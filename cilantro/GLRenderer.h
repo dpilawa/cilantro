@@ -1,6 +1,7 @@
-#pragma once
+#ifndef _GLRENDERER_H_
+#define _GLRENDERER_H_
+
 #include "Renderer.h"
-#include "GLFW/glfw3.h"
 
 class GLRenderer : public Renderer
 {
@@ -9,3 +10,4 @@ public:
 	~GLRenderer ();
 };
 
+#endif
