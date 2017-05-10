@@ -3,7 +3,9 @@
 
 #include <algorithm> 
 
+// row-major matrix representation in memory
 #define M(x, y) m [(x - 1) * 4 + y - 1]
+#define MMUL(m1, m2, x, y) M(x, y) = m1.M (x, 1) * m2.M (1, y) + m1.M (x, 2) * m2.M (2, y) + m1.M (x, 3) * m2.M (3, y) + m1.M (x, 4) * m2.M (4, y)
 
 class Matrix4f
 {
