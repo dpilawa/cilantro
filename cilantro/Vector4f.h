@@ -3,6 +3,8 @@
 
 #include <algorithm>
 
+#define V(n) v [n - 1]
+
 // Represents 4-dimensional float vector
 class Vector4f
 {

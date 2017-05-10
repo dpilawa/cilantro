@@ -1,11 +1,13 @@
 #ifndef _MATRIX4F_H_
 #define _MATRIX4F_H_
 
-#include <algorithm>
+#include <algorithm> 
+
+#define M(x, y) m [(x - 1) * 4 + y - 1]
 
 class Matrix4f
 {
-	float m[4][4];
+	float m[16];
 public:
 	// constructor
 	Matrix4f () { };
@@ -39,11 +41,5 @@ public:
 	Matrix4f& InitIdentity ();
 	Matrix4f& operator*= (const Matrix4f& m);
 };
-
-inline Matrix4f operator*(Matrix4f m, Matrix4f& n)
-{
-	m *= n;
-	return m;
-}
 
 #endif
