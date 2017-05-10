@@ -1,16 +1,41 @@
 #ifndef _VECTOR4F_H_
 #define _VECTOR4F_H_
 
+#include <algorithm>
+
 // Represents 4-dimensional float vector
 class Vector4f
 {
-	float x, y, z, w;
+	float v[4];
 public:
-	Vector4f (float x, float y, float z, float w) : x (x), y (y), z (z), w (w) { };
-	Vector4f (float x, float y, float z) : x (x), y (y), z (z), w (1.0f) { };
-	Vector4f (const Vector4f& v) : x (v.x), y (v.y), z (v.z), w (v.w) { };
-	Vector4f () : x (0.0f), y (0.0f), z (0.0f), w (1.0f) { };
+	// constructors
+	Vector4f () {};
+	Vector4f (float x, float y, float z, float w) : v { x, y, z, w } {};
+	Vector4f (float x, float y, float z) : v { x, y, z, 1.0f } {};
+
+	// copy constructor
+	Vector4f (const Vector4f& other)
+	{
+		std::copy (other.v, other.v + 3, v);
+	}
+
+	// move constructor
+	Vector4f (Vector4f&& other) : Vector4f()
+	{
+		std::swap (v, other.v);
+	}
+
+	// assignment operator
+	Vector4f& operator= (Vector4f other)
+	{
+		std::swap (v, other.v);
+		return *this;
+	}
+
+	// destructor
 	~Vector4f () { };
+
+	// other operators
 };
 
 #endif
