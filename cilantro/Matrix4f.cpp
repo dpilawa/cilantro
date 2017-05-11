@@ -1,5 +1,15 @@
 #include "Matrix4f.h"
 
+void Matrix4f::SetXY (int x, int y, float v)
+{
+	M (x, y) = v;
+}
+
+float Matrix4f::getXY (int x, int y) const
+{
+	return M (x, y);
+}
+
 Matrix4f& Matrix4f::InitIdentity()
 { 
 	M (1, 1) = 1.0f;

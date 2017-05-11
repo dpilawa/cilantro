@@ -1,11 +1,8 @@
 #include "GameScene.h"
 
-
-
 GameScene::GameScene()
 {
 }
-
 
 GameScene::~GameScene()
 {
@@ -15,7 +12,10 @@ void GameScene::Run ()
 {
 }
 
-int GameScene::AddGameObject (GameObject * object)
+// add GameObject to a scene
+// returns reference to that added pointer
+GameObject& GameScene::AddGameObject (GameObject* object)
 {
-	return 0;
+	gameObjects.push_back (object);
+	return *object;
 }

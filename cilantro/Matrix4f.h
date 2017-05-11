@@ -36,8 +36,9 @@ public:
 	// destructor
 	~Matrix4f () {};
 
-	// other operators
-
+	// getters & setters
+	void SetXY (const int x, const int y, const float v);
+	float getXY (const int x, const int y) const;
 
 	// methods
 	Matrix4f& InitIdentity ();
