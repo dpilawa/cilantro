@@ -118,6 +118,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="GameLoop.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="GLRenderer.h" />
@@ -125,10 +126,12 @@
     <ClInclude Include="Matrix4f.h" />
     <ClInclude Include="MeshObject.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="Time.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Vector4f.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GameLoop.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="GLRenderer.cpp" />
@@ -137,6 +140,7 @@
     <ClCompile Include="Matrix4f.cpp" />
     <ClCompile Include="MeshObject.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="Vector4f.cpp" />
   </ItemGroup>

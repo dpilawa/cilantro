@@ -12,6 +12,12 @@ public:
 	GameObject ();
 	~GameObject ();
 
+	// methods invoked by game loop
+
+	virtual void OnStart ();
+	virtual void OnFrame ();
+	virtual void OnEnd ();
+
 	// get transformation object's reference
 	Transform& getTransform ();
 

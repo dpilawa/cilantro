@@ -15,9 +15,9 @@ class MeshObject : public GameObject
 public:
 	MeshObject ();
 	~MeshObject ();
-	void Clear ();
-	void InitUnitCube ();
-	void InitUnitPlane ();
+	MeshObject& Clear ();
+	MeshObject& InitUnitCube ();
+	MeshObject& InitUnitPlane ();
 };
 
 #endif
