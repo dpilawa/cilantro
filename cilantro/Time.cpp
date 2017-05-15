@@ -8,22 +8,23 @@ Time::~Time ()
 {
 }
 
-// get time duration of currently rendered frame
+// get duration of currently rendered frame
 float Time::GetFrameDuration ()
 {
 	return frameDuration.count ();
 }
 
-// get time since last frame
-float Time::TimeSinceLastFrame ()
+// get time since start of current frame
+float Time::GetTimeSinceFrameStart ()
 {
-	return (std::chrono::high_resolution_clock::now () - thisFrameTime).count ();
+	timeSinceFrameStart = std::chrono::system_clock::now () - timeOfFrameStart;
+	return timeSinceFrameStart.count ();
 }
 
 // reset tracked frame durations on new frame
 void Time::Tick () 
 {
-	std::chrono::high_resolution_clock::time_point prevFrameTime;
-	thisFrameTime = std::chrono::high_resolution_clock::now ();
-	frameDuration = thisFrameTime - prevFrameTime;
+	auto timeOfPreviousFrameStart = timeOfFrameStart;
+	timeOfFrameStart = std::chrono::system_clock::now ();
+	frameDuration = timeOfFrameStart - timeOfPreviousFrameStart;
 }
