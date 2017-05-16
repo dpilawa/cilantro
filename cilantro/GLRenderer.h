@@ -8,6 +8,10 @@ class GLRenderer : public Renderer
 public:
 	GLRenderer ();
 	~GLRenderer ();
+
+	void OnStart ();
+	void OnFrame ();
+	void OnEnd ();
 };
 
 #endif

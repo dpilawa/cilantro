@@ -15,8 +15,6 @@ public:
 	GameScene();
 	~GameScene();
 
-	void Run ();
-
 	GameObject& AddGameObject (GameObject* object);
 };
 

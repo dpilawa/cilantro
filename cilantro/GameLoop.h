@@ -10,11 +10,12 @@ class GameLoop
 	// game loop requires a scene object
 	// and renderer interface
 	GameScene* gameScene;
-	Renderer* renderer;
+	Renderer* gameRenderer;
+	bool shouldStop = false;
 
 public:
-	GameLoop ();
-	~GameLoop ();
+	GameLoop (GameScene& scene, Renderer& renderer) : gameScene (&scene), gameRenderer (&renderer) {};
+	~GameLoop () {};
 
 	// run a game loop
 	void Go ();

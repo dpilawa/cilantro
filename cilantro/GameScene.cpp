@@ -8,10 +8,6 @@ GameScene::~GameScene()
 {
 }
 
-void GameScene::Run ()
-{
-}
-
 // add GameObject to a scene
 // returns reference to that added pointer
 GameObject& GameScene::AddGameObject (GameObject* object)

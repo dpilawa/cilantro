@@ -10,3 +10,15 @@ GLRenderer::GLRenderer ()
 GLRenderer::~GLRenderer ()
 {
 }
+
+void GLRenderer::OnStart ()
+{
+}
+
+void GLRenderer::OnFrame ()
+{
+}
+
+void GLRenderer::OnEnd ()
+{
+}
