@@ -1,5 +1,12 @@
 #include "Time.h"
 
+// duration of current frame
+std::chrono::duration<float> Time::frameDuration;
+// time elapsed since start of current frame
+std::chrono::duration<float> Time::timeSinceFrameStart;
+// start time of current frame (set on Tick)
+std::chrono::time_point<std::chrono::system_clock> Time::timeOfFrameStart;
+
 Time::Time ()
 {
 }

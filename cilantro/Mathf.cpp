@@ -58,6 +58,16 @@ Matrix4f Mathf::GenRotationZMatrix (float angle)
 	return m;
 }
 
+Matrix4f Mathf::GenTranslationMatrix (float x, float y, float z)
+{
+	return Matrix4f ();
+}
+
+Matrix4f Mathf::GenScalingMatrix (float x, float y, float z)
+{
+	return Matrix4f ();
+}
+
 // generate translation matrix along 3 axes
 Matrix4f GenTranslationMatrix (float x, float y, float z)
 {

@@ -13,6 +13,10 @@ Transform& Transform::Scale (float x, float y, float z)
 	return *this;
 }
 
+void Transform::CalculateModelMatrix ()
+{
+}
+
 Transform& Transform::Translate (float x, float y, float z)
 {
 	translateX += x;

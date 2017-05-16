@@ -8,6 +8,18 @@ GameObject::~GameObject ()
 {
 }
 
+void GameObject::OnStart ()
+{
+}
+
+void GameObject::OnFrame ()
+{
+}
+
+void GameObject::OnEnd ()
+{
+}
+
 Transform& GameObject::getTransform ()
 {
 	return objectTransform;
