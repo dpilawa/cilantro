@@ -14,7 +14,7 @@ int main (int argc, char* argv[])
 	MeshObject& object2 = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
 	object2.InitUnitPlane ().getTransform ().Scale (5.0f, 5.0f, 5.0f);
 
-	GameLoop game (scene, renderer);
+	GameLoop game (scene, renderer, 30.0f);
 	game.Go ();
 
 	return 0;

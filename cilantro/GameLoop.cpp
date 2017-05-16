@@ -1,6 +1,10 @@
 #include "GameLoop.h"
-#include <chrono>
-#include <thread>
+
+GameLoop::GameLoop (GameScene & scene, Renderer & renderer, const float renderFPS) :
+	gameScene (&scene), gameRenderer (&renderer), renderFPS (renderFPS)
+{
+	renderFrameDuration = std::chrono::duration<int, std::micro> ((int)(1000000.f / renderFPS));
+}
 
 void GameLoop::Go ()
 {
