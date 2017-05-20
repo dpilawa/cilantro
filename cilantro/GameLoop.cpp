@@ -1,16 +1,15 @@
 #include "GameLoop.h"
+#include <iostream>
 
-GameLoop::GameLoop (GameScene & scene, Renderer & renderer, const float renderFPS) :
-	gameScene (&scene), gameRenderer (&renderer), renderFPS (renderFPS)
+GameLoop::GameLoop (GameScene & scene, Renderer & renderer) :
+	gameScene (&scene), gameRenderer (&renderer)
 {
-	renderFrameDuration = std::chrono::duration<int, std::micro> ((int)(1000000.f / renderFPS));
+	shouldStop = false;
 }
 
 void GameLoop::Go ()
 {
-	std::chrono::duration<int, std::micro> timer_duration2 (16667);
-
-	// set game clocks
+	// pre-set game clocks
 	Time::Tick ();
 
 	// initialize renderer
@@ -18,10 +17,12 @@ void GameLoop::Go ()
 
 	// run game loop, terminate when shouldStop condition is met
 	while (shouldStop != true) {
+		Time::Tick ();
 		gameRenderer->OnFrame ();
-		std::this_thread::sleep_for (timer_duration2);
+		std::cout << "Frame time: " << Time::GetFrameDeltaTime () << std::endl;
 	}
 
 	// deinitialize renderer
 	gameRenderer->OnEnd ();
 }
+

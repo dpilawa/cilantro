@@ -1,11 +1,9 @@
 #include "Time.h"
 
 // duration of current frame
-std::chrono::duration<float> Time::frameDuration;
-// time elapsed since start of current frame
-std::chrono::duration<float> Time::timeSinceFrameStart;
+std::chrono::duration<float> Time::frameDeltaTime;
 // start time of current frame (set on Tick)
-std::chrono::time_point<std::chrono::system_clock> Time::timeOfFrameStart;
+std::chrono::high_resolution_clock::time_point Time::timeOfFrameStart;
 
 Time::Time ()
 {
@@ -15,23 +13,16 @@ Time::~Time ()
 {
 }
 
-// get duration of currently rendered frame
-float Time::GetFrameDuration ()
+// get duration of currently rendered frame (in seconds)
+float Time::GetFrameDeltaTime ()
 {
-	return frameDuration.count ();
-}
-
-// get time since start of current frame
-float Time::GetTimeSinceFrameStart ()
-{
-	timeSinceFrameStart = std::chrono::system_clock::now () - timeOfFrameStart;
-	return timeSinceFrameStart.count ();
+	return std::chrono::duration_cast<std::chrono::microseconds>(frameDeltaTime).count () / 1000000.0f;
 }
 
 // reset tracked frame durations on new frame
 void Time::Tick () 
 {
 	auto timeOfPreviousFrameStart = timeOfFrameStart;
-	timeOfFrameStart = std::chrono::system_clock::now ();
-	frameDuration = timeOfFrameStart - timeOfPreviousFrameStart;
+	timeOfFrameStart = std::chrono::high_resolution_clock::now ();
+	frameDeltaTime = timeOfFrameStart - timeOfPreviousFrameStart;
 }

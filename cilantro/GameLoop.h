@@ -12,7 +12,7 @@
 class GameLoop
 {
 public:
-	GameLoop (GameScene& scene, Renderer& renderer, const float renderFPS);
+	GameLoop (GameScene& scene, Renderer& renderer);
 	~GameLoop () {};
 
 	// run a game loop
@@ -25,13 +25,8 @@ private:
 	GameScene* gameScene;
 	Renderer* gameRenderer;
 
-	// frames per second
-	float renderFPS;
-	std::chrono::duration<int, std::micro> renderFrameDuration;
-
-	// bool flags to control the loop and fps synchronization
-	std::atomic_bool shouldStop = false;
-	std::atomic_bool frameInProgress = false;
+	// bool flags to control the game loop
+	std::atomic_bool shouldStop;
 };
 
 #endif
