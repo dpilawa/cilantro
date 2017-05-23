@@ -14,12 +14,11 @@ void GameLoop::Go ()
 
 	// initialize renderer
 	gameRenderer->OnStart ();
-
+	
 	// run game loop, terminate when shouldStop condition is met
 	while (shouldStop != true) {
 		Time::Tick ();
 		gameRenderer->OnFrame ();
-		std::cout << "Frame time: " << Time::GetFrameDeltaTime () << std::endl;
 	}
 
 	// deinitialize renderer

@@ -35,13 +35,6 @@ Matrix4f& Matrix4f::InitIdentity()
 	return *this;
 }
 
-// binary operator for matrix multiplication
-inline Matrix4f operator*(Matrix4f m, Matrix4f& n)
-{
-	m *= n;
-	return m;
-}
-
 // compound assignment operator for matrix multiplication
 Matrix4f& Matrix4f::operator*=(const Matrix4f& other)
 {

@@ -45,4 +45,11 @@ public:
 	Matrix4f& operator*= (const Matrix4f& m);
 };
 
+// binary operator for matrix multiplication
+inline Matrix4f operator*(Matrix4f m, Matrix4f& n)
+{
+	m *= n;
+	return m;
+};
+
 #endif

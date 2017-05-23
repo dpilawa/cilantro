@@ -1,5 +1,6 @@
 #include "Transform.h"
 #include "Mathf.h"
+#include "Matrix4f.h"
 
 Transform& Transform::Scale (float x, float y, float z) 
 {
@@ -7,14 +8,15 @@ Transform& Transform::Scale (float x, float y, float z)
 	scaleY *= y;
 	scaleZ *= z;
 
-	scalingMatrix = Mathf::GenScalingMatrix (scaleX, scaleY, scaleZ);
-	CalculateModelMatrix ();
-
 	return *this;
 }
 
 void Transform::CalculateModelMatrix ()
 {
+	scalingMatrix = Mathf::GenScalingMatrix (scaleX, scaleY, scaleZ);
+	translationMatrix = Mathf::GenTranslationMatrix (translateX, translateY, translateZ);
+
+	modelMatrix = translationMatrix * scalingMatrix;
 }
 
 Transform& Transform::Translate (float x, float y, float z)
@@ -22,9 +24,6 @@ Transform& Transform::Translate (float x, float y, float z)
 	translateX += x;
 	translateY += y;
 	translateZ += z;
-
-	translationMatrix = Mathf::GenTranslationMatrix (translateX, translateY, translateZ);
-	CalculateModelMatrix ();
 
 	return *this;
 }

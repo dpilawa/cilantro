@@ -2,6 +2,7 @@
 #define _GLRENDERER_H_
 
 #include "Renderer.h"
+#include "GLFW/glfw3.h"
 
 class GLRenderer : public Renderer
 {
@@ -12,6 +13,11 @@ public:
 	void OnStart ();
 	void OnFrame ();
 	void OnEnd ();
+private:
+	// GL window context
+	GLFWwindow* window;
+
+
 };
 
 #endif

@@ -4,10 +4,6 @@
 #include "GameScene.h"
 #include "Renderer.h"
 #include "Time.h"
-#include <chrono>
-#include <thread>
-#include <atomic>
-#include <mutex>
 
 class GameLoop
 {
@@ -26,7 +22,7 @@ private:
 	Renderer* gameRenderer;
 
 	// bool flags to control the game loop
-	std::atomic_bool shouldStop;
+	bool shouldStop;
 };
 
 #endif
