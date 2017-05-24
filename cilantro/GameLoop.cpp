@@ -18,6 +18,9 @@ void GameLoop::Go ()
 	// run game loop, terminate when shouldStop condition is met
 	while (shouldStop != true) {
 		Time::Tick ();
+		// traverse all GameObjects and invoke OnFrame
+		// -- tbd
+		// render frame
 		gameRenderer->OnFrame ();
 	}
 

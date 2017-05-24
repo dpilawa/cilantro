@@ -2,11 +2,12 @@
 #define _GAMEOBJECT_H_
 
 #include "Transform.h"
+#include "Renderer.h"
 
 class GameObject
 {
 	// object's transformation from local space to world space
-	Transform objectTransform;
+	Transform worldTransform;
 
 public:
 	GameObject ();
@@ -18,8 +19,11 @@ public:
 	virtual void OnFrame ();
 	virtual void OnEnd ();
 
+	// methods invoked by renderer
+	virtual void OnDraw (Renderer& renderer);
+
 	// get transformation object's reference
-	Transform& getTransform ();
+	Transform& getWorldTransform ();
 
 };
 

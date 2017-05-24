@@ -20,7 +20,11 @@ void GameObject::OnEnd ()
 {
 }
 
-Transform& GameObject::getTransform ()
+void GameObject::OnDraw (Renderer& renderer)
 {
-	return objectTransform;
+}
+
+Transform& GameObject::getWorldTransform ()
+{
+	return worldTransform;
 }

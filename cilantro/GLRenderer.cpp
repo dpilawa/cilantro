@@ -1,7 +1,9 @@
 #include "GLRenderer.h"
 
-GLRenderer::GLRenderer ()
+GLRenderer::GLRenderer (GameScene & scene, int xRes, int yRes) : xResolution (xRes), yResolution (yRes)
 {
+	gameScene = scene;
+
 	glfwInit ();
 }
 
@@ -20,7 +22,7 @@ void GLRenderer::OnStart ()
 	glfwWindowHint (GLFW_RESIZABLE, GL_FALSE);
 	
 	// create window
-	window = glfwCreateWindow (800, 450, "GL", nullptr, nullptr);
+	window = glfwCreateWindow (xResolution, yResolution, "GL", nullptr, nullptr);
 
 	// make openGL context active
 	glfwMakeContextCurrent (window);
@@ -31,10 +33,27 @@ void GLRenderer::OnStart ()
 
 void GLRenderer::OnFrame ()
 {
+	// traverse GameObject tree and draw objects
+	for each (GameObject* g in gameScene.GetGameObjectsVector())
+	{
+		g->OnDraw (*this);
+	}
+
+	// swap front and back buffers
 	glfwSwapBuffers (window);
+	
+	// poll input
 	glfwPollEvents ();
 }
 
 void GLRenderer::OnEnd ()
+{
+}
+
+void GLRenderer::DrawGameObject (GameObject & gameObject)
+{
+}
+
+void GLRenderer::DrawGameObject (MeshObject & meshObject)
 {
 }

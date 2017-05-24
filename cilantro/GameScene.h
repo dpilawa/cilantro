@@ -3,7 +3,6 @@
 
 #include <vector>
 #include "GameObject.h"
-#include "GLRenderer.h"
 
 // This class represents a game world (a.k.a scene or level)
 // It contains all visible and invisible objects in a game
@@ -16,6 +15,7 @@ public:
 	~GameScene();
 
 	GameObject& AddGameObject (GameObject* object);
+	std::vector <GameObject*> & GetGameObjectsVector ();
 };
 
 #endif

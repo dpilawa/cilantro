@@ -15,3 +15,8 @@ GameObject& GameScene::AddGameObject (GameObject* object)
 	gameObjects.push_back (object);
 	return *object;
 }
+
+std::vector<GameObject*>& GameScene::GetGameObjectsVector ()
+{
+	return gameObjects;
+}

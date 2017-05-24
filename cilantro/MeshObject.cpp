@@ -1,5 +1,3 @@
-#include <vector>
-#include "Vector4f.h"
 #include "MeshObject.h"
 
 MeshObject::MeshObject ()
@@ -54,4 +52,12 @@ MeshObject& MeshObject::InitUnitPlane ()
 	faces = std::vector<int> { 0, 1, 2, 2, 3, 0 };
 
 	return *this;
+}
+
+void MeshObject::OnDraw (Renderer& renderer)
+{
+	// draw parent class
+	GameObject::OnDraw (renderer);
+	// draw object by invoking renderers overloaded method for this object
+	renderer.DrawGameObject (*this);
 }

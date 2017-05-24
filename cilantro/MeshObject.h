@@ -1,9 +1,10 @@
 #ifndef _MESHOBJECT_H_
-#define _MESGOBJECT_H_
+#define _MESHOBJECT_H_
 
 #include <vector>
 #include "Vector4f.h"
 #include "GameObject.h"
+#include "Renderer.h"
 
 // Represents a 3d mesh, inherits from GameObject
 // 3d mesh has a collection of vertices and a collection of vertex indices to represent mesh faces (polygons)
@@ -18,6 +19,8 @@ public:
 	MeshObject& Clear ();
 	MeshObject& InitUnitCube ();
 	MeshObject& InitUnitPlane ();
+
+	void OnDraw (Renderer& renderer);
 };
 
 #endif
