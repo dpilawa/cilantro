@@ -20,7 +20,7 @@ void GameObject::OnEnd ()
 {
 }
 
-void GameObject::OnDraw (Renderer& renderer)
+void GameObject::Draw ()
 {
 }
 

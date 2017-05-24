@@ -10,15 +10,13 @@
 class GLRenderer : public Renderer
 {
 public:
-	GLRenderer (GameScene & scene, int xRes, int yRes);
+	GLRenderer (int xRes, int yRes);
 	~GLRenderer ();
 
 	void OnStart ();
 	void OnFrame ();
 	void OnEnd ();
 
-	void DrawGameObject (GameObject& gameObject);
-	void DrawGameObject (MeshObject& meshObject);
 private:
 	// rendering resolution
 	int xResolution;

@@ -14,8 +14,7 @@ public:
 	GameScene();
 	~GameScene();
 
-	GameObject& AddGameObject (GameObject* object);
-	std::vector <GameObject*> & GetGameObjectsVector ();
+	GameObject& AddGameObject (GameObject* gameObject);
 };
 
 #endif

@@ -18,8 +18,8 @@ private:
 
 	// game loop requires a scene object
 	// and renderer interface
-	GameScene* gameScene;
-	Renderer* gameRenderer;
+	GameScene& gameScene;
+	Renderer& gameRenderer;
 
 	// bool flags to control the game loop
 	bool shouldStop;

@@ -2,7 +2,7 @@
 #include <iostream>
 
 GameLoop::GameLoop (GameScene & scene, Renderer & renderer) :
-	gameScene (&scene), gameRenderer (&renderer)
+	gameScene (scene), gameRenderer (renderer)
 {
 	shouldStop = false;
 }
@@ -13,18 +13,18 @@ void GameLoop::Go ()
 	Time::Tick ();
 
 	// initialize renderer
-	gameRenderer->OnStart ();
+	gameRenderer.OnStart ();
 	
 	// run game loop, terminate when shouldStop condition is met
 	while (shouldStop != true) {
+		// update game clocks
 		Time::Tick ();
-		// traverse all GameObjects and invoke OnFrame
-		// -- tbd
+
 		// render frame
-		gameRenderer->OnFrame ();
+		gameRenderer.OnFrame ();
 	}
 
 	// deinitialize renderer
-	gameRenderer->OnEnd ();
+	gameRenderer.OnEnd ();
 }
 

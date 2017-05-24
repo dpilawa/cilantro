@@ -2,7 +2,6 @@
 #define _GAMEOBJECT_H_
 
 #include "Transform.h"
-#include "Renderer.h"
 
 class GameObject
 {
@@ -19,8 +18,7 @@ public:
 	virtual void OnFrame ();
 	virtual void OnEnd ();
 
-	// methods invoked by renderer
-	virtual void OnDraw (Renderer& renderer);
+	virtual void Draw ();
 
 	// get transformation object's reference
 	Transform& getWorldTransform ();

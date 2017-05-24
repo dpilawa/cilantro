@@ -1,9 +1,7 @@
 #include "GLRenderer.h"
 
-GLRenderer::GLRenderer (GameScene & scene, int xRes, int yRes) : xResolution (xRes), yResolution (yRes)
+GLRenderer::GLRenderer (int xRes, int yRes) : xResolution (xRes), yResolution (yRes)
 {
-	gameScene = scene;
-
 	glfwInit ();
 }
 
@@ -33,11 +31,7 @@ void GLRenderer::OnStart ()
 
 void GLRenderer::OnFrame ()
 {
-	// traverse GameObject tree and draw objects
-	for each (GameObject* g in gameScene.GetGameObjectsVector())
-	{
-		g->OnDraw (*this);
-	}
+	// draw scene
 
 	// swap front and back buffers
 	glfwSwapBuffers (window);
@@ -50,10 +44,3 @@ void GLRenderer::OnEnd ()
 {
 }
 
-void GLRenderer::DrawGameObject (GameObject & gameObject)
-{
-}
-
-void GLRenderer::DrawGameObject (MeshObject & meshObject)
-{
-}

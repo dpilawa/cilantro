@@ -7,7 +7,7 @@
 int main (int argc, char* argv[])
 {
 	GameScene scene;
-	GLRenderer renderer (scene, 800, 600);
+	GLRenderer renderer (800, 600);
 
 	MeshObject& object = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
 	object.InitUnitCube ().getWorldTransform ().Scale (0.3f, 0.3f, 0.3f).Translate (0.0f, 0.5f, 0.0f);

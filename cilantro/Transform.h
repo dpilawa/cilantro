@@ -23,9 +23,9 @@ public:
 	Matrix4f GetModelMatrix () const;
 	Transform& Translate (float x, float y, float z);
 	Transform& Scale (float x, float y, float z);
-	Transform& RotateX (float angle);
-	Transform& RotateY (float angle);
-	Transform& RotateZ (float angle);
+	//Transform& RotateX (float angle);
+	//Transform& RotateY (float angle);
+	//Transform& RotateZ (float angle);
 private:
 	void CalculateModelMatrix ();
 };

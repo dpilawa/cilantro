@@ -1,4 +1,5 @@
 #include "MeshObject.h"
+#include "Renderer.h"
 
 MeshObject::MeshObject ()
 {
@@ -54,10 +55,11 @@ MeshObject& MeshObject::InitUnitPlane ()
 	return *this;
 }
 
-void MeshObject::OnDraw (Renderer& renderer)
+void MeshObject::Draw ()
 {
-	// draw parent class
-	GameObject::OnDraw (renderer);
-	// draw object by invoking renderers overloaded method for this object
-	renderer.DrawGameObject (*this);
+	// draw parent object
+	GameObject::Draw ();
+	// get renderer reference adn invoke its mesh drawing function
+	
 }
+

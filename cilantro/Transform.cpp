@@ -19,6 +19,11 @@ void Transform::CalculateModelMatrix ()
 	modelMatrix = translationMatrix * scalingMatrix;
 }
 
+Matrix4f Transform::GetModelMatrix () const
+{
+	return modelMatrix;
+}
+
 Transform& Transform::Translate (float x, float y, float z)
 {
 	translateX += x;
