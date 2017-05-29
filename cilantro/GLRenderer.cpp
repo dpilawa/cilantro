@@ -1,6 +1,6 @@
 #include "GLRenderer.h"
 
-GLRenderer::GLRenderer (int xRes, int yRes) : xResolution (xRes), yResolution (yRes)
+GLRenderer::GLRenderer (GameScene& scene, int xRes, int yRes) : Renderer(scene), xResolution (xRes), yResolution (yRes)
 {
 	glfwInit ();
 }
@@ -27,11 +27,15 @@ void GLRenderer::OnStart ()
 
 	// set vsync on
 	glfwSwapInterval (1);
+
+	// set callback for new objects
+	renderedScene.AddGameObjectCallBack (std::bind (&GLRenderer::OnUpdateObject, this, std::placeholders::_1));
 }
 
 void GLRenderer::OnFrame ()
 {
 	// draw scene
+
 
 	// swap front and back buffers
 	glfwSwapBuffers (window);
@@ -43,4 +47,9 @@ void GLRenderer::OnFrame ()
 void GLRenderer::OnEnd ()
 {
 }
+
+void GLRenderer::OnUpdateObject (GameObject *)
+{
+}
+
 

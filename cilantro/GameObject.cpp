@@ -20,10 +20,6 @@ void GameObject::OnEnd ()
 {
 }
 
-void GameObject::Draw ()
-{
-}
-
 Transform& GameObject::getWorldTransform ()
 {
 	return worldTransform;

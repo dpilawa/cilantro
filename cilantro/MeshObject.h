@@ -21,8 +21,6 @@ public:
 	MeshObject& InitUnitCube ();
 	MeshObject& InitUnitPlane ();
 
-	// rendering functions
-	virtual void Draw ();
 };
 
 #endif

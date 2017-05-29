@@ -55,11 +55,5 @@ MeshObject& MeshObject::InitUnitPlane ()
 	return *this;
 }
 
-void MeshObject::Draw ()
-{
-	// draw parent object
-	GameObject::Draw ();
-	// get renderer reference adn invoke its mesh drawing function
-	
-}
+
 

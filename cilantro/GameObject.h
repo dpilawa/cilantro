@@ -13,12 +13,9 @@ public:
 	~GameObject ();
 
 	// methods invoked by game loop
-
 	virtual void OnStart ();
 	virtual void OnFrame ();
 	virtual void OnEnd ();
-
-	virtual void Draw ();
 
 	// get transformation object's reference
 	Transform& getWorldTransform ();
