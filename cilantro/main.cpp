@@ -3,11 +3,15 @@
 #include "GameObject.h"
 #include "MeshObject.h"
 #include "GLRenderer.h"
+#include "LogMessage.h"
 
-int main (int argc, char* argv[])
+void main (int argc, char* argv[])
 {
+	LogMessage () << "Engine starting";
+
 	GameScene scene;
 	GLRenderer renderer (scene, 800, 600);
+	GameLoop game (scene, renderer);
 
 	MeshObject& object = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
 	object.InitUnitCube ().getWorldTransform ().Scale (0.3f, 0.3f, 0.3f).Translate (0.0f, 0.5f, 0.0f);
@@ -15,8 +19,7 @@ int main (int argc, char* argv[])
 	MeshObject& object2 = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
 	object2.InitUnitPlane ().getWorldTransform ().Scale (5.0f, 5.0f, 5.0f);
 
-	GameLoop game (scene, renderer);
 	game.Go ();
 
-	return 0;
+	LogMessage () << "Engine shutdown";
 }

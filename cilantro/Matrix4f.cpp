@@ -35,28 +35,3 @@ Matrix4f& Matrix4f::InitIdentity()
 	return *this;
 }
 
-// compound assignment operator for matrix multiplication
-Matrix4f& Matrix4f::operator*=(const Matrix4f& other)
-{
-	// actual multiplication code
-	Matrix4f temp = *this;
-
-	MMUL (temp, other, 1, 1);
-	MMUL (temp, other, 1, 2);
-	MMUL (temp, other, 1, 3);
-	MMUL (temp, other, 1, 4);
-	MMUL (temp, other, 2, 1);
-	MMUL (temp, other, 2, 2);
-	MMUL (temp, other, 2, 3);
-	MMUL (temp, other, 2, 4);
-	MMUL (temp, other, 3, 1);
-	MMUL (temp, other, 3, 2);
-	MMUL (temp, other, 3, 3);
-	MMUL (temp, other, 3, 4);
-	MMUL (temp, other, 4, 1);
-	MMUL (temp, other, 4, 2);
-	MMUL (temp, other, 4, 3);
-	MMUL (temp, other, 4, 4);
-
-	return *this;
-}

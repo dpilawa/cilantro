@@ -1,4 +1,5 @@
 #include "GLRenderer.h"
+#include "LogMessage.h"
 
 GLRenderer::GLRenderer (GameScene& scene, int xRes, int yRes) : Renderer(scene), xResolution (xRes), yResolution (yRes)
 {
@@ -50,6 +51,7 @@ void GLRenderer::OnEnd ()
 
 void GLRenderer::OnUpdateObject (GameObject *)
 {
+	LogMessage () << "Received callback on updated object";
 }
 
 

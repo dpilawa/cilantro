@@ -130,6 +130,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="GLRenderer.h" />
+    <ClInclude Include="LogMessage.h" />
     <ClInclude Include="Mathf.h" />
     <ClInclude Include="Matrix4f.h" />
     <ClInclude Include="MeshObject.h" />
@@ -143,6 +144,7 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="GLRenderer.cpp" />
+    <ClCompile Include="LogMessage.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mathf.cpp" />
     <ClCompile Include="Matrix4f.cpp" />

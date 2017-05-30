@@ -4,17 +4,22 @@
 GameLoop::GameLoop (GameScene & scene, Renderer & renderer) :
 	gameScene (scene), gameRenderer (renderer)
 {
+	// set flags
 	shouldStop = false;
+	// pre-set game clocks
+	Time::Tick ();
+	// initialize renderer
+	gameRenderer.OnStart ();
+}
+
+GameLoop::~GameLoop ()
+{
+	// deinitialize renderer
+	gameRenderer.OnEnd ();
 }
 
 void GameLoop::Go ()
 {
-	// pre-set game clocks
-	Time::Tick ();
-
-	// initialize renderer
-	gameRenderer.OnStart ();
-
 	// run game loop, terminate when shouldStop condition is met
 	while (shouldStop != true) {
 		// update game clocks
@@ -24,7 +29,5 @@ void GameLoop::Go ()
 		gameRenderer.OnFrame ();
 	}
 
-	// deinitialize renderer
-	gameRenderer.OnEnd ();
 }
 

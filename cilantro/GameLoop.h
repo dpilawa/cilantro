@@ -9,7 +9,7 @@ class GameLoop
 {
 public:
 	GameLoop (GameScene& scene, Renderer& renderer);
-	~GameLoop () {};
+	~GameLoop ();
 
 	// run a game loop
 	void Go ();
