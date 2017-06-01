@@ -15,8 +15,6 @@ private:
 	bool didPrint;
 };
 
-#endif
-
 template<class T>
 inline LogMessage& LogMessage::operator<<(const T & message)
 {
@@ -24,3 +22,5 @@ inline LogMessage& LogMessage::operator<<(const T & message)
 	didPrint = true;
 	return *this;
 }
+
+#endif

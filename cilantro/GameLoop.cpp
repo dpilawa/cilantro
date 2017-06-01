@@ -10,12 +10,16 @@ GameLoop::GameLoop (GameScene & scene, Renderer & renderer) :
 	Time::Tick ();
 	// initialize renderer
 	gameRenderer.OnStart ();
+	// initialize all game objects
+	// ...
 }
 
 GameLoop::~GameLoop ()
 {
 	// deinitialize renderer
 	gameRenderer.OnEnd ();
+	// deinitialize all game objects
+	// ...
 }
 
 void GameLoop::Go ()
@@ -24,7 +28,6 @@ void GameLoop::Go ()
 	while (shouldStop != true) {
 		// update game clocks
 		Time::Tick ();
-
 		// render frame
 		gameRenderer.OnFrame ();
 	}

@@ -30,7 +30,7 @@ void GLRenderer::OnStart ()
 	glfwSwapInterval (1);
 
 	// set callback for new objects
-	renderedScene.AddGameObjectCallBack (std::bind (&GLRenderer::OnUpdateObject, this, std::placeholders::_1));
+	renderedScene.RegisterGameObjectModifiedCallback (std::bind (&GLRenderer::OnUpdateGameObject, this, std::placeholders::_1));
 }
 
 void GLRenderer::OnFrame ()
@@ -49,9 +49,9 @@ void GLRenderer::OnEnd ()
 {
 }
 
-void GLRenderer::OnUpdateObject (GameObject *)
+void GLRenderer::OnUpdateGameObject (size_t objectHandle)
 {
-	LogMessage () << "Received callback on updated object";
+	LogMessage () << "GLRenderer received callback on new or updated object [" << objectHandle << "]";
 }
 
 

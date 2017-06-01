@@ -12,13 +12,14 @@ GameScene::~GameScene()
 // returns reference to that added pointer
 GameObject& GameScene::AddGameObject (GameObject* gameObject)
 {
+	// set object handle
+	gameObject->SetHandle (gameObjects.size ());
 	// insert into collection
 	gameObjects.push_back (gameObject);
-	// notify all callback subscribers about new object
-	for each (auto callback in objectCallbacks)
-	{
-		callback (gameObject);
-	}
+	// set callback on object modification
+	gameObject->SetGameObjectModifiedCallback (std::bind (&GameScene::OnModifiedGameObject, this, std::placeholders::_1));
+	// notify subscribers
+	OnModifiedGameObject (gameObject->GetHandle ());
 	// return object
 	return *gameObject;
 }
@@ -29,10 +30,19 @@ std::vector<GameObject*>& GameScene::GetGameObjects ()
 	return gameObjects;
 }
 
-// add new GameObject callback
-void GameScene::AddGameObjectCallBack (std::function<void (GameObject*)> callback)
+void GameScene::RegisterGameObjectModifiedCallback (std::function<void (size_t)> callback)
 {
 	objectCallbacks.push_back (callback);
+}
+
+void GameScene::OnModifiedGameObject (size_t objectHandle)
+{
+	LogMessage () << "GameScene notifying on new or updated object [" << objectHandle << "]";
+	// notify all callback subscribers about new or modified object
+	for each (auto callback in objectCallbacks)
+	{
+		callback (objectHandle);
+	}
 }
 
 

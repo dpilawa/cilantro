@@ -15,7 +15,7 @@ public:
 	void OnFrame ();
 	void OnEnd ();
 
-	void OnUpdateObject (GameObject*);
+	void OnUpdateGameObject (size_t objectHandle);
 
 private:
 	// rendering resolution

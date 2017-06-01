@@ -37,6 +37,8 @@ MeshObject& MeshObject::InitUnitCube ()
 							   0, 4, 1, 1, 4, 5, 3, 2, 6, 3, 6, 7,		// top, bottom
 							   1, 5, 6, 1, 6, 2, 0, 3, 4, 3, 7, 4 };	// left, right
 
+	GameObjectModifiedNotify ();
+
 	return *this;
 }
 
@@ -51,6 +53,8 @@ MeshObject& MeshObject::InitUnitPlane ()
 	vertices.push_back (Vector4f (-.5f, 0, .5f));
 
 	faces = std::vector<int> { 0, 1, 2, 2, 3, 0 };
+
+	GameObjectModifiedNotify ();
 
 	return *this;
 }

@@ -14,7 +14,7 @@ public:
 	virtual void OnFrame () = 0;
 	virtual void OnEnd () = 0;
 
-	virtual void OnUpdateObject (GameObject*) = 0;
+	virtual void OnUpdateGameObject (size_t objectHandle) = 0;
 
 protected:
 	GameScene& renderedScene;
