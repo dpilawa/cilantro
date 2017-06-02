@@ -9,7 +9,7 @@ public:
 	Time ();
 	~Time ();
 
-	// get duration of currently rendered frame
+	// get duration of currently rendered frame (in seconds)
 	static double GetFrameDeltaTime ();
 	// reset tracked frame durations on new frame
 	static void Tick ();

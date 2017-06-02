@@ -11,11 +11,12 @@ public:
 	GLRenderer (GameScene& scene,  int xRes, int yRes);
 	~GLRenderer ();
 
-	void OnStart ();
-	void OnFrame ();
-	void OnEnd ();
-
-	void OnUpdateGameObject (size_t objectHandle);
+	// initialize renderer
+	void Initialize ();
+	// render one frame
+	void RenderFrame ();
+	// deinitialize renderer
+	void Deinitialize ();
 
 private:
 	// rendering resolution
@@ -26,8 +27,11 @@ private:
 	GLFWwindow* window;
 
 	// VAOs and EBOs for all scene objects
-	std::vector <GLint> vao;
-	std::vector <GLint> ebo;
+	std::vector <GLint> VAO;
+	std::vector <GLint> EBO;
+
+	// callback function to get notified about new or modified GameObjects
+	void OnUpdateGameObject (size_t objectHandle);
 };
 
 #endif

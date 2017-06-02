@@ -51,6 +51,9 @@
     <ClInclude Include="LogMessage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CallbackProvider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameScene.cpp">

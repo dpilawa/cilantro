@@ -11,11 +11,30 @@ Transform& Transform::Scale (float x, float y, float z)
 	return *this;
 }
 
+Transform & Transform::RotateX (float angle)
+{
+	return *this;
+}
+
+
+Transform & Transform::RotateY (float angle)
+{
+	return *this;
+}
+
+
+Transform & Transform::RotateZ (float angle)
+{
+	return *this;
+}
+
+
 void Transform::CalculateModelMatrix ()
 {
 	scalingMatrix = Mathf::GenScalingMatrix (scaleX, scaleY, scaleZ);
 	translationMatrix = Mathf::GenTranslationMatrix (translateX, translateY, translateZ);
 
+	// multiply transformation matrices (order - rotate, scale, then translate)
 	modelMatrix = translationMatrix * scalingMatrix;
 }
 

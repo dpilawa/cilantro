@@ -16,9 +16,13 @@ public:
 	MeshObject ();
 	~MeshObject ();
 
-	// MeshObjects initializers
+	// Cleans up contents of used collections
 	MeshObject& Clear ();
+
+	// Initialize mesh in local space as unit cube with center in space origin
 	MeshObject& InitUnitCube ();
+
+	// Initialize mesh in local space as unit plane parallel to x and z axis, with center in space origin
 	MeshObject& InitUnitPlane ();
 
 };

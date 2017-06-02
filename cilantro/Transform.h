@@ -20,12 +20,18 @@ public:
 		rotateX (0.0f), rotateY (0.0f), rotateZ (0.0f) { };
 	~Transform () { };
 
+	// returns models matrix (multiplication of rotation, scaling, translation)
 	Matrix4f GetModelMatrix () const;
+	// translate in space
 	Transform& Translate (float x, float y, float z);
+	// scale
 	Transform& Scale (float x, float y, float z);
-	//Transform& RotateX (float angle);
-	//Transform& RotateY (float angle);
-	//Transform& RotateZ (float angle);
+	// rotate in space around X axis
+	Transform& RotateX (float angle);
+	// rotate in space around Y axis	
+	Transform& RotateY (float angle);
+	// rotate in space around Z axis	
+	Transform& RotateZ (float angle);
 private:
 	void CalculateModelMatrix ();
 };

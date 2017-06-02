@@ -1,20 +1,19 @@
 #include <cmath>
 #include "Mathf.h"
 
-// convert degrees to radians
+
 float Mathf::Deg2Rad (float degrees)
 {
 	return degrees * Mathf::Pi() / 180.f;
 }
 
-// convert radians to degrees
+
 float Mathf::Rad2Deg (float radians)
 {
 	return radians * 180.f / Mathf::Pi();
 }
 
-// generate rotation matrix to rotate around X axis
-// angle provided in radians
+
 Matrix4f Mathf::GenRotationXMatrix(float angle)
 {
 	Matrix4f m;
@@ -28,8 +27,7 @@ Matrix4f Mathf::GenRotationXMatrix(float angle)
 	return m;
 }
 
-// generate rotation matrix to rotate around Y axis
-// angle provided in radians
+
 Matrix4f Mathf::GenRotationYMatrix (float angle)
 {
 	Matrix4f m;
@@ -43,8 +41,7 @@ Matrix4f Mathf::GenRotationYMatrix (float angle)
 	return m;
 }
 
-// generate rotation matrix to rotate around Z axis
-// angle provided in radians
+
 Matrix4f Mathf::GenRotationZMatrix (float angle)
 {
 	Matrix4f m;
@@ -68,7 +65,7 @@ Matrix4f Mathf::GenScalingMatrix (float x, float y, float z)
 	return Matrix4f ();
 }
 
-// generate translation matrix along 3 axes
+
 Matrix4f GenTranslationMatrix (float x, float y, float z)
 {
 	Matrix4f m;
@@ -81,7 +78,7 @@ Matrix4f GenTranslationMatrix (float x, float y, float z)
 	return m;
 }
 
-// generate scaling matrix along 3 axes
+
 Matrix4f GenScalingMatrix (float x, float y, float z)
 {
 	Matrix4f m;

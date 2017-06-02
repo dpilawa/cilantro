@@ -9,7 +9,7 @@ GameLoop::GameLoop (GameScene & scene, Renderer & renderer) :
 	// pre-set game clocks
 	Time::Tick ();
 	// initialize renderer
-	gameRenderer.OnStart ();
+	gameRenderer.Initialize ();
 	// initialize all game objects
 	// ...
 }
@@ -17,7 +17,7 @@ GameLoop::GameLoop (GameScene & scene, Renderer & renderer) :
 GameLoop::~GameLoop ()
 {
 	// deinitialize renderer
-	gameRenderer.OnEnd ();
+	gameRenderer.Deinitialize ();
 	// deinitialize all game objects
 	// ...
 }
@@ -28,8 +28,10 @@ void GameLoop::Go ()
 	while (shouldStop != true) {
 		// update game clocks
 		Time::Tick ();
+		// update all game objects
+		// ...
 		// render frame
-		gameRenderer.OnFrame ();
+		gameRenderer.RenderFrame ();
 	}
 
 }

@@ -9,7 +9,7 @@ MeshObject::~MeshObject ()
 {
 }
 
-// Cleans up contents of used collections
+
 MeshObject& MeshObject::Clear ()
 {
 	vertices.clear ();
@@ -18,7 +18,7 @@ MeshObject& MeshObject::Clear ()
 	return *this;
 }
 
-// Initialize mesh in local space as unit cube with center in space origin
+
 MeshObject& MeshObject::InitUnitCube ()
 {
 	Clear ();
@@ -37,12 +37,12 @@ MeshObject& MeshObject::InitUnitCube ()
 							   0, 4, 1, 1, 4, 5, 3, 2, 6, 3, 6, 7,		// top, bottom
 							   1, 5, 6, 1, 6, 2, 0, 3, 4, 3, 7, 4 };	// left, right
 
-	GameObjectModifiedNotify ();
+	InvokeCallbacks (GetHandle ());
 
 	return *this;
 }
 
-// Initialize mesh in local space as unit plane parallel to x and z axis, with center in space origin
+
 MeshObject& MeshObject::InitUnitPlane ()
 {
 	Clear ();
@@ -54,7 +54,7 @@ MeshObject& MeshObject::InitUnitPlane ()
 
 	faces = std::vector<int> { 0, 1, 2, 2, 3, 0 };
 
-	GameObjectModifiedNotify ();
+	InvokeCallbacks (GetHandle ());
 
 	return *this;
 }

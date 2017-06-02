@@ -10,10 +10,12 @@ public:
 	Renderer (GameScene& scene);
 	~Renderer ();
 
-	virtual void OnStart () = 0;
-	virtual void OnFrame () = 0;
-	virtual void OnEnd () = 0;
+	// abstract functions declarations
+	virtual void Initialize () = 0;
+	virtual void RenderFrame () = 0;
+	virtual void Deinitialize () = 0;
 
+	// callback function to get notified about new or modified GameObjects
 	virtual void OnUpdateGameObject (size_t objectHandle) = 0;
 
 protected:

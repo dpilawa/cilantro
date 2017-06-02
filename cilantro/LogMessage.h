@@ -9,14 +9,14 @@ public:
 	LogMessage ();
 	~LogMessage ();
 
-	template <class T> 
-	LogMessage& operator<<(const T& message);\
+	template <class P> 
+	LogMessage& operator<<(const P& message);\
 private:
 	bool didPrint;
 };
 
-template<class T>
-inline LogMessage& LogMessage::operator<<(const T & message)
+template<class P>
+inline LogMessage& LogMessage::operator<<(const P & message)
 {
 	std::cout << message;
 	didPrint = true;

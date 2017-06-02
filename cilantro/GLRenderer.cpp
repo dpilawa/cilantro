@@ -12,7 +12,7 @@ GLRenderer::~GLRenderer ()
 	glfwTerminate ();
 }
 
-void GLRenderer::OnStart ()
+void GLRenderer::Initialize ()
 {
 	// set up GL & window properties
 	glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -30,10 +30,10 @@ void GLRenderer::OnStart ()
 	glfwSwapInterval (1);
 
 	// set callback for new objects
-	renderedScene.RegisterGameObjectModifiedCallback (std::bind (&GLRenderer::OnUpdateGameObject, this, std::placeholders::_1));
+	renderedScene.RegisterCallback (std::bind (&GLRenderer::OnUpdateGameObject, this, std::placeholders::_1));
 }
 
-void GLRenderer::OnFrame ()
+void GLRenderer::RenderFrame ()
 {
 	// draw scene
 
@@ -45,7 +45,7 @@ void GLRenderer::OnFrame ()
 	glfwPollEvents ();
 }
 
-void GLRenderer::OnEnd ()
+void GLRenderer::Deinitialize ()
 {
 }
 
