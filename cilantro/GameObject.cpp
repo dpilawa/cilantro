@@ -8,12 +8,12 @@ GameObject::~GameObject ()
 {
 }
 
-void GameObject::SetHandle (size_t handle)
+void GameObject::SetHandle (unsigned int handle)
 {
 	objectHandle = handle;
 }
 
-size_t GameObject::GetHandle () const
+unsigned int GameObject::GetHandle () const
 {
 	return objectHandle;
 }

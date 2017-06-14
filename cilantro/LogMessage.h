@@ -2,11 +2,13 @@
 #define _LOGMESSAGE_H_
 
 #include <iostream>
+#include <string>
 
 class LogMessage
 {
 public:
 	LogMessage ();
+	LogMessage (std::string label);
 	~LogMessage ();
 
 	template <class P> 

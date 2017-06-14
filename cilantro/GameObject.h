@@ -6,15 +6,15 @@
 #include <vector>
 #include <functional>
 
-class GameObject : public CallbackProvider<size_t>
+class GameObject : public CallbackProvider<unsigned int>
 {
 public:
 	GameObject ();
 	~GameObject ();
 
 	// getters and setters
-	void SetHandle (size_t handle);
-	size_t GetHandle () const;
+	void SetHandle (unsigned int handle);
+	unsigned int GetHandle () const;
 
 	// invoked by game loop during initializaton
 	virtual void OnStart ();
@@ -27,7 +27,7 @@ public:
 	Transform& getWorldTransform ();
 private:
 	// object's handle (index in vector inside GameScene)
-	size_t objectHandle;
+	unsigned int objectHandle;
 
 	// object's transformation from local space to world space
 	Transform worldTransform;

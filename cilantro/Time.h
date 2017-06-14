@@ -9,16 +9,24 @@ public:
 	Time ();
 	~Time ();
 
-	// get duration of currently rendered frame (in seconds)
+	// return delta-time of currently rendered frame (in seconds)
 	static double GetFrameDeltaTime ();
-	// reset tracked frame durations on new frame
+	// return rendering time of last frame (in seconds)
+	static double GetFrameRenderTime ();
+	// calculate delta-time and reset begin timestamps on new frame
 	static void Tick ();
+	// set end timestamp and calculate frame rendering time
+	static void Tock ();
 
 private:
-	// duration of current frame
+	// delta-time of current frame
 	static std::chrono::duration<double> frameDeltaTime;
+	// rendering time of current frame
+	static std::chrono::duration<double> frameRenderTime;
 	// start time of current frame (set on Tick)
-	static std::chrono::steady_clock::time_point timeOfFrameStart;
+	static std::chrono::high_resolution_clock::time_point timeOfFrameStart;
+	// end time of current frame (set on Tock)
+	static std::chrono::high_resolution_clock::time_point timeOfFrameEnd;
 };
 
 #endif

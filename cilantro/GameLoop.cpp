@@ -6,32 +6,55 @@ GameLoop::GameLoop (GameScene & scene, Renderer & renderer) :
 {
 	// set flags
 	shouldStop = false;
+
 	// pre-set game clocks
 	Time::Tick ();
+
+	// initialize all game objects
+	for (auto gameObject : gameScene.GetGameObjects ())
+	{
+		gameObject->OnStart ();
+	}
+
 	// initialize renderer
 	gameRenderer.Initialize ();
-	// initialize all game objects
-	// ...
 }
 
 GameLoop::~GameLoop ()
 {
 	// deinitialize renderer
 	gameRenderer.Deinitialize ();
+	
 	// deinitialize all game objects
-	// ...
+	for (auto gameObject : gameScene.GetGameObjects ())
+	{
+		gameObject->OnEnd ();
+	}
 }
 
 void GameLoop::Go ()
 {
 	// run game loop, terminate when shouldStop condition is met
 	while (shouldStop != true) {
-		// update game clocks
+		
+		// update game clocks (Tick)
 		Time::Tick ();
+	
 		// update all game objects
-		// ...
+		for (auto gameObject : gameScene.GetGameObjects ())
+		{
+			gameObject->OnFrame ();
+		}
+		
 		// render frame
 		gameRenderer.RenderFrame ();
+
+		// display debug message
+		if (gameRenderer.GetFrameCount() % 200 == 0)
+		{
+			LogMessage () << "Actual FPS: " << 1 / Time::GetFrameDeltaTime () << "; Theoretical FPS: " << 1 / Time::GetFrameRenderTime ();
+		}
+	
 	}
 
 }

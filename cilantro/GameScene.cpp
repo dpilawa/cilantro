@@ -2,6 +2,7 @@
 
 GameScene::GameScene()
 {
+	gameObjectsCount = 0;
 }
 
 GameScene::~GameScene()
@@ -11,7 +12,7 @@ GameScene::~GameScene()
 GameObject& GameScene::AddGameObject (GameObject* gameObject)
 {
 	// set object handle
-	gameObject->SetHandle (gameObjects.size ());
+	gameObject->SetHandle (gameObjectsCount++);
 	// insert into collection
 	gameObjects.push_back (gameObject);
 	// set callback on object modification
@@ -28,8 +29,13 @@ std::vector<GameObject*>& GameScene::GetGameObjects ()
 	return gameObjects;
 }
 
+unsigned int GameScene::getGameObjectsCount () const
+{
+	return gameObjectsCount;
+}
 
-void GameScene::OnModifiedGameObject (size_t objectHandle)
+
+void GameScene::OnModifiedGameObject (unsigned int objectHandle)
 {
 	InvokeCallbacks (objectHandle);
 }

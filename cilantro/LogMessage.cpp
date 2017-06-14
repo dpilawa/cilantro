@@ -5,6 +5,12 @@ LogMessage::LogMessage ()
 	didPrint = false;
 }
 
+LogMessage::LogMessage (std::string label)
+{
+	std::cout << "[" << label << "] ";
+	didPrint = true;
+}
+
 
 LogMessage::~LogMessage ()
 {

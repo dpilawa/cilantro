@@ -12,14 +12,21 @@ public:
 
 	// abstract functions declarations
 	virtual void Initialize () = 0;
-	virtual void RenderFrame () = 0;
+	virtual void RenderFrame ();
 	virtual void Deinitialize () = 0;
 
 	// callback function to get notified about new or modified GameObjects
-	virtual void OnUpdateGameObject (size_t objectHandle) = 0;
+	virtual void OnUpdateGameObject (unsigned int objectHandle) = 0;
+
+	// return number of rendered frames
+	long long GetFrameCount () const;
 
 protected:
+	// GameScene being rendered
 	GameScene& renderedScene;
+
+	// number of rendered frames
+	long long frameCount;
 };
 
 #endif
