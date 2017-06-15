@@ -1,5 +1,6 @@
 #include "MeshObject.h"
 #include "Renderer.h"
+#include "LogMessage.h"
 
 MeshObject::MeshObject ()
 {
@@ -57,6 +58,27 @@ MeshObject& MeshObject::InitUnitPlane ()
 	InvokeCallbacks (GetHandle ());
 
 	return *this;
+}
+
+Vector4f * MeshObject::GetVerticesData ()
+{
+	return vertices.data ();
+}
+
+int * MeshObject::GetFacesData ()
+{
+	return faces.data ();
+}
+
+void MeshObject::OnFrame ()
+{
+	GameObject::OnFrame ();
+}
+
+void MeshObject::OnDraw (Renderer& renderer)
+{
+	GameObject::OnDraw (renderer);
+	renderer.Draw (*this);
 }
 
 

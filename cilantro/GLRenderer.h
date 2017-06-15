@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include "Time.h"
 #include "Renderer.h"
+#include "GameScene.h"
 #include "LogMessage.h"
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
@@ -28,6 +29,9 @@ public:
 	void RenderFrame ();
 	// deinitialize renderer
 	void Deinitialize ();
+
+	// object drawing functions
+	void Draw (MeshObject& meshobject);
 
 private:
 	// rendering resolution

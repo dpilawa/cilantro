@@ -71,6 +71,11 @@ void GLRenderer::Deinitialize ()
 	glfwDestroyWindow (window);
 }
 
+void GLRenderer::Draw (MeshObject & meshobject)
+{
+	// Draw mesh
+}
+
 void GLRenderer::InitializeBuffers ()
 {
 	for (GameObject* gameObject : renderedScene.GetGameObjects ())
@@ -89,7 +94,7 @@ void GLRenderer::LoadBuffers (unsigned int objectHandle)
 		
 	// copy vertices to GPU
 	glBindBuffer (GL_ARRAY_BUFFER, buffers[objectHandle].VBO);
-	//glBufferData (GL_ARRAY_BUFFER, renderedScene.GetGameObjects()[objectHandle], )
+	//glBufferData (GL_ARRAY_BUFFER, renderedScene.GetGameObjects()[objectHandle]->, )
 
 }
 

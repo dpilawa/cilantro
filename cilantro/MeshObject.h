@@ -25,6 +25,16 @@ public:
 	// Initialize mesh in local space as unit plane parallel to x and z axis, with center in space origin
 	MeshObject& InitUnitPlane ();
 
+	// get vertices raw data
+	Vector4f* GetVerticesData ();
+
+	// get faces raw data
+	int* GetFacesData ();
+
+	// invoked by game loop on each frame
+	virtual void OnFrame ();
+	virtual void OnDraw (Renderer& renderer);
+
 };
 
 #endif

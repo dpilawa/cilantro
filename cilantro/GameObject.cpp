@@ -26,6 +26,10 @@ void GameObject::OnFrame ()
 {
 }
 
+void GameObject::OnDraw (Renderer& renreder)
+{
+}
+
 void GameObject::OnEnd ()
 {
 }

@@ -3,6 +3,7 @@
 
 #include "Transform.h"
 #include "CallbackProvider.h"
+#include "Renderer.h"
 #include <vector>
 #include <functional>
 
@@ -20,6 +21,7 @@ public:
 	virtual void OnStart ();
 	// invoked by game loop on each frame
 	virtual void OnFrame ();
+	virtual void OnDraw (Renderer& renderer);
 	// invoked by game loop during deinitialization
 	virtual void OnEnd ();
 
