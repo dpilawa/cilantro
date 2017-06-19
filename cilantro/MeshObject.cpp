@@ -38,7 +38,7 @@ MeshObject& MeshObject::InitUnitCube ()
 							   0, 4, 1, 1, 4, 5, 3, 2, 6, 3, 6, 7,		// top, bottom
 							   1, 5, 6, 1, 6, 2, 0, 3, 4, 3, 7, 4 };	// left, right
 
-	InvokeCallbacks ("OnUpdateMeshObject", GetHandle ());
+	InvokeCallbacks ("OnUpdateMeshObject", this->GetHandle ());
 
 	return *this;
 }
@@ -55,7 +55,7 @@ MeshObject& MeshObject::InitUnitPlane ()
 
 	faces = std::vector<int> { 0, 1, 2, 2, 3, 0 };
 
-	InvokeCallbacks ("OnUpdateMeshObject", GetHandle ());
+	InvokeCallbacks ("OnUpdateMeshObject", this->GetHandle ());
 
 	return *this;
 }

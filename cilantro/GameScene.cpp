@@ -29,9 +29,6 @@ GameObject& GameScene::AddGameObject (GameObject* gameObject)
 	// set callback on object modification
 	gameObject->RegisterCallback ("OnUpdateMeshObject", std::bind (&GameScene::OnModifiedMeshObject, this, std::placeholders::_1));
 
-	// notify subscribers about new object
-	//OnModifiedMeshObject (gameObject->GetHandle ());
-
 	// return object
 	return *gameObject;
 }
