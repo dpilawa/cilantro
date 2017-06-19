@@ -16,6 +16,9 @@ GameLoop::GameLoop (GameScene & scene, Renderer & renderer) :
 		gameObject->OnStart ();
 	}
 
+	// set pointer to a game loop in a scene
+	scene.SetGameLoop (*this);
+
 	// initialize renderer
 	gameRenderer.Initialize ();
 }
@@ -63,5 +66,15 @@ void GameLoop::Go ()
 	
 	}
 
+}
+
+GameScene & GameLoop::GetScene ()
+{
+	return gameScene;
+}
+
+Renderer & GameLoop::GetRenderer ()
+{
+	return gameRenderer;
 }
 

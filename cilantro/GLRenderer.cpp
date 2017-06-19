@@ -43,8 +43,8 @@ void GLRenderer::Initialize ()
 	// initialize object buffers
 	InitializeBuffers ();
 
-	// set callback for new objects
-	renderedScene.RegisterCallback (std::bind (&GLRenderer::OnUpdateGameObject, this, std::placeholders::_1));
+	// set callback for new MeshObjects
+	renderedScene.RegisterCallback ("OnUpdateMeshObject", std::bind (&GLRenderer::OnUpdateMeshObject, this, std::placeholders::_1));
 }
 
 void GLRenderer::RenderFrame ()
@@ -98,7 +98,7 @@ void GLRenderer::LoadBuffers (unsigned int objectHandle)
 
 }
 
-void GLRenderer::OnUpdateGameObject (unsigned int objectHandle)
+void GLRenderer::OnUpdateMeshObject (unsigned int objectHandle)
 {
 	LogMessage (__FUNCTION__) << objectHandle;
 

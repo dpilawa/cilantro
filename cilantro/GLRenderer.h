@@ -50,8 +50,8 @@ private:
 	// re(load) object buffers
 	void LoadBuffers (unsigned int objectHandle);
 
-	// callback function to get notified about new or modified GameObjects
-	void OnUpdateGameObject (unsigned int objectHandle);
+	// callback function to get notified about new or modified MeshObjects
+	void OnUpdateMeshObject (unsigned int objectHandle);
 };
 
 #endif

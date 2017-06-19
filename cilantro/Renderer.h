@@ -18,9 +18,6 @@ public:
 	// object drawing functions
 	virtual void Draw (MeshObject& meshobject) = 0;
 
-	// callback function to get notified about new or modified GameObjects
-	virtual void OnUpdateGameObject (unsigned int objectHandle) = 0;
-
 	// return number of rendered frames
 	long long GetFrameCount () const;
 

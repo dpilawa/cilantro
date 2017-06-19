@@ -2,14 +2,11 @@
 #define _CALLBACKPROVIDER_H_
 
 #include <vector>
+#include <unordered_map>
 #include <functional>
 
 // Class template to enable object callbacks
-// This has the following sample uses in the engine:
-// - GameScene being notified by GameObject about its changes (to notify Renderer)
-// - Renderer being notified by GameScene about GameObject changes (to reload object into GPU memory)
-// Template types: P - callback parameter; all callbacks return void
-template<typename P>
+template<typename K, typename P>
 class CallbackProvider
 {
 public:
@@ -18,39 +15,39 @@ public:
 
 	// Registers a new callback 
 	// Recipient must set callback to one of its functions
-	void RegisterCallback (std::function<void (P)> callback);
+	void RegisterCallback (K key, std::function<void (P)> callback);
 
 private:
-	// vector of callback recipients
-	std::vector <std::function<void (P)>> callbacks;
+	// map of callback recipients
+	std::unordered_map<K, std::vector <std::function<void (P)>>> callbacks;
 
 protected:
 	// Notify callback recipients
-	void InvokeCallbacks (P parameter);
+	void InvokeCallbacks (K key, P parameter);
 };
 
-template<typename P>
-inline CallbackProvider<P>::CallbackProvider ()
+template<typename K, typename P>
+inline CallbackProvider<K, P>::CallbackProvider ()
 {
 }
 
-template<typename P>
-inline CallbackProvider<P>::~CallbackProvider ()
+template<typename K, typename P>
+inline CallbackProvider<K, P>::~CallbackProvider ()
 {
 }
 
-template<typename P>
-inline void CallbackProvider<P>::RegisterCallback (std::function<void (P)> callback)
+template<typename K, typename P>
+inline void CallbackProvider<K, P>::RegisterCallback (K key, std::function<void (P)> callback)
 {
 	// push new callback at the end of callbacks vector
-	callbacks.push_back (callback);
+	callbacks[key].push_back (callback);
 }
 
-template<typename P>
-inline void CallbackProvider<P>::InvokeCallbacks (P parameter)
+template<typename K, typename P>
+inline void CallbackProvider<K, P>::InvokeCallbacks (K key, P parameter)
 {
 	// invoke all registered callbacks
-	for (auto&& callback : callbacks)
+	for (auto&& callback : callbacks[key])
 	{
 		callback (parameter);
 	}

@@ -14,6 +14,12 @@ public:
 	// run a game loop
 	void Go ();
 
+	// get scene reference
+	GameScene& GetScene ();
+
+	// get renderer reference
+	Renderer& GetRenderer ();
+
 private:
 
 	// game loop requires a scene object

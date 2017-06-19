@@ -3,22 +3,35 @@
 GameScene::GameScene()
 {
 	gameObjectsCount = 0;
+	myGameLoop = nullptr;
 }
 
 GameScene::~GameScene()
 {
 }
 
+void GameScene::SetGameLoop (GameLoop & gameloop)
+{
+	myGameLoop = &gameloop;
+}
+
 GameObject& GameScene::AddGameObject (GameObject* gameObject)
 {
-	// set object handle
+	// set object's handle
 	gameObject->SetHandle (gameObjectsCount++);
+
+	// set object's pointer to scene
+	gameObject->SetGameScene (*this);
+
 	// insert into collection
 	gameObjects.push_back (gameObject);
+
 	// set callback on object modification
-	gameObject->RegisterCallback (std::bind (&GameScene::OnModifiedGameObject, this, std::placeholders::_1));
+	gameObject->RegisterCallback ("OnUpdateMeshObject", std::bind (&GameScene::OnModifiedMeshObject, this, std::placeholders::_1));
+
 	// notify subscribers about new object
-	OnModifiedGameObject (gameObject->GetHandle ());
+	//OnModifiedMeshObject (gameObject->GetHandle ());
+
 	// return object
 	return *gameObject;
 }
@@ -35,9 +48,9 @@ unsigned int GameScene::getGameObjectsCount () const
 }
 
 
-void GameScene::OnModifiedGameObject (unsigned int objectHandle)
+void GameScene::OnModifiedMeshObject (unsigned int objectHandle)
 {
-	InvokeCallbacks (objectHandle);
+	InvokeCallbacks ("OnUpdateMeshObject", objectHandle);
 }
 
 

@@ -2,6 +2,7 @@
 
 GameObject::GameObject ()
 {
+	myGameScene = nullptr;
 }
 
 GameObject::~GameObject ()
@@ -16,6 +17,11 @@ void GameObject::SetHandle (unsigned int handle)
 unsigned int GameObject::GetHandle () const
 {
 	return objectHandle;
+}
+
+void GameObject::SetGameScene (GameScene & scene)
+{
+	myGameScene = &scene;
 }
 
 void GameObject::OnStart ()
