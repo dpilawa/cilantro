@@ -1,4 +1,6 @@
 #include "GLRenderer.h"
+#include "GLShader.h"
+#include "GLShaderModel.h"
 
 GLRenderer::GLRenderer (GameScene& scene, int xRes, int yRes) : Renderer(scene), xResolution (xRes), yResolution (yRes)
 {
@@ -73,10 +75,22 @@ void GLRenderer::Deinitialize ()
 
 void GLRenderer::AddShader (std::string shaderName, std::string shaderSourceCode, ShaderType shaderType)
 {
+	shaders[shaderName] = GLShader (shaderSourceCode, shaderType);
 }
 
-void GLRenderer::AddShaderModel (std::string shaderName, std::string vertexShader, std::string fragmentShader)
+void GLRenderer::AddShaderToModel (std::string shaderModelName, std::string shaderName, std::string fragmentShader)
 {
+	auto searchModel = shaderModels.find (shaderModelName);
+	auto searchShader = shaders.find (shaderName);
+
+	if (searchShader == shaders.end ())
+	{
+		LogMessage () << "Shader " << shaderName << " not found when adding to model " << shaderModelName;
+	}
+	else
+	{
+		shaderModels[shaderModelName].AttachShader (searchShader->second);
+	}
 }
 
 void GLRenderer::Draw (MeshObject & meshobject)

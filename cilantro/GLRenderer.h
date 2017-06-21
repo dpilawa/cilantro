@@ -34,7 +34,7 @@ public:
 
 	// shader library manipulation
 	virtual void AddShader (std::string shaderName, std::string shaderSourceCode, ShaderType shaderType);
-	virtual void AddShaderModel (std::string shaderName, std::string vertexShader, std::string fragmentShader);
+	virtual void AddShaderToModel (std::string shaderModelName, std::string shaderName, std::string fragmentShader);
 
 	// object drawing functions
 	void Draw (MeshObject& meshobject);

@@ -1,10 +1,12 @@
 #ifndef _RENDERER_H_
 #define _RENDERER_H_
 
+#include <string>
+
 class MeshObject;
 class GameScene;
 
-enum class ShaderType { VERTEX_SHADER, ELEMENT_SHADER };
+enum class ShaderType { VERTEX_SHADER, FRAGMENT_SHADER };
 
 class Renderer
 {
@@ -19,7 +21,7 @@ public:
 
 	// shader library manipulation
 	virtual void AddShader (std::string shaderName, std::string shaderSourceCode, ShaderType shaderType) = 0;
-	virtual void AddShaderModel (std::string shaderModelName, std::string vertexShader, std::string fragmentShader) = 0;
+	virtual void AddShaderToModel (std::string shaderModelName, std::string shaderName, std::string fragmentShader) = 0;
 
 	// object drawing functions
 	virtual void Draw (MeshObject& meshobject) = 0;
