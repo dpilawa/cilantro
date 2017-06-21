@@ -71,6 +71,14 @@ void GLRenderer::Deinitialize ()
 	glfwDestroyWindow (window);
 }
 
+void GLRenderer::AddShader (std::string shaderName, std::string shaderSourceCode, ShaderType shaderType)
+{
+}
+
+void GLRenderer::AddShaderModel (std::string shaderName, std::string vertexShader, std::string fragmentShader)
+{
+}
+
 void GLRenderer::Draw (MeshObject & meshobject)
 {
 	// Draw mesh

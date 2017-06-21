@@ -6,15 +6,17 @@
 #include "Renderer.h"
 #include "GameScene.h"
 #include "LogMessage.h"
+#include "GLShader.h"
+#include "GLShaderModel.h"
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
 
 struct Buffers
 {
 public:
-	GLint VBO;
-	GLint EBO;
-	GLint VAO;
+	GLuint VBO;
+	GLuint EBO;
+	GLuint VAO;
 };
 
 class GLRenderer : public Renderer
@@ -30,6 +32,10 @@ public:
 	// deinitialize renderer
 	void Deinitialize ();
 
+	// shader library manipulation
+	virtual void AddShader (std::string shaderName, std::string shaderSourceCode, ShaderType shaderType);
+	virtual void AddShaderModel (std::string shaderName, std::string vertexShader, std::string fragmentShader);
+
 	// object drawing functions
 	void Draw (MeshObject& meshobject);
 
@@ -40,6 +46,10 @@ private:
 
 	// GL window context
 	GLFWwindow* window;
+
+	// GL shader library
+	std::unordered_map <std::string, GLShader> shaders;
+	std::unordered_map <std::string, GLShaderModel> shaderModels;
 
 	// GL buffers and arrays for all scene objects
 	std::unordered_map <unsigned int, Buffers> buffers;

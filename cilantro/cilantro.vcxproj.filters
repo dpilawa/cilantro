@@ -60,6 +60,9 @@
     <ClInclude Include="GLShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GLShaderModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameScene.cpp">
@@ -102,6 +105,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GLShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GLShaderModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

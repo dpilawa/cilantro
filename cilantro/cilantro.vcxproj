@@ -132,6 +132,7 @@
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="GLRenderer.h" />
     <ClInclude Include="GLShader.h" />
+    <ClInclude Include="GLShaderModel.h" />
     <ClInclude Include="LogMessage.h" />
     <ClInclude Include="Mathf.h" />
     <ClInclude Include="Matrix4f.h" />
@@ -147,6 +148,7 @@
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="GLRenderer.cpp" />
     <ClCompile Include="GLShader.cpp" />
+    <ClCompile Include="GLShaderModel.cpp" />
     <ClCompile Include="LogMessage.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mathf.cpp" />
