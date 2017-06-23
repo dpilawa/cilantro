@@ -127,6 +127,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CallbackProvider.h" />
+    <ClInclude Include="default.fs.h" />
     <ClInclude Include="default.vs.h" />
     <ClInclude Include="GameLoop.h" />
     <ClInclude Include="GameObject.h" />

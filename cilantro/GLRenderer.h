@@ -6,8 +6,10 @@
 #include "Renderer.h"
 #include "GameScene.h"
 #include "LogMessage.h"
+#include "MeshObject.h"
 #include "GLShader.h"
 #include "GLShaderModel.h"
+
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
 
@@ -34,10 +36,11 @@ public:
 
 	// shader library manipulation
 	virtual void AddShader (std::string shaderName, std::string shaderSourceCode, ShaderType shaderType);
-	virtual void AddShaderToModel (std::string shaderModelName, std::string shaderName, std::string fragmentShader);
+	virtual void AddShaderToModel (std::string shaderModelName, std::string shaderName);
+	GLShaderModel& GetShaderModel (std::string shaderModelName);
 
 	// object drawing functions
-	void Draw (MeshObject& meshobject);
+	void Draw (MeshObject& meshObject);
 
 private:
 	// rendering resolution

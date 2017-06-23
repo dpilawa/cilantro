@@ -10,8 +10,9 @@
 // 3d mesh may have only one material assigned to it
 class MeshObject : public GameObject
 {
-	std::vector<Vector4f> vertices;
-	std::vector<int> faces;
+	std::vector<float> vertices;
+	std::vector<unsigned int> faces;
+
 public:
 	MeshObject ();
 	~MeshObject ();
@@ -25,11 +26,15 @@ public:
 	// Initialize mesh in local space as unit plane parallel to x and z axis, with center in space origin
 	MeshObject& InitUnitPlane ();
 
+	// get mesh counts
+	unsigned int GetVertexCount ();
+	unsigned int GetFaceCount ();
+
 	// get vertices raw data
-	Vector4f* GetVerticesData ();
+	float* GetVerticesData ();
 
 	// get faces raw data
-	int* GetFacesData ();
+	unsigned int* GetFacesData ();
 
 	// invoked by game loop on each frame
 	virtual void OnFrame ();

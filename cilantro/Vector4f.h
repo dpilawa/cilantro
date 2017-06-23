@@ -37,7 +37,11 @@ public:
 	// destructor
 	~Vector4f () { };
 
-	// other operators
+	// getters
+	float GetX () const;
+	float GetY () const;
+	float GetZ () const;
+	float GetW () const;
 };
 
 #endif

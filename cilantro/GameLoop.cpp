@@ -50,10 +50,10 @@ void GameLoop::Go ()
 		}
 
 		// draw all game objects
-		for (auto gameObject : gameScene.GetGameObjects ())
-		{
-			gameObject->OnDraw (gameRenderer);
-		}
+		//for (auto gameObject : gameScene.GetGameObjects ())
+		//{
+		//	gameObject->OnDraw (gameRenderer);
+		//}
 
 		// render frame
 		gameRenderer.RenderFrame ();

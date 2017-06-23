@@ -22,7 +22,7 @@ void GLShaderModel::AttachShader (GLShader shader)
 
 	if (!success)
 	{
-		LogMessage () << "Unable to attach shader " << shader.GetShaderId () << " to program " << shaderProgramId;
+		LogMessage (__FUNCTION__, EXIT_FAILURE) << "Unable to attach shader " << shader.GetShaderId () << " to program " << shaderProgramId;
 	}
 }
 

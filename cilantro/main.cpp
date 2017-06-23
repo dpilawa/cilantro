@@ -7,7 +7,7 @@
 
 void main (int argc, char* argv[])
 {
-	LogMessage () << "Engine starting";
+	LogMessage (__FUNCTION__) << "Engine starting";
 
 	GameScene scene;
 	GLRenderer renderer (scene, 800, 600);
@@ -21,5 +21,5 @@ void main (int argc, char* argv[])
 
 	game.Go ();
 
-	LogMessage () << "Engine shutdown";
+	LogMessage (__FUNCTION__) << "Engine shutdown";
 }
