@@ -14,10 +14,10 @@ void main (int argc, char* argv[])
 	GameLoop game (scene, renderer);
 
 	MeshObject& object = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-	object.InitUnitCube ().getWorldTransform ().Scale (0.3f, 0.3f, 0.3f).Translate (0.0f, 0.5f, 0.0f);
+	object.InitUnitCube ().GetWorldTransform ().Scale (0.3f, 0.3f, 0.3f).Translate (0.0f, 0.5f, 0.0f);
 
 	MeshObject& object2 = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-	object2.InitUnitPlane ().getWorldTransform ().Scale (5.0f, 5.0f, 5.0f);
+	object2.InitUnitPlane ().GetWorldTransform ().Scale (5.0f, 5.0f, 5.0f);
 	object2.SetParentObject (object);
 
 	game.Go ();

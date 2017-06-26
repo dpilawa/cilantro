@@ -20,12 +20,12 @@ unsigned int GameObject::GetHandle () const
 	return objectHandle;
 }
 
-void GameObject::SetParentObject (GameObject & const parent)
+void GameObject::SetParentObject (GameObject & parent)
 {
 	parentObject = &parent;
 }
 
-void GameObject::SetGameScene (GameScene & const scene)
+void GameObject::SetGameScene (GameScene & scene)
 {
 	myGameScene = &scene;
 }

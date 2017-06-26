@@ -19,10 +19,10 @@ public:
 	unsigned int GetHandle () const;
 
 	// set pointer to parent object (i.e. put current object inside hierarchy)
-	void SetParentObject (GameObject & const parent);
+	void SetParentObject (GameObject & parent);
 
 	// set pointer to game scene
-	void SetGameScene (GameScene & const scene);
+	void SetGameScene (GameScene & scene);
 
 	// invoked by game loop during initializaton
 	virtual void OnStart ();
