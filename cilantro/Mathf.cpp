@@ -55,18 +55,12 @@ Matrix4f Mathf::GenRotationZMatrix (float angle)
 	return m;
 }
 
+Matrix4f Mathf::GenRotationXYZMatrix (float x, float y, float z)
+{
+	return GenRotationZMatrix (z) * GenRotationYMatrix (y)* GenRotationXMatrix (x);
+}
+
 Matrix4f Mathf::GenTranslationMatrix (float x, float y, float z)
-{
-	return Matrix4f ();
-}
-
-Matrix4f Mathf::GenScalingMatrix (float x, float y, float z)
-{
-	return Matrix4f ();
-}
-
-
-Matrix4f GenTranslationMatrix (float x, float y, float z)
 {
 	Matrix4f m;
 
@@ -78,8 +72,7 @@ Matrix4f GenTranslationMatrix (float x, float y, float z)
 	return m;
 }
 
-
-Matrix4f GenScalingMatrix (float x, float y, float z)
+Matrix4f Mathf::GenScalingMatrix (float x, float y, float z)
 {
 	Matrix4f m;
 
@@ -90,3 +83,4 @@ Matrix4f GenScalingMatrix (float x, float y, float z)
 
 	return m;
 }
+

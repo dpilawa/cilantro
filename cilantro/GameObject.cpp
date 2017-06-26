@@ -2,6 +2,7 @@
 
 GameObject::GameObject ()
 {
+	parentObject = nullptr;
 	myGameScene = nullptr;
 }
 
@@ -19,7 +20,12 @@ unsigned int GameObject::GetHandle () const
 	return objectHandle;
 }
 
-void GameObject::SetGameScene (GameScene & scene)
+void GameObject::SetParentObject (GameObject & const parent)
+{
+	parentObject = &parent;
+}
+
+void GameObject::SetGameScene (GameScene & const scene)
 {
 	myGameScene = &scene;
 }
@@ -40,9 +46,21 @@ void GameObject::OnEnd ()
 {
 }
 
-Transform& GameObject::getWorldTransform ()
+Transform & GameObject::GetWorldTransform ()
 {
 	return worldTransform;
+}
+
+Matrix4f GameObject::GetWorldTransformMatrix ()
+{
+	if (parentObject == nullptr) 
+	{
+		return worldTransform.GetModelMatrix ();
+	}
+	else 
+	{
+		return worldTransform.GetModelMatrix () * parentObject->GetWorldTransformMatrix ();
+	}
 }
 
 

@@ -30,6 +30,10 @@ public:
 	// angle provided in radians
 	static Matrix4f GenRotationZMatrix (float angle);
 
+	// generate rotation matrix to rotate around X, then Y, then Z axis
+	// angle provided in radians
+	static Matrix4f GenRotationXYZMatrix (float x, float y, float z);
+
 	// generate translation matrix along 3 axes
 	static Matrix4f GenTranslationMatrix (float x, float y, float z);
 

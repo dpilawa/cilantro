@@ -18,6 +18,7 @@ void main (int argc, char* argv[])
 
 	MeshObject& object2 = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
 	object2.InitUnitPlane ().getWorldTransform ().Scale (5.0f, 5.0f, 5.0f);
+	object2.SetParentObject (object);
 
 	game.Go ();
 

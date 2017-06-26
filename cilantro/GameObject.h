@@ -14,12 +14,15 @@ public:
 	GameObject ();
 	~GameObject ();
 
-	// getters and setters
+	// handle  operations
 	void SetHandle (unsigned int handle);
 	unsigned int GetHandle () const;
 
+	// set pointer to parent object (i.e. put current object inside hierarchy)
+	void SetParentObject (GameObject & const parent);
+
 	// set pointer to game scene
-	void SetGameScene (GameScene& scene);
+	void SetGameScene (GameScene & const scene);
 
 	// invoked by game loop during initializaton
 	virtual void OnStart ();
@@ -32,10 +35,19 @@ public:
 	virtual void OnEnd ();
 
 	// get transformation object's reference
-	Transform& getWorldTransform ();
+	// this function is recursive and concatenates world-space 
+	// transformation matrices of parent objects 
+	Transform& GetWorldTransform ();
+
+	// get transformatio matrix
+	Matrix4f GetWorldTransformMatrix ();
+
 private:
 	// object's handle (index in vector inside GameScene)
 	unsigned int objectHandle;
+
+	// pointer to parent object (objects may form a hierarchy)
+	GameObject* parentObject;
 
 	// pointer to a game scene
 	GameScene* myGameScene;

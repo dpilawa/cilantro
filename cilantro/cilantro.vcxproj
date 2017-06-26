@@ -139,6 +139,7 @@
     <ClInclude Include="Mathf.h" />
     <ClInclude Include="Matrix4f.h" />
     <ClInclude Include="MeshObject.h" />
+    <ClInclude Include="Quaternion.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Transform.h" />
@@ -156,6 +157,7 @@
     <ClCompile Include="Mathf.cpp" />
     <ClCompile Include="Matrix4f.cpp" />
     <ClCompile Include="MeshObject.cpp" />
+    <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transform.cpp" />
