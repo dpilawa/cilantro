@@ -114,8 +114,19 @@ GLShaderModel & GLRenderer::GetShaderModel (std::string shaderModelName)
 
 void GLRenderer::Draw (MeshObject & meshObject)
 {
+	GLuint shaderProgramId;
+	GLuint worldMatrixId;
+
 	// draw mesh
-	GetShaderModel("default_shader").Use ();
+	GLShaderModel& shaderProgram = GetShaderModel ("default_shader");
+	shaderProgramId = shaderProgram.GetProgramId ();
+
+	// get world matrix uniform and set value
+	worldMatrixId = glGetUniformLocation (shaderProgramId, "mWorld");
+	glUniformMatrix4fv (worldMatrixId, 1, GL_TRUE, meshObject.GetWorldTransformMatrix ().getDataPointer ());
+
+	// draw
+	shaderProgram.Use ();
 	glBindVertexArray (buffers[meshObject.GetHandle ()].VAO);
 	glDrawElements (GL_TRIANGLES, meshObject.GetFaceCount () * 3, GL_UNSIGNED_INT, 0);
 	glBindVertexArray (0);

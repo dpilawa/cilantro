@@ -10,6 +10,11 @@ GLShaderModel::~GLShaderModel ()
 {
 }
 
+GLuint GLShaderModel::GetProgramId ()
+{
+	return shaderProgramId;
+}
+
 
 void GLShaderModel::AttachShader (GLShader shader)
 {

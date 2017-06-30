@@ -57,7 +57,7 @@ Matrix4f Mathf::GenRotationZMatrix (float angle)
 
 Matrix4f Mathf::GenRotationXYZMatrix (float x, float y, float z)
 {
-	return GenRotationZMatrix (z) * GenRotationYMatrix (y)* GenRotationXMatrix (x);
+	return GenRotationZMatrix (z) * GenRotationYMatrix (y) * GenRotationXMatrix (x);
 }
 
 Matrix4f Mathf::GenTranslationMatrix (float x, float y, float z)

@@ -18,7 +18,7 @@ public:
 	// copy constructor
 	Vector4f (const Vector4f& other)
 	{
-		std::copy (other.v, other.v + 3, v);
+		std::copy (other.v, other.v + 4, v);
 	}
 
 	// move constructor

@@ -12,12 +12,12 @@ public:
 	~Transform ();
 
 	// returns models matrix (multiplication of rotation, scaling, translation)
-	Matrix4f GetModelMatrix ();
+	Matrix4f& GetModelMatrix ();
 
 	// returns transformation matrices
-	Matrix4f GetTranslationMatrix () const;
-	Matrix4f GetScalingMatrix () const;
-	Matrix4f GetRotationMatrix () const;
+	Matrix4f& GetTranslationMatrix ();
+	Matrix4f& GetScalingMatrix ();
+	Matrix4f& GetRotationMatrix ();
 	
 	// translate
 	Transform& Translate (float x, float y, float z);

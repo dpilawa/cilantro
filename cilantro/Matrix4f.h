@@ -17,7 +17,7 @@ public:
 	// copy constructor
 	Matrix4f (const Matrix4f& other)
 	{
-		std::copy (other.m, other.m + 15, m);
+		std::copy (other.m, other.m + 16, m);
 	}
 
 	// move constructor
@@ -39,6 +39,7 @@ public:
 	// getters & setters
 	void SetXY (const int x, const int y, const float v);
 	float getXY (const int x, const int y) const;
+	float* getDataPointer ();
 
 	// methods
 	Matrix4f& InitIdentity ();
@@ -72,7 +73,7 @@ inline Matrix4f& Matrix4f::operator*=(const Matrix4f& other)
 }
 
 // binary operator for matrix multiplication
-inline Matrix4f operator*(Matrix4f m, Matrix4f& n)
+inline Matrix4f operator*(Matrix4f m, const Matrix4f& n)
 {
 	m *= n;
 	return m;

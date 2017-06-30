@@ -8,13 +8,19 @@ scaleX (1.0f), scaleY (1.0f), scaleZ (1.0f),
 rotateX (0.0f), rotateY (0.0f), rotateZ (0.0f)
 {
 	hasChanged = false;
+
+	// calculate initial matrices
+	Translate (0.0f, 0.0f, 0.0f);
+	Scale (1.0f, 1.0f, 1.0f);
+	Rotate (0.0f, 0.0f, 0.0f);
+
 }
 
 Transform::~Transform ()
 {
 }
 
-Matrix4f Transform::GetModelMatrix ()
+Matrix4f& Transform::GetModelMatrix ()
 {
 	// multiply transformation matrices (rotate, then scale, then translate)
 	if (hasChanged == true) 
@@ -26,17 +32,17 @@ Matrix4f Transform::GetModelMatrix ()
 	return modelMatrix;
 }
 
-Matrix4f Transform::GetTranslationMatrix () const
+Matrix4f& Transform::GetTranslationMatrix () 
 {
 	return translationMatrix;
 }
 
-Matrix4f Transform::GetScalingMatrix () const
+Matrix4f& Transform::GetScalingMatrix () 
 {
 	return scalingMatrix;
 }
 
-Matrix4f Transform::GetRotationMatrix () const
+Matrix4f& Transform::GetRotationMatrix () 
 {
 	return rotationMatrix;
 }

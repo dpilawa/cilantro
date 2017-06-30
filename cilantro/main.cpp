@@ -13,12 +13,12 @@ void main (int argc, char* argv[])
 	GLRenderer renderer (scene, 800, 600);
 	GameLoop game (scene, renderer);
 
-	MeshObject& object = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-	object.InitUnitCube ().GetWorldTransform ().Scale (0.3f, 0.3f, 0.3f).Translate (0.0f, 0.5f, 0.0f);
+	MeshObject& cube = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
+	cube.InitUnitCube ().GetWorldTransform ().Scale (0.3f, 0.3f, 0.3f).Translate (0.0f, 0.5f, 0.0f);
 
-	MeshObject& object2 = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-	object2.InitUnitPlane ().GetWorldTransform ().Scale (5.0f, 5.0f, 5.0f);
-	object2.SetParentObject (object);
+	//MeshObject& plane = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
+	//plane.InitUnitPlane ().GetWorldTransform ().Scale (5.0f, 5.0f, 5.0f);
+	//plane.SetParentObject (cube);
 
 	game.Go ();
 

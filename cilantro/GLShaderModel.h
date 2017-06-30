@@ -10,6 +10,9 @@ public:
 	GLShaderModel ();
 	~GLShaderModel ();
 
+	// return program id
+	GLuint GetProgramId ();
+
 	// attach shader to a program
 	void AttachShader (GLShader shader);
 
