@@ -50,7 +50,7 @@ void GLRenderer::Initialize ()
 	InitializeBuffers ();
 
 	// set callback for new MeshObjects
-	renderedScene.RegisterCallback ("OnUpdateMeshObject", std::bind (&GLRenderer::OnUpdateMeshObject, this, std::placeholders::_1));
+	renderedScene.RegisterCallback ("OnUpdateMeshObject", [&] (unsigned int objectHandle) { LoadBuffers (objectHandle); });
 }
 
 void GLRenderer::RenderFrame ()
@@ -135,6 +135,8 @@ void GLRenderer::LoadBuffers (unsigned int objectHandle)
 	buffers.insert_or_assign (objectHandle, Buffers ());
 	MeshObject* myMeshObject = dynamic_cast<MeshObject*>(renderedScene.GetGameObjects ()[objectHandle]);
 
+	LogMessage (__FUNCTION__) << objectHandle;
+
 	// bind Vertex Array Object
 	glGenVertexArrays (1, &buffers[objectHandle].VAO);
 	glBindVertexArray (buffers[objectHandle].VAO);
@@ -153,14 +155,6 @@ void GLRenderer::LoadBuffers (unsigned int objectHandle)
 	// location = 0 (vertex position)
 	glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (void*)0);
 	glEnableVertexAttribArray (0);
-}
-
-void GLRenderer::OnUpdateMeshObject (unsigned int objectHandle)
-{
-	LogMessage (__FUNCTION__) << objectHandle;
-
-	// update object buffers
-	LoadBuffers (objectHandle);
 }
 
 
