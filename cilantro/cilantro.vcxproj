@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{C0592EA9-A9E0-4F5B-9E13-560018B301A5}</ProjectGuid>
     <RootNamespace>cilantro</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -136,6 +136,7 @@
     <ClInclude Include="GLShader.h" />
     <ClInclude Include="GLShaderModel.h" />
     <ClInclude Include="LogMessage.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="Mathf.h" />
     <ClInclude Include="Matrix4f.h" />
     <ClInclude Include="MeshObject.h" />
@@ -143,6 +144,7 @@
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="Vector3f.h" />
     <ClInclude Include="Vector4f.h" />
   </ItemGroup>
   <ItemGroup>
@@ -154,6 +156,7 @@
     <ClCompile Include="GLShaderModel.cpp" />
     <ClCompile Include="LogMessage.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mathf.cpp" />
     <ClCompile Include="Matrix4f.cpp" />
     <ClCompile Include="MeshObject.cpp" />
@@ -161,6 +164,7 @@
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="Vector3f.cpp" />
     <ClCompile Include="Vector4f.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

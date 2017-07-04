@@ -27,7 +27,7 @@ GLShader::GLShader (std::string sourceCode, ShaderType type) : shaderSourceCode(
 	
 	if (!success)
 	{
-		LogMessage () << "Unable to compile shader " << shaderId;
+		LogMessage (__FUNCTION__, EXIT_FAILURE) << "Unable to compile shader " << shaderId;
 	}
 }
 

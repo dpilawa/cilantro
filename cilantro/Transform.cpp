@@ -81,7 +81,7 @@ Transform & Transform::Rotate (float x, float y, float z)
 	rotateY += y;
 	rotateZ += z;
 
-	rotationMatrix = Mathf::GenRotationXYZMatrix (rotateX, rotateY, rotateZ);
+	rotationMatrix = Mathf::GenRotationXYZMatrix (Mathf::Deg2Rad (rotateX), Mathf::Deg2Rad (rotateY), Mathf::Deg2Rad (rotateZ));
 
 	return *this;
 }

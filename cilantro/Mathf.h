@@ -2,16 +2,17 @@
 #define _MATHF_H_
 
 #include "Matrix4f.h"
+#include "Vector3f.h"
 
 // Math constants
-#define M_PI 3.14159265358979323846f
+#define cPI 3.14159265358979323846f
 
 // Collection of static helper math floating point routines
 class Mathf
 {
 public:
 	// static constants
-	static const float Pi () { return M_PI; };
+	static const float Pi () { return cPI; };
 
 	// convert degrees to radians
 	static float Deg2Rad (float degrees);
@@ -36,9 +37,18 @@ public:
 
 	// generate translation matrix along 3 axes
 	static Matrix4f GenTranslationMatrix (float x, float y, float z);
+	static Matrix4f GenTranslationMatrix (Vector3f& t);
 
 	// generate scaling matrix along 3 axes
 	static Matrix4f GenScalingMatrix (float x, float y, float z);
+
+	// generate projection matrix (perspective)
+	// fov provided in radians
+	static Matrix4f GenCameraViewMatrix (Vector3f& position, Vector3f& lookAt, Vector3f& up);
+
+	// generate projection matrix (perspective)
+	// fov provided in radians
+	static Matrix4f GenPerspectiveProjectionMatrix (float aspect, float fov, float nearZ, float farZ);
 };
 
 #endif

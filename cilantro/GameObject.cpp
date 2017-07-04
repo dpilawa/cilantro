@@ -46,20 +46,20 @@ void GameObject::OnEnd ()
 {
 }
 
-Transform & GameObject::GetWorldTransform ()
+Transform & GameObject::GetModelTransform ()
 {
-	return worldTransform;
+	return modelTransform;
 }
 
-Matrix4f GameObject::GetWorldTransformMatrix ()
+Matrix4f GameObject::GetModelTransformMatrix ()
 {
 	if (parentObject == nullptr) 
 	{
-		return worldTransform.GetModelMatrix ();
+		return modelTransform.GetModelMatrix ();
 	}
 	else 
 	{
-		return worldTransform.GetModelMatrix () * parentObject->GetWorldTransformMatrix ();
+		return modelTransform.GetModelMatrix () * parentObject->GetModelTransformMatrix ();
 	}
 }
 

@@ -33,6 +33,7 @@ protected:
 	// GameScene being rendered
 	GameScene& renderedScene;
 
+private:
 	// number of rendered frames
 	long long frameCount;
 };

@@ -72,6 +72,11 @@ Matrix4f Mathf::GenTranslationMatrix (float x, float y, float z)
 	return m;
 }
 
+Matrix4f Mathf::GenTranslationMatrix (Vector3f & t)
+{
+	return Mathf::GenTranslationMatrix (t.GetX (), t.GetY (), t.GetZ ());
+}
+
 Matrix4f Mathf::GenScalingMatrix (float x, float y, float z)
 {
 	Matrix4f m;
@@ -80,6 +85,48 @@ Matrix4f Mathf::GenScalingMatrix (float x, float y, float z)
 	m.SetXY (1, 1, x);
 	m.SetXY (2, 2, y);
 	m.SetXY (3, 3, z);
+
+	return m;
+}
+
+Matrix4f Mathf::GenCameraViewMatrix (Vector3f& position, Vector3f& lookAt, Vector3f& up)
+{
+	Matrix4f m;
+	Vector3f u, v, n;
+
+	n = lookAt - position;
+	n.Normalize ();
+
+	u = Cross (n, up);
+	u.Normalize ();
+
+	v = Cross (u, n);
+	
+	m.InitIdentity ();
+	m.SetXY (1, 1, u.GetX ());
+	m.SetXY (1, 2, u.GetY ());
+	m.SetXY (1, 3, u.GetZ ());
+	m.SetXY (2, 1, v.GetX ());
+	m.SetXY (2, 2, v.GetY ());
+	m.SetXY (2, 3, v.GetZ ());
+	m.SetXY (3, 1, n.GetX ());
+	m.SetXY (3, 2, n.GetY ());
+	m.SetXY (3, 3, n.GetZ ());
+
+	return m * Mathf::GenTranslationMatrix (-position);
+}
+
+Matrix4f Mathf::GenPerspectiveProjectionMatrix (float aspect, float fov, float nearZ, float farZ)
+{
+	Matrix4f m;
+	float fov2 = fov * 0.5f;
+
+	m.InitIdentity ();
+	m.SetXY (1, 1, 1.0f / (aspect * std::tanf (fov2)));
+	m.SetXY (2, 2, 1.0f / std::tanf (fov2));
+	m.SetXY (3, 3, (-nearZ - farZ) / (nearZ - farZ));
+	m.SetXY (3, 4, (2.0f * nearZ * farZ) / (nearZ - farZ));
+	m.SetXY (4, 3, 1.0f);
 
 	return m;
 }

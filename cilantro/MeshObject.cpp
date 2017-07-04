@@ -14,6 +14,7 @@ MeshObject::~MeshObject ()
 MeshObject& MeshObject::Clear ()
 {
 	vertices.clear ();
+	normals.clear ();
 	faces.clear ();
 
 	return *this;
@@ -24,39 +25,113 @@ MeshObject& MeshObject::InitUnitCube ()
 {
 	Clear ();
 
-	vertices = std::vector<float> { .5f, .5f, .5f,
-									-.5f, .5f, .5f,
-									-.5f, -.5f, .5f,
-									.5f, -.5f, .5f,
-									.5f, .5f, -.5f,
-									-.5f, .5f, -.5f,
-									-.5f, -.5f, -.5f,
-									.5f, -.5f, -.5f };
+	vertices = std::vector<float> {
 
-	faces = std::vector<unsigned int> { 0, 1, 2, 0, 2, 3, 6, 5, 4, 4, 7, 6,		// front, back
-										0, 4, 1, 1, 4, 5, 3, 2, 6, 3, 6, 7,		// top, bottom
-										1, 5, 6, 1, 6, 2, 0, 3, 4, 3, 7, 4 };	// left, right
+		-0.5f, -0.5f,  0.5f, 
+		 0.5f, -0.5f,  0.5f, 
+		-0.5f,  0.5f,  0.5f, 
+		-0.5f,  0.5f,  0.5f, 
+		 0.5f, -0.5f,  0.5f, 
+		 0.5f,  0.5f,  0.5f, 
+
+		-0.5f,  0.5f,  0.5f, 
+		 0.5f,  0.5f,  0.5f, 
+		-0.5f,  0.5f, -0.5f, 
+		-0.5f,  0.5f, -0.5f, 
+		 0.5f,  0.5f,  0.5f, 
+		 0.5f,  0.5f, -0.5f, 
+
+		-0.5f,  0.5f, -0.5f, 
+		 0.5f,  0.5f, -0.5f, 
+		-0.5f, -0.5f, -0.5f, 
+		-0.5f, -0.5f, -0.5f, 
+		 0.5f,  0.5f, -0.5f, 
+		 0.5f, -0.5f, -0.5f, 
+
+		-0.5f, -0.5f, -0.5f, 
+		 0.5f, -0.5f, -0.5f, 
+		-0.5f, -0.5f,  0.5f, 
+		-0.5f, -0.5f,  0.5f, 
+		 0.5f, -0.5f, -0.5f, 
+		 0.5f, -0.5f,  0.5f, 
+
+		 0.5f, -0.5f,  0.5f, 
+		 0.5f, -0.5f, -0.5f, 
+		 0.5f,  0.5f,  0.5f, 
+		 0.5f,  0.5f,  0.5f, 
+		 0.5f, -0.5f, -0.5f, 
+		 0.5f,  0.5f, -0.5f, 
+
+		-0.5f, -0.5f, -0.5f, 
+		-0.5f, -0.5f,  0.5f, 
+		-0.5f,  0.5f, -0.5f, 
+		-0.5f,  0.5f, -0.5f, 
+		-0.5f, -0.5f,  0.5f, 
+		-0.5f,  0.5f,  0.5f
+
+	};
+
+	for (unsigned int i = 0; i < 36; ++i)
+	{
+		faces.push_back (i);
+	};
+	
+	normals = std::vector<float> {
+
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+
+		0.0f, 1.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+
+		0.0f, 0.0f, -1.0f,
+		0.0f, 0.0f, -1.0f,
+		0.0f, 0.0f, -1.0f,
+		0.0f, 0.0f, -1.0f,
+		0.0f, 0.0f, -1.0f,
+		0.0f, 0.0f, -1.0f,
+
+		0.0f, -1.0f, 0.0f,
+		0.0f, -1.0f, 0.0f,
+		0.0f, -1.0f, 0.0f,
+		0.0f, -1.0f, 0.0f,
+		0.0f, -1.0f, 0.0f,
+		0.0f, -1.0f, 0.0f,
+
+		1.0f, 0.0f, 0.0f,
+		1.0f, 0.0f, 0.0f,
+		1.0f, 0.0f, 0.0f,
+		1.0f, 0.0f, 0.0f,
+		1.0f, 0.0f, 0.0f,
+		1.0f, 0.0f, 0.0f,
+
+		-1.0f, 0.0f, 0.0f,
+		-1.0f, 0.0f, 0.0f,
+		-1.0f, 0.0f, 0.0f,
+		-1.0f, 0.0f, 0.0f,
+		-1.0f, 0.0f, 0.0f,
+		-1.0f, 0.0f, 0.0f
+
+	};
+
+	//CalculateVertexNormals ();
 
 	InvokeCallbacks ("OnUpdateMeshObject", this->GetHandle ());
 
 	return *this;
 }
 
-
-MeshObject& MeshObject::InitUnitPlane ()
+void MeshObject::CalculateVertexNormals ()
 {
-	Clear ();
-
-	vertices = std::vector<float> { .5f, 0, .5f,
-									.5f, 0, -.5f,
-									-.5f, 0, -.5f,
-									-.5f, 0, .5f };
-
-	faces = std::vector<unsigned int> { 0, 1, 2, 2, 3, 0 };
-
-	InvokeCallbacks ("OnUpdateMeshObject", this->GetHandle ());
-
-	return *this;
+	// TBD
 }
 
 unsigned int MeshObject::GetVertexCount ()
@@ -72,6 +147,11 @@ unsigned int MeshObject::GetFaceCount ()
 float* MeshObject::GetVerticesData ()
 {
 	return vertices.data ();
+}
+
+float* MeshObject::GetNormalsData ()
+{
+	return normals.data ();
 }
 
 unsigned int* MeshObject::GetFacesData ()

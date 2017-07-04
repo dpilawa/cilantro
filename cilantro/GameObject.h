@@ -37,10 +37,10 @@ public:
 	// get transformation object's reference
 	// this function is recursive and concatenates world-space 
 	// transformation matrices of parent objects 
-	Transform& GetWorldTransform ();
+	Transform& GetModelTransform ();
 
 	// get transformatio matrix
-	Matrix4f GetWorldTransformMatrix ();
+	Matrix4f GetModelTransformMatrix ();
 
 private:
 	// object's handle (index in vector inside GameScene)
@@ -53,7 +53,7 @@ private:
 	GameScene* myGameScene;
 
 	// object's transformation from local space to world space
-	Transform worldTransform;
+	Transform modelTransform;
 };
 
 #endif

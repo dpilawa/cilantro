@@ -5,7 +5,6 @@
 
 class Transform
 {
-
 public:
 
 	Transform ();
@@ -23,7 +22,7 @@ public:
 	Transform& Translate (float x, float y, float z);
 	// scale
 	Transform& Scale (float x, float y, float z);
-	// rotate
+	// rotate (angles in degrees)
 	Transform& Rotate (float x, float y, float z);
 
 private:

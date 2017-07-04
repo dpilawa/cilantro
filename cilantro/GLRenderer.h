@@ -3,6 +3,7 @@
 
 #include <unordered_map>
 #include "Time.h"
+#include "Mathf.h"
 #include "Renderer.h"
 #include "GameScene.h"
 #include "LogMessage.h"
@@ -16,8 +17,11 @@
 struct Buffers
 {
 public:
-	GLuint VBO;
+	// Vertex Buffer Objects (vertices, normals, uvs)
+	GLuint VBO[3];
+	// Element Buffer Object
 	GLuint EBO;
+	// Vertex Array Object
 	GLuint VAO;
 };
 
@@ -60,7 +64,7 @@ private:
 	// initialize object buffers
 	void InitializeBuffers ();
 
-	// re(load) object buffers
+	// re(load) object buffers of mesh objects
 	void LoadBuffers (unsigned int objectHandle);
 
 };

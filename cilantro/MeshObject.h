@@ -10,9 +10,6 @@
 // 3d mesh may have only one material assigned to it
 class MeshObject : public GameObject
 {
-	std::vector<float> vertices;
-	std::vector<unsigned int> faces;
-
 public:
 	MeshObject ();
 	~MeshObject ();
@@ -23,8 +20,8 @@ public:
 	// Initialize mesh in local space as unit cube with center in space origin
 	MeshObject& InitUnitCube ();
 
-	// Initialize mesh in local space as unit plane parallel to x and z axis, with center in space origin
-	MeshObject& InitUnitPlane ();
+	// calculate vertex normals
+	void CalculateVertexNormals ();
 
 	// get mesh counts
 	unsigned int GetVertexCount ();
@@ -33,6 +30,9 @@ public:
 	// get vertices raw data
 	float* GetVerticesData ();
 
+	// get normals raw data
+	float* GetNormalsData ();
+
 	// get faces raw data
 	unsigned int* GetFacesData ();
 
@@ -40,6 +40,13 @@ public:
 	virtual void OnFrame ();
 	virtual void OnDraw (Renderer& renderer);
 
+private:
+
+	std::vector<float> vertices;
+	std::vector<unsigned int> faces;
+
+	std::vector<float> normals;
+	std::vector<float> uvs;
 };
 
 #endif

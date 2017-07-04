@@ -14,6 +14,7 @@ public:
 
 	template <class P> 
 	LogMessage& operator<<(const P& message);
+
 private:
 	bool didPrint;
 	bool willExit;

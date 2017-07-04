@@ -17,7 +17,7 @@ public:
 	~GameScene();
 
 	// set game loop pointer
-	void SetGameLoop (GameLoop& gameloop);
+	void SetGameLoop (GameLoop& gameLoop);
 
 	// add GameObject to a scene
 	// returns reference to that added object

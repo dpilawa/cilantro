@@ -10,9 +10,9 @@ GameScene::~GameScene()
 {
 }
 
-void GameScene::SetGameLoop (GameLoop & gameloop)
+void GameScene::SetGameLoop (GameLoop & gameLoop)
 {
-	myGameLoop = &gameloop;
+	myGameLoop = &gameLoop;
 }
 
 GameObject& GameScene::AddGameObject (GameObject* gameObject)

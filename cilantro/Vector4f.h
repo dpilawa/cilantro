@@ -2,13 +2,11 @@
 #define _VECTOR4F_H_
 
 #include <algorithm>
-
-#define V(n) v [n - 1]
+#include "Vector3f.h"
 
 // Represents 4-dimensional float vector
 class Vector4f
 {
-	float v[4];
 public:
 	// constructors
 	Vector4f () {};
@@ -19,6 +17,13 @@ public:
 	Vector4f (const Vector4f& other)
 	{
 		std::copy (other.v, other.v + 4, v);
+	}
+
+	// copy constructor (from 3-dimensional vector)
+	Vector4f (const Vector3f& other)
+	{
+		std::copy (other.v, other.v + 3, v);
+		v[3] = 1.0f;
 	}
 
 	// move constructor
@@ -37,11 +42,9 @@ public:
 	// destructor
 	~Vector4f () { };
 
-	// getters
-	float GetX () const;
-	float GetY () const;
-	float GetZ () const;
-	float GetW () const;
+private:
+	float v[4];
+
 };
 
 #endif

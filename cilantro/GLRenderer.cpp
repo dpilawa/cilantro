@@ -34,6 +34,10 @@ void GLRenderer::Initialize ()
 	// set vsync on
 	glfwSwapInterval (1);
 
+	// enable depth test
+	glEnable (GL_DEPTH_TEST);
+
+
 	// initialize GLEW
 	if (glewInit () != GLEW_OK)
 	{
@@ -69,7 +73,10 @@ void GLRenderer::RenderFrame ()
 
 	// swap front and back buffers
 	glfwSwapBuffers (window);
-	
+
+	// clear frame and depth buffers
+	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	// poll input
 	glfwPollEvents ();
 }
@@ -115,15 +122,27 @@ GLShaderModel & GLRenderer::GetShaderModel (std::string shaderModelName)
 void GLRenderer::Draw (MeshObject & meshObject)
 {
 	GLuint shaderProgramId;
-	GLuint worldMatrixId;
+	GLuint modelMatrixId;
+	GLuint viewMatrixId;
+	GLuint projectionMatrixId;
 
 	// draw mesh
 	GLShaderModel& shaderProgram = GetShaderModel ("default_shader");
 	shaderProgramId = shaderProgram.GetProgramId ();
 
 	// get world matrix uniform and set value
-	worldMatrixId = glGetUniformLocation (shaderProgramId, "mWorld");
-	glUniformMatrix4fv (worldMatrixId, 1, GL_TRUE, meshObject.GetWorldTransformMatrix ().getDataPointer ());
+	modelMatrixId = glGetUniformLocation (shaderProgramId, "mModel");
+	glUniformMatrix4fv (modelMatrixId, 1, GL_TRUE, meshObject.GetModelTransformMatrix ().getDataPointer ());
+
+	// get camera view matrix uniform and set value
+	// TODO: this matrix should be a property of camera
+	viewMatrixId = glGetUniformLocation (shaderProgramId, "mView");
+	glUniformMatrix4fv (viewMatrixId, 1, GL_TRUE, Mathf::GenCameraViewMatrix(Vector3f(1.0f, 2.0f, 3.0f), Vector3f(0.0f, 0.0f, 0.0f), Vector3f(0.0f, 1.0f, 0.0f)).getDataPointer ());
+
+	// get projection matrix uniform and set value
+	// TODO: this matrix should be a property of camera
+	projectionMatrixId = glGetUniformLocation (shaderProgramId, "mProjection");
+	glUniformMatrix4fv (projectionMatrixId, 1, GL_TRUE, Mathf::GenPerspectiveProjectionMatrix (4.0f / 3.0f, Mathf::Deg2Rad (60.0f), 0.1f, 100.0f).getDataPointer ());
 
 	// draw
 	shaderProgram.Use ();
@@ -153,19 +172,27 @@ void GLRenderer::LoadBuffers (unsigned int objectHandle)
 	glBindVertexArray (buffers[objectHandle].VAO);
 		
 	// copy vertices to GPU
-	glGenBuffers (1, &buffers[objectHandle].VBO);
-	glBindBuffer (GL_ARRAY_BUFFER, buffers[objectHandle].VBO);
+	glGenBuffers (1, &buffers[objectHandle].VBO[0]);
+	glBindBuffer (GL_ARRAY_BUFFER, buffers[objectHandle].VBO[0]);
 	glBufferData (GL_ARRAY_BUFFER, myMeshObject->GetVertexCount () * sizeof (float), myMeshObject->GetVerticesData (), GL_STATIC_DRAW);
+	// location = 0 (vertex position)
+	glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (void*)0);
+
+	// copy normals to GPU
+	glGenBuffers (1, &buffers[objectHandle].VBO[1]);
+	glBindBuffer (GL_ARRAY_BUFFER, buffers[objectHandle].VBO[1]);
+	glBufferData (GL_ARRAY_BUFFER, myMeshObject->GetVertexCount () * sizeof (float), myMeshObject->GetNormalsData (), GL_STATIC_DRAW);
+	// location = 1 (vertex normal)
+	glVertexAttribPointer (1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (void*)0);
 
 	// copy face indices to GPU
 	glGenBuffers (1, &buffers[objectHandle].EBO);
 	glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, buffers[objectHandle].EBO);
 	glBufferData (GL_ELEMENT_ARRAY_BUFFER, myMeshObject->GetFaceCount () * sizeof (unsigned int), myMeshObject->GetFacesData (), GL_STATIC_DRAW);
 
-	// define vertex attributes
-	// location = 0 (vertex position)
-	glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (void*)0);
+	// enable VBO arrays
 	glEnableVertexAttribArray (0);
+	glEnableVertexAttribArray (1);
 }
 
 

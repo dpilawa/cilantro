@@ -9,7 +9,6 @@
 
 class Matrix4f
 {
-	float m[16];
 public:
 	// constructor
 	Matrix4f () { };
@@ -43,14 +42,21 @@ public:
 
 	// methods
 	Matrix4f& InitIdentity ();
+
+	// operators
 	Matrix4f& operator*= (const Matrix4f& m);
+
+private:
+
+	float m[16];
+
 };
 
 // compound assignment operator for matrix multiplication
 inline Matrix4f& Matrix4f::operator*=(const Matrix4f& other)
 {
 	// actual multiplication code
-	Matrix4f temp = *this;
+	Matrix4f temp (*this);
 
 	MMUL (temp, other, 1, 1);
 	MMUL (temp, other, 1, 2);
@@ -73,7 +79,7 @@ inline Matrix4f& Matrix4f::operator*=(const Matrix4f& other)
 }
 
 // binary operator for matrix multiplication
-inline Matrix4f operator*(Matrix4f m, const Matrix4f& n)
+inline Matrix4f operator* (Matrix4f m, const Matrix4f& n)
 {
 	m *= n;
 	return m;
