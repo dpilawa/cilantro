@@ -14,15 +14,24 @@
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
 
-struct Buffers
+enum VBOType { VBO_VERTICES = 0, VBO_NORMALS, VBO_UVS };
+
+struct ObjectBuffers
 {
 public:
 	// Vertex Buffer Objects (vertices, normals, uvs)
 	GLuint VBO[3];
-	// Element Buffer Object
+	// Element Buffer Object (face indices)
 	GLuint EBO;
 	// Vertex Array Object
 	GLuint VAO;
+};
+
+struct SceneBuffers
+{
+public:
+	// Uniform Buffer Object (V&P matrices, lights)
+	GLuint UBO;
 };
 
 class GLRenderer : public Renderer
@@ -58,8 +67,15 @@ private:
 	std::unordered_map <std::string, GLShader> shaders;
 	std::unordered_map <std::string, GLShaderModel> shaderModels;
 
-	// GL buffers and arrays for all scene objects
-	std::unordered_map <unsigned int, Buffers> buffers;
+	// GL buffers and arrays for scene objects
+	// These buffers contain data for objects to be rendered
+	// * MeshObject vertices, uvs, normals, etc
+	std::unordered_map <unsigned int, ObjectBuffers> objectBuffers;
+
+	// GL buffers for uniforms shared by entire scene:
+	// * view and projection matrix
+	// * vrray of lights
+	SceneBuffers sceneBuffers;
 
 	// initialize object buffers
 	void InitializeBuffers ();

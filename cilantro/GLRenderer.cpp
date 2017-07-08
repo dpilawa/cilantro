@@ -83,7 +83,7 @@ void GLRenderer::RenderFrame ()
 
 void GLRenderer::Deinitialize ()
 {
-	buffers.clear ();
+	objectBuffers.clear ();
 	glfwDestroyWindow (window);
 }
 
@@ -137,7 +137,7 @@ void GLRenderer::Draw (MeshObject & meshObject)
 	// get camera view matrix uniform and set value
 	// TODO: this matrix should be a property of camera
 	viewMatrixId = glGetUniformLocation (shaderProgramId, "mView");
-	glUniformMatrix4fv (viewMatrixId, 1, GL_TRUE, Mathf::GenCameraViewMatrix(Vector3f(1.0f, 2.0f, 3.0f), Vector3f(0.0f, 0.0f, 0.0f), Vector3f(0.0f, 1.0f, 0.0f)).getDataPointer ());
+	glUniformMatrix4fv (viewMatrixId, 1, GL_TRUE, Mathf::GenCameraViewMatrix (Vector3f (1.0f, 2.0f, 3.0f), Vector3f (0.0f, 0.0f, 0.0f), Vector3f (0.0f, 1.0f, 0.0f)).getDataPointer ());
 
 	// get projection matrix uniform and set value
 	// TODO: this matrix should be a property of camera
@@ -146,7 +146,7 @@ void GLRenderer::Draw (MeshObject & meshObject)
 
 	// draw
 	shaderProgram.Use ();
-	glBindVertexArray (buffers[meshObject.GetHandle ()].VAO);
+	glBindVertexArray (objectBuffers[meshObject.GetHandle ()].VAO);
 	glDrawElements (GL_TRIANGLES, meshObject.GetFaceCount () * 3, GL_UNSIGNED_INT, 0);
 	glBindVertexArray (0);
 }
@@ -162,37 +162,68 @@ void GLRenderer::InitializeBuffers ()
 
 void GLRenderer::LoadBuffers (unsigned int objectHandle)
 {
-	buffers.insert_or_assign (objectHandle, Buffers ());
 	MeshObject* myMeshObject = dynamic_cast<MeshObject*>(renderedScene.GetGameObjects ()[objectHandle]);
 
-	LogMessage (__FUNCTION__) << objectHandle;
+	// check of object's buffers are already initialized
+	auto find = objectBuffers.find (objectHandle);
 
-	// bind Vertex Array Object
-	glGenVertexArrays (1, &buffers[objectHandle].VAO);
-	glBindVertexArray (buffers[objectHandle].VAO);
-		
-	// copy vertices to GPU
-	glGenBuffers (1, &buffers[objectHandle].VBO[0]);
-	glBindBuffer (GL_ARRAY_BUFFER, buffers[objectHandle].VBO[0]);
-	glBufferData (GL_ARRAY_BUFFER, myMeshObject->GetVertexCount () * sizeof (float), myMeshObject->GetVerticesData (), GL_STATIC_DRAW);
-	// location = 0 (vertex position)
-	glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (void*)0);
+	if (find == objectBuffers.end ())
+	{
+		// it is a new object, perform full buffers initialization and load data
 
-	// copy normals to GPU
-	glGenBuffers (1, &buffers[objectHandle].VBO[1]);
-	glBindBuffer (GL_ARRAY_BUFFER, buffers[objectHandle].VBO[1]);
-	glBufferData (GL_ARRAY_BUFFER, myMeshObject->GetVertexCount () * sizeof (float), myMeshObject->GetNormalsData (), GL_STATIC_DRAW);
-	// location = 1 (vertex normal)
-	glVertexAttribPointer (1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (void*)0);
+		objectBuffers.insert ({ objectHandle, ObjectBuffers () });
 
-	// copy face indices to GPU
-	glGenBuffers (1, &buffers[objectHandle].EBO);
-	glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, buffers[objectHandle].EBO);
-	glBufferData (GL_ELEMENT_ARRAY_BUFFER, myMeshObject->GetFaceCount () * sizeof (unsigned int), myMeshObject->GetFacesData (), GL_STATIC_DRAW);
+		LogMessage (__FUNCTION__) << "NEW" << objectHandle;
 
-	// enable VBO arrays
-	glEnableVertexAttribArray (0);
-	glEnableVertexAttribArray (1);
+		// generate and bind Vertex Array Object (VAO)
+		glGenVertexArrays (1, &objectBuffers[objectHandle].VAO);
+		glBindVertexArray (objectBuffers[objectHandle].VAO);
+
+		// generate vertex buffer and copy vertices to GPU
+		glGenBuffers (1, &objectBuffers[objectHandle].VBO[VBOType::VBO_VERTICES]);
+		glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_VERTICES]);
+		glBufferData (GL_ARRAY_BUFFER, myMeshObject->GetVertexCount () * sizeof (float), myMeshObject->GetVerticesData (), GL_STATIC_DRAW);
+		// location = 0 (vertex position)
+		glVertexAttribPointer (VBOType::VBO_VERTICES, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (void*)0);
+
+		// generate normals buffer and copy normals to GPU
+		glGenBuffers (1, &objectBuffers[objectHandle].VBO[VBOType::VBO_NORMALS]);
+		glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_NORMALS]);
+		glBufferData (GL_ARRAY_BUFFER, myMeshObject->GetVertexCount () * sizeof (float), myMeshObject->GetNormalsData (), GL_STATIC_DRAW);
+		// location = 1 (vertex normal)
+		glVertexAttribPointer (VBOType::VBO_NORMALS, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (void*)0);
+
+		// generate index buffer and copy face indices to GPU
+		glGenBuffers (1, &objectBuffers[objectHandle].EBO);
+		glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, objectBuffers[objectHandle].EBO);
+		glBufferData (GL_ELEMENT_ARRAY_BUFFER, myMeshObject->GetFaceCount () * sizeof (unsigned int), myMeshObject->GetFacesData (), GL_STATIC_DRAW);
+
+		// enable VBO arrays
+		glEnableVertexAttribArray (VBOType::VBO_VERTICES);
+		glEnableVertexAttribArray (VBOType::VBO_NORMALS);
+
+	}
+	else
+	{
+		// it is an existing object which has been modified
+		LogMessage (__FUNCTION__) << "MODIFIED" << objectHandle;
+
+		// bind Vertex Array Object (VAO)
+		glBindVertexArray (objectBuffers[objectHandle].VAO);
+
+		// load vertex buffer
+		glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[0]);
+		glBufferSubData (GL_ARRAY_BUFFER, 0, myMeshObject->GetVertexCount () * sizeof (float), myMeshObject->GetVerticesData ());
+
+		// load normals buffer
+		glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[1]);
+		glBufferSubData (GL_ARRAY_BUFFER, 0, myMeshObject->GetVertexCount () * sizeof (float), myMeshObject->GetNormalsData ());
+
+		// load index buffer
+		glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, objectBuffers[objectHandle].EBO);
+		glBufferSubData (GL_ELEMENT_ARRAY_BUFFER, 0, myMeshObject->GetFaceCount () * sizeof (unsigned int), myMeshObject->GetFacesData ());
+
+	}
 }
 
 

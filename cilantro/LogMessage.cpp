@@ -8,7 +8,7 @@ LogMessage::LogMessage ()
 
 LogMessage::LogMessage (std::string label)
 {
-	std::cout << label << ": ";
+	std::cout << label << ":";
 	didPrint = true;
 	willExit = false;
 }

@@ -24,7 +24,7 @@ private:
 template<class P>
 inline LogMessage& LogMessage::operator<<(const P & message)
 {
-	std::cout << message;
+	std::cout << " " << message;
 	didPrint = true;
 	return *this;
 }
