@@ -25,7 +25,7 @@ Matrix4f& Transform::GetModelMatrix ()
 	// multiply transformation matrices (rotate, then scale, then translate)
 	if (hasChanged == true) 
 	{
-		modelMatrix = translationMatrix * scalingMatrix * rotationMatrix;
+		modelMatrix = translationMatrix * rotationMatrix * scalingMatrix;
 		hasChanged = false;
 	}
 

@@ -39,8 +39,11 @@ public:
 	// transformation matrices of parent objects 
 	Transform& GetModelTransform ();
 
-	// get transformatio matrix
+	// get transformation matrices
 	Matrix4f GetModelTransformMatrix ();
+	Matrix4f GetRotationTransformMatrix ();
+	Matrix4f GetTranslationTransformMatrix ();
+	Matrix4f GetScalingTransformMatrix ();
 
 private:
 	// object's handle (index in vector inside GameScene)
