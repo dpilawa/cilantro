@@ -61,7 +61,7 @@ void GameLoop::Go ()
 		// display debug message
 		if (gameRenderer.GetFrameCount() % 200 == 0)
 		{
-			LogMessage () << "Actual FPS: " << 1 / Time::GetFrameDeltaTime () << "; Theoretical FPS: " << 1 / Time::GetFrameRenderTime ();
+			LogMessage () << "Actual FPS:" << 1 / Time::GetFrameDeltaTime () << "; Theoretical FPS:" << 1 / Time::GetFrameRenderTime ();
 		}
 	
 	}
