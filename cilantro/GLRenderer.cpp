@@ -15,6 +15,9 @@ GLRenderer::~GLRenderer ()
 
 void GLRenderer::Initialize ()
 {
+	GLuint shaderProgramId;
+	GLuint uniformBlockIndex;
+
 	// set up GL & window properties
 	glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -44,23 +47,34 @@ void GLRenderer::Initialize ()
 		LogMessage (__FUNCTION__, EXIT_FAILURE) << "GLEW initialization failed";
 	}
 
+	// initialize object buffers
+	InitializeObjectBuffers ();
+
+	// initialize uniform buffers
+	InitializeUniformBuffers ();
+
 	// initialize shader library
 	AddShader ("default_vertex_shader", gDefaultVertexShader, ShaderType::VERTEX_SHADER);
 	AddShader ("default_fragment_shader", gDefaultFragmentShader, ShaderType::FRAGMENT_SHADER);
 	AddShaderToModel ("default_shader", "default_vertex_shader");
 	AddShaderToModel ("default_shader", "default_fragment_shader");
-
-	// initialize object buffers
-	InitializeBuffers ();
+	
+	// set uniform block binding
+	shaderProgramId = shaderModels["default_shader"].GetProgramId ();
+	uniformBlockIndex = glGetUniformBlockIndex (shaderProgramId, "UniformBlock");
+	glUniformBlockBinding (shaderProgramId, uniformBlockIndex, BindingPoint::BP_UNIFORMS);
 
 	// set callback for new MeshObjects
-	renderedScene.RegisterCallback ("OnUpdateMeshObject", [&] (unsigned int objectHandle) { LoadBuffers (objectHandle); });
+	renderedScene.RegisterCallback ("OnUpdateMeshObject", [&] (unsigned int objectHandle) { LoadObjectBuffers (objectHandle); });
 }
 
 void GLRenderer::RenderFrame ()
 {
 	// invoke base class function
 	Renderer::RenderFrame ();
+
+	// load uniform buffers
+	LoadUniformBuffers ();
 
 	// draw all objects scene
 	for (GameObject* gameObject : renderedScene.GetGameObjects ())
@@ -84,6 +98,8 @@ void GLRenderer::RenderFrame ()
 void GLRenderer::Deinitialize ()
 {
 	objectBuffers.clear ();
+	shaders.clear ();
+	shaderModels.clear ();
 	glfwDestroyWindow (window);
 }
 
@@ -121,28 +137,17 @@ GLShaderModel & GLRenderer::GetShaderModel (std::string shaderModelName)
 
 void GLRenderer::Draw (MeshObject & meshObject)
 {
-	GLuint shaderProgramId;
 	GLuint modelMatrixId;
-	GLuint viewMatrixId;
-	GLuint projectionMatrixId;
+	GLuint shaderProgramId;
 
 	// draw mesh
+	// TODO: this to be retrieved from Material class
 	GLShaderModel& shaderProgram = GetShaderModel ("default_shader");
 	shaderProgramId = shaderProgram.GetProgramId ();
 
-	// get world matrix uniform and set value
+	// get world matrix for drawn objects and set uniform value
 	modelMatrixId = glGetUniformLocation (shaderProgramId, "mModel");
 	glUniformMatrix4fv (modelMatrixId, 1, GL_TRUE, meshObject.GetModelTransformMatrix ().getDataPointer ());
-
-	// get camera view matrix uniform and set value
-	// TODO: this matrix should be a property of camera
-	viewMatrixId = glGetUniformLocation (shaderProgramId, "mView");
-	glUniformMatrix4fv (viewMatrixId, 1, GL_TRUE, Mathf::GenCameraViewMatrix (Vector3f (1.0f, 2.0f, 3.0f), Vector3f (0.0f, 0.0f, 0.0f), Vector3f (0.0f, 1.0f, 0.0f)).getDataPointer ());
-
-	// get projection matrix uniform and set value
-	// TODO: this matrix should be a property of camera
-	projectionMatrixId = glGetUniformLocation (shaderProgramId, "mProjection");
-	glUniformMatrix4fv (projectionMatrixId, 1, GL_TRUE, Mathf::GenPerspectiveProjectionMatrix (4.0f / 3.0f, Mathf::Deg2Rad (60.0f), 0.1f, 100.0f).getDataPointer ());
 
 	// draw
 	shaderProgram.Use ();
@@ -151,16 +156,25 @@ void GLRenderer::Draw (MeshObject & meshObject)
 	glBindVertexArray (0);
 }
 
-void GLRenderer::InitializeBuffers ()
+void GLRenderer::InitializeObjectBuffers ()
 {
 	for (GameObject* gameObject : renderedScene.GetGameObjects ())
 	{
 		unsigned int objectHandle = gameObject->GetHandle ();
-		LoadBuffers (objectHandle);
+		LoadObjectBuffers (objectHandle);
 	}
 }
 
-void GLRenderer::LoadBuffers (unsigned int objectHandle)
+void GLRenderer::InitializeUniformBuffers ()
+{
+	// create and pre-load uniform buffer
+	glGenBuffers (1, &sceneBuffers.UBO);
+	glBindBuffer (GL_UNIFORM_BUFFER, sceneBuffers.UBO);
+	glBufferData (GL_UNIFORM_BUFFER, sizeof (uniformBufferMatrices), &uniformBufferMatrices, GL_DYNAMIC_DRAW);
+	glBindBufferBase (GL_UNIFORM_BUFFER, BindingPoint::BP_UNIFORMS, sceneBuffers.UBO);
+}
+
+void GLRenderer::LoadObjectBuffers (unsigned int objectHandle)
 {
 	MeshObject* myMeshObject = dynamic_cast<MeshObject*>(renderedScene.GetGameObjects ()[objectHandle]);
 
@@ -202,6 +216,8 @@ void GLRenderer::LoadBuffers (unsigned int objectHandle)
 		glEnableVertexAttribArray (VBOType::VBO_VERTICES);
 		glEnableVertexAttribArray (VBOType::VBO_NORMALS);
 
+		// unbind VAO
+		glBindVertexArray (0);
 	}
 	else
 	{
@@ -212,18 +228,39 @@ void GLRenderer::LoadBuffers (unsigned int objectHandle)
 		glBindVertexArray (objectBuffers[objectHandle].VAO);
 
 		// load vertex buffer
-		glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[0]);
+		glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_VERTICES]);
 		glBufferSubData (GL_ARRAY_BUFFER, 0, myMeshObject->GetVertexCount () * sizeof (float), myMeshObject->GetVerticesData ());
 
 		// load normals buffer
-		glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[1]);
+		glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_NORMALS]);
 		glBufferSubData (GL_ARRAY_BUFFER, 0, myMeshObject->GetVertexCount () * sizeof (float), myMeshObject->GetNormalsData ());
 
 		// load index buffer
 		glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, objectBuffers[objectHandle].EBO);
 		glBufferSubData (GL_ELEMENT_ARRAY_BUFFER, 0, myMeshObject->GetFaceCount () * sizeof (unsigned int), myMeshObject->GetFacesData ());
 
+		// unbind VAO
+		glBindVertexArray (0);
+
 	}
+}
+
+void GLRenderer::LoadUniformBuffers ()
+{
+
+	// load view matrix
+	// TODO: this matrix should be a property of camera
+	std::memcpy (uniformBufferMatrices.ViewMatrix, Transpose (Mathf::GenCameraViewMatrix (Vector3f (1.0f, 2.0f, 5.0f), Vector3f (0.0f, -1.0f, 0.0f), Vector3f (0.0f, 1.0f, 0.0f))).getDataPointer (), 16 * sizeof (GLfloat));
+
+	// load projection matrix
+	// TODO: this matrix should be a property of camera
+	std::memcpy (uniformBufferMatrices.ProjectionMatrix, Transpose (Mathf::GenPerspectiveProjectionMatrix (4.0f / 3.0f, Mathf::Deg2Rad (75.0f), 0.1f, 100.0f)).getDataPointer (), 16 * sizeof (GLfloat));
+
+	// load to GPU
+	glBindBuffer (GL_UNIFORM_BUFFER, sceneBuffers.UBO);
+	glBufferSubData (GL_UNIFORM_BUFFER, 0, 2 * 16 * sizeof (GLfloat), &uniformBufferMatrices);
+	glBindBuffer (GL_UNIFORM_BUFFER, 0);
+
 }
 
 

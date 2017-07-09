@@ -8,22 +8,26 @@ std::string gDefaultVertexShader = R"V0G0N(
 	#version 330 core
 
 	uniform mat4 mModel;
-	uniform mat4 mView;
-	uniform mat4 mProjection;
 
-	layout (location = 0) in vec3 vposition;
-	layout (location = 1) in vec3 vnormal;
+	uniform UniformBlock 
+	{
+		mat4 mView;
+		mat4 mProjection;
+	};
 
-	out vec3 fposition;
-	out vec3 fnormal;
+	layout (location = 0) in vec3 vPosition;
+	layout (location = 1) in vec3 vNormal;
+
+	out vec3 fPosition;
+	out vec3 fNormal;
 
 	void main ()
 	{
-		gl_Position = mProjection * mView * mModel * vec4 (vposition.xyz, 1.0);
+		gl_Position = mProjection * mView * mModel * vec4 (vPosition.xyz, 1.0);
 		
-		fposition = vec3 (mModel * vec4 (vposition.xyz, 1.0));
-		fnormal = normalize (mModel * vec4 (vnormal, 1.0));
-		
+		fPosition = vec3 (mModel * vec4 (vPosition.xyz, 1.0));
+		fNormal = normalize (transpose(inverse(mModel)) * vec4 (vNormal, 1.0));
+		/* TODO: transpose inverse (normal matrix) must be calculated outside of vertex shared and passed as uniform */
 	}
 	
 )V0G0N";

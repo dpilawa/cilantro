@@ -5,7 +5,7 @@ void Matrix4f::SetXY (int x, int y, float v)
 	M (x, y) = v;
 }
 
-float Matrix4f::getXY (int x, int y) const
+float Matrix4f::GetXY (int x, int y) const
 {
 	return M (x, y);
 }

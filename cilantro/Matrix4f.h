@@ -37,11 +37,14 @@ public:
 
 	// getters & setters
 	void SetXY (const int x, const int y, const float v);
-	float getXY (const int x, const int y) const;
+	float GetXY (const int x, const int y) const;
 	float* getDataPointer ();
 
 	// methods
 	Matrix4f& InitIdentity ();
+
+	// transpose matrix
+	friend inline Matrix4f Transpose (const Matrix4f& m);
 
 	// operators
 	Matrix4f& operator*= (const Matrix4f& m);
@@ -51,6 +54,34 @@ private:
 	float m[16];
 
 };
+
+// transpose matrix
+inline Matrix4f Transpose (const Matrix4f & m)
+{
+	Matrix4f n;
+
+	n.SetXY (1, 1, m.GetXY (1, 1));
+	n.SetXY (1, 2, m.GetXY (2, 1));
+	n.SetXY (1, 3, m.GetXY (3, 1));
+	n.SetXY (1, 4, m.GetXY (4, 1));
+
+	n.SetXY (2, 1, m.GetXY (1, 2));
+	n.SetXY (2, 2, m.GetXY (2, 2));
+	n.SetXY (2, 3, m.GetXY (3, 2));
+	n.SetXY (2, 4, m.GetXY (4, 2));
+
+	n.SetXY (3, 1, m.GetXY (1, 3));
+	n.SetXY (3, 2, m.GetXY (2, 3));
+	n.SetXY (3, 3, m.GetXY (3, 3));
+	n.SetXY (3, 4, m.GetXY (4, 3));
+
+	n.SetXY (4, 1, m.GetXY (1, 4));
+	n.SetXY (4, 2, m.GetXY (2, 4));
+	n.SetXY (4, 3, m.GetXY (3, 4));
+	n.SetXY (4, 4, m.GetXY (4, 4));
+
+	return n;
+}
 
 // compound assignment operator for matrix multiplication
 inline Matrix4f& Matrix4f::operator*=(const Matrix4f& other)

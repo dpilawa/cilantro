@@ -43,7 +43,7 @@ public:
 	float Length ();
 
 	// normalize vector
-	void Normalize ();
+	Vector3f& Normalize ();
 
 	// cross product of two vectors
 	friend inline Vector3f Cross (const Vector3f& v1, const Vector3f& v2);
@@ -57,10 +57,6 @@ private:
 	float v[3];
 };
 
-inline Vector3f Cross (const Vector3f& v1, const Vector3f& v2)
-{
-	return Vector3f (v1.v[1] * v2.v[2] - v1.v[2] * v2.v[1], v1.v[2] * v2.v[0] - v1.v[0] * v2.v[2], v1.v[0] * v2.v[1] - v1.v[1] * v2.v[0]);
-}
 
 inline Vector3f& Vector3f::operator+=(const Vector3f& other)
 {
@@ -91,6 +87,11 @@ inline Vector3f operator- (Vector3f u, const Vector3f& v)
 	u -= v;
 	return u;
 };
+
+inline Vector3f Cross (const Vector3f& v1, const Vector3f& v2)
+{
+	return Vector3f (v1.v[1] * v2.v[2] - v1.v[2] * v2.v[1], v1.v[2] * v2.v[0] - v1.v[0] * v2.v[2], v1.v[0] * v2.v[1] - v1.v[1] * v2.v[0]);
+}
 
 inline Vector3f operator- (Vector3f v)
 {

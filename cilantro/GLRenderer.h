@@ -15,6 +15,7 @@
 #include "GLFW/glfw3.h"
 
 enum VBOType { VBO_VERTICES = 0, VBO_NORMALS, VBO_UVS };
+enum BindingPoint { BP_UNIFORMS = 1 };
 
 struct ObjectBuffers
 {
@@ -32,6 +33,15 @@ struct SceneBuffers
 public:
 	// Uniform Buffer Object (V&P matrices, lights)
 	GLuint UBO;
+};
+
+struct UniformBufferMatrices
+{
+public:
+	// view matrix
+	GLfloat ViewMatrix[16];
+	// projection matrix
+	GLfloat ProjectionMatrix[16];
 };
 
 class GLRenderer : public Renderer
@@ -77,11 +87,20 @@ private:
 	// * vrray of lights
 	SceneBuffers sceneBuffers;
 
+	// data structure for uniforms
+	UniformBufferMatrices uniformBufferMatrices;
+
 	// initialize object buffers
-	void InitializeBuffers ();
+	void InitializeObjectBuffers ();
+
+	// initialize uniform buffers
+	void InitializeUniformBuffers ();
 
 	// re(load) object buffers of mesh objects
-	void LoadBuffers (unsigned int objectHandle);
+	void LoadObjectBuffers (unsigned int objectHandle);
+
+	// reload uniform buffers of mesh objects
+	void LoadUniformBuffers ();
 
 };
 
