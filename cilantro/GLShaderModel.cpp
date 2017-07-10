@@ -19,6 +19,7 @@ GLuint GLShaderModel::GetProgramId ()
 void GLShaderModel::AttachShader (GLShader shader)
 {
 	GLint success;
+	char errorLog[512];
 
 	glAttachShader (shaderProgramId, shader.GetShaderId ());
 	glLinkProgram (shaderProgramId);
@@ -27,7 +28,10 @@ void GLShaderModel::AttachShader (GLShader shader)
 
 	if (!success)
 	{
-		LogMessage (__FUNCTION__, EXIT_FAILURE) << "Unable to attach shader " << shader.GetShaderId () << " to program " << shaderProgramId;
+		glGetProgramInfoLog (shaderProgramId, 512, nullptr, errorLog);
+		glDeleteProgram (shaderProgramId);
+		LogMessage () << errorLog;
+		LogMessage (__FUNCTION__, EXIT_FAILURE) << "Unable to link shader" << shader.GetShaderId () << " to program" << shaderProgramId;
 	}
 }
 

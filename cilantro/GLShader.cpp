@@ -7,7 +7,8 @@ GLShader::GLShader ()
 GLShader::GLShader (std::string sourceCode, ShaderType type) : shaderSourceCode(sourceCode), shaderType(type)
 {
 	GLint success;
-	const char * cStr;
+	char errorLog[512];
+	const char * cSourceStr;
 
 	switch (type)
 	{
@@ -19,15 +20,18 @@ GLShader::GLShader (std::string sourceCode, ShaderType type) : shaderSourceCode(
 		break;
 	}
 
-	cStr = shaderSourceCode.c_str ();
-	glShaderSource (shaderId, 1, &cStr, NULL);
+	cSourceStr = shaderSourceCode.c_str ();
+	glShaderSource (shaderId, 1, &cSourceStr, NULL);
 	glCompileShader (shaderId);
 
 	glGetShaderiv (shaderId, GL_COMPILE_STATUS, &success);
 	
 	if (!success)
 	{
-		LogMessage (__FUNCTION__, EXIT_FAILURE) << "Unable to compile shader " << shaderId;
+		glGetShaderInfoLog (shaderId, 512, nullptr, errorLog);
+		glDeleteShader (shaderId);
+		LogMessage () << errorLog;
+		LogMessage (__FUNCTION__, EXIT_FAILURE) << "Unable to compile shader:" << shaderId;
 	}
 }
 

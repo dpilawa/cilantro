@@ -26,7 +26,7 @@ std::string gDefaultVertexShader = R"V0G0N(
 		gl_Position = mProjection * mView * mModel * vec4 (vPosition.xyz, 1.0);
 		
 		fPosition = vec3 (mModel * vec4 (vPosition.xyz, 1.0));
-		fNormal = normalize (transpose(inverse(mModel)) * vec4 (vNormal, 1.0));
+		fNormal = vec3(normalize (transpose(inverse(mModel)) * vec4 (vNormal, 1.0)));
 		/* TODO: transpose inverse (normal matrix) must be calculated outside of vertex shared and passed as uniform */
 	}
 	

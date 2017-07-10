@@ -3,6 +3,8 @@
 
 #include "Renderer.h"
 #include "LogMessage.h"
+#include <string>
+#include <iostream>
 #include <GL/glew.h>
 #include <string>
 
