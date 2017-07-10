@@ -4,8 +4,8 @@
 #include <algorithm> 
 
 // row-major matrix representation in memory
-#define M(x, y) m [(x - 1) * 4 + y - 1]
-#define MMUL(m1, m2, x, y) M(x, y) = m1.M (x, 1) * m2.M (1, y) + m1.M (x, 2) * m2.M (2, y) + m1.M (x, 3) * m2.M (3, y) + m1.M (x, 4) * m2.M (4, y)
+#define M4(x, y) m [(x - 1) * 4 + y - 1]
+#define MMUL4(m1, m2, x, y) M4(x, y) = m1.M4 (x, 1) * m2.M4 (1, y) + m1.M4 (x, 2) * m2.M4 (2, y) + m1.M4 (x, 3) * m2.M4 (3, y) + m1.M4 (x, 4) * m2.M4 (4, y)
 
 class Matrix4f
 {
@@ -89,27 +89,27 @@ inline Matrix4f& Matrix4f::operator*=(const Matrix4f& other)
 	// actual multiplication code
 	Matrix4f temp (*this);
 
-	MMUL (temp, other, 1, 1);
-	MMUL (temp, other, 1, 2);
-	MMUL (temp, other, 1, 3);
-	MMUL (temp, other, 1, 4);
-	MMUL (temp, other, 2, 1);
-	MMUL (temp, other, 2, 2);
-	MMUL (temp, other, 2, 3);
-	MMUL (temp, other, 2, 4);
-	MMUL (temp, other, 3, 1);
-	MMUL (temp, other, 3, 2);
-	MMUL (temp, other, 3, 3);
-	MMUL (temp, other, 3, 4);
-	MMUL (temp, other, 4, 1);
-	MMUL (temp, other, 4, 2);
-	MMUL (temp, other, 4, 3);
-	MMUL (temp, other, 4, 4);
+	MMUL4 (temp, other, 1, 1);
+	MMUL4 (temp, other, 1, 2);
+	MMUL4 (temp, other, 1, 3);
+	MMUL4 (temp, other, 1, 4);
+	MMUL4 (temp, other, 2, 1);
+	MMUL4 (temp, other, 2, 2);
+	MMUL4 (temp, other, 2, 3);
+	MMUL4 (temp, other, 2, 4);
+	MMUL4 (temp, other, 3, 1);
+	MMUL4 (temp, other, 3, 2);
+	MMUL4 (temp, other, 3, 3);
+	MMUL4 (temp, other, 3, 4);
+	MMUL4 (temp, other, 4, 1);
+	MMUL4 (temp, other, 4, 2);
+	MMUL4 (temp, other, 4, 3);
+	MMUL4 (temp, other, 4, 4);
 
 	return *this;
 }
 
-// binary operator for matrix multiplication
+// binary operator for matrix by matrix multiplication
 inline Matrix4f operator* (Matrix4f m, const Matrix4f& n)
 {
 	m *= n;

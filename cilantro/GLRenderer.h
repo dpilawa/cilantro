@@ -2,6 +2,7 @@
 #define _GLRENDERER_H_
 
 #include <unordered_map>
+#include "Matrix3f.h"
 #include "Time.h"
 #include "Mathf.h"
 #include "Renderer.h"

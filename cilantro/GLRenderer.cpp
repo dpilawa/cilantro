@@ -138,6 +138,7 @@ GLShaderModel & GLRenderer::GetShaderModel (std::string shaderModelName)
 void GLRenderer::Draw (MeshObject & meshObject)
 {
 	GLuint modelMatrixId;
+	GLuint normalMatrixId;
 	GLuint shaderProgramId;
 
 	// draw mesh
@@ -148,6 +149,10 @@ void GLRenderer::Draw (MeshObject & meshObject)
 	// get world matrix for drawn objects and set uniform value
 	modelMatrixId = glGetUniformLocation (shaderProgramId, "mModel");
 	glUniformMatrix4fv (modelMatrixId, 1, GL_TRUE, meshObject.GetModelTransformMatrix ().getDataPointer ());
+
+	// calculate normal matrix for drawn objects and set uniform value
+	normalMatrixId = glGetUniformLocation (shaderProgramId, "mNormal");
+	glUniformMatrix3fv (normalMatrixId, 1, GL_TRUE, Inverse (Transpose (Matrix3f (meshObject.GetModelTransformMatrix ()))).getDataPointer ());
 
 	// draw
 	shaderProgram.Use ();
