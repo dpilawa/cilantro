@@ -29,6 +29,7 @@ private:
 
 	// bool flags to control the game loop
 	bool shouldStop;
+
 };
 
 #endif

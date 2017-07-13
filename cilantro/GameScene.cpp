@@ -3,16 +3,11 @@
 GameScene::GameScene()
 {
 	gameObjectsCount = 0;
-	myGameLoop = nullptr;
+	activeCamera = nullptr;
 }
 
 GameScene::~GameScene()
 {
-}
-
-void GameScene::SetGameLoop (GameLoop & gameLoop)
-{
-	myGameLoop = &gameLoop;
 }
 
 GameObject& GameScene::AddGameObject (GameObject* gameObject)
@@ -42,6 +37,16 @@ std::vector<GameObject*>& GameScene::GetGameObjects ()
 unsigned int GameScene::getGameObjectsCount () const
 {
 	return gameObjectsCount;
+}
+
+void GameScene::SetActiveCamera (Camera * camera)
+{
+	activeCamera = camera;
+}
+
+Camera * GameScene::GetActiveCamera () const
+{
+	return activeCamera;
 }
 
 

@@ -2,7 +2,7 @@
 #include "default.vs.h"
 #include "default.fs.h"
 
-GLRenderer::GLRenderer (GameScene& scene, int xRes, int yRes) : Renderer(scene), xResolution (xRes), yResolution (yRes)
+GLRenderer::GLRenderer (int xRes, int yRes) : xResolution (xRes), yResolution (yRes)
 {
 	glfwInit ();
 }
@@ -13,10 +13,13 @@ GLRenderer::~GLRenderer ()
 	glfwTerminate ();
 }
 
-void GLRenderer::Initialize ()
+void GLRenderer::Initialize (GameScene* scene)
 {
 	GLuint shaderProgramId;
 	GLuint uniformBlockIndex;
+
+	// initialize superclass
+	Renderer::Initialize (scene);
 
 	// set up GL & window properties
 	glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -65,7 +68,7 @@ void GLRenderer::Initialize ()
 	glUniformBlockBinding (shaderProgramId, uniformBlockIndex, BindingPoint::BP_UNIFORMS);
 
 	// set callback for new MeshObjects
-	renderedScene.RegisterCallback ("OnUpdateMeshObject", [&] (unsigned int objectHandle) { LoadObjectBuffers (objectHandle); });
+	renderedScene->RegisterCallback ("OnUpdateMeshObject", [&] (unsigned int objectHandle) { LoadObjectBuffers (objectHandle); });
 }
 
 void GLRenderer::RenderFrame ()
@@ -77,7 +80,7 @@ void GLRenderer::RenderFrame ()
 	LoadUniformBuffers ();
 
 	// draw all objects scene
-	for (GameObject* gameObject : renderedScene.GetGameObjects ())
+	for (GameObject* gameObject : renderedScene->GetGameObjects ())
 	{
 		gameObject->OnDraw (*this);
 	}
@@ -163,7 +166,7 @@ void GLRenderer::Draw (MeshObject & meshObject)
 
 void GLRenderer::InitializeObjectBuffers ()
 {
-	for (GameObject* gameObject : renderedScene.GetGameObjects ())
+	for (GameObject* gameObject : renderedScene->GetGameObjects ())
 	{
 		unsigned int objectHandle = gameObject->GetHandle ();
 		LoadObjectBuffers (objectHandle);
@@ -181,7 +184,7 @@ void GLRenderer::InitializeUniformBuffers ()
 
 void GLRenderer::LoadObjectBuffers (unsigned int objectHandle)
 {
-	MeshObject* myMeshObject = dynamic_cast<MeshObject*>(renderedScene.GetGameObjects ()[objectHandle]);
+	MeshObject* myMeshObject = dynamic_cast<MeshObject*>(renderedScene->GetGameObjects ()[objectHandle]);
 
 	// check of object's buffers are already initialized
 	auto find = objectBuffers.find (objectHandle);
@@ -252,14 +255,21 @@ void GLRenderer::LoadObjectBuffers (unsigned int objectHandle)
 
 void GLRenderer::LoadUniformBuffers ()
 {
+	Camera* activeCamera;
+
+	// get active camera of rendered scene
+	activeCamera = renderedScene->GetActiveCamera ();
+
+	if (activeCamera == nullptr) 
+	{
+		LogMessage (__FUNCTION__, EXIT_FAILURE) << "No active camera found";
+	}
 
 	// load view matrix
-	// TODO: this matrix should be a property of camera
-	std::memcpy (uniformBufferMatrices.ViewMatrix, Transpose (Mathf::GenCameraViewMatrix (Vector3f (1.0f, 2.0f, 5.0f), Vector3f (0.0f, -1.0f, 0.0f), Vector3f (0.0f, 1.0f, 0.0f))).getDataPointer (), 16 * sizeof (GLfloat));
+	std::memcpy (uniformBufferMatrices.ViewMatrix, Transpose (activeCamera->GetViewMatrix ()).getDataPointer (), 16 * sizeof (GLfloat));
 
 	// load projection matrix
-	// TODO: this matrix should be a property of camera
-	std::memcpy (uniformBufferMatrices.ProjectionMatrix, Transpose (Mathf::GenPerspectiveProjectionMatrix (4.0f / 3.0f, Mathf::Deg2Rad (75.0f), 0.1f, 100.0f)).getDataPointer (), 16 * sizeof (GLfloat));
+	std::memcpy (uniformBufferMatrices.ProjectionMatrix, Transpose (activeCamera->GetProjectionMatrix (xResolution, yResolution)).getDataPointer (), 16 * sizeof (GLfloat));
 
 	// load to GPU
 	glBindBuffer (GL_UNIFORM_BUFFER, sceneBuffers.UBO);

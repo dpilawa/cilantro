@@ -11,11 +11,11 @@ enum class ShaderType { VERTEX_SHADER, FRAGMENT_SHADER };
 class Renderer
 {
 public:
-	Renderer (GameScene& scene);
+	Renderer ();
 	~Renderer ();
 
 	// abstract functions declarations
-	virtual void Initialize () = 0;
+	virtual void Initialize (GameScene* scene);
 	virtual void RenderFrame ();
 	virtual void Deinitialize () = 0;
 
@@ -30,11 +30,12 @@ public:
 	long long GetFrameCount () const;
 
 protected:
+
 	// GameScene being rendered
-	GameScene& renderedScene;
+	GameScene* renderedScene;
 
 private:
-	// number of rendered frames
+	// number of renderedframes
 	long long frameCount;
 };
 

@@ -89,7 +89,7 @@ Matrix4f Mathf::GenScalingMatrix (float x, float y, float z)
 	return m;
 }
 
-Matrix4f Mathf::GenCameraViewMatrix (Vector3f& position, Vector3f& lookAt, Vector3f& up)
+Matrix4f Mathf::GenCameraViewMatrix (const Vector3f& position, const Vector3f& lookAt, const Vector3f& up)
 {
 	Matrix4f m;
 	Vector3f u, v, n;

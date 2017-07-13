@@ -5,6 +5,7 @@
 #include <vector>
 #include "GameObject.h"
 #include "LogMessage.h"
+#include "Camera.h"
 
 class GameLoop;
 
@@ -16,9 +17,6 @@ public:
 	GameScene();
 	~GameScene();
 
-	// set game loop pointer
-	void SetGameLoop (GameLoop& gameLoop);
-
 	// add GameObject to a scene
 	// returns reference to that added object
 	GameObject& AddGameObject (GameObject* gameObject);
@@ -29,15 +27,20 @@ public:
 	// return number of scene's GameObjects
 	unsigned int getGameObjectsCount () const;
 
+	// active camera manipulation
+	void SetActiveCamera (Camera* camera);
+	Camera* GetActiveCamera () const;
+
 private:
-	// pointer to a game loop
-	GameLoop* myGameLoop;
 	
 	// vector of all GameObjects in the scene
 	std::vector <GameObject*> gameObjects;
 
 	// count of all GameObjects in the scene
 	unsigned int gameObjectsCount;
+
+	// reference to active camera
+	Camera* activeCamera;
 
 	// callback function to get notified about changed MeshObjects
 	void OnModifiedMeshObject (unsigned int objectHandle);

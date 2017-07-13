@@ -2,16 +2,18 @@
 #include "GameScene.h"
 #include "GameObject.h"
 #include "MeshObject.h"
+#include "Camera.h"
 #include "GLRenderer.h"
 #include "LogMessage.h"
 
 void main (int argc, char* argv[])
 {
-	LogMessage (__FUNCTION__) << "Engine starting";
-
 	GameScene scene;
-	GLRenderer renderer (scene, 800, 600);
+	GLRenderer renderer (1280, 720);
 	GameLoop game (scene, renderer);
+
+	Camera& cam = dynamic_cast<Camera&>(scene.AddGameObject (new Camera (Vector3f (1.0f, 2.0f, 5.0f), Vector3f (0.0f, -1.0f, 0.0f), Vector3f (0.0f, 1.0f, 0.0f), 75.0f, 0.1f, 100.0f)));
+	scene.SetActiveCamera (&cam);
 
 	MeshObject& cube = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
 	cube.InitUnitCube ().GetModelTransform ().Translate (0.0f, 0.0f, 0.0f).Rotate (0.0f, 0.0f, 25.0f);
@@ -22,6 +24,5 @@ void main (int argc, char* argv[])
 	plane.SetParentObject (cube);
 
 	game.Go ();
-
-	LogMessage (__FUNCTION__) << "Engine shutdown";
 }
+

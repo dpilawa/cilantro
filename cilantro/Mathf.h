@@ -44,7 +44,7 @@ public:
 
 	// generate projection matrix (perspective)
 	// fov provided in radians
-	static Matrix4f GenCameraViewMatrix (Vector3f& position, Vector3f& lookAt, Vector3f& up);
+	static Matrix4f GenCameraViewMatrix (const Vector3f& position, const Vector3f& lookAt, const Vector3f& up);
 
 	// generate projection matrix (perspective)
 	// fov provided in radians

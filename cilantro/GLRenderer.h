@@ -48,11 +48,11 @@ public:
 class GLRenderer : public Renderer
 {
 public:
-	GLRenderer (GameScene& scene,  int xRes, int yRes);
+	GLRenderer (int xRes, int yRes);
 	~GLRenderer ();
 
 	// initialize renderer
-	void Initialize ();
+	void Initialize (GameScene* scene);
 	// render one frame
 	void RenderFrame ();
 	// deinitialize renderer

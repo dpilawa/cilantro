@@ -1,13 +1,19 @@
 #include "Renderer.h"
 #include "GameScene.h"
 
-Renderer::Renderer (GameScene& scene) : renderedScene(scene)
+Renderer::Renderer ()
 {
 	frameCount = 0;
+	renderedScene = nullptr;
 }
 
 Renderer::~Renderer ()
 {
+}
+
+void Renderer::Initialize (GameScene * scene)
+{
+	renderedScene = scene;
 }
 
 void Renderer::RenderFrame ()

@@ -1,9 +1,12 @@
 #include "GameLoop.h"
 #include <iostream>
+#include <thread>
 
 GameLoop::GameLoop (GameScene & scene, Renderer & renderer) :
 	gameScene (scene), gameRenderer (renderer)
 {
+	LogMessage (__FUNCTION__) << "Engine starting";
+
 	// set flags
 	shouldStop = false;
 
@@ -16,11 +19,8 @@ GameLoop::GameLoop (GameScene & scene, Renderer & renderer) :
 		gameObject->OnStart ();
 	}
 
-	// set pointer to a game loop in a scene
-	scene.SetGameLoop (*this);
-
 	// initialize renderer
-	gameRenderer.Initialize ();
+	gameRenderer.Initialize (&scene);
 }
 
 GameLoop::~GameLoop ()
@@ -33,16 +33,19 @@ GameLoop::~GameLoop ()
 	{
 		gameObject->OnEnd ();
 	}
+
+	LogMessage (__FUNCTION__) << "Engine stopped";
+
 }
 
 void GameLoop::Go ()
 {
 	// run game loop, terminate when shouldStop condition is met
 	while (shouldStop != true) {
-		
+
 		// update game clocks (Tick)
 		Time::Tick ();
-	
+
 		// update all game objects
 		for (auto gameObject : gameScene.GetGameObjects ())
 		{
@@ -59,13 +62,12 @@ void GameLoop::Go ()
 		gameRenderer.RenderFrame ();
 
 		// display debug message
-		if (gameRenderer.GetFrameCount() % 200 == 0)
+		if (gameRenderer.GetFrameCount () % 200 == 0)
 		{
 			LogMessage () << "Actual FPS:" << 1 / Time::GetFrameDeltaTime () << "; Theoretical FPS:" << 1 / Time::GetFrameRenderTime ();
 		}
-	
-	}
 
+	}
 }
 
 GameScene & GameLoop::GetScene ()
