@@ -20,7 +20,6 @@ void main (int argc, char* argv[])
 
 	MeshObject& plane = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
 	plane.InitUnitCube ().GetModelTransform ().Scale (5.0f, 0.1f, 5.0f).Translate (0.0f, -1.0f, 0.0f);
-	//plane.InitUnitCube ().GetModelTransform ().Rotate (0.0f, 0.0f, -10.0f);
 	plane.SetParentObject (cube);
 
 	game.Go ();
