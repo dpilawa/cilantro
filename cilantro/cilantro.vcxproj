@@ -139,6 +139,7 @@
     <ClInclude Include="LogMessage.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mathf.h" />
+    <ClInclude Include="Matrix3f.h" />
     <ClInclude Include="Matrix4f.h" />
     <ClInclude Include="MeshObject.h" />
     <ClInclude Include="Quaternion.h" />
@@ -160,6 +161,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mathf.cpp" />
+    <ClCompile Include="Matrix3f.cpp" />
     <ClCompile Include="Matrix4f.cpp" />
     <ClCompile Include="MeshObject.cpp" />
     <ClCompile Include="Quaternion.cpp" />

@@ -1,16 +1,16 @@
 #include "Vector3f.h"
 
-float Vector3f::GetX ()
+float Vector3f::GetX () const
 {
 	return v[0];
 }
 
-float Vector3f::GetY ()
+float Vector3f::GetY () const
 {
 	return v[1];
 }
 
-float Vector3f::GetZ ()
+float Vector3f::GetZ () const
 {
 	return v[2];
 }
