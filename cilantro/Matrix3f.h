@@ -6,7 +6,7 @@
 
 // row-major matrix representation in memory
 #define M3(x, y) m [(x - 1) * 3 + y - 1]
-#define MMUL3(m1, m2, x, y) M3(x, y) = m1.M3 (x, 1) * m2.M3 (1, y) + m1.M3 (x, 2) * m2.M3 (2, y) + m1.M3 (x, 3) * m2.M3 (3, y)
+#define MMUL3(m1, m2, x, y) m1.M3 (x, 1) * m2.M3 (1, y) + m1.M3 (x, 2) * m2.M3 (2, y) + m1.M3 (x, 3) * m2.M3 (3, y)
 
 class Matrix3f
 {
@@ -82,17 +82,17 @@ inline Matrix3f Transpose (const Matrix3f & m)
 {
 	Matrix3f n;
 
-	n.SetXY (1, 1, m.GetXY (1, 1));
-	n.SetXY (1, 2, m.GetXY (2, 1));
-	n.SetXY (1, 3, m.GetXY (3, 1));
+	n.M3 (1, 1) = m.M3 (1, 1);
+	n.M3 (1, 2) = m.M3 (2, 1);
+	n.M3 (1, 3) = m.M3 (3, 1);
 
-	n.SetXY (2, 1, m.GetXY (1, 2));
-	n.SetXY (2, 2, m.GetXY (2, 2));
-	n.SetXY (2, 3, m.GetXY (3, 2));
+	n.M3 (2, 1) = m.M3 (1, 2);
+	n.M3 (2, 2) = m.M3 (2, 2);
+	n.M3 (2, 3) = m.M3 (3, 2);
 
-	n.SetXY (3, 1, m.GetXY (1, 3));
-	n.SetXY (3, 2, m.GetXY (2, 3));
-	n.SetXY (3, 3, m.GetXY (3, 3));
+	n.M3 (3, 1) = m.M3 (1, 3);
+	n.M3 (3, 2) = m.M3 (2, 3);
+	n.M3 (3, 3) = m.M3 (3, 3);
 
 	return n;
 }
@@ -102,17 +102,17 @@ inline Matrix3f Inverse (const Matrix3f & m)
 	Matrix3f i;
 	float det = m.GetDeterminant();
 
-	i.SetXY (1, 1, m.GetXY (2, 2) * m.GetXY (3, 3) - m.GetXY (2, 3) * m.GetXY (3, 2));
-	i.SetXY (1, 2, m.GetXY (1, 3) * m.GetXY (3, 2) - m.GetXY (1, 2) * m.GetXY (3, 3));
-	i.SetXY (1, 3, m.GetXY (1, 2) * m.GetXY (2, 3) - m.GetXY (1, 3) * m.GetXY (2, 2));
+	i.M3 (1, 1) = m.M3 (2, 2) * m.M3 (3, 3) - m.M3 (2, 3) * m.M3 (3, 2);
+	i.M3 (1, 2) = m.M3 (1, 3) * m.M3 (3, 2) - m.M3 (1, 2) * m.M3 (3, 3);
+	i.M3 (1, 3) = m.M3 (1, 2) * m.M3 (2, 3) - m.M3 (1, 3) * m.M3 (2, 2);
 
-	i.SetXY (2, 1, m.GetXY (2, 3) * m.GetXY (3, 1) - m.GetXY (2, 1) * m.GetXY (3, 3));
-	i.SetXY (2, 2, m.GetXY (1, 1) * m.GetXY (3, 3) - m.GetXY (1, 3) * m.GetXY (3, 1));
-	i.SetXY (2, 3, m.GetXY (1, 3) * m.GetXY (2, 1) - m.GetXY (1, 1) * m.GetXY (2, 3));
+	i.M3 (2, 1) = m.M3 (2, 3) * m.M3 (3, 1) - m.M3 (2, 1) * m.M3 (3, 3);
+	i.M3 (2, 2) = m.M3 (1, 1) * m.M3 (3, 3) - m.M3 (1, 3) * m.M3 (3, 1);
+	i.M3 (2, 3) = m.M3 (1, 3) * m.M3 (2, 1) - m.M3 (1, 1) * m.M3 (2, 3);
 
-	i.SetXY (3, 1, m.GetXY (2, 1) * m.GetXY (3, 2) - m.GetXY (2, 2) * m.GetXY (3, 1));
-	i.SetXY (3, 2, m.GetXY (1, 2) * m.GetXY (3, 1) - m.GetXY (1, 1) * m.GetXY (3, 2));
-	i.SetXY (3, 3, m.GetXY (1, 1) * m.GetXY (2, 2) - m.GetXY (1, 2) * m.GetXY (2, 1));
+	i.M3 (3, 1) = m.M3 (2, 1) * m.M3 (3, 2) - m.M3 (2, 2) * m.M3 (3, 1);
+	i.M3 (3, 2) = m.M3 (1, 2) * m.M3 (3, 1) - m.M3 (1, 1) * m.M3 (3, 2);
+	i.M3 (3, 3) = m.M3 (1, 1) * m.M3 (2, 2) - m.M3 (1, 2) * m.M3 (2, 1);
 
 	i *= (1.0f / det);
 
@@ -125,15 +125,15 @@ inline Matrix3f& Matrix3f::operator*=(const Matrix3f& other)
 	// actual multiplication code
 	Matrix3f temp (*this);
 
-	MMUL3 (temp, other, 1, 1);
-	MMUL3 (temp, other, 1, 2);
-	MMUL3 (temp, other, 1, 3);
-	MMUL3 (temp, other, 2, 1);
-	MMUL3 (temp, other, 2, 2);
-	MMUL3 (temp, other, 2, 3);
-	MMUL3 (temp, other, 3, 1);
-	MMUL3 (temp, other, 3, 2);
-	MMUL3 (temp, other, 3, 3);
+	M3 (1, 1) = MMUL3 (temp, other, 1, 1);
+	M3 (1, 2) = MMUL3 (temp, other, 1, 2);
+	M3 (1, 3) = MMUL3 (temp, other, 1, 3);
+	M3 (2, 1) = MMUL3 (temp, other, 2, 1);
+	M3 (2, 2) = MMUL3 (temp, other, 2, 2);
+	M3 (2, 3) = MMUL3 (temp, other, 2, 3);
+	M3 (3, 1) = MMUL3 (temp, other, 3, 1);
+	M3 (3, 2) = MMUL3 (temp, other, 3, 2);
+	M3 (3, 3) = MMUL3 (temp, other, 3, 3);
 
 	return *this;
 }

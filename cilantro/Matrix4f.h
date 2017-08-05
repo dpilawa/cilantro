@@ -5,7 +5,7 @@
 
 // row-major matrix representation in memory
 #define M4(x, y) m [(x - 1) * 4 + y - 1]
-#define MMUL4(m1, m2, x, y) M4(x, y) = m1.M4 (x, 1) * m2.M4 (1, y) + m1.M4 (x, 2) * m2.M4 (2, y) + m1.M4 (x, 3) * m2.M4 (3, y) + m1.M4 (x, 4) * m2.M4 (4, y)
+#define MMUL4(m1, m2, x, y) m1.M4 (x, 1) * m2.M4 (1, y) + m1.M4 (x, 2) * m2.M4 (2, y) + m1.M4 (x, 3) * m2.M4 (3, y) + m1.M4 (x, 4) * m2.M4 (4, y)
 
 class Matrix4f
 {
@@ -60,25 +60,25 @@ inline Matrix4f Transpose (const Matrix4f & m)
 {
 	Matrix4f n;
 
-	n.SetXY (1, 1, m.GetXY (1, 1));
-	n.SetXY (1, 2, m.GetXY (2, 1));
-	n.SetXY (1, 3, m.GetXY (3, 1));
-	n.SetXY (1, 4, m.GetXY (4, 1));
+	n.M4 (1, 1) = m.M4 (1, 1);
+	n.M4 (1, 2) = m.M4 (2, 1);
+	n.M4 (1, 3) = m.M4 (3, 1);
+	n.M4 (1, 4) = m.M4 (4, 1);
 
-	n.SetXY (2, 1, m.GetXY (1, 2));
-	n.SetXY (2, 2, m.GetXY (2, 2));
-	n.SetXY (2, 3, m.GetXY (3, 2));
-	n.SetXY (2, 4, m.GetXY (4, 2));
+	n.M4 (2, 1) = m.M4 (1, 2);
+	n.M4 (2, 2) = m.M4 (2, 2);
+	n.M4 (2, 3) = m.M4 (3, 2);
+	n.M4 (2, 4) = m.M4 (4, 2);
 
-	n.SetXY (3, 1, m.GetXY (1, 3));
-	n.SetXY (3, 2, m.GetXY (2, 3));
-	n.SetXY (3, 3, m.GetXY (3, 3));
-	n.SetXY (3, 4, m.GetXY (4, 3));
+	n.M4 (3, 1) = m.M4 (1, 3);
+	n.M4 (3, 2) = m.M4 (2, 3);
+	n.M4 (3, 3) = m.M4 (3, 3);
+	n.M4 (3, 4) = m.M4 (4, 3);
 
-	n.SetXY (4, 1, m.GetXY (1, 4));
-	n.SetXY (4, 2, m.GetXY (2, 4));
-	n.SetXY (4, 3, m.GetXY (3, 4));
-	n.SetXY (4, 4, m.GetXY (4, 4));
+	n.M4 (4, 1) = m.M4 (1, 4);
+	n.M4 (4, 2) = m.M4 (2, 4);
+	n.M4 (4, 3) = m.M4 (3, 4);
+	n.M4 (4, 4) = m.M4 (4, 4);
 
 	return n;
 }
@@ -89,22 +89,22 @@ inline Matrix4f& Matrix4f::operator*=(const Matrix4f& other)
 	// actual multiplication code
 	Matrix4f temp (*this);
 
-	MMUL4 (temp, other, 1, 1);
-	MMUL4 (temp, other, 1, 2);
-	MMUL4 (temp, other, 1, 3);
-	MMUL4 (temp, other, 1, 4);
-	MMUL4 (temp, other, 2, 1);
-	MMUL4 (temp, other, 2, 2);
-	MMUL4 (temp, other, 2, 3);
-	MMUL4 (temp, other, 2, 4);
-	MMUL4 (temp, other, 3, 1);
-	MMUL4 (temp, other, 3, 2);
-	MMUL4 (temp, other, 3, 3);
-	MMUL4 (temp, other, 3, 4);
-	MMUL4 (temp, other, 4, 1);
-	MMUL4 (temp, other, 4, 2);
-	MMUL4 (temp, other, 4, 3);
-	MMUL4 (temp, other, 4, 4);
+	M4 (1, 1) = MMUL4 (temp, other, 1, 1);
+	M4 (1, 2) = MMUL4 (temp, other, 1, 2);
+	M4 (1, 3) = MMUL4 (temp, other, 1, 3);
+	M4 (1, 4) = MMUL4 (temp, other, 1, 4);
+	M4 (2, 1) = MMUL4 (temp, other, 2, 1);
+	M4 (2, 2) = MMUL4 (temp, other, 2, 2);
+	M4 (2, 3) = MMUL4 (temp, other, 2, 3);
+	M4 (2, 4) = MMUL4 (temp, other, 2, 4);
+	M4 (3, 1) = MMUL4 (temp, other, 3, 1);
+	M4 (3, 2) = MMUL4 (temp, other, 3, 2);
+	M4 (3, 3) = MMUL4 (temp, other, 3, 3);
+	M4 (3, 4) = MMUL4 (temp, other, 3, 4);
+	M4 (4, 1) = MMUL4 (temp, other, 4, 1);
+	M4 (4, 2) = MMUL4 (temp, other, 4, 2);
+	M4 (4, 3) = MMUL4 (temp, other, 4, 3);
+	M4 (4, 4) = MMUL4 (temp, other, 4, 4);
 
 	return *this;
 }
