@@ -35,9 +35,9 @@ public:
 	~Vector3f () { };
 
 	// getters
-	float GetX ();
-	float GetY ();
-	float GetZ ();
+	float GetX () const;
+	float GetY () const;
+	float GetZ () const;
 	float* GetDataPointer ();
 
 	// returns vector length
