@@ -10,7 +10,7 @@ float Matrix4f::GetXY (int x, int y) const
 	return M4 (x, y);
 }
 
-float * Matrix4f::getDataPointer ()
+float * Matrix4f::GetDataPointer ()
 {
 	return m;
 }

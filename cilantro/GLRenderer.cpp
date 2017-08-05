@@ -140,22 +140,26 @@ GLShaderModel & GLRenderer::GetShaderModel (std::string shaderModelName)
 
 void GLRenderer::Draw (MeshObject & meshObject)
 {
+	GLuint diffuseColorId;
 	GLuint modelMatrixId;
 	GLuint normalMatrixId;
 	GLuint shaderProgramId;
 
 	// draw mesh
-	// TODO: this to be retrieved from Material class
-	GLShaderModel& shaderProgram = GetShaderModel ("default_shader");
+	GLShaderModel& shaderProgram = GetShaderModel (meshObject.GetMaterial ().GetShaderModelName ());
 	shaderProgramId = shaderProgram.GetProgramId ();
+
+	// get diffuse color for drawn objects and set uniform value
+	diffuseColorId = glGetUniformLocation (shaderProgramId, "vDiffuseColor");
+	glUniform3fv (diffuseColorId, 1, meshObject.GetMaterial ().GetDiffuseColor ().GetDataPointer ());
 
 	// get world matrix for drawn objects and set uniform value
 	modelMatrixId = glGetUniformLocation (shaderProgramId, "mModel");
-	glUniformMatrix4fv (modelMatrixId, 1, GL_TRUE, meshObject.GetModelTransformMatrix ().getDataPointer ());
+	glUniformMatrix4fv (modelMatrixId, 1, GL_TRUE, meshObject.GetModelTransformMatrix ().GetDataPointer ());
 
 	// calculate normal matrix for drawn objects and set uniform value
 	normalMatrixId = glGetUniformLocation (shaderProgramId, "mNormal");
-	glUniformMatrix3fv (normalMatrixId, 1, GL_TRUE, Inverse (Transpose (Matrix3f (meshObject.GetModelTransformMatrix ()))).getDataPointer ());
+	glUniformMatrix3fv (normalMatrixId, 1, GL_TRUE, Inverse (Transpose (Matrix3f (meshObject.GetModelTransformMatrix ()))).GetDataPointer ());
 
 	// draw
 	shaderProgram.Use ();
@@ -266,10 +270,10 @@ void GLRenderer::LoadUniformBuffers ()
 	}
 
 	// load view matrix
-	std::memcpy (uniformBufferMatrices.ViewMatrix, Transpose (activeCamera->GetViewMatrix ()).getDataPointer (), 16 * sizeof (GLfloat));
+	std::memcpy (uniformBufferMatrices.ViewMatrix, Transpose (activeCamera->GetViewMatrix ()).GetDataPointer (), 16 * sizeof (GLfloat));
 
 	// load projection matrix
-	std::memcpy (uniformBufferMatrices.ProjectionMatrix, Transpose (activeCamera->GetProjectionMatrix (xResolution, yResolution)).getDataPointer (), 16 * sizeof (GLfloat));
+	std::memcpy (uniformBufferMatrices.ProjectionMatrix, Transpose (activeCamera->GetProjectionMatrix (xResolution, yResolution)).GetDataPointer (), 16 * sizeof (GLfloat));
 
 	// load to GPU
 	glBindBuffer (GL_UNIFORM_BUFFER, sceneBuffers.UBO);

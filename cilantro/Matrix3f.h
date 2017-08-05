@@ -55,7 +55,7 @@ public:
 	// getters & setters
 	void SetXY (const int x, const int y, const float v);
 	float GetXY (const int x, const int y) const;
-	float* getDataPointer ();
+	float* GetDataPointer ();
 
 	// methods
 	Matrix3f& InitIdentity ();

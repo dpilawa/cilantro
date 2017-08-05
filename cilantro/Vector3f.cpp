@@ -15,6 +15,11 @@ float Vector3f::GetZ ()
 	return v[2];
 }
 
+float* Vector3f::GetDataPointer ()
+{
+	return v;
+}
+
 float Vector3f::Length ()
 {
 	return std::sqrtf (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);

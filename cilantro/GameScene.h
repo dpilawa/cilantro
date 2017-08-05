@@ -4,6 +4,7 @@
 #include <functional>
 #include <vector>
 #include "GameObject.h"
+#include "Material.h"
 #include "LogMessage.h"
 #include "Camera.h"
 
@@ -21,6 +22,10 @@ public:
 	// returns reference to that added object
 	GameObject& AddGameObject (GameObject* gameObject);
 
+	// add material to the scene 
+	// returns reference to that material
+	Material& AddMaterial (Material* material);
+
 	// return reference to GameObject vector
 	std::vector <GameObject*>& GetGameObjects ();
 
@@ -35,6 +40,9 @@ private:
 	
 	// vector of all GameObjects in the scene
 	std::vector <GameObject*> gameObjects;
+
+	// vector of all Materials in the scene
+	std::vector <Material*> materials;
 
 	// count of all GameObjects in the scene
 	unsigned int gameObjectsCount;

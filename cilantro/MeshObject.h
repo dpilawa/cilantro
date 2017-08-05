@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "Vector4f.h"
+#include "Material.h"
 #include "GameObject.h"
 
 // Represents a 3d mesh, inherits from GameObject
@@ -27,6 +28,12 @@ public:
 	unsigned int GetVertexCount ();
 	unsigned int GetFaceCount ();
 
+	// set mesh material
+	void SetMaterial (Material& material);
+
+	// get mesh material
+	Material& GetMaterial () const;
+
 	// get vertices raw data
 	float* GetVerticesData ();
 
@@ -41,6 +48,8 @@ public:
 	virtual void OnDraw (Renderer& renderer);
 
 private:
+
+	Material* objectMaterial;
 
 	std::vector<float> vertices;
 	std::vector<unsigned int> faces;

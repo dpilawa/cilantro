@@ -122,7 +122,7 @@ MeshObject& MeshObject::InitUnitCube ()
 
 	};
 
-	//CalculateVertexNormals ();
+	// CalculateVertexNormals ();
 
 	InvokeCallbacks ("OnUpdateMeshObject", this->GetHandle ());
 
@@ -142,6 +142,16 @@ unsigned int MeshObject::GetVertexCount ()
 unsigned int MeshObject::GetFaceCount ()
 {
 	return (unsigned int) faces.size ();
+}
+
+void MeshObject::SetMaterial (Material & material)
+{
+	objectMaterial = &material;
+}
+
+Material & MeshObject::GetMaterial () const
+{
+	return *objectMaterial;
 }
 
 float* MeshObject::GetVerticesData ()

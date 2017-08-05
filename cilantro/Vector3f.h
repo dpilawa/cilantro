@@ -38,6 +38,7 @@ public:
 	float GetX ();
 	float GetY ();
 	float GetZ ();
+	float* GetDataPointer ();
 
 	// returns vector length
 	float Length ();

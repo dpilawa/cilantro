@@ -28,6 +28,14 @@ GameObject& GameScene::AddGameObject (GameObject* gameObject)
 	return *gameObject;
 }
 
+Material& GameScene::AddMaterial (Material* material)
+{
+	// insert into collection
+	materials.push_back (material);
+
+	// return material
+	return *material;
+}
 
 std::vector<GameObject*>& GameScene::GetGameObjects ()
 {

@@ -10,7 +10,7 @@ float Matrix3f::GetXY (int x, int y) const
 	return M3 (x, y);
 }
 
-float * Matrix3f::getDataPointer ()
+float * Matrix3f::GetDataPointer ()
 {
 	return m;
 }
