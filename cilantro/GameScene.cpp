@@ -21,8 +21,9 @@ GameObject& GameScene::AddGameObject (GameObject* gameObject)
 	// insert into collection
 	gameObjects.push_back (gameObject);
 
-	// set callback on object modification
+	// set callbacks on object modification
 	gameObject->RegisterCallback ("OnUpdateMeshObject", [&](unsigned int objectHandle) { InvokeCallbacks ("OnUpdateMeshObject", objectHandle); });
+	gameObject->RegisterCallback ("OnUpdatePointLight", [&](unsigned int objectHandle) { InvokeCallbacks ("OnUpdatePointLight", objectHandle); });
 
 	// return object
 	return *gameObject;

@@ -11,7 +11,7 @@ std::string gDefaultVertexShader = R"V0G0N(
 	uniform mat3 mNormal;
 	uniform vec3 vDiffuseColor;
 
-	uniform UniformBlock 
+	uniform UniformMatricesBlock 
 	{
 		mat4 mView;
 		mat4 mProjection;

@@ -17,6 +17,8 @@ MeshObject& MeshObject::Clear ()
 	normals.clear ();
 	faces.clear ();
 
+	InvokeCallbacks ("OnUpdateMeshObject", this->GetHandle ());
+
 	return *this;
 }
 

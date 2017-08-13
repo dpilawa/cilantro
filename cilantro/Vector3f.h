@@ -6,7 +6,6 @@
 // Represents 3-dimensional float vector
 class Vector3f
 {
-	friend class Vector4f;
 public:
 	// constructors
 	Vector3f () { };

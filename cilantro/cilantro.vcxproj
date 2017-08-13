@@ -136,12 +136,14 @@
     <ClInclude Include="GLRenderer.h" />
     <ClInclude Include="GLShader.h" />
     <ClInclude Include="GLShaderModel.h" />
+    <ClInclude Include="Light.h" />
     <ClInclude Include="LogMessage.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mathf.h" />
     <ClInclude Include="Matrix3f.h" />
     <ClInclude Include="Matrix4f.h" />
     <ClInclude Include="MeshObject.h" />
+    <ClInclude Include="PointLight.h" />
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Time.h" />
@@ -157,6 +159,7 @@
     <ClCompile Include="GLRenderer.cpp" />
     <ClCompile Include="GLShader.cpp" />
     <ClCompile Include="GLShaderModel.cpp" />
+    <ClCompile Include="Light.cpp" />
     <ClCompile Include="LogMessage.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
@@ -164,6 +167,7 @@
     <ClCompile Include="Matrix3f.cpp" />
     <ClCompile Include="Matrix4f.cpp" />
     <ClCompile Include="MeshObject.cpp" />
+    <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Time.cpp" />

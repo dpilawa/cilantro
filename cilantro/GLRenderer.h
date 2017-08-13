@@ -2,6 +2,7 @@
 #define _GLRENDERER_H_
 
 #include <unordered_map>
+#include <vector>
 #include "Matrix3f.h"
 #include "Time.h"
 #include "Mathf.h"
@@ -9,14 +10,18 @@
 #include "GameScene.h"
 #include "LogMessage.h"
 #include "MeshObject.h"
+#include "PointLight.h"
 #include "GLShader.h"
 #include "GLShaderModel.h"
 
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
 
+#define MAX_LIGHTS 100
+
 enum VBOType { VBO_VERTICES = 0, VBO_NORMALS, VBO_UVS };
-enum BindingPoint { BP_UNIFORMS = 1 };
+enum UBOType { UBO_MATRICES = 0, UBO_POINTLIGHTS };
+enum BindingPoint { BP_MATRICES = 1, BP_POINTLIGHTS };
 
 struct ObjectBuffers
 {
@@ -32,17 +37,33 @@ public:
 struct SceneBuffers
 {
 public:
-	// Uniform Buffer Object (V&P matrices, lights)
-	GLuint UBO;
+	// Uniform Buffer Objects (view & projection matrices, lights)
+	GLuint UBO[2];
 };
 
-struct UniformBufferMatrices
+struct UniformMatrixBuffer
 {
 public:
 	// view matrix
-	GLfloat ViewMatrix[16];
+	GLfloat viewMatrix[16];
 	// projection matrix
-	GLfloat ProjectionMatrix[16];
+	GLfloat projectionMatrix[16];
+};
+
+struct PointLightStruct
+{
+public:
+	GLfloat lightColor[3];
+	GLfloat lightPosition[3];
+};
+
+struct UniformPointLightBuffer
+{
+public:
+	// number of active point lights
+	GLint pointLightCount;
+	// array of active point lights
+	PointLightStruct pointLights[MAX_LIGHTS];
 };
 
 class GLRenderer : public Renderer
@@ -88,20 +109,30 @@ private:
 	// * vrray of lights
 	SceneBuffers sceneBuffers;
 
-	// data structure for uniforms
-	UniformBufferMatrices uniformBufferMatrices;
+	// data structures for uniforms
+	UniformMatrixBuffer uniformMatrixBuffer;
+	UniformPointLightBuffer uniformPointLightBuffer;
+
+	// active lights collection
+	std::unordered_map<unsigned int, bool> pointLights;
+
+	// initialize shader library
+	void InitializeShaderLibrary ();
 
 	// initialize object buffers
 	void InitializeObjectBuffers ();
-
-	// initialize uniform buffers
-	void InitializeUniformBuffers ();
+	// initialize uniform buffers of view and projection matrices
+	void InitializeMatrixUniformBuffers ();
+	// initialize uniform buffers of lights
+	void InitializeLightBuffers ();
 
 	// re(load) object buffers of mesh objects
 	void LoadObjectBuffers (unsigned int objectHandle);
-
-	// reload uniform buffers of mesh objects
-	void LoadUniformBuffers ();
+	// reload uniform buffers of view and projection matrices
+	void LoadMatrixUniformBuffers ();
+	// reload buffers of lights
+	void LoadLightBuffers (unsigned int objectHandle);
+	void LoadLightUniformBuffers ();
 
 };
 
