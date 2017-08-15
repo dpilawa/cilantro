@@ -14,10 +14,10 @@ void main (int argc, char* argv[])
 	GameLoop game (scene, renderer);
 
 	Material& green = scene.AddMaterial (new Material ());
-	green.SetDiffuseColor (Vector3f (0.0f, 0.75f, 0.0f));
+	green.SetDiffuseColor (Vector3f (0.1f, 0.75f, 0.1f));
 
 	Material& red = scene.AddMaterial (new Material ());
-	red.SetDiffuseColor (Vector3f (1.0f, 0.0f, 0.0f));
+	red.SetDiffuseColor (Vector3f (0.75f, 0.1f, 0.1f));
 
 	Camera& cam = dynamic_cast<Camera&>(scene.AddGameObject (new Camera (Vector3f (1.0f, 2.0f, 5.0f), Vector3f (0.0f, -1.0f, 0.0f), Vector3f (0.0f, 1.0f, 0.0f), 75.0f, 0.1f, 100.0f)));
 	scene.SetActiveCamera (&cam);
@@ -33,11 +33,11 @@ void main (int argc, char* argv[])
 
 	PointLight& light1 = dynamic_cast<PointLight&>(scene.AddGameObject (new PointLight ()));
 	light1.GetModelTransform ().Translate (2.0f, 4.0f, 3.0f);
-	light1.SetLightColor (Vector3f (1.0f, 1.0f, 1.0f));
+	light1.SetLightColor (Vector3f (1.0f, 1.0f, 0.0f));
 	light1.Enable ();
 
 	PointLight& light2 = dynamic_cast<PointLight&>(scene.AddGameObject (new PointLight ()));
-	light2.SetLightColor (Vector3f (1.0f, 1.0f, 1.0f));
+	light2.SetLightColor (Vector3f (0.1f, 0.0f, 1.0f));
 	light2.GetModelTransform ().Translate (10.0f, 10.0f, 10.0f);
 	light2.Enable ();
 

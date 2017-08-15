@@ -54,7 +54,9 @@ struct PointLightStruct
 {
 public:
 	GLfloat lightColor[3];
+	GLfloat pad1; // std140 padding
 	GLfloat lightPosition[3];
+	GLfloat pad2; // std140 padding
 };
 
 struct UniformPointLightBuffer
@@ -62,6 +64,8 @@ struct UniformPointLightBuffer
 public:
 	// number of active point lights
 	GLint pointLightCount;
+	// pad to std140 specification
+	GLint pad[3];
 	// array of active point lights
 	PointLightStruct pointLights[MAX_LIGHTS];
 };
