@@ -27,14 +27,14 @@ std::string gDefaultFragmentShader = R"V0G0N(
 
 	out vec4 color;
 
-	vec3 CalculatePointLight (PointLightStruct light)
+	vec4 CalculatePointLight (PointLightStruct light)
 	{
 		vec3 lightDirection = normalize (light.lightPosition.xyz - fPosition);
 		float diffuseCoefficient = max (dot (fNormal, lightDirection), 0.0);
 		
 		vec3 diffuse = diffuseCoefficient * fDiffuseColor * light.lightColor.xyz;
 
-		return diffuse;
+		return vec4 (diffuse, 1.0);
 	}
 
 	void main()

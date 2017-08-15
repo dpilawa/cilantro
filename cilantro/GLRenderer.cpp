@@ -23,7 +23,8 @@ void GLRenderer::Initialize (GameScene* scene)
 	glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint (GLFW_RESIZABLE, GL_FALSE);
-	
+	glfwWindowHint (GLFW_SAMPLES, 4);
+
 	// create window
 	window = glfwCreateWindow (xResolution, yResolution, "GL", nullptr, nullptr);
 	if (window == NULL)
@@ -39,6 +40,9 @@ void GLRenderer::Initialize (GameScene* scene)
 
 	// enable depth test
 	glEnable (GL_DEPTH_TEST);
+
+	// enable antialiasing
+	glEnable (GL_MULTISAMPLE);
 
 	// initialize GLEW
 	if (glewInit () != GLEW_OK)
