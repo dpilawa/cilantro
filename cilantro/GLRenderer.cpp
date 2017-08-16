@@ -140,7 +140,12 @@ GLShaderModel & GLRenderer::GetShaderModel (std::string shaderModelName)
 
 void GLRenderer::Draw (MeshObject & meshObject)
 {
+	//TODO: get uniform location queries to be moved to initialization
+	GLuint ambientColorId;
 	GLuint diffuseColorId;
+	GLuint specularColorId;
+	GLuint specularShininessId;
+	GLuint eyePositionId;
 	GLuint modelMatrixId;
 	GLuint normalMatrixId;
 	GLuint shaderProgramId;
@@ -149,9 +154,21 @@ void GLRenderer::Draw (MeshObject & meshObject)
 	GLShaderModel& shaderProgram = GetShaderModel (meshObject.GetMaterial ().GetShaderModelName ());
 	shaderProgramId = shaderProgram.GetProgramId ();
 
-	// get diffuse color for drawn objects and set uniform value
-	diffuseColorId = glGetUniformLocation (shaderProgramId, "vDiffuseColor");
+	// get material properties for drawn objects and set uniform value
+	ambientColorId = glGetUniformLocation (shaderProgramId, "fAmbientColor");
+	glUniform3fv (ambientColorId, 1, meshObject.GetMaterial ().GetAmbientColor ().GetDataPointer ());
+
+	diffuseColorId = glGetUniformLocation (shaderProgramId, "fDiffuseColor");
 	glUniform3fv (diffuseColorId, 1, meshObject.GetMaterial ().GetDiffuseColor ().GetDataPointer ());
+
+	specularColorId = glGetUniformLocation (shaderProgramId, "fSpecularColor");
+	glUniform3fv (specularColorId, 1, meshObject.GetMaterial ().GetSpecularColor ().GetDataPointer ());
+	specularShininessId = glGetUniformLocation (shaderProgramId, "fSpecularShininess");
+	glUniform1f (specularShininessId, meshObject.GetMaterial ().GetSpecularShininess ());
+
+	// get camera position in world space and set uniform value
+	eyePositionId = glGetUniformLocation (shaderProgramId, "eyePosition");
+	glUniform3fv (eyePositionId, 1, renderedScene->GetActiveCamera ()->GetPosition ().GetDataPointer ());
 
 	// get world matrix for drawn objects and set uniform value
 	modelMatrixId = glGetUniformLocation (shaderProgramId, "mModel");
@@ -379,13 +396,18 @@ void GLRenderer::LoadLightUniformBuffers ()
 		// copy only active lights
 		if (pointLight.second == true)
 		{
+
 			uniformPointLightBuffer.pointLightCount++;
-			
+
 			// copy position
 			Vector4f lightPosition = myPointLightObject->GetPosition ();
 			uniformPointLightBuffer.pointLights[lightId].lightPosition[0] = lightPosition.GetDataPointer ()[0];
 			uniformPointLightBuffer.pointLights[lightId].lightPosition[1] = lightPosition.GetDataPointer ()[1];
 			uniformPointLightBuffer.pointLights[lightId].lightPosition[2] = lightPosition.GetDataPointer ()[2];
+
+			// copy ambience and specular powers
+			uniformPointLightBuffer.pointLights[lightId].ambiencePower = myPointLightObject->GetAmbiencePower ();
+			uniformPointLightBuffer.pointLights[lightId].specularPower = myPointLightObject->GetSpecularPower ();
 
 			// copy color
 			uniformPointLightBuffer.pointLights[lightId].lightColor[0] = myPointLightObject->GetLightColor ().GetX ();
@@ -401,7 +423,6 @@ void GLRenderer::LoadLightUniformBuffers ()
 	glBufferSubData (GL_UNIFORM_BUFFER, 0, sizeof (UniformPointLightBuffer), &uniformPointLightBuffer);
 	glBindBuffer (GL_UNIFORM_BUFFER, 0);
 
-	LogMessage (__FUNCTION__) << "Copied" << uniformPointLightBuffer.pointLightCount << "PointLights to uniform buffer";
 }
 
 

@@ -7,9 +7,9 @@ std::string gDefaultVertexShader = R"V0G0N(
 
 	#version 330 core
 
+	/* transformation matrices */
 	uniform mat4 mModel;
 	uniform mat3 mNormal;
-	uniform vec3 vDiffuseColor;
 
 	uniform UniformMatricesBlock 
 	{
@@ -22,7 +22,6 @@ std::string gDefaultVertexShader = R"V0G0N(
 
 	out vec3 fPosition;
 	out vec3 fNormal;
-	out vec3 fDiffuseColor;
 
 	void main ()
 	{
@@ -30,8 +29,6 @@ std::string gDefaultVertexShader = R"V0G0N(
 		
 		fPosition = vec3 (mModel * vec4 (vPosition.xyz, 1.0));
 		fNormal = normalize (mNormal * vNormal);
-
-		fDiffuseColor = vDiffuseColor;
 	}
 	
 )V0G0N";

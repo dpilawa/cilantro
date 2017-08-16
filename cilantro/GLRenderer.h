@@ -54,9 +54,9 @@ struct PointLightStruct
 {
 public:
 	GLfloat lightColor[3];
-	GLfloat pad1; // std140 padding
+	GLfloat ambiencePower;
 	GLfloat lightPosition[3];
-	GLfloat pad2; // std140 padding
+	GLfloat specularPower;
 };
 
 struct UniformPointLightBuffer

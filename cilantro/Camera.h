@@ -15,6 +15,9 @@ public:
 	Matrix4f GetViewMatrix () const;
 	Matrix4f GetProjectionMatrix (unsigned int xRes, unsigned int yRes) const;
 
+	// getters
+	Vector3f GetPosition () const;
+
 private:
 	Vector3f cameraPosition;
 	Vector3f cameraLookAt;

@@ -20,4 +20,9 @@ Matrix4f Camera::GetProjectionMatrix (unsigned int xRes, unsigned int yRes) cons
 	return Mathf::GenPerspectiveProjectionMatrix (float (xRes) / float (yRes), Mathf::Deg2Rad (cameraFOV), nearPlane, farPlane);
 }
 
+Vector3f Camera::GetPosition () const
+{
+	return cameraPosition;
+}
+
 

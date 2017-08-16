@@ -9,14 +9,29 @@ std::string gDefaultFragmentShader = R"V0G0N(
 
 	#define MAX_LIGHTS 100
 
+	/* fragment position in world space */
 	in vec3 fPosition;
+
+	/* fragment normal */
 	in vec3 fNormal;
-	in vec3 fDiffuseColor;
+
+	/* material properties */
+	uniform vec3 fAmbientColor;
+	uniform vec3 fDiffuseColor;
+	uniform vec3 fSpecularColor;
+	uniform float fSpecularShininess;
+
+	/* eye position in world space */
+	uniform vec3 eyePosition;
+
+	/* point lights data structures */
 
 	struct PointLightStruct
 	{
 		vec3 lightColor;
-		vec3 lightPosition;
+		float ambiencePower;
+		vec3 lightPosition;	/* world space */
+		float specularPower;
 	};
 
 	layout (std140) uniform UniformPointLightsBlock 
@@ -25,16 +40,27 @@ std::string gDefaultFragmentShader = R"V0G0N(
 		PointLightStruct pointLights[MAX_LIGHTS];
 	};
 
+	/* output color */
 	out vec4 color;
 
+	/* calculate contribution of one point light */
 	vec4 CalculatePointLight (PointLightStruct light)
 	{
-		vec3 lightDirection = normalize (light.lightPosition.xyz - fPosition);
-		float diffuseCoefficient = max (dot (fNormal, lightDirection), 0.0);
-		
-		vec3 diffuse = diffuseCoefficient * fDiffuseColor * light.lightColor.xyz;
+		/* ambient component */
+		float ambientCoefficient = light.ambiencePower;
 
-		return vec4 (diffuse, 1.0);
+		/* diffuse component */
+		vec3 lightDirection = normalize (light.lightPosition - fPosition);
+		float diffuseCoefficient = max (dot (fNormal, lightDirection), 0.0);
+
+		/* specular component */
+		vec3 viewDirection = normalize (eyePosition - fPosition);
+		vec3 reflectionDirection = reflect (-lightDirection, fNormal);
+		float specularCoefficient = pow(max(dot(viewDirection, reflectionDirection), 0.0), fSpecularShininess) * light.specularPower;
+		
+		/* aggregate output */
+		vec3 outputColor = (ambientCoefficient * fAmbientColor + diffuseCoefficient * fDiffuseColor + specularCoefficient * fSpecularColor) * light.lightColor;
+		return vec4 (outputColor, 1.0);
 	}
 
 	void main()

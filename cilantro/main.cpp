@@ -14,10 +14,13 @@ void main (int argc, char* argv[])
 	GameLoop game (scene, renderer);
 
 	Material& green = scene.AddMaterial (new Material ());
-	green.SetDiffuseColor (Vector3f (0.1f, 0.75f, 0.1f));
+	green.SetColor (Vector3f (0.1f, 0.4f, 0.1f));
+	green.SetAmbientColor (Vector3f (0.5f, 0.5f, 0.5f));
+	green.SetSpecularColor (Vector3f (1.0f, 1.0f, 1.0f)).SetSpecularShininess (64.0f);
 
 	Material& red = scene.AddMaterial (new Material ());
-	red.SetDiffuseColor (Vector3f (0.75f, 0.1f, 0.1f));
+	red.SetColor (Vector3f (0.75f, 0.1f, 0.1f));
+	red.SetSpecularColor (Vector3f (1.0f, 0.0f, 0.0f)).SetSpecularShininess (128.0f);
 
 	Camera& cam = dynamic_cast<Camera&>(scene.AddGameObject (new Camera (Vector3f (1.0f, 2.0f, 5.0f), Vector3f (0.0f, -1.0f, 0.0f), Vector3f (0.0f, 1.0f, 0.0f), 75.0f, 0.1f, 100.0f)));
 	scene.SetActiveCamera (&cam);
@@ -37,8 +40,10 @@ void main (int argc, char* argv[])
 	light1.Enable ();
 
 	PointLight& light2 = dynamic_cast<PointLight&>(scene.AddGameObject (new PointLight ()));
-	light2.SetLightColor (Vector3f (0.1f, 0.0f, 1.0f));
-	light2.GetModelTransform ().Translate (10.0f, 10.0f, 10.0f);
+	light2.SetLightColor (Vector3f (1.0f, 1.0f, 1.0f));
+	light2.SetAmbiencePower (0.0f);
+	light2.SetSpecularPower (0.7f);
+	light2.GetModelTransform ().Translate (0.0f, 0.8f, 0.0f);
 	light2.Enable ();
 
 	game.Go ();
