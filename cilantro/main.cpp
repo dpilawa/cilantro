@@ -44,7 +44,9 @@ void main (int argc, char* argv[])
 
 	PointLight& light1 = dynamic_cast<PointLight&>(scene.AddGameObject (new PointLight ()));
 	light1.SetParentObject (lamp);
-	light1.SetLightColor (Vector3f (1.0f, 1.0f, 0.0f));
+	light1.SetLightColor (Vector3f (1.0f, 1.0f, 1.0f));
+	light1.SetSpecularPower (1.0f);
+	light1.SetAmbiencePower (0.2f);
 	light1.Enable ();
 
 	game.Go ();
