@@ -56,8 +56,10 @@ std::string gDefaultFragmentShader = R"V0G0N(
 
 		/* specular component */
 		vec3 viewDirection = normalize (eyePosition - fPosition);
-		vec3 reflectionDirection = reflect (-lightDirection, fNormal);
-		float specularCoefficient = pow(max(dot(viewDirection, reflectionDirection), 0.0), fSpecularShininess) * light.specularPower;
+		vec3 halfwayDirection = normalize(lightDirection + viewDirection);
+		/* vec3 reflectionDirection = reflect (-lightDirection, fNormal); */
+		/* float specularCoefficient = pow(max(dot(viewDirection, reflectionDirection), 0.0), fSpecularShininess) * light.specularPower; */
+		float specularCoefficient = pow(max(dot(fNormal, halfwayDirection), 0.0), fSpecularShininess) * light.specularPower;
 		
 		/* aggregate output */
 		vec3 outputColor = (ambientCoefficient * fAmbientColor + diffuseCoefficient * fDiffuseColor + specularCoefficient * fSpecularColor) * light.lightColor;
