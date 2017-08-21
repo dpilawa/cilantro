@@ -20,6 +20,7 @@ std::string gDefaultFragmentShader = R"V0G0N(
 	uniform vec3 fDiffuseColor;
 	uniform vec3 fSpecularColor;
 	uniform float fSpecularShininess;
+	uniform vec3 fEmissiveColor;
 
 	/* eye position in world space */
 	uniform vec3 eyePosition;
@@ -65,6 +66,8 @@ std::string gDefaultFragmentShader = R"V0G0N(
 
 	void main()
 	{
+		color = vec4 (fEmissiveColor, 1.0);
+
 		for (int i=0; i < pointLightCount; i++)
 		{
 			color += CalculatePointLight (pointLights[i]);

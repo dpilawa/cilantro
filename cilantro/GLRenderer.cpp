@@ -144,6 +144,7 @@ void GLRenderer::Draw (MeshObject & meshObject)
 	GLuint ambientColorId;
 	GLuint diffuseColorId;
 	GLuint specularColorId;
+	GLuint emissiveColorId;
 	GLuint specularShininessId;
 	GLuint eyePositionId;
 	GLuint modelMatrixId;
@@ -160,6 +161,9 @@ void GLRenderer::Draw (MeshObject & meshObject)
 
 	diffuseColorId = glGetUniformLocation (shaderProgramId, "fDiffuseColor");
 	glUniform3fv (diffuseColorId, 1, meshObject.GetMaterial ().GetDiffuseColor ().GetDataPointer ());
+
+	emissiveColorId = glGetUniformLocation (shaderProgramId, "fEmissiveColor");
+	glUniform3fv (emissiveColorId, 1, meshObject.GetMaterial ().GetEmissiveColor ().GetDataPointer ());
 
 	specularColorId = glGetUniformLocation (shaderProgramId, "fSpecularColor");
 	glUniform3fv (specularColorId, 1, meshObject.GetMaterial ().GetSpecularColor ().GetDataPointer ());

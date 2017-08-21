@@ -16,6 +16,7 @@ public:
 	Material& SetDiffuseColor (const Vector3f& color);
 	Material& SetSpecularColor (const Vector3f& color);
 	Material& SetSpecularShininess (const float shininess);
+	Material& SetEmissiveColor (const Vector3f& emissive);
 	Material& SetColor (const Vector3f& color);
 
 	// getters
@@ -24,6 +25,7 @@ public:
 	Vector3f GetDiffuseColor () const;
 	Vector3f GetSpecularColor () const;
 	float GetSpecularShininess () const;
+	Vector3f GetEmissiveColor () const;
 
 private:
 
@@ -39,6 +41,9 @@ private:
 	// specular color
 	Vector3f specularColor;
 	float specularShininess;
+
+	// emissive color
+	Vector3f emissiveColor;
 
 };
 

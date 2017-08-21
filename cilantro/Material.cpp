@@ -4,6 +4,7 @@ Material::Material ()
 {
 	shaderModelName = "default_shader";
 	SetColor (Vector3f (1.0f, 1.0f, 1.0f));
+	SetEmissiveColor (Vector3f (0.0f, 0.0f, 0.0f));
 	SetSpecularShininess (32.0f);
 }
 
@@ -46,6 +47,13 @@ Material & Material::SetSpecularShininess (const float shininess)
 	return *this;
 }
 
+Material & Material::SetEmissiveColor (const Vector3f & emissive)
+{
+	emissiveColor = emissive;
+
+	return *this;
+}
+
 Material & Material::SetColor (const Vector3f & color)
 {
 	SetAmbientColor (color);
@@ -78,4 +86,9 @@ Vector3f Material::GetSpecularColor () const
 float Material::GetSpecularShininess () const
 {
 	return specularShininess;
+}
+
+Vector3f Material::GetEmissiveColor () const
+{
+	return emissiveColor;
 }
