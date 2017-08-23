@@ -413,10 +413,15 @@ void GLRenderer::LoadLightUniformBuffers ()
 			uniformPointLightBuffer.pointLights[lightId].ambiencePower = myPointLightObject->GetAmbiencePower ();
 			uniformPointLightBuffer.pointLights[lightId].specularPower = myPointLightObject->GetSpecularPower ();
 
+			// copy attenuation factors
+			uniformPointLightBuffer.pointLights[lightId].attenuationConst = myPointLightObject->GetConstantAttenuationFactor ();
+			uniformPointLightBuffer.pointLights[lightId].attenuationLinear = myPointLightObject->GetLinearAttenuationFactor ();
+			uniformPointLightBuffer.pointLights[lightId].attenuationQuadratic = myPointLightObject->GetQuadraticAttenuationFactor ();
+
 			// copy color
-			uniformPointLightBuffer.pointLights[lightId].lightColor[0] = myPointLightObject->GetLightColor ().GetX ();
-			uniformPointLightBuffer.pointLights[lightId].lightColor[1] = myPointLightObject->GetLightColor ().GetY ();
-			uniformPointLightBuffer.pointLights[lightId].lightColor[2] = myPointLightObject->GetLightColor ().GetZ ();
+			uniformPointLightBuffer.pointLights[lightId].lightColor[0] = myPointLightObject->GetColor ().GetX ();
+			uniformPointLightBuffer.pointLights[lightId].lightColor[1] = myPointLightObject->GetColor ().GetY ();
+			uniformPointLightBuffer.pointLights[lightId].lightColor[2] = myPointLightObject->GetColor ().GetZ ();
 
 		}
 

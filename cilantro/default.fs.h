@@ -29,10 +29,13 @@ std::string gDefaultFragmentShader = R"V0G0N(
 
 	struct PointLightStruct
 	{
+		vec3 lightPosition;	/* world space */
 		vec3 lightColor;
 		float ambiencePower;
-		vec3 lightPosition;	/* world space */
 		float specularPower;
+		float attenuationConst;
+		float attenuationLinear;
+		float attenuationQuadratic;
 	};
 
 	layout (std140) uniform UniformPointLightsBlock 
@@ -61,8 +64,12 @@ std::string gDefaultFragmentShader = R"V0G0N(
 		/* float specularCoefficient = pow(max(dot(viewDirection, reflectionDirection), 0.0), fSpecularShininess) * light.specularPower; */
 		float specularCoefficient = pow(max(dot(fNormal, halfwayDirection), 0.0), fSpecularShininess) * light.specularPower;
 		
+		/* attenuation */
+		float distanceToLight = length (light.lightPosition - fPosition);
+		float attenuationFactor = 1.0f / (light.attenuationConst + light.attenuationLinear * distanceToLight + light.attenuationQuadratic * distanceToLight * distanceToLight);
+
 		/* aggregate output */
-		vec3 outputColor = (ambientCoefficient * fAmbientColor + diffuseCoefficient * fDiffuseColor + specularCoefficient * fSpecularColor) * light.lightColor;
+		vec3 outputColor = (ambientCoefficient * fAmbientColor + diffuseCoefficient * fDiffuseColor * attenuationFactor + specularCoefficient * fSpecularColor) * light.lightColor;
 		return vec4 (outputColor, 1.0);
 	}
 

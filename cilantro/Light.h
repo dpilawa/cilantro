@@ -14,10 +14,8 @@ public:
 	virtual void Enable () = 0;
 	virtual void Disable () = 0;
 
-	Vector4f GetPosition ();
-
 protected:
-	Vector4f lightPosition;
+	
 	bool isEnabled;
 };
 

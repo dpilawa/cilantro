@@ -2,9 +2,15 @@
 
 PointLight::PointLight () : Light()
 {
+	lightPosition = Vector4f (0.0f, 0.0f, 0.0f, 1.0f);
 	lightColor = Vector3f (1.0f, 1.0f, 1.0f);
+	
 	ambiencePower = 0.0f;
 	specularPower = 0.0f;
+
+	attenuationConst = 1.0f;
+	attenuationLinear = 0.0f;
+	attenuationQuadratic = 0.0f;
 }
 
 PointLight::~PointLight ()
@@ -49,9 +55,35 @@ PointLight & PointLight::SetSpecularPower (const float specular)
 	return *this;
 }
 
-Vector3f PointLight::GetLightColor () const
+PointLight& PointLight::SetConstantAttenuationFactor (const float attenuation)
+{
+	attenuationConst = attenuation;
+	InvokeCallbacks ("OnUpdatePointLight", this->GetHandle ());
+	return *this;
+}
+
+PointLight& PointLight::SetLinearAttenuationFactor (const float attenuation)
+{
+	attenuationLinear = attenuation;
+	InvokeCallbacks ("OnUpdatePointLight", this->GetHandle ());
+	return *this;
+}
+
+PointLight& PointLight::SetQuadraticAttenuationFactor (const float attenuation)
+{
+	attenuationQuadratic = attenuation;
+	InvokeCallbacks ("OnUpdatePointLight", this->GetHandle ());
+	return *this;
+}
+
+Vector3f PointLight::GetColor () const
 {
 	return lightColor;
+}
+
+Vector4f PointLight::GetPosition ()
+{
+	return lightPosition * GetModelTransformMatrix ();
 }
 
 float PointLight::GetAmbiencePower () const
@@ -62,4 +94,19 @@ float PointLight::GetAmbiencePower () const
 float PointLight::GetSpecularPower () const
 {
 	return specularPower;
+}
+
+float PointLight::GetConstantAttenuationFactor () const
+{
+	return attenuationConst;
+}
+
+float PointLight::GetLinearAttenuationFactor () const
+{
+	return attenuationLinear;
+}
+
+float PointLight::GetQuadraticAttenuationFactor () const
+{
+	return attenuationQuadratic;
 }

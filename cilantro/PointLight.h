@@ -22,16 +22,28 @@ public:
 	PointLight& SetAmbiencePower (const float ambience);
 	PointLight& SetSpecularPower (const float specular);
 
+	// set attenuation factor
+	PointLight& SetConstantAttenuationFactor (const float attenuation);
+	PointLight& SetLinearAttenuationFactor (const float attenuation);
+	PointLight& SetQuadraticAttenuationFactor (const float attenuation);
+
 	// getters
-	Vector3f GetLightColor () const;
+	Vector4f GetPosition ();
+	Vector3f GetColor () const;
 	float GetAmbiencePower () const;
 	float GetSpecularPower () const;
+	float GetConstantAttenuationFactor () const;
+	float GetLinearAttenuationFactor () const;
+	float GetQuadraticAttenuationFactor () const;
 
 private:
+	Vector4f lightPosition;
 	Vector3f lightColor;
 	float ambiencePower;
 	float specularPower;
-	float attenuation;
+	float attenuationConst;
+	float attenuationLinear;
+	float attenuationQuadratic;
 };
 
 #endif

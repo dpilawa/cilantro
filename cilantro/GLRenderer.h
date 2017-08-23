@@ -53,10 +53,14 @@ public:
 struct PointLightStruct
 {
 public:
+	GLfloat lightPosition[3];
+	GLfloat pad1;
 	GLfloat lightColor[3];
 	GLfloat ambiencePower;
-	GLfloat lightPosition[3];
 	GLfloat specularPower;
+	GLfloat attenuationConst;
+	GLfloat attenuationLinear;
+	GLfloat attenuationQuadratic;
 };
 
 struct UniformPointLightBuffer
