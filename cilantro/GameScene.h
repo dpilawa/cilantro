@@ -1,40 +1,37 @@
 #ifndef _GAMESCENE_H_
 #define _GAMESCENE_H_
 
-#include <functional>
-#include <vector>
+#include "cilantroengine.h"
+#include "CallbackProvider.h"
 #include "GameObject.h"
 #include "Material.h"
-#include "LogMessage.h"
 #include "Camera.h"
-
-class GameLoop;
 
 // This class represents a game world (a.k.a scene or level)
 // It contains all visible and invisible objects in a game
 class GameScene : public CallbackProvider<std::string, unsigned int>
 {
 public:
-	GameScene();
-	~GameScene();
+	__EAPI GameScene();
+	__EAPI ~GameScene();
 
 	// add GameObject to a scene
 	// returns reference to that added object
-	GameObject& AddGameObject (GameObject* gameObject);
+	__EAPI GameObject& AddGameObject (GameObject* gameObject);
 
 	// add material to the scene 
 	// returns reference to that material
-	Material& AddMaterial (Material* material);
+	__EAPI Material& AddMaterial (Material* material);
 
 	// return reference to GameObject vector
-	std::vector <GameObject*>& GetGameObjects ();
+	__EAPI std::vector <GameObject*>& GetGameObjects ();
 
 	// return number of scene's GameObjects
-	unsigned int getGameObjectsCount () const;
+	__EAPI unsigned int getGameObjectsCount () const;
 
 	// active camera manipulation
-	void SetActiveCamera (Camera* camera);
-	Camera* GetActiveCamera () const;
+	__EAPI void SetActiveCamera (Camera* camera);
+	__EAPI Camera* GetActiveCamera () const;
 
 private:
 	

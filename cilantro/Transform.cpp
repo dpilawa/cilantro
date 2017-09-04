@@ -1,6 +1,4 @@
 #include "Transform.h"
-#include "Mathf.h"
-#include "Matrix4f.h"
 
 Transform::Transform () : 
 translateX (0.0f), translateY (0.0f), translateZ (0.0f),

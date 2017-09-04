@@ -1,8 +1,8 @@
 #ifndef _VECTOR4F_H_
 #define _VECTOR4F_H_
 
-#include <algorithm>
 #include "Matrix4f.h"
+#include <algorithm>
 
 // Represents 4-dimensional float vector
 class Vector4f

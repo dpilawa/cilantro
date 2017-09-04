@@ -1,10 +1,11 @@
 #ifndef _MESHOBJECT_H_
 #define _MESHOBJECT_H_
 
-#include <vector>
-#include "Vector4f.h"
-#include "Material.h"
+#include "cilantroengine.h"
+#include "Renderer.h"
 #include "GameObject.h"
+#include "Material.h"
+#include <vector>
 
 // Represents a 3d mesh, inherits from GameObject
 // 3d mesh has a collection of vertices and a collection of vertex indices to represent mesh faces (polygons)
@@ -12,40 +13,40 @@
 class MeshObject : public GameObject
 {
 public:
-	MeshObject ();
-	~MeshObject ();
+	__EAPI MeshObject ();
+	__EAPI ~MeshObject ();
 
 	// Cleans up contents of used collections
-	MeshObject& Clear ();
+	__EAPI MeshObject& Clear ();
 
 	// Initialize mesh in local space as unit cube with center in space origin
-	MeshObject& InitUnitCube ();
+	__EAPI MeshObject& InitUnitCube ();
 
 	// calculate vertex normals
-	void CalculateVertexNormals ();
+	__EAPI void CalculateVertexNormals ();
 
 	// get mesh counts
-	unsigned int GetVertexCount ();
-	unsigned int GetFaceCount ();
+	__EAPI unsigned int GetVertexCount ();
+	__EAPI unsigned int GetFaceCount ();
 
 	// set mesh material
-	void SetMaterial (Material& material);
+	__EAPI void SetMaterial (Material& material);
 
 	// get mesh material
-	Material& GetMaterial () const;
+	__EAPI Material& GetMaterial () const;
 
 	// get vertices raw data
-	float* GetVerticesData ();
+	__EAPI float* GetVerticesData ();
 
 	// get normals raw data
-	float* GetNormalsData ();
+	__EAPI float* GetNormalsData ();
 
 	// get faces raw data
-	unsigned int* GetFacesData ();
+	__EAPI unsigned int* GetFacesData ();
 
 	// invoked by game loop on each frame
-	virtual void OnFrame ();
-	virtual void OnDraw (Renderer& renderer);
+	__EAPI virtual void OnFrame ();
+	__EAPI virtual void OnDraw (Renderer& renderer);
 
 private:
 

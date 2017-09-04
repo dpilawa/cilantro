@@ -1,24 +1,27 @@
 #ifndef _GAMELOOP_H_
 #define _GAMELOOP_H_
 
+#include "cilantroengine.h"
+#include "LogMessage.h"
 #include "GameScene.h"
 #include "Renderer.h"
 #include "Time.h"
+#include <string>
 
 class GameLoop
 {
 public:
-	GameLoop (GameScene& scene, Renderer& renderer);
-	~GameLoop ();
+	__EAPI GameLoop (GameScene& scene, Renderer& renderer);
+	__EAPI ~GameLoop ();
 
 	// run a game loop
-	void Go ();
+	__EAPI void Go ();
 
 	// get scene reference
-	GameScene& GetScene ();
+	__EAPI GameScene& GetScene ();
 
 	// get renderer reference
-	Renderer& GetRenderer ();
+	__EAPI Renderer& GetRenderer ();
 
 private:
 

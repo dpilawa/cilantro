@@ -1,8 +1,8 @@
 #ifndef _LOGMESSAGE_H_
 #define _LOGMESSAGE_H_
 
-#include <iostream>
 #include <string>
+#include <iostream>
 
 class LogMessage
 {

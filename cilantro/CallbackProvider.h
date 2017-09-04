@@ -1,9 +1,8 @@
 #ifndef _CALLBACKPROVIDER_H_
 #define _CALLBACKPROVIDER_H_
 
-#include <vector>
-#include <unordered_map>
 #include <functional>
+#include <unordered_map>
 
 // Class template to enable object callbacks
 template<typename K, typename P>

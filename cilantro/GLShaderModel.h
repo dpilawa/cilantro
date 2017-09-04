@@ -2,7 +2,6 @@
 #define _GLSHADERPROGRAM_H_
 
 #include "GLShader.h"
-#include "LogMessage.h"
 
 class GLShaderModel
 {

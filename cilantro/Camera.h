@@ -1,22 +1,23 @@
 #ifndef _CAMERA_H_
 #define _CAMERA_H_
 
-#include "GameObject.h"
+#include "cilantroengine.h"
 #include "Vector3f.h"
 #include "Matrix4f.h"
 #include "Mathf.h"
+#include "GameObject.h"
 
 class Camera : public GameObject
 {
 public:
-	Camera (Vector3f& position, Vector3f& lookAt, Vector3f& up, float fov, float near, float far);
-	~Camera ();
+	__EAPI Camera (Vector3f& position, Vector3f& lookAt, Vector3f& up, float fov, float near, float far);
+	__EAPI ~Camera ();
 
-	Matrix4f GetViewMatrix () const;
-	Matrix4f GetProjectionMatrix (unsigned int xRes, unsigned int yRes) const;
+	__EAPI Matrix4f GetViewMatrix () const;
+	__EAPI Matrix4f GetProjectionMatrix (unsigned int xRes, unsigned int yRes) const;
 
 	// getters
-	Vector3f GetPosition () const;
+	__EAPI Vector3f GetPosition () const;
 
 private:
 	Vector3f cameraPosition;

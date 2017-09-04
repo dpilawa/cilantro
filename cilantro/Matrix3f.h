@@ -1,7 +1,6 @@
 #ifndef _MATRIX3F_H_
 #define _MATRIX3F_H_
 
-#include <algorithm>
 #include "Matrix4f.h"
 
 // row-major matrix representation in memory
@@ -12,7 +11,7 @@ class Matrix3f
 {
 public:
 	// constructor
-	Matrix3f () {};
+	Matrix3f () { };
 
 	// copy constructor
 	Matrix3f (const Matrix3f& other)

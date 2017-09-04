@@ -1,11 +1,4 @@
-#include "GameLoop.h"
-#include "GameScene.h"
-#include "GameObject.h"
-#include "MeshObject.h"
-#include "PointLight.h"
-#include "Camera.h"
-#include "GLRenderer.h"
-#include "LogMessage.h"
+#include "cilantroengine.h"
 
 void main (int argc, char* argv[])
 {

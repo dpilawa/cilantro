@@ -19,8 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{C0592EA9-A9E0-4F5B-9E13-560018B301A5}</ProjectGuid>
-    <RootNamespace>cilantro</RootNamespace>
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{C3BF42C5-A4A2-4129-8005-43C87CDEAEEE}</ProjectGuid>
+    <RootNamespace>example01</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -38,7 +39,7 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
@@ -69,30 +70,24 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
-      <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\glfw-3.2.1.bin.WIN64\include;C:\glew-2.0.0\include;E:\glfw-3.2.1\include;E:\glew-2.0.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ClCompile>
-    <Link>
-      <AdditionalLibraryDirectories>E:\glfw-3.2.1\build\src\Release;E:\glew-2.0.0\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glew32.lib;glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Link>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)\ext\glfw\include;$(SolutionDir)\ext\glew\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>BUILDING_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>glew32d.lib;glfw3dll.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)\ext\glfw\src\Debug;$(SolutionDir)\ext\glew\lib\Debug\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cilantro.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -101,13 +96,10 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\glfw-3.2.1.bin.WIN64\include;C:\glew-2.0.0\include;E:\glfw-3.2.1\include;E:\glew-2.0.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>E:\glfw-3.2.1\build\src\Release;E:\glew-2.0.0\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glew32.lib;glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -117,64 +109,18 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\glfw-3.2.1.bin.WIN64\include;C:\glew-2.0.0\include;E:\glfw-3.2.1\include;E:\glew-2.0.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>glew32.lib;glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>E:\glfw-3.2.1\build\src\Release;E:\glew-2.0.0\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="CallbackProvider.h" />
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="cilantroengine.h" />
-    <ClInclude Include="default.fs.h" />
-    <ClInclude Include="default.vs.h" />
-    <ClInclude Include="GameLoop.h" />
-    <ClInclude Include="GameObject.h" />
-    <ClInclude Include="GameScene.h" />
-    <ClInclude Include="GLRenderer.h" />
-    <ClInclude Include="GLShader.h" />
-    <ClInclude Include="GLShaderModel.h" />
-    <ClInclude Include="Light.h" />
-    <ClInclude Include="LogMessage.h" />
-    <ClInclude Include="Material.h" />
-    <ClInclude Include="Mathf.h" />
-    <ClInclude Include="Matrix3f.h" />
-    <ClInclude Include="Matrix4f.h" />
-    <ClInclude Include="MeshObject.h" />
-    <ClInclude Include="PointLight.h" />
-    <ClInclude Include="Quaternion.h" />
-    <ClInclude Include="Renderer.h" />
-    <ClInclude Include="Time.h" />
-    <ClInclude Include="Transform.h" />
-    <ClInclude Include="Vector3f.h" />
-    <ClInclude Include="Vector4f.h" />
+    <ClCompile Include="..\cilantro\main.cpp" />
+    <ClCompile Include="RotatingCube.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="GameLoop.cpp" />
-    <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="GameScene.cpp" />
-    <ClCompile Include="GLRenderer.cpp" />
-    <ClCompile Include="GLShader.cpp" />
-    <ClCompile Include="GLShaderModel.cpp" />
-    <ClCompile Include="Light.cpp" />
-    <ClCompile Include="LogMessage.cpp" />
-    <ClCompile Include="Material.cpp" />
-    <ClCompile Include="Mathf.cpp" />
-    <ClCompile Include="Matrix3f.cpp" />
-    <ClCompile Include="Matrix4f.cpp" />
-    <ClCompile Include="MeshObject.cpp" />
-    <ClCompile Include="PointLight.cpp" />
-    <ClCompile Include="Quaternion.cpp" />
-    <ClCompile Include="Renderer.cpp" />
-    <ClCompile Include="Time.cpp" />
-    <ClCompile Include="Transform.cpp" />
-    <ClCompile Include="Vector3f.cpp" />
-    <ClCompile Include="Vector4f.cpp" />
+    <ClInclude Include="RotatingCube.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,31 +1,32 @@
 #ifndef _MATERIAL_H_
 #define _MATERIAL_H_
 
-#include <string>
+#include "cilantroengine.h"
 #include "Vector3f.h"
+#include <string>
 
 class Material
 {
 public:
-	Material ();
-	~Material ();
+	__EAPI Material ();
+	__EAPI ~Material ();
 
 	// setters
-	Material& SetShaderModelName (std::string name);
-	Material& SetAmbientColor (const Vector3f& color);
-	Material& SetDiffuseColor (const Vector3f& color);
-	Material& SetSpecularColor (const Vector3f& color);
-	Material& SetSpecularShininess (const float shininess);
-	Material& SetEmissiveColor (const Vector3f& emissive);
-	Material& SetColor (const Vector3f& color);
+	__EAPI Material& SetShaderModelName (std::string name);
+	__EAPI Material& SetAmbientColor (const Vector3f& color);
+	__EAPI Material& SetDiffuseColor (const Vector3f& color);
+	__EAPI Material& SetSpecularColor (const Vector3f& color);
+	__EAPI Material& SetSpecularShininess (const float shininess);
+	__EAPI Material& SetEmissiveColor (const Vector3f& emissive);
+	__EAPI Material& SetColor (const Vector3f& color);
 
 	// getters
-	std::string GetShaderModelName () const;
-	Vector3f GetAmbientColor () const;
-	Vector3f GetDiffuseColor () const;
-	Vector3f GetSpecularColor () const;
-	float GetSpecularShininess () const;
-	Vector3f GetEmissiveColor () const;
+	__EAPI std::string GetShaderModelName () const;
+	__EAPI Vector3f GetAmbientColor () const;
+	__EAPI Vector3f GetDiffuseColor () const;
+	__EAPI Vector3f GetSpecularColor () const;
+	__EAPI float GetSpecularShininess () const;
+	__EAPI Vector3f GetEmissiveColor () const;
 
 private:
 

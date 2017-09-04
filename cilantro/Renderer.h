@@ -1,12 +1,13 @@
 #ifndef _RENDERER_H_
 #define _RENDERER_H_
 
+#include "GameScene.h"
+#include "MeshObject.h"
 #include <string>
 
-class MeshObject;
-class GameScene;
-
 enum class ShaderType { VERTEX_SHADER, FRAGMENT_SHADER };
+
+class MeshObject;
 
 class Renderer
 {

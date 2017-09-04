@@ -1,21 +1,23 @@
 #ifndef _GLRENDERER_H_
 #define _GLRENDERER_H_
 
-#include <unordered_map>
-#include <vector>
-#include "Matrix3f.h"
+#include "cilantroengine.h"
+#include "Renderer.h"
+#include "LogMessage.h"
 #include "Time.h"
 #include "Mathf.h"
-#include "Renderer.h"
-#include "GameScene.h"
-#include "LogMessage.h"
-#include "MeshObject.h"
+#include "Matrix3f.h"
+#include "Vector4f.h"
 #include "PointLight.h"
 #include "GLShader.h"
 #include "GLShaderModel.h"
 
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
+#include "default.vs.h"
+#include "default.fs.h"
+
+#include <string>
 
 #define MAX_LIGHTS 100
 
@@ -77,23 +79,23 @@ public:
 class GLRenderer : public Renderer
 {
 public:
-	GLRenderer (int xRes, int yRes);
-	~GLRenderer ();
+	__EAPI GLRenderer (int xRes, int yRes);
+	__EAPI ~GLRenderer ();
 
 	// initialize renderer
-	void Initialize (GameScene* scene);
+	__EAPI void Initialize (GameScene* scene);
 	// render one frame
-	void RenderFrame ();
+	__EAPI void RenderFrame ();
 	// deinitialize renderer
-	void Deinitialize ();
+	__EAPI void Deinitialize ();
 
 	// shader library manipulation
-	virtual void AddShader (std::string shaderName, std::string shaderSourceCode, ShaderType shaderType);
-	virtual void AddShaderToModel (std::string shaderModelName, std::string shaderName);
-	GLShaderModel& GetShaderModel (std::string shaderModelName);
+	__EAPI virtual void AddShader (std::string shaderName, std::string shaderSourceCode, ShaderType shaderType);
+	__EAPI virtual void AddShaderToModel (std::string shaderModelName, std::string shaderName);
+	__EAPI GLShaderModel& GetShaderModel (std::string shaderModelName);
 
 	// object drawing functions
-	void Draw (MeshObject& meshObject);
+	__EAPI void Draw (MeshObject& meshObject);
 
 private:
 	// rendering resolution

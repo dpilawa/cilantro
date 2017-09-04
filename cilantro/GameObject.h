@@ -1,12 +1,13 @@
 #ifndef _GAMEOBJECT_H_
 #define _GAMEOBJECT_H_
 
-#include "Transform.h"
+#include "cilantroengine.h"
 #include "CallbackProvider.h"
-#include "Renderer.h"
-#include <vector>
+#include "Transform.h"
 #include <string>
-#include <functional>
+
+class GameScene;
+class Renderer;
 
 class GameObject : public CallbackProvider<std::string, unsigned int>
 {
@@ -15,14 +16,14 @@ public:
 	~GameObject ();
 
 	// handle  operations
-	void SetHandle (unsigned int handle);
-	unsigned int GetHandle () const;
+	__EAPI void SetHandle (unsigned int handle);
+	__EAPI unsigned int GetHandle () const;
 
 	// set pointer to parent object (i.e. put current object inside hierarchy)
-	void SetParentObject (GameObject & parent);
+	__EAPI void SetParentObject (GameObject & parent);
 
 	// set pointer to game scene
-	void SetGameScene (GameScene & scene);
+	__EAPI void SetGameScene (GameScene & scene);
 
 	// invoked by game loop during initializaton
 	virtual void OnStart ();
@@ -37,13 +38,13 @@ public:
 	// get transformation object's reference
 	// this function is recursive and concatenates world-space 
 	// transformation matrices of parent objects 
-	Transform& GetModelTransform ();
+	__EAPI Transform& GetModelTransform ();
 
 	// get transformation matrices
-	Matrix4f GetModelTransformMatrix ();
-	Matrix4f GetRotationTransformMatrix ();
-	Matrix4f GetTranslationTransformMatrix ();
-	Matrix4f GetScalingTransformMatrix ();
+	__EAPI Matrix4f GetModelTransformMatrix ();
+	__EAPI Matrix4f GetRotationTransformMatrix ();
+	__EAPI Matrix4f GetTranslationTransformMatrix ();
+	__EAPI Matrix4f GetScalingTransformMatrix ();
 
 private:
 	// object's handle (index in vector inside GameScene)

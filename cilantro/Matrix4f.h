@@ -1,7 +1,7 @@
 #ifndef _MATRIX4F_H_
 #define _MATRIX4F_H_
 
-#include <algorithm> 
+#include <algorithm>
 
 // row-major matrix representation in memory
 #define M4(x, y) m [(x - 1) * 4 + y - 1]

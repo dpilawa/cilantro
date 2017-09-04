@@ -1,6 +1,4 @@
 #include "GameLoop.h"
-#include <iostream>
-#include <thread>
 
 GameLoop::GameLoop (GameScene & scene, Renderer & renderer) :
 	gameScene (scene), gameRenderer (renderer)

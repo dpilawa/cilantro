@@ -1,29 +1,31 @@
 #ifndef _TRANSFORM_H_
 #define _TRANSFORM_H_
 
+#include "cilantroengine.h"
 #include "Matrix4f.h"
+#include "Mathf.h"
 
 class Transform
 {
 public:
 
-	Transform ();
-	~Transform ();
+	__EAPI Transform ();
+	__EAPI ~Transform ();
 
 	// returns models matrix (multiplication of rotation, scaling, translation)
-	Matrix4f& GetModelMatrix ();
+	__EAPI Matrix4f& GetModelMatrix ();
 
 	// returns transformation matrices
-	Matrix4f& GetTranslationMatrix ();
-	Matrix4f& GetScalingMatrix ();
-	Matrix4f& GetRotationMatrix ();
+	__EAPI Matrix4f& GetTranslationMatrix ();
+	__EAPI Matrix4f& GetScalingMatrix ();
+	__EAPI Matrix4f& GetRotationMatrix ();
 	
 	// translate
-	Transform& Translate (float x, float y, float z);
+	__EAPI Transform& Translate (float x, float y, float z);
 	// scale
-	Transform& Scale (float x, float y, float z);
+	__EAPI Transform& Scale (float x, float y, float z);
 	// rotate (angles in degrees)
-	Transform& Rotate (float x, float y, float z);
+	__EAPI Transform& Rotate (float x, float y, float z);
 
 private:
 

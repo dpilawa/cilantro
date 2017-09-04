@@ -1,6 +1,4 @@
 #include "MeshObject.h"
-#include "Renderer.h"
-#include "LogMessage.h"
 
 MeshObject::MeshObject ()
 {
