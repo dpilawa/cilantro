@@ -1,4 +1,6 @@
 #include "GLRenderer.h"
+#include "default.vs.h"
+#include "default.fs.h"
 
 GLRenderer::GLRenderer (int xRes, int yRes) : xResolution (xRes), yResolution (yRes)
 {

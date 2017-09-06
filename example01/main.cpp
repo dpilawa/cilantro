@@ -1,4 +1,5 @@
 #include "cilantroengine.h"
+#include "RotatingCube.h"
 
 void main (int argc, char* argv[])
 {
@@ -21,7 +22,7 @@ void main (int argc, char* argv[])
 	Camera& cam = dynamic_cast<Camera&>(scene.AddGameObject (new Camera (Vector3f (1.0f, 2.0f, 5.0f), Vector3f (0.0f, -1.0f, 0.0f), Vector3f (0.0f, 1.0f, 0.0f), 75.0f, 0.1f, 100.0f)));
 	scene.SetActiveCamera (&cam);
 
-	MeshObject& cube = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
+	RotatingCube& cube = dynamic_cast<RotatingCube&>(scene.AddGameObject (new RotatingCube ()));
 	cube.InitUnitCube ().GetModelTransform ().Translate (0.0f, 0.0f, 0.0f).Rotate (0.0f, 0.0f, 25.0f);
 	cube.SetMaterial (red);
 

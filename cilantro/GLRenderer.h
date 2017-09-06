@@ -14,8 +14,6 @@
 
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
-#include "default.vs.h"
-#include "default.fs.h"
 
 #include <string>
 
