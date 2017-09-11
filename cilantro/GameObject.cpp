@@ -53,43 +53,15 @@ Transform & GameObject::GetModelTransform ()
 
 Matrix4f GameObject::GetModelTransformMatrix ()
 {
-	return GetTranslationTransformMatrix () * GetRotationTransformMatrix () * GetScalingTransformMatrix ();
-}
-
-Matrix4f GameObject::GetRotationTransformMatrix ()
-{
 	if (parentObject == nullptr)
 	{
-		return modelTransform.GetRotationMatrix ();
+		return modelTransform.GetModelMatrix ();
 	}
 	else
 	{
-		return modelTransform.GetRotationMatrix () * parentObject->GetRotationTransformMatrix ();
+		return parentObject->GetModelTransformMatrix () * modelTransform.GetModelMatrix ();
 	}
 }
 
-Matrix4f GameObject::GetTranslationTransformMatrix ()
-{
-	if (parentObject == nullptr)
-	{
-		return modelTransform.GetTranslationMatrix ();
-	}
-	else
-	{
-		return modelTransform.GetTranslationMatrix () * parentObject->GetTranslationTransformMatrix ();
-	}
-}
-
-Matrix4f GameObject::GetScalingTransformMatrix ()
-{
-	if (parentObject == nullptr)
-	{
-		return modelTransform.GetScalingMatrix ();
-	}
-	else
-	{
-		return modelTransform.GetScalingMatrix () * parentObject->GetScalingTransformMatrix ();
-	}
-}
 
 

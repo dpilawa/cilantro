@@ -2,7 +2,6 @@
 
 PointLight::PointLight () : Light()
 {
-	lightPosition = Vector4f (0.0f, 0.0f, 0.0f, 1.0f);
 	lightColor = Vector3f (1.0f, 1.0f, 1.0f);
 	
 	ambiencePower = 0.0f;
@@ -83,7 +82,7 @@ Vector3f PointLight::GetColor () const
 
 Vector4f PointLight::GetPosition ()
 {
-	return lightPosition * GetModelTransformMatrix ();
+	return Vector4f (0.0f, 0.0f, 0.0f, 1.0f) * GetModelTransformMatrix ();
 }
 
 float PointLight::GetAmbiencePower () const

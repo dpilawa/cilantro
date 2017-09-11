@@ -42,9 +42,6 @@ public:
 
 	// get transformation matrices
 	__EAPI Matrix4f GetModelTransformMatrix ();
-	__EAPI Matrix4f GetRotationTransformMatrix ();
-	__EAPI Matrix4f GetTranslationTransformMatrix ();
-	__EAPI Matrix4f GetScalingTransformMatrix ();
 
 private:
 	// object's handle (index in vector inside GameScene)

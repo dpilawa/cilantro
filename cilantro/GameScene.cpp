@@ -22,6 +22,7 @@ GameObject& GameScene::AddGameObject (GameObject* gameObject)
 	gameObjects.push_back (gameObject);
 
 	// set callbacks on object modification
+	// this is just a passthrough of callbacks to subscribers (e.g. Renderer)
 	gameObject->RegisterCallback ("OnUpdateMeshObject", [&](unsigned int objectHandle) { InvokeCallbacks ("OnUpdateMeshObject", objectHandle); });
 	gameObject->RegisterCallback ("OnUpdatePointLight", [&](unsigned int objectHandle) { InvokeCallbacks ("OnUpdatePointLight", objectHandle); });
 
@@ -56,12 +57,6 @@ void GameScene::SetActiveCamera (Camera * camera)
 Camera * GameScene::GetActiveCamera () const
 {
 	return activeCamera;
-}
-
-
-void GameScene::OnModifiedMeshObject (unsigned int objectHandle)
-{
-	InvokeCallbacks ("OnUpdateMeshObject", objectHandle);
 }
 
 

@@ -39,7 +39,7 @@ public:
 	__EAPI float GetQuadraticAttenuationFactor () const;
 
 private:
-	Vector4f lightPosition;
+
 	Vector3f lightColor;
 	float ambiencePower;
 	float specularPower;

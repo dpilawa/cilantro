@@ -20,7 +20,7 @@ Transform::~Transform ()
 
 Matrix4f& Transform::GetModelMatrix ()
 {
-	// multiply transformation matrices (rotate, then scale, then translate)
+	// multiply transformation matrices (scale, rotate, then translate)
 	if (hasChanged == true) 
 	{
 		modelMatrix = translationMatrix * rotationMatrix * scalingMatrix;

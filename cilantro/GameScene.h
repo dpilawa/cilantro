@@ -47,9 +47,6 @@ private:
 	// reference to active camera
 	Camera* activeCamera;
 
-	// callback function to get notified about changed MeshObjects
-	void OnModifiedMeshObject (unsigned int objectHandle);
-
 };
 
 #endif
