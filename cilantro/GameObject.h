@@ -2,6 +2,7 @@
 #define _GAMEOBJECT_H_
 
 #include "cilantroengine.h"
+#include "Vector4f.h"
 #include "CallbackProvider.h"
 #include "Transform.h"
 #include <string>
@@ -42,6 +43,9 @@ public:
 
 	// get transformation matrices
 	__EAPI Matrix4f GetModelTransformMatrix ();
+
+	// get object origin's position in world space
+	__EAPI Vector4f GetPosition ();
 
 private:
 	// object's handle (index in vector inside GameScene)

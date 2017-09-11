@@ -14,7 +14,7 @@ void main (int argc, char* argv[])
 
 	Material& red = scene.AddMaterial (new Material ());
 	red.SetColor (Vector3f (0.75f, 0.1f, 0.1f));
-	red.SetSpecularColor (Vector3f (1.0f, 0.0f, 0.0f)).SetSpecularShininess (128.0f);
+	red.SetSpecularColor (Vector3f (1.0f, 0.0f, 0.0f)).SetSpecularShininess (8.0f);
 
 	Material& lampM = scene.AddMaterial (new Material ());
 	lampM.SetEmissiveColor (Vector3f (0.9f, 0.9f, 0.9f)).SetDiffuseColor (Vector3f (0.2f, 0.2f, 0.2f));
@@ -27,7 +27,7 @@ void main (int argc, char* argv[])
 	cube.SetMaterial (red);
 
 	MeshObject& lamp = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-	lamp.InitUnitCube ().GetModelTransform ().Scale (0.2f, 0.2f, 0.2f).Translate (1.0f, 0.3f, 1.0f);
+	lamp.InitUnitCube ().GetModelTransform ().Scale (0.2f, 0.2f, 0.2f).Translate (1.0f, 0.75f, 1.0f);
 	lamp.SetMaterial (lampM);
 	lamp.SetParentObject (cube);
 

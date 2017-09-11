@@ -5,7 +5,7 @@
 #include <unordered_map>
 
 // Class template to enable object callbacks
-template<typename K, typename P>
+template<typename K, typename P = unsigned int>
 class CallbackProvider
 {
 public:

@@ -55,6 +55,8 @@ Transform& Transform::Translate (float x, float y, float z)
 
 	translationMatrix = Mathf::GenTranslationMatrix (translateX, translateY, translateZ);
 
+	InvokeCallbacks ("OnUpdateTransform", 0u);
+
 	return *this;
 }
 
@@ -68,6 +70,8 @@ Transform& Transform::Scale (float x, float y, float z)
 
 	scalingMatrix = Mathf::GenScalingMatrix (scaleX, scaleY, scaleZ);
 
+	InvokeCallbacks ("OnUpdateTransform", 0u);
+
 	return *this;
 }
 
@@ -80,6 +84,8 @@ Transform & Transform::Rotate (float x, float y, float z)
 	rotateZ += z;
 
 	rotationMatrix = Mathf::GenRotationXYZMatrix (Mathf::Deg2Rad (rotateX), Mathf::Deg2Rad (rotateY), Mathf::Deg2Rad (rotateZ));
+
+	InvokeCallbacks ("OnUpdateTransform", 0u);
 
 	return *this;
 }

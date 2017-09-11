@@ -30,7 +30,6 @@ public:
 	__EAPI PointLight& SetQuadraticAttenuationFactor (const float attenuation);
 
 	// getters
-	__EAPI Vector4f GetPosition ();
 	__EAPI Vector3f GetColor () const;
 	__EAPI float GetAmbiencePower () const;
 	__EAPI float GetSpecularPower () const;

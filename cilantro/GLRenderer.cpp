@@ -62,10 +62,16 @@ void GLRenderer::Initialize (GameScene* scene)
 	InitializeLightBuffers ();
 
 	// set callback for new MeshObjects
-	renderedScene->RegisterCallback ("OnUpdateMeshObject", [&] (unsigned int objectHandle) { LoadObjectBuffers (objectHandle); });
+	renderedScene->RegisterCallback ("OnUpdateMeshObject", [ & ](unsigned int objectHandle) { LoadObjectBuffers (objectHandle); });
 
 	// set callback for new or modified PointLights
-	renderedScene->RegisterCallback ("OnUpdatePointLight", [&](unsigned int objectHandle) { LoadLightBuffers (objectHandle); });
+	renderedScene->RegisterCallback ("OnUpdatePointLight", [ & ](unsigned int objectHandle) { LoadLightBuffers (objectHandle); });
+
+	// set callback for modified scene graph (currently this only requires to reload light buffers)
+	renderedScene->RegisterCallback ("OnUpdateSceneGraph", [ & ](unsigned int objectHandle) { LoadLightUniformBuffers (); });
+
+	// set callback for modified transforms (currently this only requires to reload light buffers)
+	renderedScene->RegisterCallback ("OnUpdateTransform", [ & ](unsigned int objectHandle) { LoadLightUniformBuffers (); });
 
 }
 

@@ -80,11 +80,6 @@ Vector3f PointLight::GetColor () const
 	return lightColor;
 }
 
-Vector4f PointLight::GetPosition ()
-{
-	return Vector4f (0.0f, 0.0f, 0.0f, 1.0f) * GetModelTransformMatrix ();
-}
-
 float PointLight::GetAmbiencePower () const
 {
 	return ambiencePower;

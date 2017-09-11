@@ -2,10 +2,11 @@
 #define _TRANSFORM_H_
 
 #include "cilantroengine.h"
+#include "CallbackProvider.h"
 #include "Matrix4f.h"
 #include "Mathf.h"
 
-class Transform
+class Transform : public CallbackProvider<std::string>
 {
 public:
 

@@ -4,6 +4,11 @@ GameObject::GameObject ()
 {
 	parentObject = nullptr;
 	myGameScene = nullptr;
+
+	// set callbacks on transform modification
+	// this is just a passthrough of callbacks to subscribers (Scene)
+	modelTransform.RegisterCallback ("OnUpdateTransform", [ & ](unsigned int objectHandle) { InvokeCallbacks ("OnUpdateTransform", objectHandle); });
+
 }
 
 GameObject::~GameObject ()
@@ -23,6 +28,7 @@ unsigned int GameObject::GetHandle () const
 void GameObject::SetParentObject (GameObject & parent)
 {
 	parentObject = &parent;
+	InvokeCallbacks ("OnUpdateSceneGraph", this->GetHandle ());
 }
 
 void GameObject::SetGameScene (GameScene & scene)
@@ -61,6 +67,11 @@ Matrix4f GameObject::GetModelTransformMatrix ()
 	{
 		return parentObject->GetModelTransformMatrix () * modelTransform.GetModelMatrix ();
 	}
+}
+
+Vector4f GameObject::GetPosition ()
+{
+	return Vector4f (0.0f, 0.0f, 0.0f, 1.0f) * GetModelTransformMatrix ();
 }
 
 
