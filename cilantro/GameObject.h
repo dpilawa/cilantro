@@ -13,8 +13,8 @@ class Renderer;
 class GameObject : public CallbackProvider<std::string, unsigned int>
 {
 public:
-	GameObject ();
-	~GameObject ();
+	__EAPI GameObject ();
+	__EAPI ~GameObject ();
 
 	// handle  operations
 	__EAPI void SetHandle (unsigned int handle);

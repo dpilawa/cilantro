@@ -1,7 +1,5 @@
 #include "RotatingCube.h"
 
-
-
 RotatingCube::RotatingCube ()
 {
 	rotationSpeed = 90.0f;
