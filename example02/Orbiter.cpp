@@ -17,5 +17,5 @@ Orbiter::~Orbiter ()
 
 void Orbiter::OnFrame ()
 {
-	GetModelTransform ().Rotate (0.0f, orbitingPeriod * Time::GetFrameDeltaTime () / 360.0f, 0.0f);
+	GetModelTransform ().Rotate (0.0f, (1.0f / orbitingPeriod * 360.0f) * Time::GetFrameDeltaTime (), 0.0f);
 }

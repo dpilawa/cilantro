@@ -10,7 +10,7 @@ void main (int argc, char* argv [])
 	Material& gray = scene.AddMaterial (new Material ());
 	gray.SetColor (Vector3f (0.7f, 0.7f, 0.7f));
 
-	Camera& cam = dynamic_cast<Camera&>(scene.AddGameObject (new Camera (Vector3f (1.0f, 2.0f, 5.0f), Vector3f (0.0f, -1.0f, 0.0f), Vector3f (0.0f, 1.0f, 0.0f), 75.0f, 0.1f, 100.0f)));
+	Camera& cam = dynamic_cast<Camera&>(scene.AddGameObject (new Camera (Vector3f (3.0f, 5.0f, 15.0f), Vector3f (0.0f, 0.0f, 0.0f), Vector3f (0.0f, 1.0f, 0.0f), 60.0f, 0.1f, 100.0f)));
 	scene.SetActiveCamera (&cam);
 
 	MeshObject& sun = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
@@ -19,14 +19,14 @@ void main (int argc, char* argv [])
 
 	Orbiter& earthOrbiter = dynamic_cast<Orbiter&>(scene.AddGameObject (new Orbiter (365.0f)));
 	MeshObject& earth = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-	earth.InitUnitCube ().GetModelTransform ().Scale (0.2f, 0.2f, 0.2f).Translate(5.0f, 0.0f, 0.0f);
+	earth.InitUnitCube ().GetModelTransform ().Scale (0.3f, 0.3f, 0.3f).Translate(5.0f, 0.0f, 0.0f);
 	earth.SetMaterial (gray);
 	earth.SetParentObject (earthOrbiter);
 
 	Orbiter& moonOrbiter = dynamic_cast<Orbiter&>(scene.AddGameObject (new Orbiter (28.0f)));
 	moonOrbiter.SetParentObject (earth);
 	MeshObject& moon = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-	moon.InitUnitCube ().GetModelTransform ().Scale (0.1f, 0.1f, 0.1f).Translate (2.0f, 0.0f, 0.0f);
+	moon.InitUnitCube ().GetModelTransform ().Scale (0.2f, 0.2f, 0.2f).Translate (2.0f, 0.0f, 0.0f);
 	moon.SetMaterial (gray);
 	moon.SetParentObject (moonOrbiter);
 
