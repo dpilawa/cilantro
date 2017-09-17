@@ -117,10 +117,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="RotatingCube.cpp" />
+    <ClCompile Include="RotatingObject.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="RotatingCube.h" />
+    <ClInclude Include="RotatingObject.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

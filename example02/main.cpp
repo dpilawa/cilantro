@@ -9,12 +9,13 @@ void main (int argc, char* argv [])
 
 	Material& gray = scene.AddMaterial (new Material ());
 	gray.SetColor (Vector3f (0.7f, 0.7f, 0.7f));
+	gray.SetEmissiveColor (Vector3f (0.7f, 0.7f, 0.7f));
 
-	Camera& cam = dynamic_cast<Camera&>(scene.AddGameObject (new Camera (Vector3f (3.0f, 5.0f, 15.0f), Vector3f (0.0f, 0.0f, 0.0f), Vector3f (0.0f, 1.0f, 0.0f), 60.0f, 0.1f, 100.0f)));
+	Camera& cam = dynamic_cast<Camera&>(scene.AddGameObject (new Camera (Vector3f (3.0f, 5.0f, 10.0f), Vector3f (0.0f, 0.0f, 0.0f), Vector3f (0.0f, 1.0f, 0.0f), 60.0f, 0.1f, 100.0f)));
 	scene.SetActiveCamera (&cam);
 
 	MeshObject& sun = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-	sun.InitUnitCube ();
+	sun.InitUnitSphere (4);
 	sun.SetMaterial (gray);
 
 	Orbiter& earthOrbiter = dynamic_cast<Orbiter&>(scene.AddGameObject (new Orbiter (365.0f)));

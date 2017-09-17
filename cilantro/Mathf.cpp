@@ -12,6 +12,11 @@ float Mathf::Rad2Deg (float radians)
 	return radians * 180.f / Mathf::Pi();
 }
 
+Vector3f Mathf::Spherical2Cartesian (float theta, float phi, float r)
+{
+	return Vector3f (r * std::sin (theta) * std::cos (phi), r * std::cos (theta), r * std::sin (theta) * std::sin (phi));
+}
+
 
 Matrix4f Mathf::GenRotationXMatrix(float angle)
 {

@@ -19,8 +19,9 @@ public:
 	// Cleans up contents of used collections
 	__EAPI MeshObject& Clear ();
 
-	// Initialize mesh in local space as unit cube with center in space origin
+	// Initialize mesh in local space as unit primitives with center in space origin
 	__EAPI MeshObject& InitUnitCube ();
+	__EAPI MeshObject& InitUnitSphere (unsigned int subdivisions);
 
 	// calculate vertex normals
 	__EAPI void CalculateVertexNormals ();

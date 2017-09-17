@@ -1,10 +1,10 @@
 #include "cilantroengine.h"
 
-class RotatingCube : public MeshObject
+class RotatingObject : public MeshObject
 {
 public:
-	RotatingCube ();
-	~RotatingCube ();
+	RotatingObject ();
+	~RotatingObject ();
 
 	void OnFrame ();
 private:

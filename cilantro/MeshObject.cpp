@@ -76,53 +76,93 @@ MeshObject& MeshObject::InitUnitCube ()
 		faces.push_back (i);
 	};
 	
-	normals = std::vector<float> {
+	CalculateVertexNormals ();
 
-		0.0f, 0.0f, 1.0f,
-		0.0f, 0.0f, 1.0f,
-		0.0f, 0.0f, 1.0f,
-		0.0f, 0.0f, 1.0f,
-		0.0f, 0.0f, 1.0f,
-		0.0f, 0.0f, 1.0f,
+	InvokeCallbacks ("OnUpdateMeshObject", this->GetHandle ());
 
-		0.0f, 1.0f, 0.0f,
-		0.0f, 1.0f, 0.0f,
-		0.0f, 1.0f, 0.0f,
-		0.0f, 1.0f, 0.0f,
-		0.0f, 1.0f, 0.0f,
-		0.0f, 1.0f, 0.0f,
+	return *this;
+}
 
-		0.0f, 0.0f, -1.0f,
-		0.0f, 0.0f, -1.0f,
-		0.0f, 0.0f, -1.0f,
-		0.0f, 0.0f, -1.0f,
-		0.0f, 0.0f, -1.0f,
-		0.0f, 0.0f, -1.0f,
+__EAPI MeshObject & MeshObject::InitUnitSphere (unsigned int subdivisions)
+{
+	float step;
+	float theta, phi;
+	unsigned int lonSteps, latSteps;
+	Vector3f cartesian;
 
-		0.0f, -1.0f, 0.0f,
-		0.0f, -1.0f, 0.0f,
-		0.0f, -1.0f, 0.0f,
-		0.0f, -1.0f, 0.0f,
-		0.0f, -1.0f, 0.0f,
-		0.0f, -1.0f, 0.0f,
+	Clear ();
 
-		1.0f, 0.0f, 0.0f,
-		1.0f, 0.0f, 0.0f,
-		1.0f, 0.0f, 0.0f,
-		1.0f, 0.0f, 0.0f,
-		1.0f, 0.0f, 0.0f,
-		1.0f, 0.0f, 0.0f,
+	step = Mathf::Pi () / ((subdivisions + 1) * 2);
+	lonSteps = (subdivisions + 1) * 4;
+	latSteps = (subdivisions + 1) * 2;
 
-		-1.0f, 0.0f, 0.0f,
-		-1.0f, 0.0f, 0.0f,
-		-1.0f, 0.0f, 0.0f,
-		-1.0f, 0.0f, 0.0f,
-		-1.0f, 0.0f, 0.0f,
-		-1.0f, 0.0f, 0.0f
+	// add north pole
+	vertices.push_back (0.0f);
+	vertices.push_back (1.0f);
+	vertices.push_back (0.0f);
 
-	};
+	// generate sphere vertices
+	for (unsigned int i = 1; i <= latSteps - 1; i++)
+	{
+		theta = step * i;
+		for (unsigned int j = 0; j < lonSteps; j++)
+		{
+			phi = step * j;
+			cartesian = Mathf::Spherical2Cartesian (theta, phi, 1.0f);
+			vertices.push_back (cartesian.GetX ());
+			vertices.push_back (cartesian.GetY ());
+			vertices.push_back (cartesian.GetZ ());
+		}
+	}
 
-	// CalculateVertexNormals ();
+	// add south pole
+	vertices.push_back (0.0f);
+	vertices.push_back (-1.0f);
+	vertices.push_back (0.0f);
+
+	// generate face data
+	for (unsigned int i = 0; i < latSteps - 2; i++)
+	{
+		for (unsigned int j = 1; j < lonSteps; j++)
+		{
+			faces.push_back (i * lonSteps + j);
+			faces.push_back (i * lonSteps + j + 1);
+			faces.push_back (i * lonSteps + j + lonSteps);
+
+			faces.push_back (i * lonSteps + j + 1);
+			faces.push_back (i * lonSteps + j + lonSteps + 1);
+			faces.push_back (i * lonSteps + j + lonSteps);
+		}
+		
+		faces.push_back (i * lonSteps + lonSteps);
+		faces.push_back (i * lonSteps + 1);
+		faces.push_back (i * lonSteps + lonSteps + lonSteps);
+
+		faces.push_back (i * lonSteps + 1);
+		faces.push_back (i * lonSteps + lonSteps + 1);
+		faces.push_back (i * lonSteps + lonSteps + lonSteps);
+	}
+
+	// top cap
+	for (unsigned int i = 1; i < lonSteps; i++)
+	{
+		faces.push_back (0);
+		faces.push_back (i + 1);
+		faces.push_back (i);
+	}
+	faces.push_back (0);
+	faces.push_back (1);
+	faces.push_back (lonSteps);
+
+	// bottom cap
+	for (unsigned int i = 1; i < lonSteps; i++)
+	{
+		faces.push_back (lonSteps * (latSteps - 1) + 1);
+		faces.push_back (lonSteps * (latSteps - 1) - i);
+		faces.push_back (lonSteps * (latSteps - 1) + 1 - i);
+	}
+
+	CalculateVertexNormals ();
 
 	InvokeCallbacks ("OnUpdateMeshObject", this->GetHandle ());
 
@@ -131,7 +171,38 @@ MeshObject& MeshObject::InitUnitCube ()
 
 void MeshObject::CalculateVertexNormals ()
 {
-	// TBD
+	Vector3f normal;
+	Vector3f v1, v2, v3;
+
+	normals.clear ();
+
+	// loop through all vertices
+	for (unsigned int v = 0; v < vertices.size (); v += 3)
+	{
+		normal = Vector3f (0.0f, 0.0f, 0.0f);
+
+		// loop through all faces and if face contains vertex, add face normal to vertex normal
+		for (unsigned int f = 0; f < faces.size (); f += 3)
+		{
+			if ((faces[f] == v / 3) || (faces[f + 1] == v / 3) || (faces[f + 2] == v / 3))
+			{
+				v1 = Vector3f (vertices[faces[f] * 3], vertices[faces[f] * 3 + 1], vertices[faces[f] * 3 + 2]);
+				v2 = Vector3f (vertices[faces[f + 1] * 3], vertices[faces[f + 1] * 3 + 1], vertices[faces[f + 1] * 3 + 2]);
+				v3 = Vector3f (vertices[faces[f + 2] * 3], vertices[faces[f + 2] * 3 + 1], vertices[faces[f + 2] * 3 + 2]);
+
+				normal += Cross (v2 - v1, v3 - v1);
+
+			}
+		}
+
+		// normalize
+		normal.Normalize ();
+
+		// store normal
+		normals.push_back (normal.GetX ());
+		normals.push_back (normal.GetY ());
+		normals.push_back (normal.GetZ ());
+	}
 }
 
 unsigned int MeshObject::GetVertexCount ()

@@ -20,6 +20,9 @@ public:
 	// convert radians to degrees
 	static float Rad2Deg (float radians);
 
+	// convert spherical to cartesian coordinates (theta and pi in radians)
+	static Vector3f Spherical2Cartesian (float theta, float phi, float r);
+
 	// generate rotation matrix to rotate around X axis
 	// angle provided in radians
 	static Matrix4f GenRotationXMatrix (float angle);
