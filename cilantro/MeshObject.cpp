@@ -83,7 +83,7 @@ MeshObject& MeshObject::InitUnitCube ()
 	return *this;
 }
 
-__EAPI MeshObject & MeshObject::InitUnitSphere (unsigned int subdivisions)
+__EAPI MeshObject & MeshObject::InitUnitSphere (unsigned int subdivisions, bool sharedVertices)
 {
 	float step;
 	float theta, phi;
@@ -97,55 +97,109 @@ __EAPI MeshObject & MeshObject::InitUnitSphere (unsigned int subdivisions)
 	lonSteps = (subdivisions + 1) * 4;
 	latSteps = (subdivisions + 1) * 2;
 
-	// generate sphere vertices
-	for (unsigned int i = 1; i <= latSteps - 1; i++)
+	if (sharedVertices == false)
 	{
-		theta = step * i;
+		// generate vertices
+		for (unsigned int i = 1; i < latSteps - 1; i++)
+		{
+			theta = step * i;
+			for (unsigned int j = 0; j <= lonSteps - 1; j++)
+			{
+				phi = step * j;
+
+				cartesian = Mathf::Spherical2Cartesian (theta, phi, 1.0f);
+				vertices.push_back (cartesian.GetX ());
+				vertices.push_back (cartesian.GetY ());
+				vertices.push_back (cartesian.GetZ ());
+
+				cartesian = Mathf::Spherical2Cartesian (theta, phi + step, 1.0f);
+				vertices.push_back (cartesian.GetX ());
+				vertices.push_back (cartesian.GetY ());
+				vertices.push_back (cartesian.GetZ ());
+
+				cartesian = Mathf::Spherical2Cartesian (theta + step, phi, 1.0f);
+				vertices.push_back (cartesian.GetX ());
+				vertices.push_back (cartesian.GetY ());
+				vertices.push_back (cartesian.GetZ ());
+
+				cartesian = Mathf::Spherical2Cartesian (theta, phi + step, 1.0f);
+				vertices.push_back (cartesian.GetX ());
+				vertices.push_back (cartesian.GetY ());
+				vertices.push_back (cartesian.GetZ ());
+
+				cartesian = Mathf::Spherical2Cartesian (theta + step, phi + step, 1.0f);
+				vertices.push_back (cartesian.GetX ());
+				vertices.push_back (cartesian.GetY ());
+				vertices.push_back (cartesian.GetZ ());
+
+				cartesian = Mathf::Spherical2Cartesian (theta + step, phi, 1.0f);
+				vertices.push_back (cartesian.GetX ());
+				vertices.push_back (cartesian.GetY ());
+				vertices.push_back (cartesian.GetZ ());
+
+			}
+		}
+
+		// generate faces
+		for (unsigned int i = 0; i < latSteps * lonSteps * 3 * 2; i++)
+		{
+			faces.push_back (i);
+		}
+
+	}
+	else
+	{
+		// generate sphere vertices
+		for (unsigned int i = 1; i <= latSteps - 1; i++)
+		{
+			theta = step * i;
+			for (unsigned int j = 0; j <= lonSteps - 1; j++)
+			{
+				phi = step * j;
+				cartesian = Mathf::Spherical2Cartesian (theta, phi, 1.0f);
+				vertices.push_back (cartesian.GetX ());
+				vertices.push_back (cartesian.GetY ());
+				vertices.push_back (cartesian.GetZ ());
+			}
+		}
+
+		vertices.push_back (0.0f);
+		vertices.push_back (1.0f);
+		vertices.push_back (0.0f);
+
+		vertices.push_back (0.0f);
+		vertices.push_back (-1.0f);
+		vertices.push_back (0.0f);
+
+		// generate face data
+		for (unsigned int i = 0; i < latSteps - 2; i++)
+		{
+			for (unsigned int j = 0; j <= lonSteps - 1; j++)
+			{
+				faces.push_back (i * lonSteps + j);
+				faces.push_back (i * lonSteps + (j + 1) % lonSteps);
+				faces.push_back ((i + 1) * lonSteps + j);
+
+				faces.push_back (i * lonSteps + (j + 1) % lonSteps);
+				faces.push_back ((i + 1) * lonSteps + (j + 1) % lonSteps);
+				faces.push_back ((i + 1) * lonSteps + j);
+			}
+		}
+
+		nIndex = (latSteps - 1) * lonSteps;
+		sIndex = nIndex + 1;
+
 		for (unsigned int j = 0; j <= lonSteps - 1; j++)
 		{
-			phi = step * j;
-			cartesian = Mathf::Spherical2Cartesian (theta, phi, 1.0f);
-			vertices.push_back (cartesian.GetX ());
-			vertices.push_back (cartesian.GetY ());
-			vertices.push_back (cartesian.GetZ ());
+			faces.push_back (nIndex);
+			faces.push_back ((j + 1) % lonSteps);
+			faces.push_back (j);
+
+			faces.push_back (sIndex);
+			faces.push_back (nIndex - 1 - (j + 1) % lonSteps);
+			faces.push_back (nIndex - 1 - j);
 		}
-	}
 
-	vertices.push_back (0.0f);
-	vertices.push_back (1.0f);
-	vertices.push_back (0.0f);
-
-	vertices.push_back (0.0f);
-	vertices.push_back (-1.0f);
-	vertices.push_back (0.0f);
-
-	// generate face data
-	for (unsigned int i = 0; i < latSteps - 2; i++)
-	{
-		for (unsigned int j = 0; j <= lonSteps - 1; j++)
-		{
-			faces.push_back (i * lonSteps + j);
-			faces.push_back (i * lonSteps + (j + 1) % lonSteps);
-			faces.push_back ((i + 1) * lonSteps + j);
-
-			faces.push_back (i * lonSteps + (j + 1) % lonSteps);
-			faces.push_back ((i + 1) * lonSteps + (j + 1) % lonSteps);
-			faces.push_back ((i + 1) * lonSteps + j);
-		}
-	}
-
-	nIndex = (latSteps - 1) * lonSteps;
-	sIndex = nIndex + 1;
-
-	for (unsigned int j = 0; j <= lonSteps - 1; j++)
-	{
-		faces.push_back (nIndex);
-		faces.push_back ((j + 1) % lonSteps);
-		faces.push_back (j);
-
-		faces.push_back (sIndex);
-		faces.push_back (nIndex - 1 - (j + 1) % lonSteps);
-		faces.push_back (nIndex - 1 - j);
 	}
 
 	CalculateVertexNormals ();

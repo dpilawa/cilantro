@@ -23,11 +23,11 @@ void main (int argc, char* argv[])
 	scene.SetActiveCamera (&cam);
 
 	RotatingObject& cube = dynamic_cast<RotatingObject&>(scene.AddGameObject (new RotatingObject ()));
-	cube.InitUnitCube().GetModelTransform ().Translate (0.0f, 0.0f, 0.0f).Rotate (0.0f, 0.0f, 25.0f);
+	cube.InitUnitSphere(4).GetModelTransform ().Translate (0.0f, 0.0f, 0.0f).Rotate (0.0f, 0.0f, 25.0f);
 	cube.SetMaterial (red);
 
 	MeshObject& lamp = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-	lamp.InitUnitCube ().GetModelTransform ().Scale (0.2f, 0.2f, 0.2f).Translate (1.0f, 0.75f, 1.0f);
+	lamp.InitUnitCube ().GetModelTransform ().Scale (0.2f, 0.2f, 0.2f).Translate (1.0f, 0.65f, 1.0f);
 	lamp.SetMaterial (lampM);
 	lamp.SetParentObject (cube);
 

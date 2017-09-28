@@ -21,7 +21,7 @@ public:
 
 	// Initialize mesh in local space as unit primitives with center in space origin
 	__EAPI MeshObject& InitUnitCube ();
-	__EAPI MeshObject& InitUnitSphere (unsigned int subdivisions);
+	__EAPI MeshObject& InitUnitSphere (unsigned int subdivisions, bool sharedVertices = false);
 
 	// calculate vertex normals
 	__EAPI void CalculateVertexNormals ();
