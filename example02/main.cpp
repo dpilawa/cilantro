@@ -17,7 +17,7 @@ void main (int argc, char* argv [])
 
 	Material& moonM = scene.AddMaterial (new Material ());
 	moonM.SetDiffuseColor (Vector3f (0.3f, 0.3f, 0.3f));
-	moonM.SetSpecularShininess (64.0f);
+	moonM.SetSpecularColor (Vector3f (0.0f, 0.0f, 0.0f));
 
 	Camera& cam = dynamic_cast<Camera&>(scene.AddGameObject (new Camera (Vector3f (10.0f, 0.0f, 70.0f), Vector3f (0.0f, 0.0f, 0.0f), Vector3f (0.0f, 1.0f, 0.0f), 45.0f, 0.1f, 1000.0f)));
 	scene.SetActiveCamera (&cam);
@@ -35,7 +35,7 @@ void main (int argc, char* argv [])
 	earthRotor.GetModelTransform ().Rotate (0.0f, 0.0f, -23.0f);
 	earthRotor.SetParentObject (earthOrbit);
 	MeshObject& earth = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-	earth.InitUnitSphere (4);
+	earth.InitUnitSphere (4, true);
 	earth.SetMaterial (earthM);
 	earth.SetParentObject (earthRotor);
 
