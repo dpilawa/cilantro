@@ -8,6 +8,7 @@ void main (int argc, char* argv[])
 	GameLoop game (scene, renderer);
 
 	Material& green = scene.AddMaterial (new Material ());
+	green.SetShaderModelName ("blinnphong_shader");
 	green.SetColor (Vector3f (0.1f, 0.4f, 0.1f));
 	green.SetAmbientColor (Vector3f (0.5f, 0.5f, 0.5f));
 	green.SetSpecularColor (Vector3f (1.0f, 1.0f, 1.0f)).SetSpecularShininess (64.0f);

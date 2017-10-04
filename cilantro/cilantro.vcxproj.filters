@@ -66,9 +66,6 @@
     <ClInclude Include="default.vs.h">
       <Filter>Shaders</Filter>
     </ClInclude>
-    <ClInclude Include="default.fs.h">
-      <Filter>Shaders</Filter>
-    </ClInclude>
     <ClInclude Include="Quaternion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -92,6 +89,12 @@
     </ClInclude>
     <ClInclude Include="cilantroengine.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="phong.fs.h">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="blinnphong.fs.h">
+      <Filter>Shaders</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,6 +1,7 @@
 #include "GLRenderer.h"
 #include "default.vs.h"
-#include "default.fs.h"
+#include "phong.fs.h"
+#include "blinnphong.fs.h"
 
 GLRenderer::GLRenderer (int xRes, int yRes) : xResolution (xRes), yResolution (yRes)
 {
@@ -127,6 +128,10 @@ void GLRenderer::AddShaderToModel (std::string shaderModelName, std::string shad
 	}
 	else
 	{
+		if (searchModel == shaderModels.end ())
+		{
+			LogMessage (__FUNCTION__) << "Registered shader" << shaderModelName;
+		}
 		shaderModels[shaderModelName].AttachShader (searchShader->second);
 	}
 }
@@ -198,9 +203,16 @@ void GLRenderer::InitializeShaderLibrary ()
 {
 	// initialize shader library
 	AddShader ("default_vertex_shader", gDefaultVertexShader, ShaderType::VERTEX_SHADER);
-	AddShader ("default_fragment_shader", gDefaultFragmentShader, ShaderType::FRAGMENT_SHADER);
-	AddShaderToModel ("default_shader", "default_vertex_shader");
-	AddShaderToModel ("default_shader", "default_fragment_shader");
+	AddShader ("phong_fragment_shader", gPhongFragmentShader, ShaderType::FRAGMENT_SHADER);
+	AddShader ("blinnphong_fragment_shader", gBlinnPhongFragmentShader, ShaderType::FRAGMENT_SHADER);
+
+	// Phong model
+	AddShaderToModel ("phong_shader", "default_vertex_shader");
+	AddShaderToModel ("phong_shader", "phong_fragment_shader");
+
+	// Blinn-Phong model
+	AddShaderToModel ("blinnphong_shader", "default_vertex_shader");
+	AddShaderToModel ("blinnphong_shader", "blinnphong_fragment_shader");
 }
 
 void GLRenderer::InitializeObjectBuffers ()
@@ -229,9 +241,12 @@ void GLRenderer::InitializeMatrixUniformBuffers ()
 	glBindBufferBase (GL_UNIFORM_BUFFER, BindingPoint::BP_MATRICES, sceneBuffers.UBO[UBO_MATRICES]);
 
 	// set uniform block bindings
-	shaderProgramId = shaderModels["default_shader"].GetProgramId ();
-	uniformMatricesBlockIndex = glGetUniformBlockIndex (shaderProgramId, "UniformMatricesBlock");
-	glUniformBlockBinding (shaderProgramId, uniformMatricesBlockIndex, BindingPoint::BP_MATRICES);
+	for (auto &shaderModel : shaderModels)
+	{
+		shaderProgramId = shaderModel.second.GetProgramId ();
+		uniformMatricesBlockIndex = glGetUniformBlockIndex (shaderProgramId, "UniformMatricesBlock");
+		glUniformBlockBinding (shaderProgramId, uniformMatricesBlockIndex, BindingPoint::BP_MATRICES);
+	}
 }
 
 void GLRenderer::InitializeLightBuffers ()
@@ -249,13 +264,16 @@ void GLRenderer::InitializeLightBuffers ()
 	glBindBufferBase (GL_UNIFORM_BUFFER, BindingPoint::BP_POINTLIGHTS, sceneBuffers.UBO[UBO_POINTLIGHTS]);
 
 	// set uniform block bindings in shaders
-	shaderProgramId = shaderModels["default_shader"].GetProgramId ();
-	uniformPointLightsBlockIndex = glGetUniformBlockIndex (shaderProgramId, "UniformPointLightsBlock");
-	if (uniformPointLightsBlockIndex == GL_INVALID_INDEX) 
+	for (auto &shaderModel : shaderModels)
 	{
-		LogMessage (__FUNCTION__, EXIT_FAILURE) << "Unable to locate uniform block";
+		shaderProgramId = shaderModel.second.GetProgramId ();
+		uniformPointLightsBlockIndex = glGetUniformBlockIndex (shaderProgramId, "UniformPointLightsBlock");
+		if (uniformPointLightsBlockIndex == GL_INVALID_INDEX)
+		{
+			LogMessage (__FUNCTION__, EXIT_FAILURE) << "Unable to locate uniform block";
+		}
+		glUniformBlockBinding (shaderProgramId, uniformPointLightsBlockIndex, BindingPoint::BP_POINTLIGHTS);
 	}
-	glUniformBlockBinding (shaderProgramId, uniformPointLightsBlockIndex, BindingPoint::BP_POINTLIGHTS);
 
 	// scan objects vector for point lights and populate point lights collection
 	for (GameObject* gameObject : renderedScene->GetGameObjects ())

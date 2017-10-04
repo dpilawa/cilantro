@@ -1,9 +1,9 @@
-#ifndef _DEFAULT_FS_H_
-#define _DEFAULT_FS_H_
+#ifndef _BLINNPHONG_FS_H_
+#define _BLINNPHONG_FS_H_
 
 #include <string>
 
-std::string gDefaultFragmentShader = R"V0G0N(
+std::string gBlinnPhongFragmentShader = R"V0G0N(
 
 	#version 330 core
 
@@ -60,8 +60,6 @@ std::string gDefaultFragmentShader = R"V0G0N(
 		/* specular component */
 		vec3 viewDirection = normalize (eyePosition - fPosition);
 		vec3 halfwayDirection = normalize(lightDirection + viewDirection);
-		/* vec3 reflectionDirection = reflect (-lightDirection, fNormal); */
-		/* float specularCoefficient = pow(max(dot(viewDirection, reflectionDirection), 0.0), fSpecularShininess) * light.specularPower; */
 		float specularCoefficient = pow(max(dot(fNormal, halfwayDirection), 0.0), fSpecularShininess) * light.specularPower;
 		
 		/* attenuation */
