@@ -72,7 +72,7 @@ void GLRenderer::Initialize (GameScene* scene)
 
 	// set callback for modified transforms (currently this only requires to reload light buffers)
 	renderedScene->RegisterCallback ("OnUpdateTransform", [ & ](unsigned int objectHandle) { LoadLightUniformBuffers (); });
-
+	
 }
 
 void GLRenderer::RenderFrame ()

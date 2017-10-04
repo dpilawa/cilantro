@@ -25,6 +25,8 @@ public:
 	__EAPI Transform& Translate (float x, float y, float z);
 	// scale
 	__EAPI Transform& Scale (float x, float y, float z);
+	// scale along all axes
+	__EAPI Transform& Scale (float s);
 	// rotate (angles in degrees)
 	__EAPI Transform& Rotate (float x, float y, float z);
 

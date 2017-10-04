@@ -140,6 +140,48 @@ __EAPI MeshObject & MeshObject::InitUnitSphere (unsigned int subdivisions, bool 
 			}
 		}
 
+		theta = 0.0f;
+		for (unsigned int j = 0; j <= lonSteps - 1; j++)
+		{
+			phi = step * j;
+
+			cartesian = Mathf::Spherical2Cartesian (theta + step, phi, 1.0f);
+			vertices.push_back (cartesian.GetX ());
+			vertices.push_back (cartesian.GetY ());
+			vertices.push_back (cartesian.GetZ ());
+
+			cartesian = Mathf::Spherical2Cartesian (theta, phi, 1.0f);
+			vertices.push_back (cartesian.GetX ());
+			vertices.push_back (cartesian.GetY ());
+			vertices.push_back (cartesian.GetZ ());
+
+			cartesian = Mathf::Spherical2Cartesian (theta + step, phi + step, 1.0f);
+			vertices.push_back (cartesian.GetX ());
+			vertices.push_back (cartesian.GetY ());
+			vertices.push_back (cartesian.GetZ ());
+		}
+
+		theta = Mathf::Pi ();
+		for (unsigned int j = 0; j <= lonSteps - 1; j++)
+		{
+			phi = step * j;
+
+			cartesian = Mathf::Spherical2Cartesian (theta, phi, 1.0f);
+			vertices.push_back (cartesian.GetX ());
+			vertices.push_back (cartesian.GetY ());
+			vertices.push_back (cartesian.GetZ ());
+
+			cartesian = Mathf::Spherical2Cartesian (theta - step, phi, 1.0f);
+			vertices.push_back (cartesian.GetX ());
+			vertices.push_back (cartesian.GetY ());
+			vertices.push_back (cartesian.GetZ ());
+
+			cartesian = Mathf::Spherical2Cartesian (theta - step, phi + step, 1.0f);
+			vertices.push_back (cartesian.GetX ());
+			vertices.push_back (cartesian.GetY ());
+			vertices.push_back (cartesian.GetZ ());
+		}
+
 		// generate faces
 		for (unsigned int i = 0; i < latSteps * lonSteps * 3 * 2; i++)
 		{

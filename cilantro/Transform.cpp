@@ -75,7 +75,12 @@ Transform& Transform::Scale (float x, float y, float z)
 	return *this;
 }
 
-Transform & Transform::Rotate (float x, float y, float z)
+Transform& Transform::Scale (float s)
+{
+	return this->Scale (s, s, s);
+}
+
+Transform& Transform::Rotate (float x, float y, float z)
 {
 	hasChanged = true;
 
