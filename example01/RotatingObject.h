@@ -1,6 +1,6 @@
 #include "cilantroengine.h"
 
-class RotatingObject : public MeshObject
+class RotatingObject : public GameObject
 {
 public:
 	RotatingObject ();

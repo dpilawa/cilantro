@@ -131,6 +131,7 @@
     <ClInclude Include="CallbackProvider.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="cilantroengine.h" />
+    <ClInclude Include="normals.fs.h" />
     <ClInclude Include="phong.fs.h" />
     <ClInclude Include="default.vs.h" />
     <ClInclude Include="GameLoop.h" />

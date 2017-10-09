@@ -16,6 +16,7 @@
 #include "GLFW/glfw3.h"
 
 #include <string>
+#include <iostream>
 
 #define MAX_LIGHTS 100
 
@@ -123,6 +124,9 @@ private:
 
 	// active lights collection
 	std::unordered_map<unsigned int, bool> pointLights;
+
+	// check for GL errors
+	void CheckGLError (std::string functionName);
 
 	// initialize shader library
 	void InitializeShaderLibrary ();

@@ -23,7 +23,7 @@ void main (int argc, char* argv [])
 	scene.SetActiveCamera (&cam);
 
 	MeshObject& sun = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-	sun.InitUnitSphere (6).GetModelTransform ().Scale (10.0f);
+	sun.InitUnitSphere (5, true).GetModelTransform ().Scale (10.0f);
 	sun.SetMaterial (sunM);
 
 	Orbiter& earthOrbiter = dynamic_cast<Orbiter&>(scene.AddGameObject (new Orbiter (365.256f)));
@@ -35,7 +35,7 @@ void main (int argc, char* argv [])
 	earthRotor.GetModelTransform ().Rotate (0.0f, 0.0f, -23.0f);
 	earthRotor.SetParentObject (earthOrbit);
 	MeshObject& earth = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-	earth.InitUnitSphere (4, true);
+	earth.InitUnitSphere (5, true);
 	earth.SetMaterial (earthM);
 	earth.SetParentObject (earthRotor);
 
@@ -43,7 +43,7 @@ void main (int argc, char* argv [])
 	moonOrbiter.SetParentObject (earthOrbit);
 	moonOrbiter.GetModelTransform ().Rotate (0.0f, 0.0f, 5.14f);
 	MeshObject& moon = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-	moon.InitUnitSphere (3, true).GetModelTransform ().Scale (0.273f).Translate (5.0f, 0.0f, 0.0f);
+	moon.InitUnitSphere (5, true).GetModelTransform ().Scale (0.273f).Translate (5.0f, 0.0f, 0.0f);
 	moon.SetMaterial (moonM);
 	moon.SetParentObject (moonOrbiter);
 

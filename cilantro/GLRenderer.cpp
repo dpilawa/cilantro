@@ -2,6 +2,7 @@
 #include "default.vs.h"
 #include "phong.fs.h"
 #include "blinnphong.fs.h"
+#include "normals.fs.h"
 
 GLRenderer::GLRenderer (int xRes, int yRes) : xResolution (xRes), yResolution (yRes)
 {
@@ -41,6 +42,10 @@ void GLRenderer::Initialize (GameScene* scene)
 	// enable depth test
 	glEnable (GL_DEPTH_TEST);
 
+	// enable face culling
+	glFrontFace (GL_CCW);
+	glEnable (GL_CULL_FACE);
+
 	// enable antialiasing
 	glEnable (GL_MULTISAMPLE);
 
@@ -73,7 +78,9 @@ void GLRenderer::Initialize (GameScene* scene)
 
 	// set callback for modified transforms (currently this only requires to reload light buffers)
 	renderedScene->RegisterCallback ("OnUpdateTransform", [ & ](unsigned int objectHandle) { LoadLightUniformBuffers (); });
-	
+
+	// check for any outstanding errors
+	CheckGLError (__FUNCTION__);
 }
 
 void GLRenderer::RenderFrame ()
@@ -128,11 +135,11 @@ void GLRenderer::AddShaderToModel (std::string shaderModelName, std::string shad
 	}
 	else
 	{
+		shaderModels[shaderModelName].AttachShader (searchShader->second);
 		if (searchModel == shaderModels.end ())
 		{
-			LogMessage (__FUNCTION__) << "Registered shader" << shaderModelName;
+			LogMessage (__FUNCTION__) << "Registered shader" << shaderModelName << "with id" << shaderModels[shaderModelName].GetProgramId ();
 		}
-		shaderModels[shaderModelName].AttachShader (searchShader->second);
 	}
 }
 
@@ -150,7 +157,7 @@ GLShaderModel & GLRenderer::GetShaderModel (std::string shaderModelName)
 
 void GLRenderer::Draw (MeshObject & meshObject)
 {
-	//TODO: get uniform location queries to be moved to initialization
+	//TODO: get uniform location queries to be moved to initialization and invoked one time
 	GLuint ambientColorId;
 	GLuint diffuseColorId;
 	GLuint specularColorId;
@@ -160,15 +167,16 @@ void GLRenderer::Draw (MeshObject & meshObject)
 	GLuint modelMatrixId;
 	GLuint normalMatrixId;
 	GLuint shaderProgramId;
-
-	// draw mesh
+	
+	// pick shader
 	GLShaderModel& shaderProgram = GetShaderModel (meshObject.GetMaterial ().GetShaderModelName ());
 	shaderProgramId = shaderProgram.GetProgramId ();
+	shaderProgram.Use ();
 
 	// get material properties for drawn objects and set uniform value
 	ambientColorId = glGetUniformLocation (shaderProgramId, "fAmbientColor");
 	glUniform3fv (ambientColorId, 1, meshObject.GetMaterial ().GetAmbientColor ().GetDataPointer ());
-
+	
 	diffuseColorId = glGetUniformLocation (shaderProgramId, "fDiffuseColor");
 	glUniform3fv (diffuseColorId, 1, meshObject.GetMaterial ().GetDiffuseColor ().GetDataPointer ());
 
@@ -192,11 +200,20 @@ void GLRenderer::Draw (MeshObject & meshObject)
 	normalMatrixId = glGetUniformLocation (shaderProgramId, "mNormal");
 	glUniformMatrix3fv (normalMatrixId, 1, GL_TRUE, Inverse (Transpose (Matrix3f (meshObject.GetModelTransformMatrix ()))).GetDataPointer ());
 
-	// draw
-	shaderProgram.Use ();
+	// draw mesh
 	glBindVertexArray (objectBuffers[meshObject.GetHandle ()].VAO);
 	glDrawElements (GL_TRIANGLES, meshObject.GetFaceCount () * 3, GL_UNSIGNED_INT, 0);
 	glBindVertexArray (0);
+}
+
+void GLRenderer::CheckGLError (std::string functionName)
+{
+	GLuint errorCode;
+
+	if ((errorCode = glGetError ()) != GL_NO_ERROR)
+	{
+		LogMessage (functionName, EXIT_FAILURE) << "glError:" << std::hex << std::showbase << errorCode;
+	}
 }
 
 void GLRenderer::InitializeShaderLibrary ()
@@ -205,6 +222,7 @@ void GLRenderer::InitializeShaderLibrary ()
 	AddShader ("default_vertex_shader", gDefaultVertexShader, ShaderType::VERTEX_SHADER);
 	AddShader ("phong_fragment_shader", gPhongFragmentShader, ShaderType::FRAGMENT_SHADER);
 	AddShader ("blinnphong_fragment_shader", gBlinnPhongFragmentShader, ShaderType::FRAGMENT_SHADER);
+	AddShader ("normals_fragment_shader", gNormalsFragmentShader, ShaderType::FRAGMENT_SHADER);
 
 	// Phong model
 	AddShaderToModel ("phong_shader", "default_vertex_shader");
@@ -213,6 +231,10 @@ void GLRenderer::InitializeShaderLibrary ()
 	// Blinn-Phong model
 	AddShaderToModel ("blinnphong_shader", "default_vertex_shader");
 	AddShaderToModel ("blinnphong_shader", "blinnphong_fragment_shader");
+
+	// Normals visualization model
+	AddShaderToModel ("normals_shader", "default_vertex_shader");
+	AddShaderToModel ("normals_shader", "normals_fragment_shader");
 }
 
 void GLRenderer::InitializeObjectBuffers ()

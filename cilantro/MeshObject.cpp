@@ -266,14 +266,13 @@ void MeshObject::CalculateVertexNormals ()
 		// loop through all faces and if face contains vertex, add face normal to vertex normal
 		for (unsigned int f = 0; f < faces.size (); f += 3)
 		{
-			if ((faces[f] == v / 3) || (faces[f + 1] == v / 3) || (faces[f + 2] == v / 3))
+			if ((faces[f] * 3 == v) || (faces[f + 1] * 3 == v) || (faces[f + 2] * 3 == v))
 			{
 				v1 = Vector3f (vertices[faces[f] * 3], vertices[faces[f] * 3 + 1], vertices[faces[f] * 3 + 2]);
 				v2 = Vector3f (vertices[faces[f + 1] * 3], vertices[faces[f + 1] * 3 + 1], vertices[faces[f + 1] * 3 + 2]);
 				v3 = Vector3f (vertices[faces[f + 2] * 3], vertices[faces[f + 2] * 3 + 1], vertices[faces[f + 2] * 3 + 2]);
 
 				normal += Cross (v2 - v1, v3 - v1);
-
 			}
 		}
 

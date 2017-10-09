@@ -22,6 +22,7 @@ std::string gDefaultVertexShader = R"V0G0N(
 
 	out vec3 fPosition;
 	out vec3 fNormal;
+	out vec3 fNormal_View;
 
 	void main ()
 	{

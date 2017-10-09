@@ -11,7 +11,7 @@ void main (int argc, char* argv[])
 	green.SetShaderModelName ("blinnphong_shader");
 	green.SetColor (Vector3f (0.1f, 0.4f, 0.1f));
 	green.SetAmbientColor (Vector3f (0.5f, 0.5f, 0.5f));
-	green.SetSpecularColor (Vector3f (1.0f, 1.0f, 1.0f)).SetSpecularShininess (64.0f);
+	green.SetSpecularColor (Vector3f (1.0f, 1.0f, 1.0f)).SetSpecularShininess (128.0f);
 
 	Material& red = scene.AddMaterial (new Material ());
 	red.SetColor (Vector3f (0.75f, 0.1f, 0.1f));
@@ -20,17 +20,18 @@ void main (int argc, char* argv[])
 	Material& lampM = scene.AddMaterial (new Material ());
 	lampM.SetEmissiveColor (Vector3f (0.9f, 0.9f, 0.9f)).SetDiffuseColor (Vector3f (0.2f, 0.2f, 0.2f));
 
-	Camera& cam = dynamic_cast<Camera&>(scene.AddGameObject (new Camera (Vector3f (1.0f, 2.0f, 5.0f), Vector3f (0.0f, -1.0f, 0.0f), Vector3f (0.0f, 1.0f, 0.0f), 75.0f, 0.1f, 100.0f)));
+	Camera& cam = dynamic_cast<Camera&>(scene.AddGameObject (new Camera (Vector3f (1.0f, 2.0f, 5.0f), Vector3f (0.0f, -1.0f, 0.0f), Vector3f (0.0f, 1.0f, 0.0f), 75.0f, 1.0f, 10.0f)));
 	scene.SetActiveCamera (&cam);
 
-	RotatingObject& cube = dynamic_cast<RotatingObject&>(scene.AddGameObject (new RotatingObject ()));
-	cube.InitUnitSphere(5).GetModelTransform ().Translate (0.0f, 0.0f, 0.0f).Rotate (0.0f, 0.0f, 25.0f);
+	MeshObject& cube = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
+	cube.InitUnitCube ().GetModelTransform ().Translate (0.0f, 0.0f, 0.0f).Rotate (0.0f, 0.0f, 25.0f);
 	cube.SetMaterial (red);
 
+	RotatingObject& lampPivot = dynamic_cast<RotatingObject&>(scene.AddGameObject (new RotatingObject ()));
 	MeshObject& lamp = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-	lamp.InitUnitCube ().GetModelTransform ().Scale (0.2f, 0.2f, 0.2f).Translate (1.0f, 0.75f, 1.0f);
+	lamp.InitUnitSphere (3).GetModelTransform ().Scale (0.1f, 0.1f, 0.1f).Translate (1.0f, 0.75f, 1.0f);
 	lamp.SetMaterial (lampM);
-	lamp.SetParentObject (cube);
+	lamp.SetParentObject (lampPivot);
 
 	MeshObject& plane = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
 	plane.InitUnitCube ().GetModelTransform ().Scale (5.0f, 0.1f, 5.0f).Translate (0.0f, -1.0f, 0.0f);
