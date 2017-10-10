@@ -46,13 +46,15 @@ public:
 	// generate scaling matrix along 3 axes
 	static Matrix4f GenScalingMatrix (float x, float y, float z);
 
-	// generate projection matrix (perspective)
-	// fov provided in radians
+	// generate camera (view) matrix
 	static Matrix4f GenCameraViewMatrix (const Vector3f& position, const Vector3f& lookAt, const Vector3f& up);
 
 	// generate projection matrix (perspective)
 	// fov provided in radians
 	static Matrix4f GenPerspectiveProjectionMatrix (float aspect, float fov, float nearZ, float farZ);
+
+	// generate projection matrix (orthographic)
+	static Matrix4f GenOrthographicProjectionMatrix (float aspect, float width, float nearZ, float farZ);
 };
 
 #endif

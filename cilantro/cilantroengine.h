@@ -22,6 +22,8 @@
 
 #include "GameObject.h"
 #include "Camera.h"
+#include "PerspectiveCamera.h"
+#include "OrthographicCamera.h"
 #include "Light.h"
 #include "PointLight.h"
 #include "MeshObject.h"

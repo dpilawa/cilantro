@@ -19,7 +19,7 @@ void main (int argc, char* argv [])
 	moonM.SetDiffuseColor (Vector3f (0.3f, 0.3f, 0.3f));
 	moonM.SetSpecularColor (Vector3f (0.0f, 0.0f, 0.0f));
 
-	Camera& cam = dynamic_cast<Camera&>(scene.AddGameObject (new Camera (Vector3f (10.0f, 0.0f, 70.0f), Vector3f (0.0f, 0.0f, 0.0f), Vector3f (0.0f, 1.0f, 0.0f), 45.0f, 0.1f, 1000.0f)));
+	PerspectiveCamera& cam = dynamic_cast<PerspectiveCamera&>(scene.AddGameObject (new PerspectiveCamera (Vector3f (10.0f, 0.0f, 70.0f), Vector3f (0.0f, 0.0f, 0.0f), Vector3f (0.0f, 1.0f, 0.0f), 45.0f, 0.1f, 1000.0f)));
 	scene.SetActiveCamera (&cam);
 
 	MeshObject& sun = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));

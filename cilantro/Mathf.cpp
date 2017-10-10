@@ -123,14 +123,27 @@ Matrix4f Mathf::GenCameraViewMatrix (const Vector3f& position, const Vector3f& l
 Matrix4f Mathf::GenPerspectiveProjectionMatrix (float aspect, float fov, float nearZ, float farZ)
 {
 	Matrix4f m;
-	float fov2 = fov * 0.5f;
+	float scale = std::tanf (fov * 0.5f);
 
 	m.InitIdentity ();
-	m.SetXY (1, 1, 1.0f / (aspect * std::tanf (fov2)));
-	m.SetXY (2, 2, 1.0f / std::tanf (fov2));
+	m.SetXY (1, 1, 1.0f / (aspect * scale));
+	m.SetXY (2, 2, 1.0f / scale);
 	m.SetXY (3, 3, (-nearZ - farZ) / (nearZ - farZ));
 	m.SetXY (3, 4, (2.0f * nearZ * farZ) / (nearZ - farZ));
 	m.SetXY (4, 3, 1.0f);
+
+	return m;
+}
+
+Matrix4f Mathf::GenOrthographicProjectionMatrix (float aspect, float width, float nearZ, float farZ)
+{
+	Matrix4f m;
+
+	m.InitIdentity ();
+	m.SetXY (1, 1, 2.0f / width);
+	m.SetXY (2, 2, (2.0f * aspect) / width);
+	m.SetXY (3, 3, 2.0f / (farZ - nearZ));
+	m.SetXY (3, 4, (-farZ - nearZ) / (farZ - nearZ));
 
 	return m;
 }

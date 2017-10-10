@@ -3,30 +3,26 @@
 
 #include "cilantroengine.h"
 #include "Vector3f.h"
-#include "Matrix4f.h"
-#include "Mathf.h"
 #include "GameObject.h"
 
 class Camera : public GameObject
 {
 public:
-	__EAPI Camera (Vector3f& position, Vector3f& lookAt, Vector3f& up, float fov, float near, float far);
-	__EAPI ~Camera ();
+	Camera (Vector3f& position, Vector3f& lookAt, Vector3f& up);
+	~Camera ();
 
-	__EAPI Matrix4f GetViewMatrix () const;
-	__EAPI Matrix4f GetProjectionMatrix (unsigned int xRes, unsigned int yRes) const;
+	virtual Matrix4f GetViewMatrix () const = 0;
+	virtual Matrix4f GetProjectionMatrix (unsigned int xRes, unsigned int yRes) const = 0;
 
 	// getters
-	__EAPI Vector3f GetPosition () const;
+	virtual Vector3f GetPosition () const = 0;
 
-private:
+protected:
+
 	Vector3f cameraPosition;
 	Vector3f cameraLookAt;
 	Vector3f cameraUp;
 
-	float cameraFOV;
-	float nearPlane;
-	float farPlane;
 };
 
 #endif
