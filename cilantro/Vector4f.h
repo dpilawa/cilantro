@@ -33,19 +33,32 @@ public:
 		return *this;
 	}
 
-	// multiply by matrix
-	Vector4f& operator*= (const Matrix4f& m);
-
-	// getters
-	float* GetDataPointer ();
-
 	// destructor
 	~Vector4f () { };
+
+	// accessor and mutator
+	float& operator[](unsigned int index);
+	const float& operator[](unsigned int index) const;
+
+	// multiply by matrix
+	Vector4f& operator*= (const Matrix4f& m);
 
 private:
 	float v[4];
 
 };
+
+// mutator
+inline float& Vector4f::operator[](unsigned int index)
+{
+	return v[index];
+}
+
+// accessor
+inline const float& Vector4f::operator[](unsigned int index) const
+{
+	return v[index];
+}
 
 // compound assignment operator for vector by matrix multiplication 
 inline Vector4f & Vector4f::operator*=(const Matrix4f & m)
@@ -59,8 +72,6 @@ inline Vector4f & Vector4f::operator*=(const Matrix4f & m)
 
 	return *this;
 }
-
-
 
 inline Vector4f operator* (Vector4f v, const Matrix4f& m)
 {

@@ -33,20 +33,12 @@ public:
 	// destructor
 	~Vector3f () { };
 
-	// getters
-	float GetX () const;
-	float GetY () const;
-	float GetZ () const;
-	float* GetDataPointer ();
-
-	// returns vector length
-	float Length ();
+	// accessor and mutator
+	float& operator[](unsigned int index);
+	const float& operator[](unsigned int index) const;
 
 	// normalize vector
 	Vector3f& Normalize ();
-
-	// cross product of two vectors
-	friend inline Vector3f Cross (const Vector3f& v1, const Vector3f& v2);
 
 	// operators
 	Vector3f& operator+= (const Vector3f& m);
@@ -57,6 +49,17 @@ private:
 	float v[3];
 };
 
+// mutator
+inline float& Vector3f::operator[](unsigned int index)
+{
+	return v[index];
+}
+
+// accessor
+inline const float& Vector3f::operator[](unsigned int index) const
+{
+	return v[index];
+}
 
 inline Vector3f& Vector3f::operator+=(const Vector3f& other)
 {
@@ -87,11 +90,6 @@ inline Vector3f operator- (Vector3f u, const Vector3f& v)
 	u -= v;
 	return u;
 };
-
-inline Vector3f Cross (const Vector3f& v1, const Vector3f& v2)
-{
-	return Vector3f (v1.v[1] * v2.v[2] - v1.v[2] * v2.v[1], v1.v[2] * v2.v[0] - v1.v[0] * v2.v[2], v1.v[0] * v2.v[1] - v1.v[1] * v2.v[0]);
-}
 
 inline Vector3f operator- (Vector3f v)
 {

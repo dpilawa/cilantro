@@ -15,6 +15,15 @@ public:
 	// static constants
 	static const float Pi () { return cPI; };
 
+	// vector operations
+
+	// returns vector length
+	static float Length (const Vector3f& v);
+	// cross product of two vectors
+	static Vector3f Cross (const Vector3f& v1, const Vector3f& v2);
+
+	// matrix operations
+
 	// convert degrees to radians
 	static float Deg2Rad (float degrees);
 	// convert radians to degrees

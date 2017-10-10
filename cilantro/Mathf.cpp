@@ -1,6 +1,16 @@
 #include "Mathf.h"
 
 
+float Mathf::Length (const Vector3f & v)
+{
+	return std::sqrtf (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+}
+
+Vector3f Mathf::Cross (const Vector3f & v1, const Vector3f & v2)
+{
+	return Vector3f (v1[1] * v2[2] - v1[2] * v2[1], v1[2] * v2[0] - v1[0] * v2[2], v1[0] * v2[1] - v1[1] * v2[0]);
+}
+
 float Mathf::Deg2Rad (float degrees)
 {
 	return degrees * Mathf::Pi() / 180.f;
@@ -78,7 +88,7 @@ Matrix4f Mathf::GenTranslationMatrix (float x, float y, float z)
 
 Matrix4f Mathf::GenTranslationMatrix (Vector3f & t)
 {
-	return Mathf::GenTranslationMatrix (t.GetX (), t.GetY (), t.GetZ ());
+	return Mathf::GenTranslationMatrix (t[0], t[1], t[2]);
 }
 
 Matrix4f Mathf::GenScalingMatrix (float x, float y, float z)
@@ -107,15 +117,15 @@ Matrix4f Mathf::GenCameraViewMatrix (const Vector3f& position, const Vector3f& l
 	v = Cross (u, n);
 	
 	m.InitIdentity ();
-	m.SetXY (1, 1, u.GetX ());
-	m.SetXY (1, 2, u.GetY ());
-	m.SetXY (1, 3, u.GetZ ());
-	m.SetXY (2, 1, v.GetX ());
-	m.SetXY (2, 2, v.GetY ());
-	m.SetXY (2, 3, v.GetZ ());
-	m.SetXY (3, 1, n.GetX ());
-	m.SetXY (3, 2, n.GetY ());
-	m.SetXY (3, 3, n.GetZ ());
+	m.SetXY (1, 1, u[0]);
+	m.SetXY (1, 2, u[1]);
+	m.SetXY (1, 3, u[2]);
+	m.SetXY (2, 1, v[0]);
+	m.SetXY (2, 2, v[1]);
+	m.SetXY (2, 3, v[2]);
+	m.SetXY (3, 1, n[0]);
+	m.SetXY (3, 2, n[1]);
+	m.SetXY (3, 3, n[2]);
 
 	return m * Mathf::GenTranslationMatrix (-position);
 }

@@ -175,22 +175,22 @@ void GLRenderer::Draw (MeshObject & meshObject)
 
 	// get material properties for drawn objects and set uniform value
 	ambientColorId = glGetUniformLocation (shaderProgramId, "fAmbientColor");
-	glUniform3fv (ambientColorId, 1, meshObject.GetMaterial ().GetAmbientColor ().GetDataPointer ());
+	glUniform3fv (ambientColorId, 1, &meshObject.GetMaterial ().GetAmbientColor ()[0]);
 	
 	diffuseColorId = glGetUniformLocation (shaderProgramId, "fDiffuseColor");
-	glUniform3fv (diffuseColorId, 1, meshObject.GetMaterial ().GetDiffuseColor ().GetDataPointer ());
+	glUniform3fv (diffuseColorId, 1, &meshObject.GetMaterial ().GetDiffuseColor ()[0]);
 
 	emissiveColorId = glGetUniformLocation (shaderProgramId, "fEmissiveColor");
-	glUniform3fv (emissiveColorId, 1, meshObject.GetMaterial ().GetEmissiveColor ().GetDataPointer ());
+	glUniform3fv (emissiveColorId, 1, &meshObject.GetMaterial ().GetEmissiveColor ()[0]);
 
 	specularColorId = glGetUniformLocation (shaderProgramId, "fSpecularColor");
-	glUniform3fv (specularColorId, 1, meshObject.GetMaterial ().GetSpecularColor ().GetDataPointer ());
+	glUniform3fv (specularColorId, 1, &meshObject.GetMaterial ().GetSpecularColor ()[0]);
 	specularShininessId = glGetUniformLocation (shaderProgramId, "fSpecularShininess");
 	glUniform1f (specularShininessId, meshObject.GetMaterial ().GetSpecularShininess ());
 
 	// get camera position in world space and set uniform value
 	eyePositionId = glGetUniformLocation (shaderProgramId, "eyePosition");
-	glUniform3fv (eyePositionId, 1, renderedScene->GetActiveCamera ()->GetPosition ().GetDataPointer ());
+	glUniform3fv (eyePositionId, 1, &renderedScene->GetActiveCamera ()->GetPosition ()[0]);
 
 	// get world matrix for drawn objects and set uniform value
 	modelMatrixId = glGetUniformLocation (shaderProgramId, "mModel");
@@ -450,9 +450,9 @@ void GLRenderer::LoadLightUniformBuffers ()
 
 			// copy position
 			Vector4f lightPosition = myPointLightObject->GetPosition ();
-			uniformPointLightBuffer.pointLights[lightId].lightPosition[0] = lightPosition.GetDataPointer ()[0];
-			uniformPointLightBuffer.pointLights[lightId].lightPosition[1] = lightPosition.GetDataPointer ()[1];
-			uniformPointLightBuffer.pointLights[lightId].lightPosition[2] = lightPosition.GetDataPointer ()[2];
+			uniformPointLightBuffer.pointLights[lightId].lightPosition[0] = lightPosition[0];
+			uniformPointLightBuffer.pointLights[lightId].lightPosition[1] = lightPosition[1];
+			uniformPointLightBuffer.pointLights[lightId].lightPosition[2] = lightPosition[2];
 
 			// copy ambience and specular powers
 			uniformPointLightBuffer.pointLights[lightId].ambiencePower = myPointLightObject->GetAmbiencePower ();
@@ -464,9 +464,9 @@ void GLRenderer::LoadLightUniformBuffers ()
 			uniformPointLightBuffer.pointLights[lightId].attenuationQuadratic = myPointLightObject->GetQuadraticAttenuationFactor ();
 
 			// copy color
-			uniformPointLightBuffer.pointLights[lightId].lightColor[0] = myPointLightObject->GetColor ().GetX ();
-			uniformPointLightBuffer.pointLights[lightId].lightColor[1] = myPointLightObject->GetColor ().GetY ();
-			uniformPointLightBuffer.pointLights[lightId].lightColor[2] = myPointLightObject->GetColor ().GetZ ();
+			uniformPointLightBuffer.pointLights[lightId].lightColor[0] = myPointLightObject->GetColor ()[0];
+			uniformPointLightBuffer.pointLights[lightId].lightColor[1] = myPointLightObject->GetColor ()[1];
+			uniformPointLightBuffer.pointLights[lightId].lightColor[2] = myPointLightObject->GetColor ()[2];
 
 		}
 

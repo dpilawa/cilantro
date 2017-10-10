@@ -51,6 +51,9 @@ public:
 
 private:
 
+	void AddVertex (const Vector3f& vertex);
+	void AddFace (unsigned int v1, unsigned int v2, unsigned int v3);
+
 	Material* objectMaterial;
 
 	std::vector<float> vertices;

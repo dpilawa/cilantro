@@ -71,9 +71,9 @@ MeshObject& MeshObject::InitUnitCube ()
 
 	};
 
-	for (unsigned int i = 0; i < 36; ++i)
+	for (unsigned int i = 0; i < 36; i += 3)
 	{
-		faces.push_back (i);
+		AddFace (i, i + 1, i + 2);
 	};
 	
 	CalculateVertexNormals ();
@@ -89,7 +89,6 @@ __EAPI MeshObject & MeshObject::InitUnitSphere (unsigned int subdivisions, bool 
 	float theta, phi;
 	unsigned int lonSteps, latSteps;
 	unsigned int nIndex, sIndex;
-	Vector3f cartesian;
 
 	Clear ();
 
@@ -103,40 +102,18 @@ __EAPI MeshObject & MeshObject::InitUnitSphere (unsigned int subdivisions, bool 
 		for (unsigned int i = 1; i < latSteps - 1; i++)
 		{
 			theta = step * i;
+			
 			for (unsigned int j = 0; j <= lonSteps - 1; j++)
 			{
 				phi = step * j;
 
-				cartesian = Mathf::Spherical2Cartesian (theta, phi, 1.0f);
-				vertices.push_back (cartesian.GetX ());
-				vertices.push_back (cartesian.GetY ());
-				vertices.push_back (cartesian.GetZ ());
+				AddVertex (Mathf::Spherical2Cartesian (theta, phi, 1.0f));
+				AddVertex (Mathf::Spherical2Cartesian (theta, phi + step, 1.0f));
+				AddVertex (Mathf::Spherical2Cartesian (theta + step, phi, 1.0f));
 
-				cartesian = Mathf::Spherical2Cartesian (theta, phi + step, 1.0f);
-				vertices.push_back (cartesian.GetX ());
-				vertices.push_back (cartesian.GetY ());
-				vertices.push_back (cartesian.GetZ ());
-
-				cartesian = Mathf::Spherical2Cartesian (theta + step, phi, 1.0f);
-				vertices.push_back (cartesian.GetX ());
-				vertices.push_back (cartesian.GetY ());
-				vertices.push_back (cartesian.GetZ ());
-
-				cartesian = Mathf::Spherical2Cartesian (theta, phi + step, 1.0f);
-				vertices.push_back (cartesian.GetX ());
-				vertices.push_back (cartesian.GetY ());
-				vertices.push_back (cartesian.GetZ ());
-
-				cartesian = Mathf::Spherical2Cartesian (theta + step, phi + step, 1.0f);
-				vertices.push_back (cartesian.GetX ());
-				vertices.push_back (cartesian.GetY ());
-				vertices.push_back (cartesian.GetZ ());
-
-				cartesian = Mathf::Spherical2Cartesian (theta + step, phi, 1.0f);
-				vertices.push_back (cartesian.GetX ());
-				vertices.push_back (cartesian.GetY ());
-				vertices.push_back (cartesian.GetZ ());
-
+				AddVertex (Mathf::Spherical2Cartesian (theta, phi + step, 1.0f));
+				AddVertex (Mathf::Spherical2Cartesian (theta + step, phi + step, 1.0f));
+				AddVertex (Mathf::Spherical2Cartesian (theta + step, phi, 1.0f));
 			}
 		}
 
@@ -145,20 +122,9 @@ __EAPI MeshObject & MeshObject::InitUnitSphere (unsigned int subdivisions, bool 
 		{
 			phi = step * j;
 
-			cartesian = Mathf::Spherical2Cartesian (theta + step, phi, 1.0f);
-			vertices.push_back (cartesian.GetX ());
-			vertices.push_back (cartesian.GetY ());
-			vertices.push_back (cartesian.GetZ ());
-
-			cartesian = Mathf::Spherical2Cartesian (theta, phi, 1.0f);
-			vertices.push_back (cartesian.GetX ());
-			vertices.push_back (cartesian.GetY ());
-			vertices.push_back (cartesian.GetZ ());
-
-			cartesian = Mathf::Spherical2Cartesian (theta + step, phi + step, 1.0f);
-			vertices.push_back (cartesian.GetX ());
-			vertices.push_back (cartesian.GetY ());
-			vertices.push_back (cartesian.GetZ ());
+			AddVertex (Mathf::Spherical2Cartesian (theta + step, phi, 1.0f));
+			AddVertex (Mathf::Spherical2Cartesian (theta, phi, 1.0f));
+			AddVertex (Mathf::Spherical2Cartesian (theta + step, phi + step, 1.0f));
 		}
 
 		theta = Mathf::Pi ();
@@ -166,26 +132,15 @@ __EAPI MeshObject & MeshObject::InitUnitSphere (unsigned int subdivisions, bool 
 		{
 			phi = step * j;
 
-			cartesian = Mathf::Spherical2Cartesian (theta, phi, 1.0f);
-			vertices.push_back (cartesian.GetX ());
-			vertices.push_back (cartesian.GetY ());
-			vertices.push_back (cartesian.GetZ ());
-
-			cartesian = Mathf::Spherical2Cartesian (theta - step, phi, 1.0f);
-			vertices.push_back (cartesian.GetX ());
-			vertices.push_back (cartesian.GetY ());
-			vertices.push_back (cartesian.GetZ ());
-
-			cartesian = Mathf::Spherical2Cartesian (theta - step, phi + step, 1.0f);
-			vertices.push_back (cartesian.GetX ());
-			vertices.push_back (cartesian.GetY ());
-			vertices.push_back (cartesian.GetZ ());
+			AddVertex (Mathf::Spherical2Cartesian (theta, phi, 1.0f));
+			AddVertex (Mathf::Spherical2Cartesian (theta - step, phi, 1.0f));
+			AddVertex (Mathf::Spherical2Cartesian (theta - step, phi + step, 1.0f));
 		}
 
 		// generate faces
-		for (unsigned int i = 0; i < latSteps * lonSteps * 3 * 2; i++)
+		for (unsigned int i = 0; i < latSteps * lonSteps * 3 * 2; i += 3)
 		{
-			faces.push_back (i);
+			AddFace (i, i + 1, i + 2);
 		}
 
 	}
@@ -195,36 +150,25 @@ __EAPI MeshObject & MeshObject::InitUnitSphere (unsigned int subdivisions, bool 
 		for (unsigned int i = 1; i <= latSteps - 1; i++)
 		{
 			theta = step * i;
+	
 			for (unsigned int j = 0; j <= lonSteps - 1; j++)
 			{
 				phi = step * j;
-				cartesian = Mathf::Spherical2Cartesian (theta, phi, 1.0f);
-				vertices.push_back (cartesian.GetX ());
-				vertices.push_back (cartesian.GetY ());
-				vertices.push_back (cartesian.GetZ ());
+				AddVertex (Mathf::Spherical2Cartesian (theta, phi, 1.0f));
 			}
 		}
 
-		vertices.push_back (0.0f);
-		vertices.push_back (1.0f);
-		vertices.push_back (0.0f);
-
-		vertices.push_back (0.0f);
-		vertices.push_back (-1.0f);
-		vertices.push_back (0.0f);
+		// add poles
+		AddVertex (Vector3f (0.0f, 1.0f, 0.0f));
+		AddVertex (Vector3f (0.0f, -1.0f, 0.0f));
 
 		// generate face data
 		for (unsigned int i = 0; i < latSteps - 2; i++)
 		{
 			for (unsigned int j = 0; j <= lonSteps - 1; j++)
 			{
-				faces.push_back (i * lonSteps + j);
-				faces.push_back (i * lonSteps + (j + 1) % lonSteps);
-				faces.push_back ((i + 1) * lonSteps + j);
-
-				faces.push_back (i * lonSteps + (j + 1) % lonSteps);
-				faces.push_back ((i + 1) * lonSteps + (j + 1) % lonSteps);
-				faces.push_back ((i + 1) * lonSteps + j);
+				AddFace (i * lonSteps + j, i * lonSteps + (j + 1) % lonSteps, (i + 1) * lonSteps + j);
+				AddFace (i * lonSteps + (j + 1) % lonSteps, (i + 1) * lonSteps + (j + 1) % lonSteps, (i + 1) * lonSteps + j);
 			}
 		}
 
@@ -233,13 +177,8 @@ __EAPI MeshObject & MeshObject::InitUnitSphere (unsigned int subdivisions, bool 
 
 		for (unsigned int j = 0; j <= lonSteps - 1; j++)
 		{
-			faces.push_back (nIndex);
-			faces.push_back ((j + 1) % lonSteps);
-			faces.push_back (j);
-
-			faces.push_back (sIndex);
-			faces.push_back (nIndex - 1 - (j + 1) % lonSteps);
-			faces.push_back (nIndex - 1 - j);
+			AddFace (nIndex, (j + 1) % lonSteps, j);
+			AddFace (sIndex, nIndex - 1 - (j + 1) % lonSteps, nIndex - 1 - j);
 		}
 
 	}
@@ -272,7 +211,7 @@ void MeshObject::CalculateVertexNormals ()
 				v2 = Vector3f (vertices[faces[f + 1] * 3], vertices[faces[f + 1] * 3 + 1], vertices[faces[f + 1] * 3 + 2]);
 				v3 = Vector3f (vertices[faces[f + 2] * 3], vertices[faces[f + 2] * 3 + 1], vertices[faces[f + 2] * 3 + 2]);
 
-				normal += Cross (v2 - v1, v3 - v1);
+				normal += Mathf::Cross (v2 - v1, v3 - v1);
 			}
 		}
 
@@ -280,9 +219,9 @@ void MeshObject::CalculateVertexNormals ()
 		normal.Normalize ();
 
 		// store normal
-		normals.push_back (normal.GetX ());
-		normals.push_back (normal.GetY ());
-		normals.push_back (normal.GetZ ());
+		normals.push_back (normal[0]);
+		normals.push_back (normal[1]);
+		normals.push_back (normal[2]);
 	}
 }
 
@@ -330,6 +269,20 @@ void MeshObject::OnDraw (Renderer& renderer)
 {
 	GameObject::OnDraw (renderer);
 	renderer.Draw (*this);
+}
+
+void MeshObject::AddVertex (const Vector3f & vertex)
+{
+	vertices.push_back (vertex[0]);
+	vertices.push_back (vertex[1]);
+	vertices.push_back (vertex[2]);
+}
+
+void MeshObject::AddFace (unsigned int v1, unsigned int v2, unsigned int v3)
+{
+	faces.push_back (v1);
+	faces.push_back (v2);
+	faces.push_back (v3);
 }
 
 

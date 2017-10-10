@@ -132,6 +132,8 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="cilantroengine.h" />
     <ClInclude Include="normals.fs.h" />
+    <ClInclude Include="OrthographicCamera.h" />
+    <ClInclude Include="PerspectiveCamera.h" />
     <ClInclude Include="phong.fs.h" />
     <ClInclude Include="default.vs.h" />
     <ClInclude Include="GameLoop.h" />
@@ -170,6 +172,8 @@
     <ClCompile Include="Matrix3f.cpp" />
     <ClCompile Include="Matrix4f.cpp" />
     <ClCompile Include="MeshObject.cpp" />
+    <ClCompile Include="OrthographicCamera.cpp" />
+    <ClCompile Include="PerspectiveCamera.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="Renderer.cpp" />

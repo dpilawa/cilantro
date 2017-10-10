@@ -20,7 +20,7 @@ void main (int argc, char* argv[])
 	Material& lampM = scene.AddMaterial (new Material ());
 	lampM.SetEmissiveColor (Vector3f (0.9f, 0.9f, 0.9f)).SetDiffuseColor (Vector3f (0.2f, 0.2f, 0.2f));
 
-	OrthographicCamera& cam = dynamic_cast<OrthographicCamera&>(scene.AddGameObject (new OrthographicCamera (Vector3f (1.0f, 2.0f, 5.0f), Vector3f (0.0f, -1.0f, 0.0f), Vector3f (0.0f, 1.0f, 0.0f), 10.0f, 1.0f, 10.0f)));
+	PerspectiveCamera& cam = dynamic_cast<PerspectiveCamera&>(scene.AddGameObject (new PerspectiveCamera (Vector3f (1.0f, 2.0f, 5.0f), Vector3f (0.0f, -1.0f, 0.0f), Vector3f (0.0f, 1.0f, 0.0f), 75.0f, 1.0f, 10.0f)));
 	scene.SetActiveCamera (&cam);
 
 	MeshObject& cube = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
