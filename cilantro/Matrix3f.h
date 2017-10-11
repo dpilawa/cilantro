@@ -22,17 +22,17 @@ public:
 	// copy constructor (submatrix)
 	Matrix3f (const Matrix4f& other)
 	{
-		M3 (1, 1) = other.GetXY (1, 1);
-		M3 (1, 2) = other.GetXY (1, 2);
-		M3 (1, 3) = other.GetXY (1, 3);
+		M3 (1, 1) = other[0][0];
+		M3 (1, 2) = other[0][1];
+		M3 (1, 3) = other[0][2];
 
-		M3 (2, 1) = other.GetXY (2, 1);
-		M3 (2, 2) = other.GetXY (2, 2);
-		M3 (2, 3) = other.GetXY (2, 3);
+		M3 (2, 1) = other[1][0];
+		M3 (2, 2) = other[1][1];
+		M3 (2, 3) = other[1][2];
 
-		M3 (3, 1) = other.GetXY (3, 1);
-		M3 (3, 2) = other.GetXY (3, 2);
-		M3 (3, 3) = other.GetXY (3, 3);
+		M3 (3, 1) = other[2][0];
+		M3 (3, 2) = other[2][1];
+		M3 (3, 3) = other[2][2];
 	}
 
 	// move constructor
@@ -51,10 +51,9 @@ public:
 	// destructor
 	~Matrix3f () {};
 
-	// getters & setters
-	void SetXY (const int x, const int y, const float v);
-	float GetXY (const int x, const int y) const;
-	float* GetDataPointer ();
+	// accessor and mutator
+	float* operator[](unsigned int index);
+	const float* operator[](unsigned int index) const;
 
 	// methods
 	Matrix3f& InitIdentity ();
@@ -75,6 +74,18 @@ private:
 	float m[9];
 
 };
+
+// mutator
+inline float* Matrix3f::operator[](unsigned int index)
+{
+	return m + index * 3;
+}
+
+// accessor
+inline const float* Matrix3f::operator[](unsigned int index) const
+{
+	return m + index * 3;
+}
 
 // transpose matrix
 inline Matrix3f Transpose (const Matrix3f & m)

@@ -33,10 +33,10 @@ Matrix4f Mathf::GenRotationXMatrix(float angle)
 	Matrix4f m;
 
 	m.InitIdentity ();
-	m.SetXY (2, 2, std::cos (angle));
-	m.SetXY (2, 3, -std::sin (angle));
-	m.SetXY (3, 2, std::sin (angle));
-	m.SetXY (3, 3, std::cos (angle));
+	m[1][1] = std::cos (angle);
+	m[1][2] = -std::sin (angle);
+	m[2][1] = std::sin (angle);
+	m[2][2] = std::cos (angle);
 	
 	return m;
 }
@@ -47,10 +47,10 @@ Matrix4f Mathf::GenRotationYMatrix (float angle)
 	Matrix4f m;
 
 	m.InitIdentity ();
-	m.SetXY (1, 1, std::cos (angle));
-	m.SetXY (1, 3, -std::sin (angle));
-	m.SetXY (3, 1, std::sin (angle));
-	m.SetXY (3, 3, std::cos (angle));
+	m[0][0] = std::cos (angle);
+	m[0][2] = -std::sin (angle);
+	m[2][0] = std::sin (angle);
+	m[2][2] = std::cos (angle);
 
 	return m;
 }
@@ -61,10 +61,10 @@ Matrix4f Mathf::GenRotationZMatrix (float angle)
 	Matrix4f m;
 
 	m.InitIdentity ();
-	m.SetXY (1, 1, std::cos (angle));
-	m.SetXY (1, 2, -std::sin (angle));
-	m.SetXY (2, 1, std::sin (angle));
-	m.SetXY (2, 2, std::cos (angle));
+	m[0][0] = std::cos (angle);
+	m[0][1] = -std::sin (angle);
+	m[1][0] = std::sin (angle);
+	m[1][1] = std::cos (angle);
 
 	return m;
 }
@@ -79,9 +79,9 @@ Matrix4f Mathf::GenTranslationMatrix (float x, float y, float z)
 	Matrix4f m;
 
 	m.InitIdentity ();
-	m.SetXY (1, 4, x);
-	m.SetXY (2, 4, y);
-	m.SetXY (3, 4, z);
+	m[0][3] = x;
+	m[1][3] = y;
+	m[2][3] = z;
 
 	return m;
 }
@@ -96,9 +96,9 @@ Matrix4f Mathf::GenScalingMatrix (float x, float y, float z)
 	Matrix4f m;
 
 	m.InitIdentity ();
-	m.SetXY (1, 1, x);
-	m.SetXY (2, 2, y);
-	m.SetXY (3, 3, z);
+	m[0][0] = x;
+	m[1][1] = y;
+	m[2][2] = z;
 
 	return m;
 }
@@ -117,15 +117,15 @@ Matrix4f Mathf::GenCameraViewMatrix (const Vector3f& position, const Vector3f& l
 	v = Cross (u, n);
 	
 	m.InitIdentity ();
-	m.SetXY (1, 1, u[0]);
-	m.SetXY (1, 2, u[1]);
-	m.SetXY (1, 3, u[2]);
-	m.SetXY (2, 1, v[0]);
-	m.SetXY (2, 2, v[1]);
-	m.SetXY (2, 3, v[2]);
-	m.SetXY (3, 1, n[0]);
-	m.SetXY (3, 2, n[1]);
-	m.SetXY (3, 3, n[2]);
+	m[0][0] = u[0];
+	m[0][1] = u[1];
+	m[0][2] = u[2];
+	m[1][0] = v[0];
+	m[1][1] = v[1];
+	m[1][2] = v[2];
+	m[2][0] = n[0];
+	m[2][1] = n[1];
+	m[2][2] = n[2];
 
 	return m * Mathf::GenTranslationMatrix (-position);
 }
@@ -136,11 +136,11 @@ Matrix4f Mathf::GenPerspectiveProjectionMatrix (float aspect, float fov, float n
 	float scale = std::tanf (fov * 0.5f);
 
 	m.InitIdentity ();
-	m.SetXY (1, 1, 1.0f / (aspect * scale));
-	m.SetXY (2, 2, 1.0f / scale);
-	m.SetXY (3, 3, (-nearZ - farZ) / (nearZ - farZ));
-	m.SetXY (3, 4, (2.0f * nearZ * farZ) / (nearZ - farZ));
-	m.SetXY (4, 3, 1.0f);
+	m[0][0] = 1.0f / (aspect * scale);
+	m[1][1] = 1.0f / scale;
+	m[2][2] = (-nearZ - farZ) / (nearZ - farZ);
+	m[2][3] = (2.0f * nearZ * farZ) / (nearZ - farZ);
+	m[3][2] = 1.0f;
 
 	return m;
 }
@@ -150,10 +150,10 @@ Matrix4f Mathf::GenOrthographicProjectionMatrix (float aspect, float width, floa
 	Matrix4f m;
 
 	m.InitIdentity ();
-	m.SetXY (1, 1, 2.0f / width);
-	m.SetXY (2, 2, (2.0f * aspect) / width);
-	m.SetXY (3, 3, 2.0f / (farZ - nearZ));
-	m.SetXY (3, 4, (-farZ - nearZ) / (farZ - nearZ));
+	m[0][0] = 2.0f / width;
+	m[1][1] = (2.0f * aspect) / width;
+	m[2][2] = 2.0f / (farZ - nearZ);
+	m[2][3] = (-farZ - nearZ) / (farZ - nearZ);
 
 	return m;
 }

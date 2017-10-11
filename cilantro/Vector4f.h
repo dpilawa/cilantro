@@ -65,10 +65,10 @@ inline Vector4f & Vector4f::operator*=(const Matrix4f & m)
 {
 	Vector4f temp (*this);
 
-	v[0] = temp.v[0] * m.GetXY (1, 1) + temp.v[1] * m.GetXY (1, 2) + temp.v[2] * m.GetXY (1, 3) + temp.v[3] * m.GetXY (1, 4);
-	v[1] = temp.v[0] * m.GetXY (2, 1) + temp.v[1] * m.GetXY (2, 2) + temp.v[2] * m.GetXY (2, 3) + temp.v[3] * m.GetXY (2, 4);
-	v[2] = temp.v[0] * m.GetXY (3, 1) + temp.v[1] * m.GetXY (3, 2) + temp.v[2] * m.GetXY (3, 3) + temp.v[3] * m.GetXY (3, 4);
-	v[3] = temp.v[0] * m.GetXY (4, 1) + temp.v[1] * m.GetXY (4, 2) + temp.v[2] * m.GetXY (4, 3) + temp.v[3] * m.GetXY (4, 4);
+	v[0] = temp.v[0] * m[0][0] + temp.v[1] * m[0][1] + temp.v[2] * m[0][2] + temp.v[3] * m[0][3];
+	v[1] = temp.v[0] * m[1][0] + temp.v[1] * m[1][1] + temp.v[2] * m[1][2] + temp.v[3] * m[1][3];
+	v[2] = temp.v[0] * m[2][0] + temp.v[1] * m[2][1] + temp.v[2] * m[2][2] + temp.v[3] * m[2][3];
+	v[3] = temp.v[0] * m[3][0] + temp.v[1] * m[3][1] + temp.v[2] * m[3][2] + temp.v[3] * m[3][3];
 
 	return *this;
 }

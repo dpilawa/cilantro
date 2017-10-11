@@ -1,20 +1,5 @@
 #include "Matrix3f.h"
 
-void Matrix3f::SetXY (int x, int y, float v)
-{
-	M3 (x, y) = v;
-}
-
-float Matrix3f::GetXY (int x, int y) const
-{
-	return M3 (x, y);
-}
-
-float * Matrix3f::GetDataPointer ()
-{
-	return m;
-}
-
 Matrix3f& Matrix3f::InitIdentity ()
 {
 	M3 (1, 1) = 1.0f;

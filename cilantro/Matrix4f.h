@@ -35,10 +35,9 @@ public:
 	// destructor
 	~Matrix4f () {};
 
-	// getters & setters
-	void SetXY (const int x, const int y, const float v);
-	float GetXY (const int x, const int y) const;
-	float* GetDataPointer ();
+	// accessor and mutator
+	float* operator[](unsigned int index);
+	const float* operator[](unsigned int index) const;
 
 	// methods
 	Matrix4f& InitIdentity ();
@@ -54,6 +53,18 @@ private:
 	float m[16];
 
 };
+
+// mutator
+inline float* Matrix4f::operator[](unsigned int index)
+{
+	return m + index * 4;
+}
+
+// accessor
+inline const float* Matrix4f::operator[](unsigned int index) const
+{
+	return m + index * 4;
+}
 
 // transpose matrix
 inline Matrix4f Transpose (const Matrix4f & m)
