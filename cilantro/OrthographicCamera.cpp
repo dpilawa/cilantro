@@ -10,19 +10,10 @@ OrthographicCamera::~OrthographicCamera ()
 {
 }
 
-Matrix4f OrthographicCamera::GetViewMatrix () const
-{
-	return Mathf::GenCameraViewMatrix (cameraPosition, cameraLookAt, cameraUp);
-}
-
 Matrix4f OrthographicCamera::GetProjectionMatrix (unsigned int xRes, unsigned int yRes) const
 {
 	return Mathf::GenOrthographicProjectionMatrix (float (xRes) / float (yRes), cameraWidth, nearPlane, farPlane);
 }
 
-Vector3f OrthographicCamera::GetPosition () const
-{
-	return cameraPosition;
-}
 
 

@@ -11,11 +11,11 @@ public:
 	Camera (Vector3f& position, Vector3f& lookAt, Vector3f& up);
 	~Camera ();
 
-	virtual Matrix4f GetViewMatrix () const = 0;
+	Matrix4f GetViewMatrix () const;
 	virtual Matrix4f GetProjectionMatrix (unsigned int xRes, unsigned int yRes) const = 0;
 
 	// getters
-	virtual Vector3f GetPosition () const = 0;
+	Vector3f GetPosition () const;
 
 protected:
 

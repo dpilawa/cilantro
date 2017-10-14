@@ -8,3 +8,13 @@ cameraPosition (position), cameraLookAt (lookAt), cameraUp (up)
 Camera::~Camera ()
 {
 }
+
+Matrix4f Camera::GetViewMatrix () const
+{
+	return Mathf::GenCameraViewMatrix (cameraPosition, cameraLookAt, cameraUp);
+}
+
+Vector3f Camera::GetPosition () const
+{
+	return cameraPosition;
+}
