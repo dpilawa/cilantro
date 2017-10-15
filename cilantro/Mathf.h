@@ -1,6 +1,7 @@
 #ifndef _MATHF_H_
 #define _MATHF_H_
 
+#include "Matrix3f.h"
 #include "Matrix4f.h"
 #include "Vector3f.h"
 #include <cmath>
@@ -23,6 +24,10 @@ public:
 	static Vector3f Cross (const Vector3f& v1, const Vector3f& v2);
 
 	// matrix operations
+	static float Det (const Matrix3f& m);
+	static Matrix3f Transpose (const Matrix3f& m);
+	static Matrix4f Transpose (const Matrix4f& m);
+	static Matrix3f Inverse (const Matrix3f& m);
 
 	// convert degrees to radians
 	static float Deg2Rad (float degrees);

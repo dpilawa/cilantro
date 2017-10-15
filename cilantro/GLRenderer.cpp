@@ -198,7 +198,7 @@ void GLRenderer::Draw (MeshObject & meshObject)
 
 	// calculate normal matrix for drawn objects and set uniform value
 	normalMatrixId = glGetUniformLocation (shaderProgramId, "mNormal");
-	glUniformMatrix3fv (normalMatrixId, 1, GL_TRUE, Inverse (Transpose (Matrix3f (meshObject.GetModelTransformMatrix ())))[0]);
+	glUniformMatrix3fv (normalMatrixId, 1, GL_TRUE, Mathf::Inverse (Mathf::Transpose (Matrix3f (meshObject.GetModelTransformMatrix ())))[0]);
 
 	// draw mesh
 	glBindVertexArray (objectBuffers[meshObject.GetHandle ()].VAO);
@@ -394,10 +394,10 @@ void GLRenderer::LoadMatrixUniformBuffers ()
 	}
 
 	// load view matrix
-	std::memcpy (uniformMatrixBuffer.viewMatrix, Transpose (activeCamera->GetViewMatrix ())[0], 16 * sizeof (GLfloat));
+	std::memcpy (uniformMatrixBuffer.viewMatrix, Mathf::Transpose (activeCamera->GetViewMatrix ())[0], 16 * sizeof (GLfloat));
 
 	// load projection matrix
-	std::memcpy (uniformMatrixBuffer.projectionMatrix, Transpose (activeCamera->GetProjectionMatrix (xResolution, yResolution))[0], 16 * sizeof (GLfloat));
+	std::memcpy (uniformMatrixBuffer.projectionMatrix, Mathf::Transpose (activeCamera->GetProjectionMatrix (xResolution, yResolution))[0], 16 * sizeof (GLfloat));
 
 	// load to GPU
 	glBindBuffer (GL_UNIFORM_BUFFER, sceneBuffers.UBO[UBO_MATRICES]);
