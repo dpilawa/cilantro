@@ -1,7 +1,6 @@
 #include "Camera.h"
 
-Camera::Camera (Vector3f& position, Vector3f& lookAt, Vector3f& up) :
-cameraPosition (position), cameraLookAt (lookAt), cameraUp (up)
+Camera::Camera ()
 {
 }
 
@@ -9,12 +8,15 @@ Camera::~Camera ()
 {
 }
 
-Matrix4f Camera::GetViewMatrix () const
+Matrix4f Camera::GetViewMatrix ()
 {
-	return Mathf::GenCameraViewMatrix (cameraPosition, cameraLookAt, cameraUp);
+	Matrix4f cameraModel = this->GetModelTransformMatrix ();
+
+	cameraModel[0][3] = - cameraModel[0][3];
+	cameraModel[1][3] = - cameraModel[1][3];
+	cameraModel[2][3] = - cameraModel[2][3];
+
+	return cameraModel;
 }
 
-Vector3f Camera::GetPosition () const
-{
-	return cameraPosition;
-}
+

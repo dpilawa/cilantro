@@ -10,7 +10,7 @@
 class OrthographicCamera : public Camera
 {
 public:
-	__EAPI OrthographicCamera (Vector3f& position, Vector3f& lookAt, Vector3f& up, float width, float near, float far);
+	__EAPI OrthographicCamera (float width, float near, float far);
 	__EAPI ~OrthographicCamera ();
 
 	__EAPI Matrix4f GetProjectionMatrix (unsigned int xRes, unsigned int yRes) const;

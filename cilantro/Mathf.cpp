@@ -214,9 +214,9 @@ Matrix4f Mathf::GenPerspectiveProjectionMatrix (float aspect, float fov, float n
 	m.InitIdentity ();
 	m[0][0] = 1.0f / (aspect * scale);
 	m[1][1] = 1.0f / scale;
-	m[2][2] = (-nearZ - farZ) / (nearZ - farZ);
-	m[2][3] = (2.0f * nearZ * farZ) / (nearZ - farZ);
-	m[3][2] = 1.0f;
+	m[2][2] = -(farZ + nearZ) / (farZ - nearZ);
+	m[2][3] = -(2.0f * nearZ * farZ) / (farZ - nearZ);
+	m[3][2] = -1.0f;
 
 	return m;
 }
@@ -228,8 +228,8 @@ Matrix4f Mathf::GenOrthographicProjectionMatrix (float aspect, float width, floa
 	m.InitIdentity ();
 	m[0][0] = 2.0f / width;
 	m[1][1] = (2.0f * aspect) / width;
-	m[2][2] = 2.0f / (farZ - nearZ);
-	m[2][3] = (-farZ - nearZ) / (farZ - nearZ);
+	m[2][2] = -2.0f / (farZ - nearZ);
+	m[2][3] = -(farZ + nearZ) / (farZ - nearZ);
 
 	return m;
 }

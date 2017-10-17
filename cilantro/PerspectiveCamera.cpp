@@ -1,7 +1,6 @@
 #include "PerspectiveCamera.h"
 
-PerspectiveCamera::PerspectiveCamera (Vector3f & position, Vector3f & lookAt, Vector3f & up, float fov, float near, float far) :
-	Camera (position, lookAt, up),
+PerspectiveCamera::PerspectiveCamera (float fov, float near, float far) :
 	cameraFOV (fov), nearPlane (near), farPlane (far)
 {
 }
