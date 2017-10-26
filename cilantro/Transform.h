@@ -3,6 +3,7 @@
 
 #include "cilantroengine.h"
 #include "CallbackProvider.h"
+#include "Vector3f.h"
 #include "Matrix4f.h"
 #include "Mathf.h"
 
@@ -23,12 +24,15 @@ public:
 	
 	// translate
 	__EAPI Transform& Translate (float x, float y, float z);
+	__EAPI Transform& Translate (const Vector3f& t);
 	// scale
 	__EAPI Transform& Scale (float x, float y, float z);
+	__EAPI Transform& Scale (const Vector3f& s);
 	// scale along all axes
 	__EAPI Transform& Scale (float s);
 	// rotate (angles in degrees)
 	__EAPI Transform& Rotate (float x, float y, float z);
+	__EAPI Transform& Rotate (const Vector3f& r);
 
 private:
 

@@ -3,6 +3,8 @@
 
 #include <algorithm>
 
+#define M4(i, j) m[i * 4 + j]
+
 class Matrix4f
 {
 public:
@@ -65,25 +67,25 @@ inline Matrix4f& Matrix4f::operator*=(const Matrix4f& other)
 	// actual multiplication code
 	Matrix4f temp (*this);
 
-	(*this)[0][0] = temp[0][0] * other[0][0] + temp[0][1] * other[1][0] + temp[0][2] * other[2][0] + temp[0][3] * other[3][0];
-	(*this)[0][1] = temp[0][0] * other[0][1] + temp[0][1] * other[1][1] + temp[0][2] * other[2][1] + temp[0][3] * other[3][1];
-	(*this)[0][2] = temp[0][0] * other[0][2] + temp[0][1] * other[1][2] + temp[0][2] * other[2][2] + temp[0][3] * other[3][2];
-	(*this)[0][3] = temp[0][0] * other[0][3] + temp[0][1] * other[1][3] + temp[0][2] * other[2][3] + temp[0][3] * other[3][3];
+	M4 (0, 0) = temp[0][0] * other[0][0] + temp[0][1] * other[1][0] + temp[0][2] * other[2][0] + temp[0][3] * other[3][0];
+	M4 (0, 1) = temp[0][0] * other[0][1] + temp[0][1] * other[1][1] + temp[0][2] * other[2][1] + temp[0][3] * other[3][1];
+	M4 (0, 2) = temp[0][0] * other[0][2] + temp[0][1] * other[1][2] + temp[0][2] * other[2][2] + temp[0][3] * other[3][2];
+	M4 (0, 3) = temp[0][0] * other[0][3] + temp[0][1] * other[1][3] + temp[0][2] * other[2][3] + temp[0][3] * other[3][3];
 
-	(*this)[1][0] = temp[1][0] * other[0][0] + temp[1][1] * other[1][0] + temp[1][2] * other[2][0] + temp[1][3] * other[3][0];
-	(*this)[1][1] = temp[1][0] * other[0][1] + temp[1][1] * other[1][1] + temp[1][2] * other[2][1] + temp[1][3] * other[3][1];
-	(*this)[1][2] = temp[1][0] * other[0][2] + temp[1][1] * other[1][2] + temp[1][2] * other[2][2] + temp[1][3] * other[3][2];
-	(*this)[1][3] = temp[1][0] * other[0][3] + temp[1][1] * other[1][3] + temp[1][2] * other[2][3] + temp[1][3] * other[3][3];
+	M4 (1, 0) = temp[1][0] * other[0][0] + temp[1][1] * other[1][0] + temp[1][2] * other[2][0] + temp[1][3] * other[3][0];
+	M4 (1, 1) = temp[1][0] * other[0][1] + temp[1][1] * other[1][1] + temp[1][2] * other[2][1] + temp[1][3] * other[3][1];
+	M4 (1, 2) = temp[1][0] * other[0][2] + temp[1][1] * other[1][2] + temp[1][2] * other[2][2] + temp[1][3] * other[3][2];
+	M4 (1, 3) = temp[1][0] * other[0][3] + temp[1][1] * other[1][3] + temp[1][2] * other[2][3] + temp[1][3] * other[3][3];
 
-	(*this)[2][0] = temp[2][0] * other[0][0] + temp[2][1] * other[1][0] + temp[2][2] * other[2][0] + temp[2][3] * other[3][0];
-	(*this)[2][1] = temp[2][0] * other[0][1] + temp[2][1] * other[1][1] + temp[2][2] * other[2][1] + temp[2][3] * other[3][1];
-	(*this)[2][2] = temp[2][0] * other[0][2] + temp[2][1] * other[1][2] + temp[2][2] * other[2][2] + temp[2][3] * other[3][2];
-	(*this)[2][3] = temp[2][0] * other[0][3] + temp[2][1] * other[1][3] + temp[2][2] * other[2][3] + temp[2][3] * other[3][3];
+	M4 (2, 0) = temp[2][0] * other[0][0] + temp[2][1] * other[1][0] + temp[2][2] * other[2][0] + temp[2][3] * other[3][0];
+	M4 (2, 1) = temp[2][0] * other[0][1] + temp[2][1] * other[1][1] + temp[2][2] * other[2][1] + temp[2][3] * other[3][1];
+	M4 (2, 2) = temp[2][0] * other[0][2] + temp[2][1] * other[1][2] + temp[2][2] * other[2][2] + temp[2][3] * other[3][2];
+	M4 (2, 3) = temp[2][0] * other[0][3] + temp[2][1] * other[1][3] + temp[2][2] * other[2][3] + temp[2][3] * other[3][3];
 
-	(*this)[3][0] = temp[3][0] * other[0][0] + temp[3][1] * other[1][0] + temp[3][2] * other[2][0] + temp[3][3] * other[3][0];
-	(*this)[3][1] = temp[3][0] * other[0][1] + temp[3][1] * other[1][1] + temp[3][2] * other[2][1] + temp[3][3] * other[3][1];
-	(*this)[3][2] = temp[3][0] * other[0][2] + temp[3][1] * other[1][2] + temp[3][2] * other[2][2] + temp[3][3] * other[3][2];
-	(*this)[3][3] = temp[3][0] * other[0][3] + temp[3][1] * other[1][3] + temp[3][2] * other[2][3] + temp[3][3] * other[3][3];
+	M4 (3, 0) = temp[3][0] * other[0][0] + temp[3][1] * other[1][0] + temp[3][2] * other[2][0] + temp[3][3] * other[3][0];
+	M4 (3, 1) = temp[3][0] * other[0][1] + temp[3][1] * other[1][1] + temp[3][2] * other[2][1] + temp[3][3] * other[3][1];
+	M4 (3, 2) = temp[3][0] * other[0][2] + temp[3][1] * other[1][2] + temp[3][2] * other[2][2] + temp[3][3] * other[3][2];
+	M4 (3, 3) = temp[3][0] * other[0][3] + temp[3][1] * other[1][3] + temp[3][2] * other[2][3] + temp[3][3] * other[3][3];
 
 	return *this;
 }

@@ -25,9 +25,11 @@ public:
 
 	// matrix operations
 	static float Det (const Matrix3f& m);
+	static float Det (const Matrix4f& m);
 	static Matrix3f Transpose (const Matrix3f& m);
 	static Matrix4f Transpose (const Matrix4f& m);
-	static Matrix3f Inverse (const Matrix3f& m);
+	static Matrix3f Invert (const Matrix3f& m);
+	static Matrix4f Invert (const Matrix4f& m);
 
 	// convert degrees to radians
 	static float Deg2Rad (float degrees);
@@ -52,6 +54,7 @@ public:
 	// generate rotation matrix to rotate around X, then Y, then Z axis
 	// angle provided in radians
 	static Matrix4f GenRotationXYZMatrix (float x, float y, float z);
+	static Matrix4f GenRotationXYZMatrix (Vector3f& r);
 
 	// generate translation matrix along 3 axes
 	static Matrix4f GenTranslationMatrix (float x, float y, float z);
@@ -59,6 +62,7 @@ public:
 
 	// generate scaling matrix along 3 axes
 	static Matrix4f GenScalingMatrix (float x, float y, float z);
+	static Matrix4f GenScalingMatrix (Vector3f& s);
 
 	// generate camera (view) matrix
 	static Matrix4f GenCameraViewMatrix (const Vector3f& position, const Vector3f& lookAt, const Vector3f& up);

@@ -60,6 +60,11 @@ Transform& Transform::Translate (float x, float y, float z)
 	return *this;
 }
 
+__EAPI Transform & Transform::Translate (const Vector3f & t)
+{
+	return Translate (t[0], t[1], t[2]);
+}
+
 Transform& Transform::Scale (float x, float y, float z) 
 {
 	hasChanged = true;
@@ -73,6 +78,11 @@ Transform& Transform::Scale (float x, float y, float z)
 	InvokeCallbacks ("OnUpdateTransform", 0u);
 
 	return *this;
+}
+
+__EAPI Transform & Transform::Scale (const Vector3f & s)
+{
+	return Scale (s[0], s[1], s[2]);
 }
 
 Transform& Transform::Scale (float s)
@@ -93,6 +103,11 @@ Transform& Transform::Rotate (float x, float y, float z)
 	InvokeCallbacks ("OnUpdateTransform", 0u);
 
 	return *this;
+}
+
+__EAPI Transform & Transform::Rotate (const Vector3f & r)
+{
+	return Rotate (r[0], r[1], r[2]);
 }
 
 

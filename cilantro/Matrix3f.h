@@ -3,6 +3,8 @@
 
 #include "Matrix4f.h"
 
+#define M3(i, j) m[i * 3 + j]
+
 class Matrix3f
 {
 public:
@@ -18,17 +20,17 @@ public:
 	// copy constructor (submatrix)
 	Matrix3f (const Matrix4f& other)
 	{
-		(*this)[0][0] = other[0][0];
-		(*this)[0][1] = other[0][1];
-		(*this)[0][2] = other[0][2];
+		M3 (0, 0) = other[0][0];
+		M3 (0, 1) = other[0][1];
+		M3 (0, 2) = other[0][2];
 
-		(*this)[1][0] = other[1][0];
-		(*this)[1][1] = other[1][1];
-		(*this)[1][2] = other[1][2];
+		M3 (1, 0) = other[1][0];
+		M3 (1, 1) = other[1][1];
+		M3 (1, 2) = other[1][2];
 
-		(*this)[2][0] = other[2][0];
-		(*this)[2][1] = other[2][1];
-		(*this)[2][2] = other[2][2];
+		M3 (2, 0) = other[2][0];
+		M3 (2, 1) = other[2][1];
+		M3 (2, 2) = other[2][2];
 	}
 
 	// move constructor
@@ -82,34 +84,34 @@ inline Matrix3f& Matrix3f::operator*=(const Matrix3f& other)
 	// actual multiplication code
 	Matrix3f temp (*this);
 
-	(*this)[0][0] = temp[0][0] * other[0][0] + temp[0][1] * other[1][0] + temp[0][2] * other[2][0];
-	(*this)[0][1] = temp[0][0] * other[0][1] + temp[0][1] * other[1][1] + temp[0][2] * other[2][1];
-	(*this)[0][2] = temp[0][0] * other[0][2] + temp[0][1] * other[1][2] + temp[0][2] * other[2][2];
+	M3 (0, 0) = temp[0][0] * other[0][0] + temp[0][1] * other[1][0] + temp[0][2] * other[2][0];
+	M3 (0, 1) = temp[0][0] * other[0][1] + temp[0][1] * other[1][1] + temp[0][2] * other[2][1];
+	M3 (0, 2) = temp[0][0] * other[0][2] + temp[0][1] * other[1][2] + temp[0][2] * other[2][2];
 
-	(*this)[1][0] = temp[1][0] * other[0][0] + temp[1][1] * other[1][0] + temp[1][2] * other[2][0];
-	(*this)[1][1] = temp[1][0] * other[0][1] + temp[1][1] * other[1][1] + temp[1][2] * other[2][1];
-	(*this)[1][2] = temp[1][0] * other[0][2] + temp[1][1] * other[1][2] + temp[1][2] * other[2][2];
+	M3 (1, 0) = temp[1][0] * other[0][0] + temp[1][1] * other[1][0] + temp[1][2] * other[2][0];
+	M3 (1, 1) = temp[1][0] * other[0][1] + temp[1][1] * other[1][1] + temp[1][2] * other[2][1];
+	M3 (1, 2) = temp[1][0] * other[0][2] + temp[1][1] * other[1][2] + temp[1][2] * other[2][2];
 
-	(*this)[2][0] = temp[2][0] * other[0][0] + temp[2][1] * other[1][0] + temp[2][2] * other[2][0];
-	(*this)[2][1] = temp[2][0] * other[0][1] + temp[2][1] * other[1][1] + temp[2][2] * other[2][1];
-	(*this)[2][2] = temp[2][0] * other[0][2] + temp[2][1] * other[1][2] + temp[2][2] * other[2][2];
+	M3 (2, 0) = temp[2][0] * other[0][0] + temp[2][1] * other[1][0] + temp[2][2] * other[2][0];
+	M3 (2, 1) = temp[2][0] * other[0][1] + temp[2][1] * other[1][1] + temp[2][2] * other[2][1];
+	M3 (2, 2) = temp[2][0] * other[0][2] + temp[2][1] * other[1][2] + temp[2][2] * other[2][2];
 
 	return *this;
 }
 
 inline Matrix3f & Matrix3f::operator*=(float f)
 {
-	(*this)[0][0] *= f;
-	(*this)[0][1] *= f;
-	(*this)[0][2] *= f;
+	M3 (0, 0) *= f;
+	M3 (0, 1) *= f;
+	M3 (0, 2) *= f;
 
-	(*this)[1][0] *= f;
-	(*this)[1][1] *= f;
-	(*this)[1][2] *= f;
+	M3 (1, 0) *= f;
+	M3 (1, 1) *= f;
+	M3 (1, 2) *= f;
 
-	(*this)[2][0] *= f;
-	(*this)[2][1] *= f;
-	(*this)[2][2] *= f;
+	M3 (2, 0) *= f;
+	M3 (2, 1) *= f;
+	M3 (2, 2) *= f;
 
 	return *this;
 }

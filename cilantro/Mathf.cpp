@@ -21,6 +21,11 @@ float Mathf::Det (const Matrix3f & m)
 		 - m[0][2] * m[1][1] * m[2][0];
 }
 
+float Mathf::Det (const Matrix4f & m)
+{//TBD
+	return 0.0f;
+}
+
 Matrix3f Mathf::Transpose (const Matrix3f & m)
 {
 	Matrix3f n;
@@ -67,7 +72,7 @@ Matrix4f Mathf::Transpose (const Matrix4f & m)
 	return n;
 }
 
-Matrix3f Mathf::Inverse (const Matrix3f & m)
+Matrix3f Mathf::Invert (const Matrix3f & m)
 {
 	Matrix3f i;
 
@@ -86,6 +91,12 @@ Matrix3f Mathf::Inverse (const Matrix3f & m)
 	i *= (1.0f / Det (m));
 
 	return i;
+}
+
+Matrix4f Mathf::Invert (const Matrix4f & m)
+{
+	// TBD
+	return Matrix4f ();
 }
 
 float Mathf::Deg2Rad (float degrees)
@@ -150,6 +161,11 @@ Matrix4f Mathf::GenRotationXYZMatrix (float x, float y, float z)
 	return GenRotationZMatrix (z) * GenRotationYMatrix (y) * GenRotationXMatrix (x);
 }
 
+Matrix4f Mathf::GenRotationXYZMatrix (Vector3f& r)
+{
+	return GenRotationXYZMatrix (r[0], r[1], r[2]);
+}
+
 Matrix4f Mathf::GenTranslationMatrix (float x, float y, float z)
 {
 	Matrix4f m;
@@ -177,6 +193,11 @@ Matrix4f Mathf::GenScalingMatrix (float x, float y, float z)
 	m[2][2] = z;
 
 	return m;
+}
+
+Matrix4f Mathf::GenScalingMatrix (Vector3f & s)
+{
+	return GenScalingMatrix (s[0], s[1], s[2]);
 }
 
 Matrix4f Mathf::GenCameraViewMatrix (const Vector3f& position, const Vector3f& lookAt, const Vector3f& up)
