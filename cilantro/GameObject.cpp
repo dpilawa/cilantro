@@ -71,7 +71,7 @@ Matrix4f GameObject::GetModelTransformMatrix ()
 
 Vector4f GameObject::GetPosition ()
 {
-	return Vector4f (0.0f, 0.0f, 0.0f, 1.0f) * GetModelTransformMatrix ();
+	return GetModelTransformMatrix () * Vector4f (0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 

@@ -216,7 +216,7 @@ void MeshObject::CalculateVertexNormals ()
 		}
 
 		// normalize
-		normal.Normalize ();
+		normal = Mathf::Normalize (normal);
 
 		// store normal
 		normals.push_back (normal[0]);

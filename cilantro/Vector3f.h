@@ -37,10 +37,8 @@ public:
 	float& operator[](unsigned int index);
 	const float& operator[](unsigned int index) const;
 
-	// normalize vector
-	Vector3f& Normalize ();
-
 	// operators
+	Vector3f& operator*= (float f);
 	Vector3f& operator+= (const Vector3f& m);
 	Vector3f& operator-= (const Vector3f& m);
 	friend inline Vector3f operator- (Vector3f v);
@@ -61,6 +59,15 @@ inline const float& Vector3f::operator[](unsigned int index) const
 	return v[index];
 }
 
+inline Vector3f& Vector3f::operator*=(float f)
+{
+	v[0] *= f;
+	v[1] *= f;
+	v[2] *= f;
+
+	return *this;
+}
+
 inline Vector3f& Vector3f::operator+=(const Vector3f& other)
 {
 	v[0] += other.v[0];
@@ -78,6 +85,18 @@ inline Vector3f& Vector3f::operator-=(const Vector3f& other)
 
 	return *this;
 }
+
+inline Vector3f operator* (Vector3f u, float f)
+{
+	u *= f;
+	return u;
+};
+
+inline Vector3f operator* (float f, Vector3f u)
+{
+	u *= f;
+	return u;
+};
 
 inline Vector3f operator+ (Vector3f u, const Vector3f& v)
 {

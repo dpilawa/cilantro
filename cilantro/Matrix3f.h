@@ -1,6 +1,7 @@
 #ifndef _MATRIX3F_H_
 #define _MATRIX3F_H_
 
+#include "Vector3f.h"
 #include "Matrix4f.h"
 
 #define M3(i, j) m[i * 3 + j]
@@ -31,6 +32,22 @@ public:
 		M3 (2, 0) = other[2][0];
 		M3 (2, 1) = other[2][1];
 		M3 (2, 2) = other[2][2];
+	}
+
+	// copy constructor (column vectors)
+	Matrix3f (const Vector3f& c1, const Vector3f& c2, const Vector3f& c3)
+	{
+		M3 (0, 0) = c1[0];
+		M3 (1, 0) = c1[1];
+		M3 (2, 0) = c1[2];
+
+		M3 (0, 1) = c2[0];
+		M3 (1, 1) = c2[1];
+		M3 (2, 1) = c2[2];
+
+		M3 (0, 2) = c3[0];
+		M3 (1, 2) = c3[1];
+		M3 (2, 2) = c3[2];
 	}
 
 	// move constructor

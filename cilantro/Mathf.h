@@ -1,6 +1,7 @@
 #ifndef _MATHF_H_
 #define _MATHF_H_
 
+#include "cilantroengine.h"
 #include "Matrix3f.h"
 #include "Matrix4f.h"
 #include "Vector3f.h"
@@ -14,65 +15,67 @@ class Mathf
 {
 public:
 	// static constants
-	static const float Pi () { return cPI; };
+	__EAPI static const float Pi () { return cPI; };
 
 	// vector operations
 
 	// returns vector length
-	static float Length (const Vector3f& v);
+	__EAPI static float Length (const Vector3f& v);
+	// normalize vector
+	__EAPI static Vector3f Normalize (const Vector3f& v);
 	// cross product of two vectors
-	static Vector3f Cross (const Vector3f& v1, const Vector3f& v2);
+	__EAPI static Vector3f Cross (const Vector3f& v1, const Vector3f& v2);
 
 	// matrix operations
-	static float Det (const Matrix3f& m);
-	static float Det (const Matrix4f& m);
-	static Matrix3f Transpose (const Matrix3f& m);
-	static Matrix4f Transpose (const Matrix4f& m);
-	static Matrix3f Invert (const Matrix3f& m);
-	static Matrix4f Invert (const Matrix4f& m);
+	__EAPI static float Det (const Matrix3f& m);
+	__EAPI static float Det (const Matrix4f& m);
+	__EAPI static Matrix3f Transpose (const Matrix3f& m);
+	__EAPI static Matrix4f Transpose (const Matrix4f& m);
+	__EAPI static Matrix3f Invert (const Matrix3f& m);
+	__EAPI static Matrix4f Invert (const Matrix4f& m);
 
 	// convert degrees to radians
-	static float Deg2Rad (float degrees);
+	__EAPI static float Deg2Rad (float degrees);
 	// convert radians to degrees
-	static float Rad2Deg (float radians);
+	__EAPI static float Rad2Deg (float radians);
 
 	// convert spherical to cartesian coordinates (theta and pi in radians)
-	static Vector3f Spherical2Cartesian (float theta, float phi, float r);
+	__EAPI static Vector3f Spherical2Cartesian (float theta, float phi, float r);
 
 	// generate rotation matrix to rotate around X axis
 	// angle provided in radians
-	static Matrix4f GenRotationXMatrix (float angle);
+	__EAPI static Matrix4f GenRotationXMatrix (float angle);
 
 	// generate rotation matrix to rotate around Y axis
 	// angle provided in radians
-	static Matrix4f GenRotationYMatrix (float angle);
+	__EAPI static Matrix4f GenRotationYMatrix (float angle);
 
 	// generate rotation matrix to rotate around Z axis
 	// angle provided in radians
-	static Matrix4f GenRotationZMatrix (float angle);
+	__EAPI static Matrix4f GenRotationZMatrix (float angle);
 
 	// generate rotation matrix to rotate around X, then Y, then Z axis
 	// angle provided in radians
-	static Matrix4f GenRotationXYZMatrix (float x, float y, float z);
-	static Matrix4f GenRotationXYZMatrix (Vector3f& r);
+	__EAPI static Matrix4f GenRotationXYZMatrix (float x, float y, float z);
+	__EAPI static Matrix4f GenRotationXYZMatrix (Vector3f& r);
 
 	// generate translation matrix along 3 axes
-	static Matrix4f GenTranslationMatrix (float x, float y, float z);
-	static Matrix4f GenTranslationMatrix (Vector3f& t);
+	__EAPI static Matrix4f GenTranslationMatrix (float x, float y, float z);
+	__EAPI static Matrix4f GenTranslationMatrix (Vector3f& t);
 
 	// generate scaling matrix along 3 axes
-	static Matrix4f GenScalingMatrix (float x, float y, float z);
-	static Matrix4f GenScalingMatrix (Vector3f& s);
+	__EAPI static Matrix4f GenScalingMatrix (float x, float y, float z);
+	__EAPI static Matrix4f GenScalingMatrix (Vector3f& s);
 
 	// generate camera (view) matrix
-	static Matrix4f GenCameraViewMatrix (const Vector3f& position, const Vector3f& lookAt, const Vector3f& up);
+	__EAPI static Matrix4f GenCameraViewMatrix (const Vector3f& position, const Vector3f& lookAt, const Vector3f& up);
 
 	// generate projection matrix (perspective)
 	// fov provided in radians
-	static Matrix4f GenPerspectiveProjectionMatrix (float aspect, float fov, float nearZ, float farZ);
+	__EAPI static Matrix4f GenPerspectiveProjectionMatrix (float aspect, float fov, float nearZ, float farZ);
 
 	// generate projection matrix (orthographic)
-	static Matrix4f GenOrthographicProjectionMatrix (float aspect, float width, float nearZ, float farZ);
+	__EAPI static Matrix4f GenOrthographicProjectionMatrix (float aspect, float width, float nearZ, float farZ);
 };
 
 #endif

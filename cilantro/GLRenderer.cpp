@@ -394,7 +394,7 @@ void GLRenderer::LoadMatrixUniformBuffers ()
 	}
 
 	// load view matrix
-	std::memcpy (uniformMatrixBuffer.viewMatrix, Mathf::Transpose (Mathf::Invert (activeCamera->GetViewMatrix ()))[0], 16 * sizeof (GLfloat));
+	std::memcpy (uniformMatrixBuffer.viewMatrix, Mathf::Transpose (activeCamera->GetViewMatrix ())[0], 16 * sizeof (GLfloat));
 
 	// load projection matrix
 	std::memcpy (uniformMatrixBuffer.projectionMatrix, Mathf::Transpose (activeCamera->GetProjectionMatrix (xResolution, yResolution))[0], 16 * sizeof (GLfloat));
