@@ -269,9 +269,10 @@ Matrix4f Mathf::GenCameraViewMatrix (const Vector3f& position, const Vector3f& l
 	
 	// Create a translation matrix
 	// The eye position is negated which is equivalent
-	// to the inverse of translation matrix
+	// to the inverse of translation matrix (so no need to invert)
 	Matrix4f t = Mathf::GenTranslationMatrix (-position);
 
+	// multiply matrices and return
 	return m * t;
 }
 
