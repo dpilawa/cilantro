@@ -50,21 +50,8 @@ void GameLoop::Go ()
 			gameObject->OnFrame ();
 		}
 
-		// draw all game objects
-		//for (auto gameObject : gameScene.GetGameObjects ())
-		//{
-		//	gameObject->OnDraw (gameRenderer);
-		//}
-
 		// render frame
 		gameRenderer.RenderFrame ();
-
-		// display debug message
-		if (gameRenderer.GetFrameCount () % 200 == 0)
-		{
-			LogMessage () << "Actual FPS:" << 1 / Time::GetFrameDeltaTime () << "; Theoretical FPS:" << 1 / Time::GetFrameRenderTime ();
-		}
-
 	}
 }
 

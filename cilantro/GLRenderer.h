@@ -12,8 +12,8 @@
 #include "GLShader.h"
 #include "GLShaderModel.h"
 
-#include "GL/glew.h"
-#include "GLFW/glfw3.h"
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 
 #include <string>
 #include <iostream>
@@ -100,6 +100,13 @@ private:
 	// rendering resolution
 	int xResolution;
 	int yResolution;
+
+	// frame counters and timers
+	float timeSinceLastSplit;
+	float frameRenderTimeSinceLastSplit;
+	float frameRenderTimeInLastSplit;
+	long splitFrameCount;
+	long lastFrameCount;
 
 	// GL window context
 	GLFWwindow* window;

@@ -1,8 +1,12 @@
 #include "GLRenderer.h"
+
 #include "default.vs.h"
 #include "phong.fs.h"
 #include "blinnphong.fs.h"
 #include "normals.fs.h"
+
+#include <imgui.h>
+#include "examples/opengl3_example/imgui_impl_glfw_gl3.h"
 
 GLRenderer::GLRenderer (int xRes, int yRes) : xResolution (xRes), yResolution (yRes)
 {
@@ -55,6 +59,10 @@ void GLRenderer::Initialize (GameScene* scene)
 		LogMessage (__FUNCTION__, EXIT_FAILURE) << "GLEW initialization failed";
 	}
 
+	// Setup ImGui binding
+	ImGui_ImplGlfwGL3_Init (window, true);
+	ImGui::StyleColorsClassic ();
+
 	// initialize shader library
 	InitializeShaderLibrary ();
 
@@ -88,6 +96,9 @@ void GLRenderer::RenderFrame ()
 	// invoke base class function
 	Renderer::RenderFrame ();
 
+	// tick imgui
+	ImGui_ImplGlfwGL3_NewFrame ();
+
 	// load uniform buffers
 	LoadMatrixUniformBuffers ();
 
@@ -99,6 +110,23 @@ void GLRenderer::RenderFrame ()
 
 	// update game clocks (Tock)
 	Time::Tock ();
+
+	// display debug messages
+	if (Time::GetTimeSinceSplitTime () > 1.0f)
+	{
+		timeSinceLastSplit = Time::GetTimeSinceSplitTime ();
+		Time::ResetSplitTime ();
+		splitFrameCount = GetFrameCount () - lastFrameCount;
+		lastFrameCount = GetFrameCount ();
+		frameRenderTimeInLastSplit = frameRenderTimeSinceLastSplit;
+		frameRenderTimeSinceLastSplit = 0;
+	}
+	frameRenderTimeSinceLastSplit += Time::GetFrameRenderTime ();
+	ImGui::Text ("FPS: %.1f", splitFrameCount / timeSinceLastSplit);
+	ImGui::Text ("Frame time: %.1f ms", frameRenderTimeInLastSplit / splitFrameCount * 1000.0f);
+	
+	// render imgui
+	ImGui::Render ();
 
 	// swap front and back buffers
 	glfwSwapBuffers (window);
@@ -116,6 +144,7 @@ void GLRenderer::Deinitialize ()
 	pointLights.clear ();
 	shaders.clear ();
 	shaderModels.clear ();
+	ImGui_ImplGlfwGL3_Shutdown ();
 	glfwDestroyWindow (window);
 }
 

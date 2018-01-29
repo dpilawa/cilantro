@@ -28,7 +28,7 @@ public:
 	virtual void Draw (MeshObject& meshobject) = 0;
 
 	// return number of rendered frames
-	long long GetFrameCount () const;
+	long GetFrameCount () const;
 
 protected:
 
@@ -37,7 +37,7 @@ protected:
 
 private:
 	// number of renderedframes
-	long long frameCount;
+	long frameCount;
 };
 
 #endif

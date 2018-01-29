@@ -20,7 +20,7 @@ void Renderer::RenderFrame ()
 	frameCount++;
 }
 
-long long Renderer::GetFrameCount () const
+long Renderer::GetFrameCount () const
 {
 	return frameCount;
 }
