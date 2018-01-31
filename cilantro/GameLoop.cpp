@@ -18,7 +18,7 @@ GameLoop::GameLoop (GameScene & scene, Renderer & renderer) :
 	}
 
 	// initialize renderer
-	gameRenderer.Initialize (&scene);
+	gameRenderer.Initialize ();
 }
 
 GameLoop::~GameLoop ()
@@ -36,31 +36,35 @@ GameLoop::~GameLoop ()
 
 }
 
-void GameLoop::Go ()
+void GameLoop::Run ()
 {
 	// run game loop, terminate when shouldStop condition is met
 	while (shouldStop != true) {
-
-		// update game clocks (Tick)
-		Time::Tick ();
-
-		// update all game objects
-		for (auto gameObject : gameScene.GetGameObjects ())
-		{
-			gameObject->OnFrame ();
-		}
-
-		// render frame
-		gameRenderer.RenderFrame ();
+		Step ();
 	}
 }
 
-GameScene & GameLoop::GetScene ()
+void GameLoop::Step ()
+{
+	// update game clocks (Tick)
+	Time::Tick ();
+
+	// update all game objects
+	for (auto gameObject : gameScene.GetGameObjects ())
+	{
+		gameObject->OnFrame ();
+	}
+
+	// render frame
+	gameRenderer.RenderFrame ();
+}
+
+GameScene& GameLoop::GetScene ()
 {
 	return gameScene;
 }
 
-Renderer & GameLoop::GetRenderer ()
+Renderer& GameLoop::GetRenderer ()
 {
 	return gameRenderer;
 }

@@ -12,9 +12,6 @@
 #include "GLShader.h"
 #include "GLShaderModel.h"
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
 #include <string>
 #include <iostream>
 
@@ -78,11 +75,11 @@ public:
 class GLRenderer : public Renderer
 {
 public:
-	__EAPI GLRenderer (int xRes, int yRes);
+	__EAPI GLRenderer (GameScene& scene, RenderTarget& target);
 	__EAPI ~GLRenderer ();
 
 	// initialize renderer
-	__EAPI void Initialize (GameScene* scene);
+	__EAPI void Initialize ();
 	// render one frame
 	__EAPI void RenderFrame ();
 	// deinitialize renderer
@@ -97,19 +94,6 @@ public:
 	__EAPI void Draw (MeshObject& meshObject);
 
 private:
-	// rendering resolution
-	int xResolution;
-	int yResolution;
-
-	// frame counters and timers
-	float timeSinceLastSplit;
-	float frameRenderTimeSinceLastSplit;
-	float frameRenderTimeInLastSplit;
-	long splitFrameCount;
-	long lastFrameCount;
-
-	// GL window context
-	GLFWwindow* window;
 
 	// GL shader library
 	std::unordered_map <std::string, GLShader> shaders;

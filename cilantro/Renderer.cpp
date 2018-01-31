@@ -1,27 +1,11 @@
 #include "Renderer.h"
 
-Renderer::Renderer ()
+Renderer::Renderer (GameScene& scene, RenderTarget& target)
 {
-	frameCount = 0;
-	renderedScene = nullptr;
+	renderedScene = &scene;
+	renderTarget = &target;
 }
 
 Renderer::~Renderer ()
 {
 }
-
-void Renderer::Initialize (GameScene * scene)
-{
-	renderedScene = scene;
-}
-
-void Renderer::RenderFrame ()
-{
-	frameCount++;
-}
-
-long Renderer::GetFrameCount () const
-{
-	return frameCount;
-}
-

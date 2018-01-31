@@ -4,7 +4,8 @@
 void main (int argc, char* argv[])
 {
 	GameScene scene;
-	GLRenderer renderer (1280, 720);
+	GLFWRenderTarget target (800, 600, 0, 1);
+	GLRenderer renderer (scene, target);
 	GameLoop game (scene, renderer);
 
 	Material& green = scene.AddMaterial (new Material ());
@@ -47,6 +48,6 @@ void main (int argc, char* argv[])
 	light1.SetLinearAttenuationFactor (0.2f).SetQuadraticAttenuationFactor (0.2f);
 	light1.Enable ();
 
-	game.Go ();
+	game.Run ();
 }
 

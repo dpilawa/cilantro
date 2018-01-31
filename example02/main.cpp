@@ -4,7 +4,8 @@
 void main (int argc, char* argv [])
 {
 	GameScene scene;
-	GLRenderer renderer (1680, 720);
+	GLFWRenderTarget target (1680, 720, 0, 1);
+	GLRenderer renderer (scene, target);
 	GameLoop game (scene, renderer);
 
 	Material& sunM = scene.AddMaterial (new Material ());
@@ -55,6 +56,6 @@ void main (int argc, char* argv [])
 	sunLight.SetAmbiencePower (0.1f);
 	sunLight.Enable ();
 
-	game.Go ();
+	game.Run ();
 }
 

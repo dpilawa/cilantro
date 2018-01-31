@@ -15,7 +15,8 @@ public:
 	__EAPI ~GameLoop ();
 
 	// run a game loop
-	__EAPI void Go ();
+	__EAPI void Run ();
+	__EAPI void Step ();
 
 	// get scene reference
 	__EAPI GameScene& GetScene ();

@@ -28,9 +28,11 @@
 #include "PointLight.h"
 #include "MeshObject.h"
 
+#include "RenderTarget.h"
 #include "Renderer.h"
 #include "GLShader.h"
 #include "GLShaderModel.h"
+#include "GLFWRenderTarget.h"
 #include "GLRenderer.h"
 
 #include "GameScene.h"

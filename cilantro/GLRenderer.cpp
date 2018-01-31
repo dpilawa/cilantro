@@ -5,43 +5,18 @@
 #include "blinnphong.fs.h"
 #include "normals.fs.h"
 
-#include <imgui.h>
-#include "examples/opengl3_example/imgui_impl_glfw_gl3.h"
-
-GLRenderer::GLRenderer (int xRes, int yRes) : xResolution (xRes), yResolution (yRes)
+GLRenderer::GLRenderer (GameScene& scene, RenderTarget& target) : Renderer (scene, target)
 {
-	glfwInit ();
 }
 
 GLRenderer::~GLRenderer ()
 {
-	glfwTerminate ();
 }
 
-void GLRenderer::Initialize (GameScene* scene)
+void GLRenderer::Initialize ()
 {
-	// initialize superclass
-	Renderer::Initialize (scene);
-
-	// set up GL & window properties
-	glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint (GLFW_RESIZABLE, GL_FALSE);
-	glfwWindowHint (GLFW_SAMPLES, 4);
-
-	// create window
-	window = glfwCreateWindow (xResolution, yResolution, "GL", nullptr, nullptr);
-	if (window == NULL)
-	{
-		LogMessage (__FUNCTION__, EXIT_FAILURE) << "GLFW unable to create window";
-	}
-
-	// make openGL context active
-	glfwMakeContextCurrent (window);
-
-	// set vsync on
-	glfwSwapInterval (1);
+	// initialize render target
+	renderTarget->Initialize ();
 
 	// enable depth test
 	glEnable (GL_DEPTH_TEST);
@@ -52,16 +27,6 @@ void GLRenderer::Initialize (GameScene* scene)
 
 	// enable antialiasing
 	glEnable (GL_MULTISAMPLE);
-
-	// initialize GLEW
-	if (glewInit () != GLEW_OK)
-	{
-		LogMessage (__FUNCTION__, EXIT_FAILURE) << "GLEW initialization failed";
-	}
-
-	// Setup ImGui binding
-	ImGui_ImplGlfwGL3_Init (window, true);
-	ImGui::StyleColorsClassic ();
 
 	// initialize shader library
 	InitializeShaderLibrary ();
@@ -93,11 +58,11 @@ void GLRenderer::Initialize (GameScene* scene)
 
 void GLRenderer::RenderFrame ()
 {
-	// invoke base class function
-	Renderer::RenderFrame ();
+	// invoke rendering target's pre-frame function
+	renderTarget->BeforeFrame ();
 
-	// tick imgui
-	ImGui_ImplGlfwGL3_NewFrame ();
+	// clear frame and depth buffers
+	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// load uniform buffers
 	LoadMatrixUniformBuffers ();
@@ -111,31 +76,8 @@ void GLRenderer::RenderFrame ()
 	// update game clocks (Tock)
 	Time::Tock ();
 
-	// display debug messages
-	if (Time::GetTimeSinceSplitTime () > 1.0f)
-	{
-		timeSinceLastSplit = Time::GetTimeSinceSplitTime ();
-		Time::ResetSplitTime ();
-		splitFrameCount = GetFrameCount () - lastFrameCount;
-		lastFrameCount = GetFrameCount ();
-		frameRenderTimeInLastSplit = frameRenderTimeSinceLastSplit;
-		frameRenderTimeSinceLastSplit = 0;
-	}
-	frameRenderTimeSinceLastSplit += Time::GetFrameRenderTime ();
-	ImGui::Text ("FPS: %.1f", splitFrameCount / timeSinceLastSplit);
-	ImGui::Text ("Frame time: %.1f ms", frameRenderTimeInLastSplit / splitFrameCount * 1000.0f);
-	
-	// render imgui
-	ImGui::Render ();
-
-	// swap front and back buffers
-	glfwSwapBuffers (window);
-
-	// clear frame and depth buffers
-	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	// poll input
-	glfwPollEvents ();
+	// invoke rendering target's post-frame function
+	renderTarget->AfterFrame ();
 }
 
 void GLRenderer::Deinitialize ()
@@ -144,8 +86,9 @@ void GLRenderer::Deinitialize ()
 	pointLights.clear ();
 	shaders.clear ();
 	shaderModels.clear ();
-	ImGui_ImplGlfwGL3_Shutdown ();
-	glfwDestroyWindow (window);
+
+	// deinitialize render target
+	renderTarget->Deinitialize ();
 }
 
 void GLRenderer::AddShader (std::string shaderName, std::string shaderSourceCode, ShaderType shaderType)
@@ -426,7 +369,7 @@ void GLRenderer::LoadMatrixUniformBuffers ()
 	std::memcpy (uniformMatrixBuffer.viewMatrix, Mathf::Transpose (activeCamera->GetViewMatrix ())[0], 16 * sizeof (GLfloat));
 
 	// load projection matrix
-	std::memcpy (uniformMatrixBuffer.projectionMatrix, Mathf::Transpose (activeCamera->GetProjectionMatrix (xResolution, yResolution))[0], 16 * sizeof (GLfloat));
+	std::memcpy (uniformMatrixBuffer.projectionMatrix, Mathf::Transpose (activeCamera->GetProjectionMatrix (renderTarget->GetXResolution (), renderTarget->GetYResolution ()))[0], 16 * sizeof (GLfloat));
 
 	// load to GPU
 	glBindBuffer (GL_UNIFORM_BUFFER, sceneBuffers.UBO[UBO_MATRICES]);

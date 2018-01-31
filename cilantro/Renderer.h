@@ -1,7 +1,9 @@
 #ifndef _RENDERER_H_
 #define _RENDERER_H_
 
+#include "cilantroengine.h"
 #include "GameScene.h"
+#include "RenderTarget.h"
 #include "MeshObject.h"
 #include <string>
 
@@ -12,12 +14,12 @@ class MeshObject;
 class Renderer
 {
 public:
-	Renderer ();
+	Renderer (GameScene& scene, RenderTarget& target);
 	~Renderer ();
 
 	// abstract functions declarations
-	virtual void Initialize (GameScene* scene);
-	virtual void RenderFrame ();
+	virtual void Initialize () = 0;
+	virtual void RenderFrame () = 0;
 	virtual void Deinitialize () = 0;
 
 	// shader library manipulation
@@ -27,17 +29,14 @@ public:
 	// object drawing functions
 	virtual void Draw (MeshObject& meshobject) = 0;
 
-	// return number of rendered frames
-	long GetFrameCount () const;
-
 protected:
 
 	// GameScene being rendered
 	GameScene* renderedScene;
 
-private:
-	// number of renderedframes
-	long frameCount;
+	// RenderTarget in use
+	RenderTarget* renderTarget;
+
 };
 
 #endif
