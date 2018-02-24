@@ -54,6 +54,8 @@ void GLRenderer::Initialize ()
 
 	// check for any outstanding errors
 	CheckGLError (__FUNCTION__);
+
+	LogMessage (__FUNCTION__) << "GLRenderer started";
 }
 
 void GLRenderer::RenderFrame ()

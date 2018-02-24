@@ -3,10 +3,12 @@
 #include <imgui.h>
 #include "examples/opengl3_example/imgui_impl_glfw_gl3.h"
 
-GLFWRenderTarget::GLFWRenderTarget (int xRes, int yRes, int fullscreen, int vsync) : RenderTarget (xRes, yRes)
+GLFWRenderTarget::GLFWRenderTarget (int xRes, int yRes) : RenderTarget (xRes, yRes)
 {
-	isFullscreen = fullscreen;
-	vSync = vsync;
+	isFullscreen = false;
+	isResizable = false;
+	isVSync = true;
+	isDebugVisible = true;
 
 	glfwInit ();
 
@@ -26,7 +28,7 @@ void GLFWRenderTarget::Initialize ()
 	glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint (GLFW_RESIZABLE, GL_FALSE);
+	glfwWindowHint (GLFW_RESIZABLE, isResizable);
 	glfwWindowHint (GLFW_SAMPLES, 4);
 	glfwWindowHint (GLFW_VISIBLE, 1);
 
@@ -41,7 +43,7 @@ void GLFWRenderTarget::Initialize ()
 	glfwMakeContextCurrent (window);
 
 	// set vsync on
-	glfwSwapInterval (vSync);
+	glfwSwapInterval (isVSync);
 
 	// initialize GLEW
 	if (glewInit () != GLEW_OK)
@@ -52,6 +54,8 @@ void GLFWRenderTarget::Initialize ()
 	// Setup ImGui binding
 	ImGui_ImplGlfwGL3_Init (window, true);
 	ImGui::StyleColorsClassic ();
+
+	LogMessage (__FUNCTION__) << "GLFWRenderTarget started";
 }
 
 void GLFWRenderTarget::Deinitialize ()
@@ -62,6 +66,11 @@ void GLFWRenderTarget::Deinitialize ()
 
 void GLFWRenderTarget::BeforeFrame ()
 {
+
+	// resize viewport (window size may have changed)
+	glfwGetFramebufferSize (window, &xResolution, &yResolution);
+	glViewport (0, 0, xResolution, yResolution);
+
 	// tick imgui
 	ImGui_ImplGlfwGL3_NewFrame ();
 }
@@ -95,4 +104,24 @@ void GLFWRenderTarget::AfterFrame ()
 
 	// poll input
 	glfwPollEvents ();
+}
+
+void GLFWRenderTarget::setFullscreen (bool fullscreen)
+{
+	isFullscreen = fullscreen;
+}
+
+void GLFWRenderTarget::setResizable (bool resizable)
+{
+	isResizable = resizable;
+}
+
+void GLFWRenderTarget::setVSync (bool vsync)
+{
+	isVSync = vsync;
+}
+
+void GLFWRenderTarget::setDebugVisible (bool debugvisible)
+{
+	isDebugVisible = debugvisible;
 }

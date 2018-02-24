@@ -1,8 +1,7 @@
 #ifndef _RENDERTARGET_H_
 #define _RENDERTARGET_H_
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include "cilantroengine.h"
 
 class RenderTarget
 {

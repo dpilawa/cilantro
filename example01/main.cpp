@@ -4,7 +4,13 @@
 void main (int argc, char* argv[])
 {
 	GameScene scene;
-	GLFWRenderTarget target (800, 600, 0, 1);
+	
+	GLFWRenderTarget target (800, 600);
+	target.setDebugVisible (true);
+	target.setVSync (true);
+	target.setFullscreen (false);
+	target.setResizable (true);
+
 	GLRenderer renderer (scene, target);
 	GameLoop game (scene, renderer);
 

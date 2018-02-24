@@ -1,6 +1,9 @@
 #ifndef _GLRENDERER_H_
 #define _GLRENDERER_H_
 
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+
 #include "cilantroengine.h"
 #include "Renderer.h"
 #include "LogMessage.h"

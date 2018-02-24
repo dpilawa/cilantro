@@ -6,6 +6,9 @@
 #else
 #define __EAPI __declspec(dllimport)
 
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+
 #include "CallbackProvider.h"
 #include "LogMessage.h"
 #include "Time.h"
@@ -28,8 +31,8 @@
 #include "PointLight.h"
 #include "MeshObject.h"
 
-#include "RenderTarget.h"
 #include "Renderer.h"
+#include "RenderTarget.h"
 #include "GLShader.h"
 #include "GLShaderModel.h"
 #include "GLFWRenderTarget.h"

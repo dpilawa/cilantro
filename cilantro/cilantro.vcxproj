@@ -138,6 +138,7 @@
     <ClInclude Include="CallbackProvider.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="cilantroengine.h" />
+    <ClInclude Include="FrameBufferRenderTarget.h" />
     <ClInclude Include="GLFWRenderTarget.h" />
     <ClInclude Include="normals.fs.h" />
     <ClInclude Include="OrthographicCamera.h" />
@@ -172,6 +173,7 @@
     <ClCompile Include="..\ext\imgui\imgui_demo.cpp" />
     <ClCompile Include="..\ext\imgui\imgui_draw.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="FrameBufferRenderTarget.cpp" />
     <ClCompile Include="GameLoop.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameScene.cpp" />
