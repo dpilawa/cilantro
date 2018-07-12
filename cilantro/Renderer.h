@@ -1,15 +1,7 @@
 #ifndef _RENDERER_H_
 #define _RENDERER_H_
 
-#include "cilantroengine.h"
-#include "GameScene.h"
-#include "RenderTarget.h"
-#include "MeshObject.h"
-#include <string>
-
 enum class ShaderType { VERTEX_SHADER, FRAGMENT_SHADER };
-
-class MeshObject;
 
 class Renderer
 {

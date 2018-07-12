@@ -1,8 +1,8 @@
 #ifndef _MATRIX3F_H_
 #define _MATRIX3F_H_
 
-#include "Vector3f.h"
 #include "Matrix4f.h"
+#include <algorithm>
 
 #define M3(i, j) m[i * 3 + j]
 

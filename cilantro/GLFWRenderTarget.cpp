@@ -1,7 +1,8 @@
+#include "cilantroengine.h"
+#include "RenderTarget.h"
 #include "GLFWRenderTarget.h"
-
-#include <imgui.h>
-#include "examples/opengl3_example/imgui_impl_glfw_gl3.h"
+#include "LogMessage.h"
+#include "Time.h"
 
 GLFWRenderTarget::GLFWRenderTarget (int xRes, int yRes) : RenderTarget (xRes, yRes)
 {

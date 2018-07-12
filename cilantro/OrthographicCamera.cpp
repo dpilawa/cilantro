@@ -1,4 +1,8 @@
+#include "cilantroengine.h"
 #include "OrthographicCamera.h"
+#include "Camera.h"
+#include "Matrix4f.h"
+#include "Mathf.h"
 
 OrthographicCamera::OrthographicCamera (float width, float near, float far) :
 	cameraWidth (width), nearPlane (near), farPlane (far)

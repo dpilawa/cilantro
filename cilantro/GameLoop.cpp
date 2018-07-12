@@ -1,4 +1,9 @@
+#include "cilantroengine.h"
 #include "GameLoop.h"
+#include "GameScene.h"
+#include "Renderer.h"
+#include "LogMessage.h"
+#include "Time.h"
 
 GameLoop::GameLoop (GameScene & scene, Renderer & renderer) :
 	gameScene (scene), gameRenderer (renderer)

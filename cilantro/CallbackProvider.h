@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <unordered_map>
+#include <vector>
 
 // Class template to enable object callbacks
 template<typename K, typename P = unsigned int>

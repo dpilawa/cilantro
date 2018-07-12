@@ -1,3 +1,4 @@
+#include "cilantroengine.h"
 #include "RenderTarget.h"
 
 RenderTarget::RenderTarget (int xRes, int yRes) : xResolution (xRes), yResolution (yRes)

@@ -1,4 +1,8 @@
+#include "cilantroengine.h"
+#include "GLShader.h"
 #include "GLShaderModel.h"
+#include "LogMessage.h"
+#include <iostream>
 
 GLShaderModel::GLShaderModel ()
 {

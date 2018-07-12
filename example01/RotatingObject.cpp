@@ -1,3 +1,4 @@
+#include "cilantroengine.h"
 #include "RotatingObject.h"
 
 RotatingObject::RotatingObject ()

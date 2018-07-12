@@ -1,23 +1,6 @@
 #ifndef _GLRENDERER_H_
 #define _GLRENDERER_H_
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
-#include "cilantroengine.h"
-#include "Renderer.h"
-#include "LogMessage.h"
-#include "Time.h"
-#include "Mathf.h"
-#include "Matrix3f.h"
-#include "Vector4f.h"
-#include "PointLight.h"
-#include "GLShader.h"
-#include "GLShaderModel.h"
-
-#include <string>
-#include <iostream>
-
 #define MAX_LIGHTS 100
 
 enum VBOType { VBO_VERTICES = 0, VBO_NORMALS, VBO_UVS };

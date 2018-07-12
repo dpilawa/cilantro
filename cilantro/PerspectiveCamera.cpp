@@ -1,4 +1,8 @@
+#include "cilantroengine.h"
 #include "PerspectiveCamera.h"
+#include "Camera.h"
+#include "Matrix4f.h"
+#include "Mathf.h"
 
 PerspectiveCamera::PerspectiveCamera (float fov, float near, float far) :
 	cameraFOV (fov), nearPlane (near), farPlane (far)

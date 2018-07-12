@@ -1,4 +1,6 @@
+#include "cilantroengine.h"
 #include "Time.h"
+#include <chrono>
 
 std::chrono::duration<float> Time::frameDeltaTime;
 std::chrono::duration<float> Time::frameRenderTime;

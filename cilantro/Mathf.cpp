@@ -1,4 +1,10 @@
+#include "cilantroengine.h"
+#include "Vector3f.h"
+#include "Vector4f.h"
+#include "Matrix3f.h"
+#include "Matrix4f.h"
 #include "Mathf.h"
+#include <cmath>
 
 float Mathf::Length (const Vector3f & v)
 {

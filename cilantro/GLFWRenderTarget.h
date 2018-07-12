@@ -1,14 +1,6 @@
 #ifndef _GLFWRENDERTARGET_H_
 #define _GLFWRENDERTARGET_H_
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
-#include "cilantroengine.h"
-#include "RenderTarget.h"
-#include "LogMessage.h"
-#include "Time.h"
-
 class GLFWRenderTarget : public RenderTarget
 {
 public:

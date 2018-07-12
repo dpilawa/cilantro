@@ -1,10 +1,6 @@
 #ifndef _CAMERA_H_
 #define _CAMERA_H_
 
-#include "cilantroengine.h"
-#include "Vector3f.h"
-#include "GameObject.h"
-
 class Camera : public GameObject
 {
 public:

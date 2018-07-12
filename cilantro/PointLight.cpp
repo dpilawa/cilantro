@@ -1,4 +1,9 @@
+#include "cilantroengine.h"
 #include "PointLight.h"
+#include "Light.h"
+#include "GameObject.h"
+#include "Vector3f.h"
+#include "CallbackProvider.h"
 
 PointLight::PointLight () : Light()
 {

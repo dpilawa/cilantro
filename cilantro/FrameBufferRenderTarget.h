@@ -1,12 +1,6 @@
 #ifndef _FRAMEBUFFERRENDERTARGET_H_
 #define _FRAMEBUFFERRENDERTARGET_H_
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
-#include "cilantroengine.h"
-#include "RenderTarget.h"
-
 class FrameBufferRenderTarget : public RenderTarget
 {
 public:

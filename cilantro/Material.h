@@ -1,10 +1,6 @@
 #ifndef _MATERIAL_H_
 #define _MATERIAL_H_
 
-#include "cilantroengine.h"
-#include "Vector3f.h"
-#include <string>
-
 class Material
 {
 public:

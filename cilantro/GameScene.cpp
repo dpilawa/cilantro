@@ -1,4 +1,10 @@
+#include "cilantroengine.h"
 #include "GameScene.h"
+#include "GameObject.h"
+#include "Camera.h"
+#include "CallbackProvider.h"
+#include "Material.h"
+#include <vector>
 
 GameScene::GameScene()
 {
@@ -51,12 +57,12 @@ unsigned int GameScene::getGameObjectsCount () const
 	return gameObjectsCount;
 }
 
-void GameScene::SetActiveCamera (Camera * camera)
+void GameScene::SetActiveCamera (Camera* camera)
 {
 	activeCamera = camera;
 }
 
-Camera * GameScene::GetActiveCamera () const
+Camera* GameScene::GetActiveCamera () const
 {
 	return activeCamera;
 }

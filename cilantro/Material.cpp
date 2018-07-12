@@ -1,4 +1,7 @@
+#include "cilantroengine.h"
 #include "Material.h"
+#include "Vector3f.h"
+#include <string>
 
 Material::Material ()
 {

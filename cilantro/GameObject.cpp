@@ -1,4 +1,12 @@
+#include "cilantroengine.h"
+#include "Matrix4f.h"
+#include "Vector4f.h"
+#include "Renderer.h"
+#include "GameScene.h"
 #include "GameObject.h"
+#include "Transform.h"
+#include "CallbackProvider.h"
+#include <string>
 
 GameObject::GameObject ()
 {

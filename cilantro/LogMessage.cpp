@@ -1,4 +1,7 @@
+#include "cilantroengine.h"
 #include "LogMessage.h"
+#include <string>
+#include <iostream>
 
 LogMessage::LogMessage ()
 {

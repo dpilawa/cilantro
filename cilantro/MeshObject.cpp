@@ -1,4 +1,12 @@
+#include "cilantroengine.h"
 #include "MeshObject.h"
+#include "GameObject.h"
+#include "Material.h"
+#include "Vector3f.h"
+#include "Renderer.h"
+#include "CallbackProvider.h"
+#include "Mathf.h"
+#include <vector>
 
 MeshObject::MeshObject ()
 {

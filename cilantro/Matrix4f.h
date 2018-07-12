@@ -1,10 +1,9 @@
 #ifndef _MATRIX4F_H_
 #define _MATRIX4F_H_
 
-#include "Vector4f.h"
-#include <algorithm>
-
 #define M4(i, j) m[i * 4 + j]
+
+#include "Vector4f.h"
 
 class Matrix4f
 {

@@ -1,8 +1,6 @@
 #ifndef _RENDERTARGET_H_
 #define _RENDERTARGET_H_
 
-#include "cilantroengine.h"
-
 class RenderTarget
 {
 public:

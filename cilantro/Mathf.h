@@ -1,12 +1,6 @@
 #ifndef _MATHF_H_
 #define _MATHF_H_
 
-#include "cilantroengine.h"
-#include "Matrix3f.h"
-#include "Matrix4f.h"
-#include "Vector3f.h"
-#include <cmath>
-
 // Math constants
 #define cPI 3.14159265358979323846f
 
