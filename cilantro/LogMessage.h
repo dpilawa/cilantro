@@ -1,6 +1,9 @@
 #ifndef _LOGMESSAGE_H_
 #define _LOGMESSAGE_H_
 
+#include <string>
+#include <iostream>
+
 class LogMessage
 {
 public:

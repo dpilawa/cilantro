@@ -1,3 +1,7 @@
+#ifndef _ORBITER_H_
+#define _ORBITER_H_
+
+#include "GameObject.h"
 
 class Orbiter : public GameObject
 {
@@ -12,4 +16,6 @@ private:
 	// orbiting period in days
 	float orbitingPeriod;
 };
+
+#endif
 

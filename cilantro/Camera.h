@@ -1,6 +1,10 @@
 #ifndef _CAMERA_H_
 #define _CAMERA_H_
 
+#include "cilantroengine.h"
+#include "GameObject.h"
+#include "Matrix4f.h"
+
 class Camera : public GameObject
 {
 public:

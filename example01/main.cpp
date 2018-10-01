@@ -1,5 +1,12 @@
 #include "cilantroengine.h"
 #include "RotatingObject.h"
+#include "GameScene.h"
+#include "GameLoop.h"
+#include "PerspectiveCamera.h"
+#include "MeshObject.h"
+#include "PointLight.h"
+#include "GLRenderer.h"
+#include "GLFWRenderTarget.h"
 
 void main (int argc, char* argv[])
 {

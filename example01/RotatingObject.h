@@ -1,3 +1,8 @@
+#ifndef _ROTATINGOBJECT_H_
+#define _ROTATINGOBJECT_H_
+
+#include "GameObject.h"
+
 class RotatingObject : public GameObject
 {
 public:
@@ -10,3 +15,4 @@ private:
 	float rotationSpeed;
 };
 
+#endif

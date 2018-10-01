@@ -1,6 +1,10 @@
 #ifndef _PERSPECTIVECAMERA_H_
 #define _PERSPECTIVECAMERA_H_
 
+#include "cilantroengine.h"
+#include "Camera.h"
+#include "Matrix4f.h"
+
 class PerspectiveCamera : public Camera
 {
 public:

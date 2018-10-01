@@ -1,6 +1,14 @@
 #ifndef _MESHOBJECT_H_
 #define _MESHOBJECT_H_
 
+#include "cilantroengine.h"
+#include "GameObject.h"
+#include "Material.h"
+#include "Vector3f.h"
+#include <vector>
+
+class Renderer;
+
 // Represents a 3d mesh, inherits from GameObject
 // 3d mesh has a collection of vertices and a collection of vertex indices to represent mesh faces (polygons)
 // 3d mesh may have only one material assigned to it

@@ -1,6 +1,9 @@
 #ifndef _LIGHT_H_
 #define _LIGHT_H_
 
+#include "cilantroengine.h"
+#include "GameObject.h"
+
 class Light : public GameObject
 {
 public:

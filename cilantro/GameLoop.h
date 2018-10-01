@@ -1,6 +1,10 @@
 #ifndef _GAMELOOP_H_
 #define _GAMELOOP_H_
 
+#include "cilantroengine.h"
+#include "GameScene.h"
+#include "Renderer.h"
+
 class GameLoop
 {
 public:

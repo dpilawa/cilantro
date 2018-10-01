@@ -1,4 +1,7 @@
 #include "cilantroengine.h"
+#include "GL/glew.h"
+#include "imgui.h"
+#include "examples/opengl3_example/imgui_impl_glfw_gl3.h"
 #include "RenderTarget.h"
 #include "GLFWRenderTarget.h"
 #include "LogMessage.h"

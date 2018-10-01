@@ -1,6 +1,9 @@
 #ifndef _GLSHADERPROGRAM_H_
 #define _GLSHADERPROGRAM_H_
 
+#include "GL/glew.h"
+#include "GLShader.h"
+
 class GLShaderModel
 {
 public:

@@ -1,6 +1,10 @@
 #ifndef _POINTLIGHT_H_
 #define _POINTLIGHT_H_
 
+#include "cilantroengine.h"
+#include "Light.h"
+#include "Vector3f.h"
+
 class PointLight : public Light
 {
 public:

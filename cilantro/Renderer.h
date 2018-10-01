@@ -1,6 +1,12 @@
 #ifndef _RENDERER_H_
 #define _RENDERER_H_
 
+#include "CallbackProvider.h"
+#include "GameScene.h"
+#include "MeshObject.h"
+#include "RenderTarget.h"
+#include <string>
+
 enum class ShaderType { VERTEX_SHADER, FRAGMENT_SHADER };
 
 class Renderer

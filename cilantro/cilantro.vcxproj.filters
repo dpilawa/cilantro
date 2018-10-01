@@ -90,9 +90,6 @@
     <ClInclude Include="PointLight.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="cilantroengine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="phong.fs.h">
       <Filter>Shaders</Filter>
     </ClInclude>
@@ -136,6 +133,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FrameBufferRenderTarget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cilantroengine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

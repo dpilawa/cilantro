@@ -1,6 +1,10 @@
 #ifndef _GLSHADER_H_
 #define _GLSHADER_H_
 
+#include "GL/glew.h"
+#include "Renderer.h"
+#include <string>
+
 class GLShader
 {
 public:

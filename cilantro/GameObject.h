@@ -1,6 +1,12 @@
 #ifndef _GAMEOBJECT_H_
 #define _GAMEOBJECT_H_
 
+#include "cilantroengine.h"
+#include "Transform.h"
+
+class GameScene;
+class Renderer;
+
 class GameObject : public CallbackProvider<std::string, unsigned int>
 {
 public:
