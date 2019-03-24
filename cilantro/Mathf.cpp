@@ -8,7 +8,7 @@
 
 float Mathf::Length (const Vector3f & v)
 {
-	return std::sqrtf (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+	return std::sqrt (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
 }
 
 Vector3f Mathf::Normalize (const Vector3f & v)
@@ -220,7 +220,7 @@ Matrix4f Mathf::GenRotationXYZMatrix (float x, float y, float z)
 	return GenRotationZMatrix (z) * GenRotationYMatrix (y) * GenRotationXMatrix (x);
 }
 
-Matrix4f Mathf::GenRotationXYZMatrix (Vector3f& r)
+Matrix4f Mathf::GenRotationXYZMatrix (const Vector3f& r)
 {
 	return GenRotationXYZMatrix (r[0], r[1], r[2]);
 }
@@ -237,7 +237,7 @@ Matrix4f Mathf::GenTranslationMatrix (float x, float y, float z)
 	return m;
 }
 
-Matrix4f Mathf::GenTranslationMatrix (Vector3f & t)
+Matrix4f Mathf::GenTranslationMatrix (const Vector3f & t)
 {
 	return Mathf::GenTranslationMatrix (t[0], t[1], t[2]);
 }
@@ -254,7 +254,7 @@ Matrix4f Mathf::GenScalingMatrix (float x, float y, float z)
 	return m;
 }
 
-Matrix4f Mathf::GenScalingMatrix (Vector3f & s)
+Matrix4f Mathf::GenScalingMatrix (const Vector3f & s)
 {
 	return GenScalingMatrix (s[0], s[1], s[2]);
 }
@@ -286,7 +286,7 @@ Matrix4f Mathf::GenCameraViewMatrix (const Vector3f& position, const Vector3f& l
 Matrix4f Mathf::GenPerspectiveProjectionMatrix (float aspect, float fov, float nearZ, float farZ)
 {
 	Matrix4f m;
-	float scale = std::tanf (fov * 0.5f);
+	float scale = std::tan (fov * 0.5f);
 
 	m.InitIdentity ();
 	m[0][0] = 1.0f / (aspect * scale);

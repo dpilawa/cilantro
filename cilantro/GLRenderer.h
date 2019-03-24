@@ -8,7 +8,7 @@
 #include "Renderer.h"
 #include "GameScene.h"
 #include "RenderTarget.h"
-#include <string>
+#include <cstring>
 
 #define MAX_LIGHTS 100
 

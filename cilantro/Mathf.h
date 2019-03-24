@@ -57,15 +57,15 @@ public:
 	// generate rotation matrix to rotate around X, then Y, then Z axis
 	// angle provided in radians
 	__EAPI static Matrix4f GenRotationXYZMatrix (float x, float y, float z);
-	__EAPI static Matrix4f GenRotationXYZMatrix (Vector3f& r);
+	__EAPI static Matrix4f GenRotationXYZMatrix (const Vector3f& r);
 
 	// generate translation matrix along 3 axes
 	__EAPI static Matrix4f GenTranslationMatrix (float x, float y, float z);
-	__EAPI static Matrix4f GenTranslationMatrix (Vector3f& t);
+	__EAPI static Matrix4f GenTranslationMatrix (const Vector3f& t);
 
 	// generate scaling matrix along 3 axes
 	__EAPI static Matrix4f GenScalingMatrix (float x, float y, float z);
-	__EAPI static Matrix4f GenScalingMatrix (Vector3f& s);
+	__EAPI static Matrix4f GenScalingMatrix (const Vector3f& s);
 
 	// generate camera (view) matrix
 	__EAPI static Matrix4f GenCameraViewMatrix (const Vector3f& position, const Vector3f& lookAt, const Vector3f& up);

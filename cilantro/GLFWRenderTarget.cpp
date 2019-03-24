@@ -1,7 +1,8 @@
 #include "cilantroengine.h"
 #include "GL/glew.h"
 #include "imgui.h"
-#include "examples/opengl3_example/imgui_impl_glfw_gl3.h"
+#include "examples/imgui_impl_glfw.h"
+#include "examples/imgui_impl_opengl3.h"
 #include "RenderTarget.h"
 #include "GLFWRenderTarget.h"
 #include "LogMessage.h"
@@ -56,15 +57,21 @@ void GLFWRenderTarget::Initialize ()
 	}
 
 	// Setup ImGui binding
-	ImGui_ImplGlfwGL3_Init (window, true);
-	ImGui::StyleColorsClassic ();
+	const char* glsl_version = "#version 150";
+	ImGui::CreateContext();
+	ImGui::StyleColorsDark();
+	ImGui_ImplGlfw_InitForOpenGL (window, true);
+    ImGui_ImplOpenGL3_Init(glsl_version);
 
 	LogMessage (__FUNCTION__) << "GLFWRenderTarget started";
 }
 
 void GLFWRenderTarget::Deinitialize ()
 {
-	ImGui_ImplGlfwGL3_Shutdown ();
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
 	glfwDestroyWindow (window);
 }
 
@@ -76,7 +83,9 @@ void GLFWRenderTarget::BeforeFrame ()
 	glViewport (0, 0, xResolution, yResolution);
 
 	// tick imgui
-	ImGui_ImplGlfwGL3_NewFrame ();
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
 }
 
 void GLFWRenderTarget::AfterFrame ()
@@ -97,11 +106,13 @@ void GLFWRenderTarget::AfterFrame ()
 
 	frameRenderTimeSinceLastSplit += Time::GetFrameRenderTime ();
 
+	
 	ImGui::Text ("FPS: %.1f", splitFrameCount / timeSinceLastSplit);
 	ImGui::Text ("Frame time: %.1f ms", frameRenderTimeInLastSplit / splitFrameCount * 1000.0f);
 
 	// render imgui
 	ImGui::Render ();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 	// swap front and back buffers
 	glfwSwapBuffers (window);

@@ -8,7 +8,7 @@
 #include "GLRenderer.h"
 #include "GLFWRenderTarget.h"
 
-void main (int argc, char* argv[])
+int main (int argc, char* argv[])
 {
 	GameScene scene;
 	
@@ -62,5 +62,7 @@ void main (int argc, char* argv[])
 	light1.Enable ();
 
 	game.Run ();
+
+	return 0;
 }
 
