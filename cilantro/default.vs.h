@@ -5,7 +5,7 @@
 
 std::string gDefaultVertexShader = R"V0G0N(
 
-	#version 140 core
+	#version 140
 
 	/* transformation matrices */
 	uniform mat4 mModel;
