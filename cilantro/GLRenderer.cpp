@@ -217,14 +217,20 @@ void GLRenderer::InitializeShaderLibrary ()
 	// Phong model
 	AddShaderToModel ("phong_shader", "default_vertex_shader");
 	AddShaderToModel ("phong_shader", "phong_fragment_shader");
+	glBindAttribLocation(GetShaderModel("phong_shader").GetProgramId(), 0, "vPosition");
+	glBindAttribLocation(GetShaderModel("phong_shader").GetProgramId(), 1, "vNormal");
 
 	// Blinn-Phong model
 	AddShaderToModel ("blinnphong_shader", "default_vertex_shader");
 	AddShaderToModel ("blinnphong_shader", "blinnphong_fragment_shader");
+	glBindAttribLocation(GetShaderModel("blinnphong_shader").GetProgramId(), 0, "vPosition");
+	glBindAttribLocation(GetShaderModel("blinnphong_shader").GetProgramId(), 1, "vNormal");
 
 	// Normals visualization model
 	AddShaderToModel ("normals_shader", "default_vertex_shader");
 	AddShaderToModel ("normals_shader", "normals_fragment_shader");
+	glBindAttribLocation(GetShaderModel("normals_shader").GetProgramId(), 0, "vPosition");
+	glBindAttribLocation(GetShaderModel("normals_shader").GetProgramId(), 1, "vNormal");
 }
 
 void GLRenderer::InitializeObjectBuffers ()
@@ -282,9 +288,11 @@ void GLRenderer::InitializeLightBuffers ()
 		uniformPointLightsBlockIndex = glGetUniformBlockIndex (shaderProgramId, "UniformPointLightsBlock");
 		if (uniformPointLightsBlockIndex == GL_INVALID_INDEX)
 		{
-			LogMessage (__FUNCTION__, EXIT_FAILURE) << "Unable to locate uniform block";
+			LogMessage (__FUNCTION__) << "Unable to locate uniform block for program id " << shaderModel.second.GetProgramId();
 		}
-		glUniformBlockBinding (shaderProgramId, uniformPointLightsBlockIndex, BindingPoint::BP_POINTLIGHTS);
+		else {
+			glUniformBlockBinding(shaderProgramId, uniformPointLightsBlockIndex, BindingPoint::BP_POINTLIGHTS);
+		}
 	}
 
 	// scan objects vector for point lights and populate point lights collection

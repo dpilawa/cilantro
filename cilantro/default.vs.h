@@ -5,20 +5,20 @@
 
 std::string gDefaultVertexShader = R"V0G0N(
 
-	#version 330 core
+	#version 140 core
 
 	/* transformation matrices */
 	uniform mat4 mModel;
 	uniform mat3 mNormal;
 
-	uniform UniformMatricesBlock 
+	layout(std140) uniform UniformMatricesBlock
 	{
 		mat4 mView;
 		mat4 mProjection;
 	};
 
-	layout (location = 0) in vec3 vPosition;
-	layout (location = 1) in vec3 vNormal;
+	in vec3 vPosition;
+	in vec3 vNormal;
 
 	out vec3 fPosition;
 	out vec3 fNormal;

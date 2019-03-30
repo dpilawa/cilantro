@@ -1,7 +1,7 @@
 #ifndef _GLSHADER_H_
 #define _GLSHADER_H_
 
-#include "GL/glew.h"
+#include "GL/gl3w.h"
 #include "Renderer.h"
 #include <string>
 

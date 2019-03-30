@@ -1,5 +1,5 @@
 #include "cilantroengine.h"
-#include "GL/glew.h"
+#include "GL/gl3w.h"
 #include "imgui.h"
 #include "examples/imgui_impl_glfw.h"
 #include "examples/imgui_impl_opengl3.h"
@@ -31,8 +31,8 @@ void GLFWRenderTarget::Initialize ()
 {
 	// set up GL & window properties
 	glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 1);
+	glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_ANY_PROFILE);
 	glfwWindowHint (GLFW_RESIZABLE, isResizable);
 	glfwWindowHint (GLFW_SAMPLES, 4);
 	glfwWindowHint (GLFW_VISIBLE, 1);
@@ -51,13 +51,13 @@ void GLFWRenderTarget::Initialize ()
 	glfwSwapInterval (isVSync);
 
 	// initialize GLEW
-	if (glewInit () != GLEW_OK)
+	if (gl3wInit ())
 	{
 		LogMessage (__FUNCTION__, EXIT_FAILURE) << "GLEW initialization failed";
 	}
 
 	// Setup ImGui binding
-	const char* glsl_version = "#version 150";
+	const char* glsl_version = "#version 140";
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
 	ImGui_ImplGlfw_InitForOpenGL (window, true);

@@ -5,7 +5,7 @@
 
 std::string gNormalsFragmentShader = R"V0G0N(
 
-	#version 330 core
+	#version 140 core
 
 	#define MAX_LIGHTS 100
 

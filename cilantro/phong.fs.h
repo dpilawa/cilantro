@@ -5,7 +5,7 @@
 
 std::string gPhongFragmentShader = R"V0G0N(
 
-	#version 330 core
+	#version 140 core
 
 	#define MAX_LIGHTS 100
 
@@ -38,7 +38,7 @@ std::string gPhongFragmentShader = R"V0G0N(
 		float attenuationQuadratic;
 	};
 
-	layout (std140) uniform UniformPointLightsBlock 
+	layout(std140) uniform UniformPointLightsBlock
 	{
 		int pointLightCount;
 		PointLightStruct pointLights[MAX_LIGHTS];
