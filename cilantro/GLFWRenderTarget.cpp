@@ -29,6 +29,27 @@ GLFWRenderTarget::~GLFWRenderTarget ()
 
 void GLFWRenderTarget::Initialize ()
 {
+    // create temporary window to detect GL version
+	glfwWindowHint (GLFW_VISIBLE, 0);
+    window = glfwCreateWindow (xResolution, yResolution, "GL", nullptr, nullptr);
+	if (window == NULL)
+	{
+		LogMessage (__FUNCTION__, EXIT_FAILURE) << "GLFW unable to create window";
+	}
+	glfwMakeContextCurrent (window);
+
+	// initialize GLEW
+	if (gl3wInit ())
+	{
+		LogMessage (__FUNCTION__, EXIT_FAILURE) << "GLEW initialization failed";
+	}
+
+	// display GL version information
+	LogMessage (__FUNCTION__) << "Version:" << (char*) glGetString (GL_VERSION);
+    LogMessage (__FUNCTION__) << "Shader language version:" << (char*) glGetString (GL_SHADING_LANGUAGE_VERSION);
+	LogMessage (__FUNCTION__) << "Renderer:" << (char*) glGetString (GL_RENDERER);
+	glfwDestroyWindow (window);
+
 	// set up GL & window properties
 	glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 1);
@@ -49,12 +70,6 @@ void GLFWRenderTarget::Initialize ()
 
 	// set vsync on
 	glfwSwapInterval (isVSync);
-
-	// initialize GLEW
-	if (gl3wInit ())
-	{
-		LogMessage (__FUNCTION__, EXIT_FAILURE) << "GLEW initialization failed";
-	}
 
 	// Setup ImGui binding
 	const char* glsl_version = "#version 140";
@@ -106,7 +121,7 @@ void GLFWRenderTarget::AfterFrame ()
 
 	frameRenderTimeSinceLastSplit += Time::GetFrameRenderTime ();
 
-	
+
 	ImGui::Text ("FPS: %.1f", splitFrameCount / timeSinceLastSplit);
 	ImGui::Text ("Frame time: %.1f ms", frameRenderTimeInLastSplit / splitFrameCount * 1000.0f);
 
