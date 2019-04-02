@@ -8,7 +8,7 @@
 GameLoop::GameLoop (GameScene & scene, Renderer & renderer) :
 	gameScene (scene), gameRenderer (renderer)
 {
-	LogMessage (__FUNCTION__) << "Engine starting";
+	LogMessage (__func__) << "Engine starting";
 
 	// set flags
 	shouldStop = false;
@@ -30,14 +30,14 @@ GameLoop::~GameLoop ()
 {
 	// deinitialize renderer
 	gameRenderer.Deinitialize ();
-	
+
 	// deinitialize all game objects
 	for (auto gameObject : gameScene.GetGameObjects ())
 	{
 		gameObject->OnEnd ();
 	}
 
-	LogMessage (__FUNCTION__) << "Engine stopped";
+	LogMessage (__func__) << "Engine stopped";
 
 }
 

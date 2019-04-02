@@ -11,7 +11,7 @@ class GameObject : public CallbackProvider<std::string, unsigned int>
 {
 public:
 	__EAPI GameObject ();
-	__EAPI ~GameObject ();
+	__EAPI virtual ~GameObject ();
 
 	// handle  operations
 	__EAPI void SetHandle (unsigned int handle);
@@ -34,8 +34,8 @@ public:
 	__EAPI virtual void OnEnd ();
 
 	// get transformation object's reference
-	// this function is recursive and concatenates world-space 
-	// transformation matrices of parent objects 
+	// this function is recursive and concatenates world-space
+	// transformation matrices of parent objects
 	__EAPI Transform& GetModelTransform ();
 
 	// get transformation matrices

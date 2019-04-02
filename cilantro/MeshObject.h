@@ -16,7 +16,7 @@ class MeshObject : public GameObject
 {
 public:
 	__EAPI MeshObject ();
-	__EAPI ~MeshObject ();
+	__EAPI virtual ~MeshObject ();
 
 	// Cleans up contents of used collections
 	__EAPI MeshObject& Clear ();

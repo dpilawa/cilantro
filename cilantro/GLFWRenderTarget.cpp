@@ -34,20 +34,20 @@ void GLFWRenderTarget::Initialize ()
     window = glfwCreateWindow (xResolution, yResolution, "GL", nullptr, nullptr);
 	if (window == NULL)
 	{
-		LogMessage (__FUNCTION__, EXIT_FAILURE) << "GLFW unable to create window";
+		LogMessage (__func__, EXIT_FAILURE) << "GLFW unable to create window";
 	}
 	glfwMakeContextCurrent (window);
 
 	// initialize GLEW
 	if (gl3wInit ())
 	{
-		LogMessage (__FUNCTION__, EXIT_FAILURE) << "GLEW initialization failed";
+		LogMessage (__func__, EXIT_FAILURE) << "GLEW initialization failed";
 	}
 
 	// display GL version information
-	LogMessage (__FUNCTION__) << "Version:" << (char*) glGetString (GL_VERSION);
-    LogMessage (__FUNCTION__) << "Shader language version:" << (char*) glGetString (GL_SHADING_LANGUAGE_VERSION);
-	LogMessage (__FUNCTION__) << "Renderer:" << (char*) glGetString (GL_RENDERER);
+	LogMessage (__func__) << "Version:" << (char*) glGetString (GL_VERSION);
+    LogMessage (__func__) << "Shader language version:" << (char*) glGetString (GL_SHADING_LANGUAGE_VERSION);
+	LogMessage (__func__) << "Renderer:" << (char*) glGetString (GL_RENDERER);
 	glfwDestroyWindow (window);
 
 	// set up GL & window properties
@@ -62,7 +62,7 @@ void GLFWRenderTarget::Initialize ()
 	window = glfwCreateWindow (xResolution, yResolution, "GL", nullptr, nullptr);
 	if (window == NULL)
 	{
-		LogMessage (__FUNCTION__, EXIT_FAILURE) << "GLFW unable to create window";
+		LogMessage (__func__, EXIT_FAILURE) << "GLFW unable to create window";
 	}
 
 	// make openGL context active
@@ -78,7 +78,7 @@ void GLFWRenderTarget::Initialize ()
 	ImGui_ImplGlfw_InitForOpenGL (window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-	LogMessage (__FUNCTION__) << "GLFWRenderTarget started";
+	LogMessage (__func__) << "GLFWRenderTarget started";
 }
 
 void GLFWRenderTarget::Deinitialize ()

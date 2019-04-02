@@ -69,9 +69,9 @@ void GLRenderer::Initialize ()
 	renderedScene->RegisterCallback ("OnUpdateTransform", [ & ](unsigned int objectHandle) { LoadLightUniformBuffers (); });
 
 	// check for any outstanding errors
-	CheckGLError (__FUNCTION__);
+	CheckGLError (__func__);
 
-	LogMessage (__FUNCTION__) << "GLRenderer started";
+	LogMessage (__func__) << "GLRenderer started";
 }
 
 void GLRenderer::RenderFrame ()
@@ -121,14 +121,14 @@ void GLRenderer::AddShaderToModel (std::string shaderModelName, std::string shad
 
 	if (searchShader == shaders.end ())
 	{
-		LogMessage (__FUNCTION__, EXIT_FAILURE) << "Shader " << shaderName << " not found when adding to model " << shaderModelName;
+		LogMessage (__func__, EXIT_FAILURE) << "Shader " << shaderName << " not found when adding to model " << shaderModelName;
 	}
 	else
 	{
 		shaderModels[shaderModelName].AttachShader (searchShader->second);
 		if (searchModel == shaderModels.end ())
 		{
-			LogMessage (__FUNCTION__) << "Registered shader" << shaderModelName << "with id" << shaderModels[shaderModelName].GetProgramId ();
+			LogMessage (__func__) << "Registered shader" << shaderModelName << "with id" << shaderModels[shaderModelName].GetProgramId ();
 		}
 	}
 }
@@ -139,7 +139,7 @@ GLShaderModel & GLRenderer::GetShaderModel (std::string shaderModelName)
 
 	if (searchModel == shaderModels.end ())
 	{
-		LogMessage (__FUNCTION__, EXIT_FAILURE) << "Unable to find shader model " << shaderModelName;
+		LogMessage (__func__, EXIT_FAILURE) << "Unable to find shader model " << shaderModelName;
 	}
 
 	return searchModel->second;
@@ -157,7 +157,7 @@ void GLRenderer::Draw (MeshObject & meshObject)
 	GLuint modelMatrixId;
 	GLuint normalMatrixId;
 	GLuint shaderProgramId;
-	
+
 	// pick shader
 	GLShaderModel& shaderProgram = GetShaderModel (meshObject.GetMaterial ().GetShaderModelName ());
 	shaderProgramId = shaderProgram.GetProgramId ();
@@ -166,7 +166,7 @@ void GLRenderer::Draw (MeshObject & meshObject)
 	// get material properties for drawn objects and set uniform value
 	ambientColorId = glGetUniformLocation (shaderProgramId, "fAmbientColor");
 	glUniform3fv (ambientColorId, 1, &meshObject.GetMaterial ().GetAmbientColor ()[0]);
-	
+
 	diffuseColorId = glGetUniformLocation (shaderProgramId, "fDiffuseColor");
 	glUniform3fv (diffuseColorId, 1, &meshObject.GetMaterial ().GetDiffuseColor ()[0]);
 
@@ -288,7 +288,7 @@ void GLRenderer::InitializeLightBuffers ()
 		uniformPointLightsBlockIndex = glGetUniformBlockIndex (shaderProgramId, "UniformPointLightsBlock");
 		if (uniformPointLightsBlockIndex == GL_INVALID_INDEX)
 		{
-			LogMessage (__FUNCTION__) << "Unable to locate uniform block for program id " << shaderModel.second.GetProgramId();
+			LogMessage (__func__) << "Unable to locate uniform block for program id " << shaderModel.second.GetProgramId();
 		}
 		else {
 			glUniformBlockBinding(shaderProgramId, uniformPointLightsBlockIndex, BindingPoint::BP_POINTLIGHTS);
@@ -321,7 +321,7 @@ void GLRenderer::LoadObjectBuffers (unsigned int objectHandle)
 
 		objectBuffers.insert ({ objectHandle, ObjectBuffers () });
 
-		LogMessage (__FUNCTION__) << "New MeshObject" << objectHandle;
+		LogMessage (__func__) << "New MeshObject" << objectHandle;
 
 		// generate and bind Vertex Array Object (VAO)
 		glGenVertexArrays (1, &objectBuffers[objectHandle].VAO);
@@ -356,7 +356,7 @@ void GLRenderer::LoadObjectBuffers (unsigned int objectHandle)
 	else
 	{
 		// it is an existing object which has been modified
-		LogMessage (__FUNCTION__) << "Modified MeshObject" << objectHandle;
+		LogMessage (__func__) << "Modified MeshObject" << objectHandle;
 
 		// bind Vertex Array Object (VAO)
 		glBindVertexArray (objectBuffers[objectHandle].VAO);
@@ -386,9 +386,9 @@ void GLRenderer::LoadMatrixUniformBuffers ()
 	// get active camera of rendered scene
 	activeCamera = renderedScene->GetActiveCamera ();
 
-	if (activeCamera == nullptr) 
+	if (activeCamera == nullptr)
 	{
-		LogMessage (__FUNCTION__, EXIT_FAILURE) << "No active camera found";
+		LogMessage (__func__, EXIT_FAILURE) << "No active camera found";
 	}
 
 	// load view matrix
@@ -411,14 +411,14 @@ void GLRenderer::LoadLightBuffers (unsigned int objectHandle)
 	// check if light is already in collection
 	auto find = pointLights.find (objectHandle);
 
-	if (find == pointLights.end ()) 
+	if (find == pointLights.end ())
 	{
-		LogMessage (__FUNCTION__) << "New PointLight" << objectHandle;
+		LogMessage (__func__) << "New PointLight" << objectHandle;
 		pointLights.insert ({ objectHandle, myPointLightObject->IsEnabled () });
 	}
-	else 
+	else
 	{
-		LogMessage (__FUNCTION__) << "Modified PointLight" << objectHandle;
+		LogMessage (__func__) << "Modified PointLight" << objectHandle;
 		pointLights[objectHandle] = myPointLightObject->IsEnabled ();
 	}
 
@@ -433,9 +433,9 @@ void GLRenderer::LoadLightUniformBuffers ()
 
 	// clear buffer
 	uniformPointLightBuffer.pointLightCount = 0;
-	
+
 	// copy collection to light struct
-	for (auto pointLight : pointLights) 
+	for (auto pointLight : pointLights)
 	{
 		lightId = uniformPointLightBuffer.pointLightCount;
 		myPointLightObject = dynamic_cast<PointLight*>(renderedScene->GetGameObjects ()[pointLight.first]);

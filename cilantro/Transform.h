@@ -5,7 +5,7 @@
 #include "CallbackProvider.h"
 #include "Matrix4f.h"
 
-class Transform : public CallbackProvider<std::string>
+class Transform : public CallbackProvider<std::string, unsigned int>
 {
 public:
 
@@ -19,7 +19,7 @@ public:
 	__EAPI Matrix4f& GetTranslationMatrix ();
 	__EAPI Matrix4f& GetScalingMatrix ();
 	__EAPI Matrix4f& GetRotationMatrix ();
-	
+
 	// translate
 	__EAPI Transform& Translate (float x, float y, float z);
 	__EAPI Transform& Translate (const Vector3f& t);

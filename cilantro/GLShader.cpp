@@ -29,13 +29,13 @@ GLShader::GLShader (std::string sourceCode, ShaderType type) : shaderSourceCode(
 	glCompileShader (shaderId);
 
 	glGetShaderiv (shaderId, GL_COMPILE_STATUS, &success);
-	
+
 	if (!success)
 	{
 		glGetShaderInfoLog (shaderId, 512, nullptr, errorLog);
 		glDeleteShader (shaderId);
 		LogMessage () << errorLog;
-		LogMessage (__FUNCTION__, EXIT_FAILURE) << "Unable to compile shader:" << shaderId;
+		LogMessage (__func__, EXIT_FAILURE) << "Unable to compile shader:" << shaderId;
 	}
 }
 

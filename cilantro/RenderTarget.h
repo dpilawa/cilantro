@@ -5,7 +5,7 @@ class RenderTarget
 {
 public:
 	RenderTarget (int xRes, int yRes);
-	~RenderTarget ();
+	virtual ~RenderTarget ();
 
 	virtual void Initialize () = 0;
 	virtual void Deinitialize () = 0;

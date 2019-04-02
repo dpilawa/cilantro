@@ -42,11 +42,11 @@ void FrameBufferRenderTarget::Initialize ()
 	// check status
 	if (glCheckFramebufferStatus (GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
-		LogMessage (__FUNCTION__, EXIT_FAILURE) << "Framebuffer is not complete";
+		LogMessage (__func__, EXIT_FAILURE) << "Framebuffer is not complete";
 	}
 	else
 	{
-		LogMessage (__FUNCTION__) << "FrameBufferRenderTarget started";
+		LogMessage (__func__) << "FrameBufferRenderTarget started";
 	}
 
 	glBindFramebuffer (GL_FRAMEBUFFER, 0);

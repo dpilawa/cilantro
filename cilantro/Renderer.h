@@ -13,7 +13,7 @@ class Renderer
 {
 public:
 	Renderer (GameScene& scene, RenderTarget& target);
-	~Renderer ();
+	virtual ~Renderer ();
 
 	// abstract functions declarations
 	virtual void Initialize () = 0;
