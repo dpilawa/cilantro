@@ -14,7 +14,7 @@ GLShader::GLShader (std::string sourceCode, ShaderType type) : shaderSourceCode(
 	char errorLog[512];
 	const char * cSourceStr;
 
-	switch (type)
+	switch (shaderType)
 	{
 	case ShaderType::VERTEX_SHADER:
 		shaderId = glCreateShader (GL_VERTEX_SHADER);
