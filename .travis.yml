@@ -1,1 +1,15 @@
-language: c++
+language: cpp
+dist: trusty
+
+os:
+  - linux
+
+compiler:
+  - gcc
+  - clang
+
+script:
+     - mkdir -p build
+     - cd build
+     - cmake ../
+     - make
