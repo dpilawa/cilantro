@@ -2,6 +2,7 @@
 #define _GAMEOBJECT_H_
 
 #include "cilantroengine.h"
+#include "CallbackProvider.h"
 #include "Transform.h"
 
 class GameScene;

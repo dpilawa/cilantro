@@ -7,19 +7,25 @@
 #include "PointLight.h"
 #include "GLRenderer.h"
 #include "GLFWRenderTarget.h"
+#include "GLFWInputController.h"
 
 int main (int argc, char* argv[])
 {
 	GameScene scene;
 	
 	GLFWRenderTarget target (800, 600);
-	target.setDebugVisible (true);
-	target.setVSync (true);
-	target.setFullscreen (false);
-	target.setResizable (true);
+	target.SetDebugVisible (true);
+	target.SetVSync (true);
+	target.SetFullscreen (false);
+	target.SetResizable (true);
+
+	GLFWInputController controller (target.GetWindow ());
+	controller.CreateEvent ("exit", InputEventKey::KeyEsc, InputEventTrigger::Press);
 
 	GLRenderer renderer (scene, target);
-	GameLoop game (scene, renderer);
+	GameLoop game (scene, controller, renderer);
+
+	controller.BindEvent ("exit", [ & ]() { game.Stop (); });
 
 	Material& green = scene.AddMaterial (new Material ());
 	green.SetShaderModelName ("blinnphong_shader");

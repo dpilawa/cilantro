@@ -4,15 +4,18 @@
 #include "cilantroengine.h"
 #include "GameScene.h"
 #include "Renderer.h"
+#include "InputController.h"
 
 class GameLoop
 {
 public:
-	__EAPI GameLoop (GameScene& scene, Renderer& renderer);
+
+	__EAPI GameLoop (GameScene& scene, InputController& inputController, Renderer& renderer);
 	__EAPI ~GameLoop ();
 
 	// run a game loop
 	__EAPI void Run ();
+	__EAPI void Stop ();	
 	__EAPI void Step ();
 
 	// get scene reference
@@ -21,12 +24,16 @@ public:
 	// get renderer reference
 	__EAPI Renderer& GetRenderer ();
 
+	// get input controller reference
+	__EAPI Renderer& GetInputController ();
+
 private:
 
 	// game loop requires a scene object
 	// and renderer interface
 	GameScene& gameScene;
 	Renderer& gameRenderer;
+	InputController& gameInputController;
 
 	// bool flags to control the game loop
 	bool shouldStop;
