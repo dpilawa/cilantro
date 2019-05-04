@@ -46,7 +46,7 @@ inline void CallbackProvider<Key, Params...>::RegisterCallback (Key key, std::fu
 template<typename Key, typename... Params>
 inline void CallbackProvider<Key, Params...>::InvokeCallbacks (Key key, Params... params)
 {
-	// invoke all registered callbacks
+	// invoke all registered callbacks of given key
 	for (auto&& callback : callbacks[key])
 	{
 		callback (params...);

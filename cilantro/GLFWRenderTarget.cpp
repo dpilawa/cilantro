@@ -136,22 +136,27 @@ void GLFWRenderTarget::AfterFrame ()
 	glfwPollEvents ();
 }
 
-void GLFWRenderTarget::setFullscreen (bool fullscreen)
+GLFWwindow** GLFWRenderTarget::GetWindow ()
+{
+	return &window;
+}
+
+void GLFWRenderTarget::SetFullscreen (bool fullscreen)
 {
 	isFullscreen = fullscreen;
 }
 
-void GLFWRenderTarget::setResizable (bool resizable)
+void GLFWRenderTarget::SetResizable (bool resizable)
 {
 	isResizable = resizable;
 }
 
-void GLFWRenderTarget::setVSync (bool vsync)
+void GLFWRenderTarget::SetVSync (bool vsync)
 {
 	isVSync = vsync;
 }
 
-void GLFWRenderTarget::setDebugVisible (bool debugvisible)
+void GLFWRenderTarget::SetDebugVisible (bool debugvisible)
 {
 	isDebugVisible = debugvisible;
 }

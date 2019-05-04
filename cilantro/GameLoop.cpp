@@ -2,11 +2,12 @@
 #include "GameLoop.h"
 #include "GameScene.h"
 #include "Renderer.h"
+#include "InputController.h"
 #include "LogMessage.h"
 #include "Time.h"
 
-GameLoop::GameLoop (GameScene & scene, Renderer & renderer) :
-	gameScene (scene), gameRenderer (renderer)
+GameLoop::GameLoop (GameScene & scene, InputController & inputController, Renderer & renderer) :
+	gameScene (scene), gameInputController (inputController), gameRenderer (renderer)
 {
 	LogMessage (__func__) << "Engine starting";
 
@@ -22,13 +23,15 @@ GameLoop::GameLoop (GameScene & scene, Renderer & renderer) :
 		gameObject->OnStart ();
 	}
 
-	// initialize renderer
+	// initialize renderer & controller
 	gameRenderer.Initialize ();
+	gameInputController.Initialize ();
 }
 
 GameLoop::~GameLoop ()
 {
-	// deinitialize renderer
+	// deinitialize renderer & controller
+	gameInputController.Deinitialize ();
 	gameRenderer.Deinitialize ();
 
 	// deinitialize all game objects
@@ -49,6 +52,12 @@ void GameLoop::Run ()
 	}
 }
 
+void GameLoop::Stop ()
+{
+	// stop game loop
+	shouldStop = true;
+}
+
 void GameLoop::Step ()
 {
 	// update game clocks (Tick)
@@ -59,6 +68,9 @@ void GameLoop::Step ()
 	{
 		gameObject->OnFrame ();
 	}
+
+	// process controller events
+	gameInputController.OnFrame ();
 
 	// render frame
 	gameRenderer.RenderFrame ();

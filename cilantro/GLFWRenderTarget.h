@@ -17,10 +17,12 @@ public:
 	__EAPI void BeforeFrame ();
 	__EAPI void AfterFrame ();
 
-	__EAPI void setFullscreen (bool fullscreen);
-	__EAPI void setResizable (bool resizable);
-	__EAPI void setVSync (bool vsync);
-	__EAPI void setDebugVisible (bool debugvisible);
+	__EAPI GLFWwindow** GetWindow ();
+
+	__EAPI void SetFullscreen (bool fullscreen);
+	__EAPI void SetResizable (bool resizable);
+	__EAPI void SetVSync (bool vsync);
+	__EAPI void SetDebugVisible (bool debugvisible);
 
 private:
 

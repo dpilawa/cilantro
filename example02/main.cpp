@@ -7,18 +7,22 @@
 #include "PointLight.h"
 #include "GLRenderer.h"
 #include "GLFWRenderTarget.h"
+#include "GLFWInputController.h"
 
 int main (int argc, char* argv [])
 {
 	GameScene scene;
 
 	GLFWRenderTarget target (1680, 720);
-	target.setDebugVisible (true);
-	target.setVSync (true);
-	target.setFullscreen (false);
+	target.SetDebugVisible (true);
+	target.SetVSync (true);
+	target.SetFullscreen (false);
+
+	GLFWInputController controller (target.GetWindow ());
+	controller.CreateEvent ("exit", InputEventKey::KeyEsc, InputEventTrigger::Press);
 
 	GLRenderer renderer (scene, target);
-	GameLoop game (scene, renderer);
+	GameLoop game (scene, controller, renderer);
 
 	Material& sunM = scene.AddMaterial (new Material ());
 	sunM.SetColor (Vector3f (0.7f, 0.7f, 0.7f));
