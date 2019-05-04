@@ -8,6 +8,13 @@ compiler:
   - gcc
   - clang
 
+addons:
+  apt:
+    packages:
+      # RANDR
+      - libxcb1-dev
+      - libxcb-randr0-dev
+
 script:
      - mkdir -p build
      - cd build
