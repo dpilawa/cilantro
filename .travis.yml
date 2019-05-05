@@ -30,7 +30,7 @@ addons:
       - libxcb-randr0-dev
 
 script:
-     - cd ${HOME}/dpilawa/cilantro
+     - cd ${TRAVIS_BUILD_DIR}
      - mkdir -p build
      - cd build
      - cmake ../
