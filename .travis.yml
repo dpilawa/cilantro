@@ -21,7 +21,6 @@ install:
       brew install cmake || brew upgrade cmake
     fi
   - cmake --version
-  - cd ..
 
 addons:
   apt:
@@ -31,6 +30,7 @@ addons:
       - libxcb-randr0-dev
 
 script:
+     - cd dpilawa/cilantro
      - mkdir -p build
      - cd build
      - cmake ../
