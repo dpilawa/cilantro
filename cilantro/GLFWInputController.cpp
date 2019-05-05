@@ -48,9 +48,9 @@ void GLFWInputController::OnFrame ()
     InputController::OnFrame ();
 }
 
-InputEvent* GLFWInputController::CreateEvent (std::string name, InputEventKey key, InputEventTrigger trigger)
+InputEvent* GLFWInputController::CreateInputEvent (std::string name, InputEventKey key, InputEventTrigger trigger)
 {
-    InputEvent* event = InputController::CreateEvent (name, key, trigger);
+    InputEvent* event = InputController::CreateInputEvent (name, key, trigger);
 
     if (event) 
     {
@@ -70,7 +70,7 @@ InputEvent* GLFWInputController::CreateEvent (std::string name, InputEventKey ke
     return event;
 }
 
-InputAxis*  GLFWInputController::CreateAxis (std::string name, InputAxis axis, float scale) 
+InputAxis*  GLFWInputController::CreateInputAxis (std::string name, InputAxis axis, float scale) 
 {
     return NULL; //fixme
 }

@@ -19,7 +19,7 @@ int main (int argc, char* argv [])
 	target.SetFullscreen (false);
 
 	GLFWInputController controller (target.GetWindow ());
-	controller.CreateEvent ("exit", InputEventKey::KeyEsc, InputEventTrigger::Press);
+	controller.CreateInputEvent ("exit", InputEventKey::KeyEsc, InputEventTrigger::Press);
 
 	GLRenderer renderer (scene, target);
 	GameLoop game (scene, controller, renderer);

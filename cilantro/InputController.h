@@ -21,11 +21,11 @@ public:
 
     virtual void OnFrame ();
 
-    virtual InputEvent* CreateEvent (std::string name, InputEventKey key, InputEventTrigger trigger);
-    virtual InputAxis*  CreateAxis (std::string name, InputAxis axis, float scale);
+    virtual InputEvent* CreateInputEvent (std::string name, InputEventKey key, InputEventTrigger trigger);
+    virtual InputAxis*  CreateInputAxis (std::string name, InputAxis axis, float scale);
 
-    __EAPI void BindEvent (std::string name, std::function<void ()>);
-    __EAPI void BindAxis (std::string name, std::function<void (float)>);
+    __EAPI void BindInputEvent (std::string name, std::function<void ()>);
+    __EAPI void BindInputAxis (std::string name, std::function<void (float)>);
 
 
 private: 

@@ -4,10 +4,12 @@
 #include "cilantroengine.h"
 #include "InputController.h"
 #include "GLFW/glfw3.h"
+#include <cstddef>
 #include <unordered_map>
 #include <tuple>
+#include <string>
 
-struct key_hash : public std::unary_function<std::tuple<int, int, int>, std::size_t>
+struct key_hash
 {
     std::size_t operator() (const std::tuple<int, int, int>& k) const
     {
@@ -20,15 +22,15 @@ class GLFWInputController : public InputController
 public:
 
     __EAPI GLFWInputController (GLFWwindow** window);
-    ~GLFWInputController ();
+    __EAPI ~GLFWInputController ();
 
     __EAPI void Initialize ();
     __EAPI void Deinitialize ();
 
     __EAPI void OnFrame ();
 
-    __EAPI InputEvent* CreateEvent (std::string name, InputEventKey key, InputEventTrigger trigger);
-    __EAPI InputAxis*  CreateAxis (std::string name, InputAxis axis, float scale);
+    __EAPI InputEvent* CreateInputEvent (std::string name, InputEventKey key, InputEventTrigger trigger);
+    __EAPI InputAxis*  CreateInputAxis (std::string name, InputAxis axis, float scale);
 
 private: 
     
@@ -36,9 +38,9 @@ private:
 
     GLFWwindow** window;
     std::unordered_map<std::tuple<int, int, int>, InputEvent*, key_hash> glfwEventMap;
-
     static std::unordered_map<InputEventKey, int> glfwKeyMap;
 
 };
+
 
 #endif // _GLFWINPUTCONTROLLER_H_

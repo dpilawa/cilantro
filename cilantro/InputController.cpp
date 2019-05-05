@@ -23,7 +23,7 @@ void InputController::OnFrame ()
     // TBD
 }
 
-InputEvent* InputController::CreateEvent (std::string name, InputEventKey key, InputEventTrigger trigger) 
+InputEvent* InputController::CreateInputEvent (std::string name, InputEventKey key, InputEventTrigger trigger) 
 {
     auto search = events.find (name);
 
@@ -48,12 +48,12 @@ InputEvent* InputController::CreateEvent (std::string name, InputEventKey key, I
     return NULL;
 }
 
-InputAxis* InputController::CreateAxis (std::string name, InputAxis axis, float scale) 
+InputAxis* InputController::CreateInputAxis (std::string name, InputAxis axis, float scale) 
 {
     return NULL;
 }
 
-void InputController::BindEvent (std::string name, std::function<void ()> function)
+void InputController::BindInputEvent (std::string name, std::function<void ()> function)
 {
     auto search = events.find (name);
 
@@ -68,7 +68,7 @@ void InputController::BindEvent (std::string name, std::function<void ()> functi
 }
 
 
-void InputController::BindAxis (std::string name, std::function<void (float)> function)
+void InputController::BindInputAxis (std::string name, std::function<void (float)> function)
 {
 
 }

@@ -20,12 +20,12 @@ int main (int argc, char* argv[])
 	target.SetResizable (true);
 
 	GLFWInputController controller (target.GetWindow ());
-	controller.CreateEvent ("exit", InputEventKey::KeyEsc, InputEventTrigger::Press);
 
 	GLRenderer renderer (scene, target);
 	GameLoop game (scene, controller, renderer);
 
-	controller.BindEvent ("exit", [ & ]() { game.Stop (); });
+	controller.CreateInputEvent ("exit", InputEventKey::KeyEsc, InputEventTrigger::Press);
+	controller.BindInputEvent ("exit", [ & ]() { game.Stop (); });
 
 	Material& green = scene.AddMaterial (new Material ());
 	green.SetShaderModelName ("blinnphong_shader");

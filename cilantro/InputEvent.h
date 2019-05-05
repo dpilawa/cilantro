@@ -14,7 +14,7 @@ enum class InputEventKey : unsigned {
     MouseRight
 };
 
-enum class InputEventTrigger {
+enum class InputEventTrigger : unsigned {
     Press,
     Release
 };
@@ -22,7 +22,7 @@ enum class InputEventTrigger {
 class InputEvent : public CallbackProvider <std::string>
 {
     public:
-        InputEvent (InputEventKey eventKey, InputEventTrigger eventTrigger);
+        InputEvent (InputEventKey key, InputEventTrigger trigger);
         ~InputEvent ();
      
         void Set ();
