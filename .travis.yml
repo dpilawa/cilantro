@@ -26,6 +26,8 @@ addons:
   apt:
     packages:
       # RANDR
+      - xorg-dev
+      - libxinerama-dev
       - libxrandr-dev
 
 script:
