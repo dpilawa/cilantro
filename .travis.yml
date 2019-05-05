@@ -21,6 +21,7 @@ install:
       brew install cmake || brew upgrade cmake
     fi
   - cmake --version
+  - cd ..
 
 addons:
   apt:
