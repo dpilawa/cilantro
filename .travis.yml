@@ -30,7 +30,7 @@ addons:
       - libxcb-randr0-dev
 
 script:
-     - cd dpilawa/cilantro
+     - pwd
      - mkdir -p build
      - cd build
      - cmake ../
