@@ -26,8 +26,8 @@ addons:
   apt:
     packages:
       # RANDR
-      - libxcb1-dev
-      - libxcb-randr0-dev
+      - xorg-dev
+      - xrandr-dev
 
 script:
      - cd ${TRAVIS_BUILD_DIR}
