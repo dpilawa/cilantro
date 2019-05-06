@@ -7,7 +7,7 @@ add_subdirectory (ext/glfw)
 add_subdirectory (ext/gl3w)
 
 add_subdirectory (cilantro)
-add_dependencies(cilantro gl3w)
+add_dependencies (cilantro gl3w_gen)
 target_link_libraries (cilantro glfw)
 
 add_subdirectory (example01)
