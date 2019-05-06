@@ -1,10 +1,10 @@
 add_compile_definitions(IMGUI_IMPL_OPENGL_LOADER_GL3W)
 add_compile_definitions(BUILDING_DLL)
 include_directories ("${PROJECT_SOURCE_DIR}/ext/glfw/include")
-include_directories ("${PROJECT_BINARY_DIR}/ext/gl3w/include")
+include_directories ("${PROJECT_SOURCE_DIR}/ext/gl3w/include")
 include_directories ("${PROJECT_SOURCE_DIR}/ext/imgui")
 add_library(cilantro SHARED
-${PROJECT_BINARY_DIR}/ext/gl3w/src/gl3w.c
+${PROJECT_SOURCE_DIR}/ext/gl3w/src/gl3w.c
 ../ext/imgui/examples/imgui_impl_glfw.cpp
 ../ext/imgui/examples/imgui_impl_glfw.h
 ../ext/imgui/examples/imgui_impl_opengl3.cpp
