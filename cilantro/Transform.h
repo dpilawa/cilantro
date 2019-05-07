@@ -4,6 +4,7 @@
 #include "cilantroengine.h"
 #include "CallbackProvider.h"
 #include "Matrix4f.h"
+#include <string>
 
 class Transform : public CallbackProvider<std::string, unsigned int>
 {
