@@ -4,6 +4,7 @@
 #include "cilantroengine.h"
 #include "CallbackProvider.h"
 #include "Transform.h"
+#include <string>
 
 class GameScene;
 class Renderer;
