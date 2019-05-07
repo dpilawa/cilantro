@@ -14,7 +14,7 @@ namespace std
     template<>
     struct hash<std::tuple<int, int, int>>
     {
-        std::size_t operator() (const std::tuple<int, int, int>& k) const
+        std::size_t operator() (std::tuple<int, int, int> const& k) const noexcept
         {
             return std::get<0>(k) ^ std::get<1>(k) ^ std::get<2>(k);
         }
