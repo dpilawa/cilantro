@@ -9,13 +9,17 @@
 #include <tuple>
 #include <string>
 
-struct key_hash
+namespace std 
 {
-    std::size_t operator() (const std::tuple<int, int, int>& k) const
+    template<>
+    struct hash<std::tuple<int, int, int>>
     {
-        return std::get<0>(k) ^ std::get<1>(k) ^ std::get<2>(k);
-    }
-};
+        std::size_t operator() (const std::tuple<int, int, int>& k) const
+        {
+            return std::get<0>(k) ^ std::get<1>(k) ^ std::get<2>(k);
+        }
+    };
+}
 
 class GLFWInputController : public InputController
 {
@@ -37,7 +41,7 @@ private:
     void KeyCallback(int key, int scancode, int action, int mods);
 
     GLFWwindow** window;
-    std::unordered_map<std::tuple<int, int, int>, InputEvent*, key_hash> glfwEventMap;
+    std::unordered_map<std::tuple<int, int, int>, InputEvent*> glfwEventMap;
     static std::unordered_map<InputEventKey, int> glfwKeyMap;
 
 };
