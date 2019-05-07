@@ -3,6 +3,8 @@ dist: xenial
 
 os:
   - linux
+  - osx
+  - windows
 
 compiler:
   - gcc
