@@ -4,7 +4,7 @@
 #include "InputEvent.h"
 #include "GLFWInputController.h"
 
-std::unordered_map<InputEventKey, int> GLFWInputController::glfwKeyMap {
+std::unordered_map<InputEventKey, int, InputEventKeyHash> GLFWInputController::glfwKeyMap {
         {InputEventKey::KeyA, GLFW_KEY_A},
         {InputEventKey::KeyD, GLFW_KEY_D},
         {InputEventKey::KeyS, GLFW_KEY_S},
@@ -16,12 +16,10 @@ std::unordered_map<InputEventKey, int> GLFWInputController::glfwKeyMap {
 
 GLFWInputController::GLFWInputController(GLFWwindow** window) : window (window)
 {
-
 }
 
 GLFWInputController::~GLFWInputController()
 {
-
 }
 
 void GLFWInputController::Initialize () 

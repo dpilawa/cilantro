@@ -4,22 +4,27 @@
 #include "cilantroengine.h"
 #include "InputController.h"
 #include "GLFW/glfw3.h"
+#include <type_traits>
 #include <cstddef>
 #include <unordered_map>
 #include <tuple>
 #include <string>
 
-namespace std 
+struct TupleHash
 {
-    template<>
-    struct hash<std::tuple<int, int, int>>
+    std::size_t operator() (const std::tuple<int, int, int>& k) const noexcept
     {
-        std::size_t operator() (std::tuple<int, int, int> const& k) const noexcept
-        {
-            return std::get<0>(k) ^ std::get<1>(k) ^ std::get<2>(k);
-        }
-    };
-}
+        return std::get<0>(k) ^ std::get<1>(k) ^ std::get<2>(k);
+    }
+};
+
+struct InputEventKeyHash
+{
+    std::size_t operator() (const InputEventKey& k) const noexcept
+    {
+        return static_cast<std::size_t>(k);
+    }
+};
 
 class GLFWInputController : public InputController
 {
@@ -41,8 +46,8 @@ private:
     void KeyCallback(int key, int scancode, int action, int mods);
 
     GLFWwindow** window;
-    std::unordered_map<std::tuple<int, int, int>, InputEvent*> glfwEventMap;
-    static std::unordered_map<InputEventKey, int> glfwKeyMap;
+    std::unordered_map<std::tuple<int, int, int>, InputEvent*, TupleHash> glfwEventMap;
+    static std::unordered_map<InputEventKey, int, InputEventKeyHash> glfwKeyMap;
 
 };
 
