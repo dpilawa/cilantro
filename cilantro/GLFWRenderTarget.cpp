@@ -109,17 +109,17 @@ void GLFWRenderTarget::AfterFrame ()
 
 	// display debug messages
 
-	if (Time::GetTimeSinceSplitTime () > 1.0f)
+	if (Timer::GetTimeSinceSplitTime () > 1.0f)
 	{
-		timeSinceLastSplit = Time::GetTimeSinceSplitTime ();
-		Time::ResetSplitTime ();
+		timeSinceLastSplit = Timer::GetTimeSinceSplitTime ();
+		Timer::ResetSplitTime ();
 		splitFrameCount = frameCount - lastFrameCount;
 		lastFrameCount = frameCount;
 		frameRenderTimeInLastSplit = frameRenderTimeSinceLastSplit;
 		frameRenderTimeSinceLastSplit = 0;
 	}
 
-	frameRenderTimeSinceLastSplit += Time::GetFrameRenderTime ();
+	frameRenderTimeSinceLastSplit += Timer::GetFrameRenderTime ();
 
 
 	ImGui::Text ("FPS: %.1f", splitFrameCount / timeSinceLastSplit);

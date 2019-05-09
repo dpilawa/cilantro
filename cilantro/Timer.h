@@ -4,11 +4,11 @@
 #include "cilantroengine.h"
 #include <chrono>
 
-class Time
+class Timer
 {
 public:
-	Time ();
-	~Time ();
+	Timer ();
+	~Timer ();
 
 	// return delta-time of currently rendered frame (in seconds)
 	static __EAPI float GetFrameDeltaTime ();

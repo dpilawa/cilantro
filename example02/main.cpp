@@ -19,10 +19,12 @@ int main (int argc, char* argv [])
 	target.SetFullscreen (false);
 
 	GLFWInputController controller (target.GetWindow ());
-	controller.CreateInputEvent ("exit", InputEventKey::KeyEsc, InputEventTrigger::Press);
 
 	GLRenderer renderer (scene, target);
 	GameLoop game (scene, controller, renderer);
+
+	controller.CreateInputEvent ("exit", InputEventKey::KeyEsc, InputEventTrigger::Press);
+	controller.BindInputEvent ("exit", [ & ]() { game.Stop (); });
 
 	Material& sunM = scene.AddMaterial (new Material ());
 	sunM.SetColor (Vector3f (0.7f, 0.7f, 0.7f));

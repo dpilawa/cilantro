@@ -92,7 +92,7 @@ void GLRenderer::RenderFrame ()
 	}
 
 	// update game clocks (Tock)
-	Time::Tock ();
+	Timer::Tock ();
 
 	// invoke rendering target's post-frame function
 	renderTarget->AfterFrame ();

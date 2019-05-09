@@ -14,5 +14,5 @@ RotatingObject::~RotatingObject ()
 
 void RotatingObject::OnFrame ()
 {
-	GetModelTransform ().Rotate (0.0f, rotationSpeed * Time::GetFrameDeltaTime (), 0.0f);
+	GetModelTransform ().Rotate (0.0f, rotationSpeed * Timer::GetFrameDeltaTime (), 0.0f);
 }

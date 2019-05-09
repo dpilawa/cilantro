@@ -15,7 +15,7 @@ GameLoop::GameLoop (GameScene & scene, InputController & inputController, Render
 	shouldStop = false;
 
 	// pre-set game clocks
-	Time::Tick ();
+	Timer::Tick ();
 
 	// initialize all game objects
 	for (auto gameObject : gameScene.GetGameObjects ())
@@ -61,9 +61,9 @@ void GameLoop::Stop ()
 void GameLoop::Step ()
 {
 	// update game clocks (Tick)
-	Time::Tick ();
+    Timer::Tick ();
 
-	// update all game objects
+    // update all game objects
 	for (auto gameObject : gameScene.GetGameObjects ())
 	{
 		gameObject->OnFrame ();
