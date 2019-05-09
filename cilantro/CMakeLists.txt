@@ -77,8 +77,8 @@ Renderer.cpp
 Renderer.h
 RenderTarget.cpp
 RenderTarget.h
-Time.cpp
-Time.h
+Timer.cpp
+Timer.h
 Transform.cpp
 Transform.h
 Vector3f.cpp

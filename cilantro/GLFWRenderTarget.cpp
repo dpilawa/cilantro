@@ -6,7 +6,7 @@
 #include "RenderTarget.h"
 #include "GLFWRenderTarget.h"
 #include "LogMessage.h"
-#include "Time.h"
+#include "Timer.h"
 
 GLFWRenderTarget::GLFWRenderTarget (int xRes, int yRes) : RenderTarget (xRes, yRes)
 {

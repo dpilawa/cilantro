@@ -4,7 +4,7 @@
 #include "Renderer.h"
 #include "InputController.h"
 #include "LogMessage.h"
-#include "Time.h"
+#include "Timer.h"
 
 GameLoop::GameLoop (GameScene & scene, InputController & inputController, Renderer & renderer) :
 	gameScene (scene), gameInputController (inputController), gameRenderer (renderer)

@@ -5,6 +5,7 @@
 #include "GameObject.h"
 #include "Material.h"
 #include "Camera.h"
+#include <string>
 
 // This class represents a game world (a.k.a scene or level)
 // It contains all visible and invisible objects in a game
