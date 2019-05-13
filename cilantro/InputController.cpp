@@ -23,7 +23,7 @@ void InputController::OnFrame ()
     // TBD
 }
 
-InputEvent* InputController::CreateInputEvent (std::string name, InputEventKey key, InputEventTrigger trigger) 
+InputEvent* InputController::CreateInputEvent (std::string name, InputEventKey key, InputEventTrigger trigger, std::set<InputEventModifier> modifiers) 
 {
     auto search = events.find (name);
 
@@ -33,7 +33,7 @@ InputEvent* InputController::CreateInputEvent (std::string name, InputEventKey k
     }
     else 
     {
-        auto inserted = events.emplace (std::piecewise_construct, std::forward_as_tuple (name), std::forward_as_tuple (key, trigger));
+        auto inserted = events.emplace (std::piecewise_construct, std::forward_as_tuple (name), std::forward_as_tuple (key, trigger, modifiers));
         if (inserted.second == true)
         {
             LogMessage(__func__) << "Created controller event" << name;

@@ -7,6 +7,7 @@
 #include <string>
 #include <functional>
 #include <unordered_map>
+#include <set>
 
 
 class InputController
@@ -21,7 +22,8 @@ public:
 
     virtual void OnFrame ();
 
-    virtual InputEvent* CreateInputEvent (std::string name, InputEventKey key, InputEventTrigger trigger);
+    virtual InputEvent* CreateInputEvent (std::string name, InputEventKey key, InputEventTrigger trigger, std::set<InputEventModifier> modifiers);
+    virtual InputEvent* CreateInputEvent (std::string name, InputEventKey key, InputEventTrigger trigger) = 0;    
     virtual InputAxis*  CreateInputAxis (std::string name, InputAxis axis, float scale);
 
     __EAPI void BindInputEvent (std::string name, std::function<void ()>);

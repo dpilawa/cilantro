@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <tuple>
 #include <string>
+#include <set>
 
 struct TupleHash
 {
@@ -38,7 +39,8 @@ public:
 
     __EAPI void OnFrame ();
 
-    __EAPI InputEvent* CreateInputEvent (std::string name, InputEventKey key, InputEventTrigger trigger);
+    __EAPI InputEvent* CreateInputEvent (std::string name, InputEventKey key, InputEventTrigger trigger, std::set<InputEventModifier> modifiers);
+    __EAPI InputEvent* CreateInputEvent (std::string name, InputEventKey key, InputEventTrigger trigger);    
     __EAPI InputAxis*  CreateInputAxis (std::string name, InputAxis axis, float scale);
 
 private: 

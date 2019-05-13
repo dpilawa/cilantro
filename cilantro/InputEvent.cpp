@@ -1,6 +1,6 @@
 #include "InputEvent.h"
 
-InputEvent::InputEvent (InputEventKey key, InputEventTrigger trigger) : eventKey (key), eventTrigger (trigger)
+InputEvent::InputEvent (InputEventKey key, InputEventTrigger trigger, std::set<InputEventModifier> modifiers) : eventKey (key), eventTrigger (trigger), eventModifiers (modifiers)
 {
     eventTriggered = false;
 }

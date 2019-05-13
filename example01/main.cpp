@@ -24,7 +24,7 @@ int main (int argc, char* argv[])
 	GLRenderer renderer (scene, target);
 	GameLoop game (scene, controller, renderer);
 
-	controller.CreateInputEvent ("exit", InputEventKey::KeyEsc, InputEventTrigger::Press);
+	controller.CreateInputEvent ("exit", InputEventKey::KeyEsc, InputEventTrigger::Press, {InputEventModifier::Control, InputEventModifier::Shift});
 	controller.BindInputEvent ("exit", [ & ]() { game.Stop (); });
 
 	Material& green = scene.AddMaterial (new Material ());
