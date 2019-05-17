@@ -14,38 +14,24 @@ InputController::~InputController ()
 void InputController::OnFrame ()
 {
     // process events
-    for (auto& event : events)
+    for (auto&& event : events)
     {
-        event.second.OnFrame ();
+        if (event.Read ()) 
+        {
+            InvokeCallbacks (event.GetName (), event.GetMultiplier ());
+        }
     }
 
     // process axes
     // TBD
 }
 
-InputEvent* InputController::CreateInputEvent (std::string name, InputEventKey key, InputEventTrigger trigger, std::set<InputEventModifier> modifiers) 
+InputEvent* InputController::CreateInputEvent (std::string name, InputEventKey key, InputEventTrigger trigger, std::set<InputEventModifier> modifiers, float multiplier) 
 {
-    auto search = events.find (name);
-
-    if (search != events.end ())
-    {
-        LogMessage(__func__, EXIT_FAILURE) << "Event" << name << "already exists";
-    }
-    else 
-    {
-        auto inserted = events.emplace (std::piecewise_construct, std::forward_as_tuple (name), std::forward_as_tuple (key, trigger, modifiers));
-        if (inserted.second == true)
-        {
-            LogMessage(__func__) << "Created controller event" << name;
-            return &(inserted.first->second);
-        }
-        else 
-        {
-            LogMessage(__func__, EXIT_FAILURE) << "Unable to create event" << name;
-        }
-    }
-
-    return NULL;
+    /* emplace event into vector */
+    events.emplace_back (name, key, trigger, modifiers, multiplier);
+    
+    return &(events.back ());
 }
 
 InputAxis* InputController::CreateInputAxis (std::string name, InputAxis axis, float scale) 
@@ -53,18 +39,9 @@ InputAxis* InputController::CreateInputAxis (std::string name, InputAxis axis, f
     return NULL;
 }
 
-void InputController::BindInputEvent (std::string name, std::function<void ()> function)
+void InputController::BindInputEvent (std::string name, std::function<void (float)> function)
 {
-    auto search = events.find (name);
-
-    if (search == events.end ())
-    {
-        LogMessage(__func__, EXIT_FAILURE) << "Event" << name << "not found";
-    }
-    else 
-    {
-        search->second.RegisterCallback ("event", function);
-    }
+    RegisterCallback (name, function);
 }
 
 

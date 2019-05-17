@@ -24,8 +24,10 @@ int main (int argc, char* argv[])
 	GLRenderer renderer (scene, target);
 	GameLoop game (scene, controller, renderer);
 
-	controller.CreateInputEvent ("exit", InputEventKey::KeyEsc, InputEventTrigger::Press, {InputEventModifier::Control, InputEventModifier::Shift});
-	controller.BindInputEvent ("exit", [ & ]() { game.Stop (); });
+	controller.CreateInputEvent ("exit", InputEventKey::KeyEsc, InputEventTrigger::Press, {InputEventModifier::Control, InputEventModifier::Shift}, 1.0f);
+	controller.CreateInputEvent ("exit", InputEventKey::KeyQ, InputEventTrigger::Press, {}, 1.0f);
+	controller.CreateInputEvent ("exit", InputEventKey::KeyX, InputEventTrigger::Press, {}, 1.0f);
+	controller.BindInputEvent ("exit", [ & ](float) { game.Stop (); });
 
 	Material& green = scene.AddMaterial (new Material ());
 	green.SetShaderModelName ("blinnphong_shader");

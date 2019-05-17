@@ -91,9 +91,9 @@ void GLFWInputController::OnFrame ()
     InputController::OnFrame ();
 }
 
-InputEvent* GLFWInputController::CreateInputEvent (std::string name, InputEventKey key, InputEventTrigger trigger, std::set<InputEventModifier> modifiers)
+InputEvent* GLFWInputController::CreateInputEvent (std::string name, InputEventKey key, InputEventTrigger trigger, std::set<InputEventModifier> modifiers, float multiplier)
 {
-    InputEvent* event = InputController::CreateInputEvent (name, key, trigger, modifiers);
+    InputEvent* event = InputController::CreateInputEvent (name, key, trigger, modifiers, multiplier);
 
     if (event) 
     {
@@ -106,16 +106,10 @@ InputEvent* GLFWInputController::CreateInputEvent (std::string name, InputEventK
         {
             glfwEventMap[std::make_tuple(find->second, trigger == InputEventTrigger::Press ? GLFW_PRESS : GLFW_RELEASE, 0)] = event;
         	LogMessage (__func__) << "Mapped key event" << find->second << (trigger == InputEventTrigger::Press ? GLFW_PRESS : GLFW_RELEASE) << 0;
-
         }
     }
 
     return event;
-}
-
-InputEvent* GLFWInputController::CreateInputEvent (std::string name, InputEventKey key, InputEventTrigger trigger)
-{
-    return GLFWInputController::CreateInputEvent (name, key, trigger, {});
 }
 
 InputAxis*  GLFWInputController::CreateInputAxis (std::string name, InputAxis axis, float scale) 
@@ -132,7 +126,7 @@ void GLFWInputController::KeyCallback (int key, int scancode, int action, int mo
 	    LogMessage (__func__) << "Unhandled key event" << key << action << mods;
     }
     else
-    {
+    {LogMessage (__func__) << "Set event" << key;
         find->second->Set ();
     }
 }

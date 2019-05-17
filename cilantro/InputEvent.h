@@ -73,23 +73,27 @@ enum class InputEventModifier : unsigned {
     Shift
 };
 
-class InputEvent : public CallbackProvider <std::string>
+class InputEvent
 {
     public:
-        InputEvent (InputEventKey key, InputEventTrigger trigger, std::set<InputEventModifier> modifiers);
+        InputEvent (std::string name, InputEventKey key, InputEventTrigger trigger, std::set<InputEventModifier> modifiers, float multiplier);
         ~InputEvent ();
      
         void Set ();
-        void Clear ();
+        void Clear ();        
+        bool Read ();
 
-        void OnFrame ();
+        std::string GetName ();
+        float GetMultiplier ();
 
     protected:
 
     private:
+        std::string eventName;
         InputEventKey eventKey;
         InputEventTrigger eventTrigger;
         std::set<InputEventModifier> eventModifiers;
+        float eventMultiplier;
         bool eventTriggered;
 };
 

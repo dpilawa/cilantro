@@ -23,8 +23,8 @@ int main (int argc, char* argv [])
 	GLRenderer renderer (scene, target);
 	GameLoop game (scene, controller, renderer);
 
-	controller.CreateInputEvent ("exit", InputEventKey::KeyEsc, InputEventTrigger::Press);
-	controller.BindInputEvent ("exit", [ & ]() { game.Stop (); });
+	controller.CreateInputEvent ("exit", InputEventKey::KeyEsc, InputEventTrigger::Press, {}, 1.0f);
+	controller.BindInputEvent ("exit", [ & ](float) { game.Stop (); });
 
 	Material& sunM = scene.AddMaterial (new Material ());
 	sunM.SetColor (Vector3f (0.7f, 0.7f, 0.7f));

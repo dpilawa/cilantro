@@ -2,15 +2,17 @@
 #define _INPUTCONTROLLER_H_
 
 #include "cilantroengine.h"
+#include "CallbackProvider.h"
 #include "InputEvent.h"
 #include "InputAxis.h"
 #include <string>
 #include <functional>
 #include <unordered_map>
 #include <set>
+#include <vector>
 
 
-class InputController
+class InputController : public CallbackProvider <std::string, float>
 {
 public:
 
@@ -22,18 +24,17 @@ public:
 
     virtual void OnFrame ();
 
-    virtual InputEvent* CreateInputEvent (std::string name, InputEventKey key, InputEventTrigger trigger, std::set<InputEventModifier> modifiers);
-    virtual InputEvent* CreateInputEvent (std::string name, InputEventKey key, InputEventTrigger trigger) = 0;    
+    virtual InputEvent* CreateInputEvent (std::string name, InputEventKey key, InputEventTrigger trigger, std::set<InputEventModifier> modifiers, float multiplier);
     virtual InputAxis*  CreateInputAxis (std::string name, InputAxis axis, float scale);
 
-    __EAPI void BindInputEvent (std::string name, std::function<void ()>);
+    __EAPI void BindInputEvent (std::string name, std::function<void (float)>);
     __EAPI void BindInputAxis (std::string name, std::function<void (float)>);
 
 
 private: 
     
-    std::unordered_map <std::string, InputEvent> events;
-    std::unordered_map <std::string, InputAxis> axes;
+    std::vector<InputEvent> events;
+    std::vector<InputAxis> axes;
 
 };
 
