@@ -126,7 +126,8 @@ void GLFWInputController::KeyCallback (int key, int scancode, int action, int mo
 	    LogMessage (__func__) << "Unhandled key event" << key << action << mods;
     }
     else
-    {LogMessage (__func__) << "Set event" << key;
+    {
+        LogMessage (__func__) << "Set event" << key << find->second->GetName ();
         find->second->Set ();
     }
 }

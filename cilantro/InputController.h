@@ -33,8 +33,8 @@ public:
 
 private: 
     
-    std::vector<InputEvent> events;
-    std::vector<InputAxis> axes;
+    std::vector<InputEvent*> events;
+    std::vector<InputAxis*> axes;
 
 };
 
