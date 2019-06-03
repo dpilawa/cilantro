@@ -19,9 +19,9 @@ struct TupleHash
     }
 };
 
-struct InputEventKeyHash
+struct InputKeyHash
 {
-    std::size_t operator() (const InputEventKey& k) const noexcept
+    std::size_t operator() (const InputKey& k) const noexcept
     {
         return static_cast<std::size_t>(k);
     }
@@ -39,16 +39,17 @@ public:
 
     __EAPI void OnFrame ();
 
-    __EAPI InputEvent* CreateInputEvent (std::string name, InputEventKey key, InputEventTrigger trigger, std::set<InputEventModifier> modifiers, float multiplier); 
+    __EAPI InputEvent* CreateInputEvent (std::string name, InputKey key, InputTrigger trigger, std::set<InputModifier> modifiers); 
     __EAPI InputAxis*  CreateInputAxis (std::string name, InputAxis axis, float scale);
 
 private: 
     
     void KeyCallback(int key, int scancode, int action, int mods);
+    void MouseCursorCallback(double xpos, double ypos);
 
     GLFWwindow** window;
     std::unordered_map<std::tuple<int, int, int>, InputEvent*, TupleHash> glfwEventMap;
-    static std::unordered_map<InputEventKey, int, InputEventKeyHash> glfwKeyMap;
+    static std::unordered_map<InputKey, int, InputKeyHash> glfwKeyMap;
 
 };
 

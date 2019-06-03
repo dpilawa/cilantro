@@ -43,6 +43,8 @@ GLShader.cpp
 GLShader.h
 GLShaderModel.cpp
 GLShaderModel.h
+Input.cpp
+Input.h
 InputAxis.cpp
 InputAxis.h
 InputEvent.cpp

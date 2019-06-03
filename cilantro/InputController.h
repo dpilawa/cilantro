@@ -24,7 +24,7 @@ public:
 
     virtual void OnFrame ();
 
-    virtual InputEvent* CreateInputEvent (std::string name, InputEventKey key, InputEventTrigger trigger, std::set<InputEventModifier> modifiers, float multiplier);
+    virtual InputEvent* CreateInputEvent (std::string name, InputKey key, InputTrigger trigger, std::set<InputModifier> modifiers);
     virtual InputAxis*  CreateInputAxis (std::string name, InputAxis axis, float scale);
 
     __EAPI void BindInputEvent (std::string name, std::function<void (float)>);

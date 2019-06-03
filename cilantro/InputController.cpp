@@ -18,7 +18,7 @@ void InputController::OnFrame ()
     {
         if (event->Read ()) 
         {
-            InvokeCallbacks (event->GetName (), event->GetMultiplier ());
+            InvokeCallbacks (event->GetName (), event->GetScale ());
         }
     }
 
@@ -26,10 +26,10 @@ void InputController::OnFrame ()
     // TBD
 }
 
-InputEvent* InputController::CreateInputEvent (std::string name, InputEventKey key, InputEventTrigger trigger, std::set<InputEventModifier> modifiers, float multiplier) 
+InputEvent* InputController::CreateInputEvent (std::string name, InputKey key, InputTrigger trigger, std::set<InputModifier> modifiers) 
 {
     /* emplace event into vector */
-    events.push_back (new InputEvent (name, key, trigger, modifiers, multiplier));
+    events.push_back (new InputEvent (name, key, trigger, modifiers));
 
     return events.back ();
 }

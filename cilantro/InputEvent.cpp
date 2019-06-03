@@ -1,8 +1,8 @@
 #include "InputEvent.h"
 #include "LogMessage.h"
 
-InputEvent::InputEvent (std::string name, InputEventKey key, InputEventTrigger trigger, std::set<InputEventModifier> modifiers, float multiplier) : 
-eventName (name), eventKey (key), eventTrigger (trigger), eventModifiers (modifiers), eventMultiplier (multiplier)
+InputEvent::InputEvent (std::string name, InputKey key, InputTrigger trigger, std::set<InputModifier> modifiers) : 
+Input(name), eventKey (key), eventTrigger (trigger), eventModifiers (modifiers)
 {
     eventTriggered = false;
 }
@@ -28,12 +28,4 @@ bool InputEvent::Read ()
     
     Clear ();
     return eventState;
-}
-
-std::string InputEvent::GetName () {
-    return eventName;
-}
-
-float InputEvent::GetMultiplier () {
-    return eventMultiplier;
 }
