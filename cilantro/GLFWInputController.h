@@ -19,6 +19,14 @@ struct TupleHash
     }
 };
 
+struct PairHash
+{
+    std::size_t operator() (const std::pair<int, int>& k) const noexcept
+    {
+        return k.first ^ k.second;
+    }
+};
+
 struct InputKeyHash
 {
     std::size_t operator() (const InputKey& k) const noexcept
@@ -39,16 +47,24 @@ public:
 
     __EAPI void OnFrame ();
 
-    __EAPI InputEvent* CreateInputEvent (std::string name, InputKey key, InputTrigger trigger, std::set<InputModifier> modifiers); 
-    __EAPI InputAxis*  CreateInputAxis (std::string name, InputAxis axis, float scale);
+    __EAPI Input<bool>* CreateInputEvent (std::string name, InputKey key, InputTrigger trigger, std::set<InputModifier> modifiers); 
+    __EAPI Input<float>*  CreateInputAxis (std::string name, InputKey key, std::set<InputModifier> modifiers, float scale);
+    __EAPI Input<float>*  CreateInputAxis (std::string name, InputAxis value, float scale);
 
-private: 
-    
-    void KeyCallback(int key, int scancode, int action, int mods);
+private:
+    int GetGLFWKey (InputKey key);
+    int GetGLFWTrigger (InputTrigger trigger);
+    int GetGLFWModifiers (std::set<InputModifier> modifiers);
+
+    void KeyCallback (int key, int scancode, int action, int mods);
     void MouseCursorCallback(double xpos, double ypos);
 
     GLFWwindow** window;
-    std::unordered_map<std::tuple<int, int, int>, InputEvent*, TupleHash> glfwEventMap;
+
+    std::unordered_map<std::tuple<int, int, int>, Input<bool>*, TupleHash> glfwKeyEventMap;
+    std::unordered_map<std::pair<int, int>, Input<float>*, PairHash> glfwKeyAxisMap;
+    // todo: analog axis map
+
     static std::unordered_map<InputKey, int, InputKeyHash> glfwKeyMap;
 
 };

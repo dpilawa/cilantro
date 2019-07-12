@@ -9,6 +9,8 @@
 #include "GLFWRenderTarget.h"
 #include "GLFWInputController.h"
 
+#include <iostream>
+
 int main (int argc, char* argv[])
 {
 	GameScene scene;
@@ -24,10 +26,20 @@ int main (int argc, char* argv[])
 	GLRenderer renderer (scene, target);
 	GameLoop game (scene, controller, renderer);
 
-	controller.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {InputModifier::Control, InputModifier::Shift});
+	controller.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
 	controller.BindInputEvent ("exit", [ & ](float) { game.Stop (); });
 
-	Material& green = scene.AddMaterial (new Material ());
+    controller.CreateInputAxis ("moveforward", InputKey::KeyW, {}, 1.0f);
+    controller.CreateInputAxis ("moveforward", InputKey::KeyS, {}, -1.0f);	
+
+	controller.CreateInputAxis ("moveright", InputKey::KeyD, {}, 1.0f);
+    controller.CreateInputAxis ("moveright", InputKey::KeyA, {}, -1.0f);
+
+    controller.CreateInputAxis ("camerapitch", InputAxis::MouseY, 1.0f);
+    controller.CreateInputAxis ("camerayaw", InputAxis::MouseX, 1.0f);
+	
+
+    Material& green = scene.AddMaterial (new Material ());
 	green.SetShaderModelName ("blinnphong_shader");
 	green.SetColor (Vector3f (0.1f, 0.4f, 0.1f));
 	green.SetAmbientColor (Vector3f (0.5f, 0.5f, 0.5f));
@@ -41,10 +53,13 @@ int main (int argc, char* argv[])
 	lampM.SetEmissiveColor (Vector3f (0.9f, 0.9f, 0.9f)).SetDiffuseColor (Vector3f (0.2f, 0.2f, 0.2f));
 
 	PerspectiveCamera& cam = dynamic_cast<PerspectiveCamera&>(scene.AddGameObject (new PerspectiveCamera (75.0f, 0.1f, 100.0f)));
-	cam.GetModelTransform ().Translate (3.5f, 1.5f, 3.5f).Rotate (-20.0f, -45.0f, 0.0f);
+	//cam.GetModelTransform ().Translate (3.5f, 1.5f, 3.5f).Rotate (-20.0f, -45.0f, 0.0f);
 	scene.SetActiveCamera (&cam);
 
-	MeshObject& cube = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
+    controller.BindInputAxis ("moveright", [&](float a) { cam.GetModelTransform ().Translate (a, 0.0f, 0.0f); });
+	controller.BindInputAxis ("moveforward", [&](float a) { cam.GetModelTransform ().Translate (0.0f, 0.0f, a); });
+
+    MeshObject& cube = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
 	cube.InitUnitCube ();
 	cube.SetMaterial (red);
 

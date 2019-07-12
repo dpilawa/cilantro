@@ -61,7 +61,7 @@ enum class InputKey: unsigned
     MouseRight
 };
 
-enum class InputValue : unsigned
+enum class InputAxis : unsigned
 {
     /* mouse axes */
     MouseX,
@@ -81,6 +81,7 @@ enum class InputModifier : unsigned
     Shift
 };
 
+template<typename T>
 class Input
 {
     public:
@@ -91,9 +92,56 @@ class Input
         std::string GetName ();
         float GetScale ();
 
+        void Set (T);
+        T Read ();
+
     private:
+        T inputValue{};
         std::string inputName;
         float inputScale;
 };
+
+template<typename T>
+inline Input<T>::Input (std::string name, float scale) : 
+inputName (name), inputScale(scale)
+{
+
+}
+
+template<typename T>
+inline Input<T>::Input (std::string name) : 
+inputName (name), inputScale(1.0f)
+{
+
+}
+
+template<typename T>
+inline Input<T>::~Input ()
+{   
+}
+
+
+template<typename T>
+inline std::string Input<T>::GetName () {
+    return inputName;
+}
+
+template<typename T>
+inline float Input<T>::GetScale () 
+{
+    return inputScale;
+}
+
+template<typename T>
+inline void Input<T>::Set (T value) 
+{
+    inputValue = value;
+}
+
+template<typename T>
+inline T Input<T>::Read () 
+{
+    return inputValue;
+}
 
 #endif // _INPUT_H_

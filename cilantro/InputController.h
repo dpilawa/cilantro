@@ -3,8 +3,7 @@
 
 #include "cilantroengine.h"
 #include "CallbackProvider.h"
-#include "InputEvent.h"
-#include "InputAxis.h"
+#include "Input.h"
 #include <string>
 #include <functional>
 #include <unordered_map>
@@ -24,8 +23,12 @@ public:
 
     virtual void OnFrame ();
 
-    virtual InputEvent* CreateInputEvent (std::string name, InputKey key, InputTrigger trigger, std::set<InputModifier> modifiers);
-    virtual InputAxis*  CreateInputAxis (std::string name, InputAxis axis, float scale);
+    virtual Input<bool>* CreateInputEvent (std::string name);
+    virtual Input<bool>* CreateInputEvent (std::string name, InputKey key, InputTrigger trigger, std::set<InputModifier> modifiers) = 0;
+
+    virtual Input<float>*  CreateInputAxis (std::string name, float scale);
+    virtual Input<float>*  CreateInputAxis (std::string name, InputKey key, std::set<InputModifier> modifiers, float scale) = 0;
+    virtual Input<float>*  CreateInputAxis (std::string name, InputAxis value, float scale) = 0;
 
     __EAPI void BindInputEvent (std::string name, std::function<void (float)>);
     __EAPI void BindInputAxis (std::string name, std::function<void (float)>);
@@ -33,8 +36,8 @@ public:
 
 private: 
     
-    std::vector<InputEvent*> events;
-    std::vector<InputAxis*> axes;
+    std::vector<Input<bool>*> events;
+    std::unordered_map<std::string, std::vector<Input<float>*>> axes;
 
 };
 

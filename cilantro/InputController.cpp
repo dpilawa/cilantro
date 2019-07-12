@@ -13,30 +13,42 @@ InputController::~InputController ()
 
 void InputController::OnFrame ()
 {
+    float axisCompound;
+
     // process events
     for (auto&& event : events)
     {
         if (event->Read ()) 
         {
             InvokeCallbacks (event->GetName (), event->GetScale ());
+            event->Set (false);
         }
     }
 
     // process axes
-    // TBD
+    for (auto&& axisvector : axes)
+    {
+        axisCompound = 0.0f;
+        for (auto &&axis : axisvector.second)
+        {
+            axisCompound += axis->Read () * axis->GetScale ();
+        }
+        InvokeCallbacks (axisvector.first, axisCompound);
+    }
 }
 
-InputEvent* InputController::CreateInputEvent (std::string name, InputKey key, InputTrigger trigger, std::set<InputModifier> modifiers) 
+Input<bool>* InputController::CreateInputEvent (std::string name) 
 {
-    /* emplace event into vector */
-    events.push_back (new InputEvent (name, key, trigger, modifiers));
+    events.push_back (new Input<bool> (name));
 
     return events.back ();
 }
 
-InputAxis* InputController::CreateInputAxis (std::string name, InputAxis axis, float scale) 
-{
-    return NULL;
+Input<float>* InputController::CreateInputAxis (std::string name, float scale) 
+{// fixme: move to specialized controller
+    axes[name].push_back (new Input<float> (name, scale));
+
+    return axes[name].back ();
 }
 
 void InputController::BindInputEvent (std::string name, std::function<void (float)> function)
@@ -47,6 +59,6 @@ void InputController::BindInputEvent (std::string name, std::function<void (floa
 
 void InputController::BindInputAxis (std::string name, std::function<void (float)> function)
 {
-
+    RegisterCallback (name, function);
 }
 

@@ -1,7 +1,7 @@
 #include "cilantroengine.h"
 #include "GLFW/glfw3.h"
 #include "LogMessage.h"
-#include "InputEvent.h"
+#include "Input.h"
 #include "GLFWInputController.h"
 
 std::unordered_map<InputKey, int, InputKeyHash> GLFWInputController::glfwKeyMap {
@@ -104,64 +104,108 @@ void GLFWInputController::OnFrame ()
     InputController::OnFrame ();
 }
 
-InputEvent* GLFWInputController::CreateInputEvent (std::string name, InputKey key, InputTrigger trigger, std::set<InputModifier> modifiers)
+Input<bool>* GLFWInputController::CreateInputEvent (std::string name, InputKey key, InputTrigger trigger, std::set<InputModifier> modifiers)
 {
-    InputEvent* event = InputController::CreateInputEvent (name, key, trigger, modifiers);
+    Input<bool>* event = InputController::CreateInputEvent (name);
 
     if (event) 
     {
-        auto find = glfwKeyMap.find (key);
-        if (find == glfwKeyMap.end())
-        {
-		    LogMessage (__func__, EXIT_FAILURE) << "Not supported event key for event" << name;
-        }
-        else 
-        {
-            int mods = 0;
-
-            for (auto& m : modifiers) 
-            {
-                switch (m) 
-                {
-                    case InputModifier::Alt : mods |= GLFW_MOD_ALT;
-                        break;
-                    case InputModifier::Control : mods |= GLFW_MOD_CONTROL;
-                        break;
-                    case InputModifier::Shift : mods |= GLFW_MOD_SHIFT;
-                        break;
-                    default :
-                        break;
-                }
-            }
-
-            glfwEventMap[std::make_tuple (find->second, trigger == InputTrigger::Press ? GLFW_PRESS : GLFW_RELEASE, mods)] = event;
-            LogMessage (__func__) << "Mapped key event" << find->second << (trigger == InputTrigger::Press ? GLFW_PRESS : GLFW_RELEASE) << mods;
-        }
+        glfwKeyEventMap[std::make_tuple (GetGLFWKey (key), GetGLFWTrigger (trigger), GetGLFWModifiers (modifiers))] = event;
+        LogMessage (__func__) << "Mapped key event" << GetGLFWKey (key) << GetGLFWTrigger (trigger) << GetGLFWModifiers (modifiers);
     }
 
     return event;
 }
 
-InputAxis*  GLFWInputController::CreateInputAxis (std::string name, InputAxis axis, float scale) 
+
+Input<float>*  GLFWInputController::CreateInputAxis (std::string name, InputKey key, std::set<InputModifier> modifiers, float scale) 
 {
-    return NULL; //fixme
+    Input<float>* axis = InputController::CreateInputAxis (name, scale);
+
+    if (axis) 
+    {
+        glfwKeyAxisMap[std::make_pair (GetGLFWKey (key), GetGLFWModifiers (modifiers))] = axis;
+        LogMessage (__func__) << "Mapped key axis" << GetGLFWKey (key) << GetGLFWModifiers (modifiers);
+    }
+
+    return axis;
+}
+
+Input<float>*  GLFWInputController::CreateInputAxis (std::string name, InputAxis value, float scale) 
+{
+    return NULL; //todo
+}
+
+int GLFWInputController::GetGLFWKey (InputKey key)
+{
+    auto find = glfwKeyMap.find (key);
+    if (find == glfwKeyMap.end())
+    {
+        LogMessage (__func__, EXIT_FAILURE) << "Unsupported event key";
+        return 0;
+    }
+    else 
+    {
+        return find->second;
+    }
+};
+
+int GLFWInputController::GetGLFWTrigger (InputTrigger trigger)
+{
+    return trigger == InputTrigger::Press ? GLFW_PRESS : GLFW_RELEASE;
+};
+
+int GLFWInputController::GetGLFWModifiers (std::set<InputModifier> modifiers)
+{
+    int mods = 0;
+
+    for (auto& m : modifiers) 
+    {
+        switch (m) 
+        {
+            case InputModifier::Alt : mods |= GLFW_MOD_ALT;
+                break;
+            case InputModifier::Control : mods |= GLFW_MOD_CONTROL;
+                break;
+            case InputModifier::Shift : mods |= GLFW_MOD_SHIFT;
+                break;
+            default :
+                break;
+        }
+    }
+
+    return mods;
 }
 
 void GLFWInputController::KeyCallback (int key, int scancode, int action, int mods)
 {
-    auto find = glfwEventMap.find (std::make_tuple(key, action, mods));
+    // find and process mapped events
 
-    if (find == glfwEventMap.end())
+    auto findEvent = glfwKeyEventMap.find (std::make_tuple(key, action, mods));
+
+    if (findEvent != glfwKeyEventMap.end())
     {
-	    LogMessage (__func__) << "Unhandled key/button event" << key << action << mods;
+        findEvent->second->Set (true);
     }
-    else
+
+    // find and process mapped axes
+
+    auto findAxis = glfwKeyAxisMap.find (std::make_pair(key, mods));
+
+    if (findAxis != glfwKeyAxisMap.end())
     {
-        find->second->Set ();
+        if (action == GLFW_PRESS) 
+        {
+            findAxis->second->Set (1.0f);
+        }
+        else if (action == GLFW_RELEASE)
+        {
+            findAxis->second->Set (0.0f);
+        }
     }
 }
 
 void GLFWInputController::MouseCursorCallback(double xpos, double ypos)
 {
-    LogMessage (__func__) << "Unhandled mouse cursor event" << xpos << ypos;    
+    //LogMessage (__func__) << "Unhandled mouse cursor event" << xpos << ypos;    
 }
