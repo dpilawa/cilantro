@@ -8,7 +8,7 @@ GLShader::GLShader ()
 {
 }
 
-GLShader::GLShader (std::string sourceCode, ShaderType type) : shaderSourceCode(sourceCode), shaderType(type)
+GLShader::GLShader (std::string sourceCode, ShaderType type) : shaderType(type), shaderSourceCode(sourceCode)
 {
 	GLint success;
 	char errorLog[512];

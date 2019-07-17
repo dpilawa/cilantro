@@ -57,7 +57,7 @@ int main (int argc, char* argv[])
 	scene.SetActiveCamera (&cam);
 
     controller.BindInputAxis ("moveright", [&](float a) { cam.GetModelTransform ().Translate (a, 0.0f, 0.0f); });
-	controller.BindInputAxis ("moveforward", [&](float a) { cam.GetModelTransform ().Translate (0.0f, 0.0f, a); });
+	controller.BindInputAxis ("moveforward", [&](float a) { cam.GetModelTransform ().Translate (0.0f, 0.0f, -a); });
 
     MeshObject& cube = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
 	cube.InitUnitCube ();

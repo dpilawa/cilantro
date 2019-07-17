@@ -7,7 +7,7 @@
 #include "Timer.h"
 
 GameLoop::GameLoop (GameScene & scene, InputController & inputController, Renderer & renderer) :
-	gameScene (scene), gameInputController (inputController), gameRenderer (renderer)
+	gameScene (scene), gameRenderer (renderer), gameInputController (inputController)
 {
 	LogMessage (__func__) << "Engine starting";
 
