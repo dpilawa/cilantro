@@ -6,6 +6,7 @@
 #include "GameObject.h"
 #include "Transform.h"
 #include "CallbackProvider.h"
+#include "Mathf.h"
 #include <string>
 
 GameObject::GameObject ()
@@ -82,5 +83,23 @@ Vector4f GameObject::GetPosition ()
 	return GetModelTransformMatrix () * Vector4f (0.0f, 0.0f, 0.0f, 1.0f);
 }
 
+Vector3f GameObject::GetRight ()
+{
+	Matrix4f modelTransforMatrix = GetModelTransformMatrix ();
 
+	return Mathf::Normalize (Vector3f (modelTransforMatrix[0][0], modelTransforMatrix[1][0], modelTransforMatrix[2][0]));
+}
 
+Vector3f GameObject::GetUp ()
+{
+	Matrix4f modelTransforMatrix = GetModelTransformMatrix ();
+
+	return Mathf::Normalize (Vector3f (modelTransforMatrix[0][1], modelTransforMatrix[1][1], modelTransforMatrix[2][1]));
+}
+
+Vector3f GameObject::GetForward ()
+{
+	Matrix4f modelTransforMatrix = GetModelTransformMatrix ();
+
+	return Mathf::Normalize (Vector3f (modelTransforMatrix[0][2], modelTransforMatrix[1][2], modelTransforMatrix[2][2]));
+}

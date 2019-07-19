@@ -22,20 +22,30 @@ public:
 	__EAPI Matrix4f& GetRotationMatrix ();
 
 	// translate
+	__EAPI Transform& SetTranslation (float x, float y, float z);
+	__EAPI Transform& SetTranslation (const Vector3f& t);
 	__EAPI Transform& Translate (float x, float y, float z);
-	__EAPI Transform& Translate (const Vector3f& t);
+	__EAPI Transform& Translate (const Vector3f& t);	
+
 	// scale
+	__EAPI Transform& SetScaling (float x, float y, float z);
+	__EAPI Transform& SetScaling (const Vector3f& s);
 	__EAPI Transform& Scale (float x, float y, float z);
 	__EAPI Transform& Scale (const Vector3f& s);
-	// scale along all axes
+
+	// scale uniformly along all axes
+	__EAPI Transform& SetScaling (float s);
 	__EAPI Transform& Scale (float s);
+
 	// rotate (angles in degrees)
+	__EAPI Transform& SetRotation (float x, float y, float z);
+	__EAPI Transform& SetRotation (const Vector3f& r);	
 	__EAPI Transform& Rotate (float x, float y, float z);
 	__EAPI Transform& Rotate (const Vector3f& r);
 
 private:
 
-	bool hasChanged;
+	bool isValid;
 
 	float translateX, translateY, translateZ;
 	float scaleX, scaleY, scaleZ;

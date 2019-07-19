@@ -46,6 +46,11 @@ public:
 	// get object origin's position in world space
 	__EAPI Vector4f GetPosition ();
 
+	// get object's orthogonal basis vectors
+	__EAPI Vector3f GetRight ();
+	__EAPI Vector3f GetUp ();
+	__EAPI Vector3f GetForward ();	
+
 private:
 	// object's handle (index in vector inside GameScene)
 	unsigned int objectHandle;

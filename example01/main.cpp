@@ -53,11 +53,11 @@ int main (int argc, char* argv[])
 	lampM.SetEmissiveColor (Vector3f (0.9f, 0.9f, 0.9f)).SetDiffuseColor (Vector3f (0.2f, 0.2f, 0.2f));
 
 	PerspectiveCamera& cam = dynamic_cast<PerspectiveCamera&>(scene.AddGameObject (new PerspectiveCamera (75.0f, 0.1f, 100.0f)));
-	//cam.GetModelTransform ().Translate (3.5f, 1.5f, 3.5f).Rotate (-20.0f, -45.0f, 0.0f);
+	cam.GetModelTransform ().Translate (3.5f, 1.5f, 3.5f).Rotate (-20.0f, -45.0f, 0.0f);
 	scene.SetActiveCamera (&cam);
 
-    controller.BindInputAxis ("moveright", [&](float a) { cam.GetModelTransform ().Translate (a, 0.0f, 0.0f); });
-	controller.BindInputAxis ("moveforward", [&](float a) { cam.GetModelTransform ().Translate (0.0f, 0.0f, -a); });
+    controller.BindInputAxis ("moveright", [&](float a) { cam.GetModelTransform ().Translate (cam.GetRight () * a * 0.1f); });
+	controller.BindInputAxis ("moveforward", [&](float a) { cam.GetModelTransform ().Translate (-cam.GetForward () * a * 0.1f); });
 
     MeshObject& cube = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
 	cube.InitUnitCube ();
