@@ -65,7 +65,12 @@ enum class InputAxis : unsigned
 {
     /* mouse axes */
     MouseX,
-    MouseY
+    MouseY,
+    /* joystick axes */
+    Joystick1,
+    Joystick2,
+    Joystick3,
+    Joystick4
 };
 
 enum class InputTrigger : unsigned 

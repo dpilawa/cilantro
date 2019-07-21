@@ -35,6 +35,14 @@ struct InputKeyHash
     }
 };
 
+struct InputAxisHash
+{
+    std::size_t operator() (const InputAxis& k) const noexcept
+    {
+        return static_cast<std::size_t>(k);
+    }
+};
+
 class GLFWInputController : public InputController
 {
 public:
@@ -49,7 +57,9 @@ public:
 
     __EAPI Input<bool>* CreateInputEvent (std::string name, InputKey key, InputTrigger trigger, std::set<InputModifier> modifiers); 
     __EAPI Input<float>*  CreateInputAxis (std::string name, InputKey key, std::set<InputModifier> modifiers, float scale);
-    __EAPI Input<float>*  CreateInputAxis (std::string name, InputAxis value, float scale);
+    __EAPI Input<float>*  CreateInputAxis (std::string name, InputAxis axis, float scale);
+
+    __EAPI void SetMouseRawMode(bool value);
 
 private:
     int GetGLFWKey (InputKey key);
@@ -63,10 +73,10 @@ private:
 
     std::unordered_map<std::tuple<int, int, int>, Input<bool>*, TupleHash> glfwKeyEventMap;
     std::unordered_map<std::pair<int, int>, Input<float>*, PairHash> glfwKeyAxisMap;
-    // todo: analog axis map
+    std::unordered_map<int, Input<float>*> glfwAnalogAxisMap;
 
     static std::unordered_map<InputKey, int, InputKeyHash> glfwKeyMap;
-
+    static std::unordered_map<InputAxis, int, InputAxisHash> glfwAxisMap;
 };
 
 

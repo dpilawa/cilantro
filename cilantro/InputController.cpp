@@ -45,7 +45,7 @@ Input<bool>* InputController::CreateInputEvent (std::string name)
 }
 
 Input<float>* InputController::CreateInputAxis (std::string name, float scale) 
-{// fixme: move to specialized controller
+{
     axes[name].push_back (new Input<float> (name, scale));
 
     return axes[name].back ();

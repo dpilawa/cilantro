@@ -59,6 +59,13 @@ std::unordered_map<InputKey, int, InputKeyHash> GLFWInputController::glfwKeyMap 
         {InputKey::MouseRight, GLFW_MOUSE_BUTTON_RIGHT}
 };
 
+std::unordered_map<InputAxis, int, InputAxisHash> GLFWInputController::glfwAxisMap {
+        {InputAxis::Joystick1, GLFW_JOYSTICK_1},
+        {InputAxis::Joystick2, GLFW_JOYSTICK_2},
+        {InputAxis::Joystick3, GLFW_JOYSTICK_3},
+        {InputAxis::Joystick4, GLFW_JOYSTICK_4}
+};
+
 GLFWInputController::GLFWInputController(GLFWwindow** window) : window (window)
 {
 }
@@ -118,7 +125,7 @@ Input<bool>* GLFWInputController::CreateInputEvent (std::string name, InputKey k
 }
 
 
-Input<float>*  GLFWInputController::CreateInputAxis (std::string name, InputKey key, std::set<InputModifier> modifiers, float scale) 
+Input<float>* GLFWInputController::CreateInputAxis (std::string name, InputKey key, std::set<InputModifier> modifiers, float scale) 
 {
     Input<float>* axis = InputController::CreateInputAxis (name, scale);
 
@@ -131,9 +138,29 @@ Input<float>*  GLFWInputController::CreateInputAxis (std::string name, InputKey 
     return axis;
 }
 
-Input<float>*  GLFWInputController::CreateInputAxis (std::string name, InputAxis value, float scale) 
+Input<float>* GLFWInputController::CreateInputAxis (std::string name, InputAxis axis, float scale) 
 {
     return NULL; //todo
+}
+
+void GLFWInputController::SetMouseRawMode(bool value) 
+{
+    if (value)
+    {
+        if (glfwRawMouseMotionSupported ())
+        {
+            glfwSetInputMode(*window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+        }
+        glfwSetInputMode(*window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
+    else
+    {
+        if (glfwRawMouseMotionSupported ())
+        {
+            glfwSetInputMode(*window, GLFW_RAW_MOUSE_MOTION, GLFW_FALSE);
+        }
+        glfwSetInputMode(*window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);        
+    }
 }
 
 int GLFWInputController::GetGLFWKey (InputKey key)

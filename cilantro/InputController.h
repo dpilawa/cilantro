@@ -33,6 +33,7 @@ public:
     __EAPI void BindInputEvent (std::string name, std::function<void (float)>);
     __EAPI void BindInputAxis (std::string name, std::function<void (float)>);
 
+    virtual void SetMouseRawMode(bool value) = 0;
 
 private: 
     

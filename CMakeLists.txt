@@ -11,10 +11,10 @@ execute_process(
 add_subdirectory (ext/glfw)
 add_subdirectory (ext/gl3w)
 add_subdirectory (cilantro)
-add_subdirectory (example01)
-add_subdirectory (example02)
+add_subdirectory (test01)
+add_subdirectory (test02)
 
 target_link_libraries (cilantro glfw)
-target_link_libraries (example01 cilantro)
-target_link_libraries (example02 cilantro)
+target_link_libraries (test01 cilantro)
+target_link_libraries (test02 cilantro)
 

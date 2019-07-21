@@ -29,6 +29,11 @@ int main (int argc, char* argv[])
 	controller.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
 	controller.BindInputEvent ("exit", [ & ](float) { game.Stop (); });
 
+	controller.CreateInputEvent ("mousemodeon", InputKey::MouseRight, InputTrigger::Press, {InputModifier::Control});
+	controller.BindInputEvent ("mousemodeon", [ & ](float) { controller.SetMouseRawMode (true); });
+	controller.CreateInputEvent ("mousemodeoff", InputKey::MouseRight, InputTrigger::Press, {});
+	controller.BindInputEvent ("mousemodeoff", [ & ](float) { controller.SetMouseRawMode (false); });
+
     controller.CreateInputAxis ("moveforward", InputKey::KeyW, {}, 1.0f);
     controller.CreateInputAxis ("moveforward", InputKey::KeyS, {}, -1.0f);	
 
