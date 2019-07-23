@@ -27,12 +27,10 @@ int main (int argc, char* argv[])
 	GameLoop game (scene, controller, renderer);
 
 	controller.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
-	controller.BindInputEvent ("exit", [ & ](float) { game.Stop (); });
+	controller.BindInputEvent ("exit", [ & ]() { game.Stop (); });
 
-	controller.CreateInputEvent ("mousemodeon", InputKey::MouseRight, InputTrigger::Press, {InputModifier::Control});
-	controller.BindInputEvent ("mousemodeon", [ & ](float) { controller.SetMouseRawMode (true); });
-	controller.CreateInputEvent ("mousemodeoff", InputKey::MouseRight, InputTrigger::Press, {});
-	controller.BindInputEvent ("mousemodeoff", [ & ](float) { controller.SetMouseRawMode (false); });
+	controller.CreateInputEvent ("mousemode", InputKey::KeySpace, InputTrigger::Release, {});
+	controller.BindInputEvent ("mousemode", [ & ]() { controller.SetMouseGameMode (!controller.IsGameMode ()); });
 
     controller.CreateInputAxis ("moveforward", InputKey::KeyW, {}, 1.0f);
     controller.CreateInputAxis ("moveforward", InputKey::KeyS, {}, -1.0f);	
@@ -63,6 +61,8 @@ int main (int argc, char* argv[])
 
     controller.BindInputAxis ("moveright", [&](float a) { cam.GetModelTransform ().Translate (cam.GetRight () * a * 0.1f); });
 	controller.BindInputAxis ("moveforward", [&](float a) { cam.GetModelTransform ().Translate (-cam.GetForward () * a * 0.1f); });
+	controller.BindInputAxis ("camerapitch", [&](float a) { cam.GetModelTransform ().Rotate (a * 0.25f, 0.0f, 0.0f); });
+	controller.BindInputAxis ("camerayaw", [&](float a) { cam.GetModelTransform ().Rotate (0.0f, -a * 0.25f, 0.0f); });
 
     MeshObject& cube = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
 	cube.InitUnitCube ();

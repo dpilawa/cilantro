@@ -59,15 +59,14 @@ std::unordered_map<InputKey, int, InputKeyHash> GLFWInputController::glfwKeyMap 
         {InputKey::MouseRight, GLFW_MOUSE_BUTTON_RIGHT}
 };
 
-std::unordered_map<InputAxis, int, InputAxisHash> GLFWInputController::glfwAxisMap {
-        {InputAxis::Joystick1, GLFW_JOYSTICK_1},
-        {InputAxis::Joystick2, GLFW_JOYSTICK_2},
-        {InputAxis::Joystick3, GLFW_JOYSTICK_3},
-        {InputAxis::Joystick4, GLFW_JOYSTICK_4}
-};
-
 GLFWInputController::GLFWInputController(GLFWwindow** window) : window (window)
 {
+    axisMouseX = nullptr;
+    axisMouseY = nullptr;
+    axisMouseScrollX = nullptr;
+    axisMouseScrollY = nullptr;
+
+    isGameMode = false;
 }
 
 GLFWInputController::~GLFWInputController()
@@ -88,15 +87,14 @@ void GLFWInputController::Initialize ()
         static_cast<GLFWInputController*>(glfwGetWindowUserPointer (_window))->KeyCallback(_button, 0, _action, _mods);
     };
 
-    auto mouseCursorCallback = [](GLFWwindow* _window, double _xpos, double _ypos)
+    auto mouseScrollCallback = [](GLFWwindow* _window, double _xoffset, double _yoffset)
     {
-        static_cast<GLFWInputController*>(glfwGetWindowUserPointer (_window))->MouseCursorCallback(_xpos, _ypos);
+        static_cast<GLFWInputController*>(glfwGetWindowUserPointer (_window))->MouseScrollCallback(_xoffset, _yoffset);
     };
-
 
     glfwSetKeyCallback (*window, keyCallback);
     glfwSetMouseButtonCallback (*window, mouseButtonCallback);
-    glfwSetCursorPosCallback (*window, mouseCursorCallback);
+    glfwSetScrollCallback (*window, mouseScrollCallback);
     LogMessage (__func__) << "GLFWInputController started";
 }
 
@@ -108,44 +106,75 @@ void GLFWInputController::Deinitialize ()
 void GLFWInputController::OnFrame ()
 {
     glfwPollEvents ();
+    MouseCursorPolling ();
     InputController::OnFrame ();
 }
 
 Input<bool>* GLFWInputController::CreateInputEvent (std::string name, InputKey key, InputTrigger trigger, std::set<InputModifier> modifiers)
 {
-    Input<bool>* event = InputController::CreateInputEvent (name);
+    Input<bool>* inputevent = InputController::CreateInputEvent (name);
 
-    if (event) 
+    if (inputevent) 
     {
-        glfwKeyEventMap[std::make_tuple (GetGLFWKey (key), GetGLFWTrigger (trigger), GetGLFWModifiers (modifiers))] = event;
+        glfwKeyEventMap[std::make_tuple (GetGLFWKey (key), GetGLFWTrigger (trigger), GetGLFWModifiers (modifiers))] = inputevent;
         LogMessage (__func__) << "Mapped key event" << GetGLFWKey (key) << GetGLFWTrigger (trigger) << GetGLFWModifiers (modifiers);
     }
 
-    return event;
+    return inputevent;
 }
 
 
 Input<float>* GLFWInputController::CreateInputAxis (std::string name, InputKey key, std::set<InputModifier> modifiers, float scale) 
 {
-    Input<float>* axis = InputController::CreateInputAxis (name, scale);
+    Input<float>* inputaxis = InputController::CreateInputAxis (name, scale);
 
-    if (axis) 
+    if (inputaxis) 
     {
-        glfwKeyAxisMap[std::make_pair (GetGLFWKey (key), GetGLFWModifiers (modifiers))] = axis;
+        glfwKeyAxisMap[std::make_pair (GetGLFWKey (key), GetGLFWModifiers (modifiers))] = inputaxis;
         LogMessage (__func__) << "Mapped key axis" << GetGLFWKey (key) << GetGLFWModifiers (modifiers);
     }
 
-    return axis;
+    return inputaxis;
 }
 
 Input<float>* GLFWInputController::CreateInputAxis (std::string name, InputAxis axis, float scale) 
 {
-    return NULL; //todo
+    Input<float>* inputaxis = InputController::CreateInputAxis (name, scale);
+
+    if (inputaxis)
+    {
+        switch (axis)
+        {
+            case InputAxis::MouseX :
+                axisMouseX = inputaxis;
+                break;
+
+            case InputAxis::MouseY :
+                axisMouseY = inputaxis;
+                break;
+
+            case InputAxis::MouseScrollX :
+                axisMouseScrollX = inputaxis;
+                break;
+
+            case InputAxis::MouseScrollY :
+                axisMouseScrollY = inputaxis;
+                break;
+
+            default :
+                LogMessage (__func__, EXIT_FAILURE) << "Unsupported axis";
+
+        }
+    }
+
+    return inputaxis;
 }
 
-void GLFWInputController::SetMouseRawMode(bool value) 
+void GLFWInputController::SetMouseGameMode(bool value) 
 {
-    if (value)
+    isGameMode = value;
+
+    if (isGameMode)
     {
         if (glfwRawMouseMotionSupported ())
         {
@@ -232,7 +261,42 @@ void GLFWInputController::KeyCallback (int key, int scancode, int action, int mo
     }
 }
 
-void GLFWInputController::MouseCursorCallback(double xpos, double ypos)
+void GLFWInputController::MouseCursorPolling()
 {
-    //LogMessage (__func__) << "Unhandled mouse cursor event" << xpos << ypos;    
+    double xpos, ypos;
+
+    glfwGetCursorPos(*window, &xpos, &ypos);
+
+    if (isGameMode)
+    {
+        if (axisMouseX)
+        {
+            axisMouseX->Set (prevAxisMouseX - xpos);
+        }
+
+        if (axisMouseY)
+        {
+            axisMouseY->Set (prevAxisMouseY - ypos);
+        }
+    }
+
+    prevAxisMouseX = xpos;
+    prevAxisMouseY = ypos;
+    
+}
+
+void GLFWInputController::MouseScrollCallback(double xoffset, double yoffset)
+{
+    if (isGameMode)
+    {
+        if (axisMouseScrollX)
+        {
+            axisMouseScrollX->Set (xoffset);
+        }
+
+        if (axisMouseScrollY)
+        {
+            axisMouseScrollY->Set (yoffset);
+        }
+    }
 }

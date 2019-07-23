@@ -51,9 +51,14 @@ Input<float>* InputController::CreateInputAxis (std::string name, float scale)
     return axes[name].back ();
 }
 
-void InputController::BindInputEvent (std::string name, std::function<void (float)> function)
+void InputController::BindInputEvent (std::string name, std::function<void ()> function)
 {
-    RegisterCallback (name, function);
+    auto functionCallback = [function](float scale)
+    {
+        function ();
+    };
+
+    RegisterCallback (name, functionCallback);
 }
 
 
@@ -62,3 +67,7 @@ void InputController::BindInputAxis (std::string name, std::function<void (float
     RegisterCallback (name, function);
 }
 
+bool InputController::IsGameMode ()
+{
+    return isGameMode;
+}

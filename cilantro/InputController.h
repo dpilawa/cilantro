@@ -30,15 +30,20 @@ public:
     virtual Input<float>*  CreateInputAxis (std::string name, InputKey key, std::set<InputModifier> modifiers, float scale) = 0;
     virtual Input<float>*  CreateInputAxis (std::string name, InputAxis value, float scale) = 0;
 
-    __EAPI void BindInputEvent (std::string name, std::function<void (float)>);
+    __EAPI void BindInputEvent (std::string name, std::function<void ()>);
     __EAPI void BindInputAxis (std::string name, std::function<void (float)>);
 
-    virtual void SetMouseRawMode(bool value) = 0;
+    virtual void SetMouseGameMode (bool value) = 0;
+    __EAPI bool IsGameMode ();
 
 private: 
-    
+
     std::vector<Input<bool>*> events;
     std::unordered_map<std::string, std::vector<Input<float>*>> axes;
+
+protected:
+
+    bool isGameMode;
 
 };
 
