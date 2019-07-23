@@ -78,8 +78,6 @@ Timer.cpp
 Timer.h
 Transform.cpp
 Transform.h
-Vector3f.cpp
 Vector3f.h
-Vector4f.cpp
 Vector4f.h
 )
