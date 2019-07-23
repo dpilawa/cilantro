@@ -95,20 +95,23 @@ class Input
         std::string GetName ();
         float GetScale ();
 
-        void Set (T);
+        void Set (T value);
+        void Set (T value, float shouldClearOnRead);
         T Read ();
-
+        void Clear();
+        
     private:
         T inputValue{};
         std::string inputName;
         float inputScale;
+        bool clearOnRead;
 };
 
 template<typename T>
 inline Input<T>::Input (std::string name, float scale) : 
 inputName (name), inputScale(scale)
 {
-
+    clearOnRead = false;
 }
 
 template<typename T>
@@ -138,13 +141,42 @@ inline float Input<T>::GetScale ()
 template<typename T>
 inline void Input<T>::Set (T value) 
 {
+    Set (value, false);
+}
+
+template<typename T>
+inline void Input<T>::Set (T value, float shouldClearOnRead) 
+{
     inputValue = value;
+    clearOnRead = shouldClearOnRead;
 }
 
 template<typename T>
 inline T Input<T>::Read () 
 {
-    return inputValue;
+    T returnValue;
+
+    returnValue = inputValue;
+
+    if (clearOnRead) 
+    {
+        Clear ();
+        clearOnRead = false;
+    }
+
+    return returnValue;
+}
+
+template<>
+inline void Input<bool>::Clear ()
+{
+    inputValue = false;
+}
+
+template<>
+inline void Input<float>::Clear ()
+{
+    inputValue = 0.0f;
 }
 
 #endif // _INPUT_H_

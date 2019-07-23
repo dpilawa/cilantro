@@ -87,13 +87,19 @@ void GLFWInputController::Initialize ()
         static_cast<GLFWInputController*>(glfwGetWindowUserPointer (_window))->KeyCallback(_button, 0, _action, _mods);
     };
 
-    auto mouseScrollCallback = [](GLFWwindow* _window, double _xoffset, double _yoffset)
+    auto mouseCursorCallback = [](GLFWwindow* _window, double _xPos, double _yPos)
     {
-        static_cast<GLFWInputController*>(glfwGetWindowUserPointer (_window))->MouseScrollCallback(_xoffset, _yoffset);
+        static_cast<GLFWInputController*>(glfwGetWindowUserPointer (_window))->MouseCursorCallback(_xPos, _yPos);
+    };
+
+    auto mouseScrollCallback = [](GLFWwindow* _window, double _xOffset, double _yOffset)
+    {
+        static_cast<GLFWInputController*>(glfwGetWindowUserPointer (_window))->MouseScrollCallback(_xOffset, _yOffset);
     };
 
     glfwSetKeyCallback (*window, keyCallback);
     glfwSetMouseButtonCallback (*window, mouseButtonCallback);
+    glfwSetCursorPosCallback (*window, mouseCursorCallback);
     glfwSetScrollCallback (*window, mouseScrollCallback);
     LogMessage (__func__) << "GLFWInputController started";
 }
@@ -106,7 +112,6 @@ void GLFWInputController::Deinitialize ()
 void GLFWInputController::OnFrame ()
 {
     glfwPollEvents ();
-    MouseCursorPolling ();
     InputController::OnFrame ();
 }
 
@@ -261,42 +266,38 @@ void GLFWInputController::KeyCallback (int key, int scancode, int action, int mo
     }
 }
 
-void GLFWInputController::MouseCursorPolling()
+void GLFWInputController::MouseCursorCallback(double xPos, double yPos)
 {
-    double xpos, ypos;
-
-    glfwGetCursorPos(*window, &xpos, &ypos);
-
     if (isGameMode)
     {
         if (axisMouseX)
         {
-            axisMouseX->Set (prevAxisMouseX - xpos);
+            axisMouseX->Set (prevAxisMouseX - xPos, true);
         }
 
         if (axisMouseY)
         {
-            axisMouseY->Set (prevAxisMouseY - ypos);
+            axisMouseY->Set (prevAxisMouseY - yPos, true);
         }
     }
 
-    prevAxisMouseX = xpos;
-    prevAxisMouseY = ypos;
+    prevAxisMouseX = xPos;
+    prevAxisMouseY = yPos;
     
 }
 
-void GLFWInputController::MouseScrollCallback(double xoffset, double yoffset)
+void GLFWInputController::MouseScrollCallback(double xOffset, double yOffset)
 {
     if (isGameMode)
     {
         if (axisMouseScrollX)
         {
-            axisMouseScrollX->Set (xoffset);
+            axisMouseScrollX->Set (xOffset);
         }
 
         if (axisMouseScrollY)
         {
-            axisMouseScrollY->Set (yoffset);
+            axisMouseScrollY->Set (yOffset);
         }
     }
 }

@@ -59,8 +59,8 @@ private:
     int GetGLFWModifiers (std::set<InputModifier> modifiers);
 
     void KeyCallback (int key, int scancode, int action, int mods);
-    void MouseScrollCallback (double xoffset, double yoffset);    
-    void MouseCursorPolling();   
+    void MouseCursorCallback (double xPos, double yPos);      
+    void MouseScrollCallback (double xOffset, double yOffset);    
 
     GLFWwindow** window;
 
