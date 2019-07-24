@@ -68,7 +68,6 @@ PerspectiveCamera.h
 phong.fs.h
 PointLight.cpp
 PointLight.h
-Quaternion.cpp
 Quaternion.h
 Renderer.cpp
 Renderer.h

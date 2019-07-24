@@ -39,8 +39,8 @@ public:
 
 	// operators
 	Vector3f& operator*= (float f);
-	Vector3f& operator+= (const Vector3f& m);
-	Vector3f& operator-= (const Vector3f& m);
+	Vector3f& operator+= (const Vector3f& other);
+	Vector3f& operator-= (const Vector3f& other);
 	friend inline Vector3f operator- (Vector3f v);
 
 private:
@@ -90,25 +90,25 @@ inline Vector3f operator* (Vector3f u, float f)
 {
 	u *= f;
 	return u;
-};
+}
 
 inline Vector3f operator* (float f, Vector3f u)
 {
 	u *= f;
 	return u;
-};
+}
 
 inline Vector3f operator+ (Vector3f u, const Vector3f& v)
 {
 	u += v;
 	return u;
-};
+}
 
 inline Vector3f operator- (Vector3f u, const Vector3f& v)
 {
 	u -= v;
 	return u;
-};
+}
 
 inline Vector3f operator- (Vector3f v)
 {

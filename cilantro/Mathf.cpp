@@ -16,9 +16,60 @@ Vector3f Mathf::Normalize (const Vector3f & v)
 	return v * (1.0f / Length (v));
 }
 
+float Mathf::Dot (const Vector3f & v1, const Vector3f & v2)
+{
+	return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
+}
+
 Vector3f Mathf::Cross (const Vector3f & v1, const Vector3f & v2)
 {
 	return Vector3f (v1[1] * v2[2] - v1[2] * v2[1], v1[2] * v2[0] - v1[0] * v2[2], v1[0] * v2[1] - v1[1] * v2[0]);
+}
+
+float Mathf::Norm (const Quaternion& q)
+{
+	return std::sqrtf (q.s * q.s + q.v[0] * q.v[0] + q.v[1] * q.v[1] + q.v[2] * q.v[2]);
+}
+
+Quaternion Mathf::Normalize (const Quaternion& q)
+{
+	float norm = Mathf::Norm (q);
+
+	return (1.0f / norm) * q;
+}
+
+Quaternion Mathf::Conjugate (const Quaternion& q)
+{
+	return Quaternion (q.s, -q.v);
+}
+
+Quaternion Mathf::Invert (const Quaternion& q)
+{
+	float norm = Mathf::Norm (q);
+	float normSquared = norm * norm;
+
+	return (1.0f / normSquared) * Mathf::Conjugate (q);
+}
+
+Quaternion Mathf::Product (const Quaternion& q, const Quaternion& r)
+{
+	return Quaternion (q.s * r.s - Mathf::Dot (q.v, r.v), q.s * r.v + r.s * q.v + Mathf::Cross (q.v, r.v));
+}
+
+Vector3f Mathf::Rotate (const Vector3f& v, const Vector3f& axis, float theta)
+{
+	float rad = Mathf::Deg2Rad (theta);
+	Quaternion p (0.0f, v);
+	Vector3f axisNormalized = Mathf::Normalize (axis);
+	Quaternion q (rad, axisNormalized);
+
+	q.s *= std::cosf (rad * 0.5f);
+	q.v *= std::sinf (rad * 0.5f);
+
+	Quaternion qInv = Mathf::Invert (q);
+	Quaternion rotated = Mathf::Product (Mathf::Product (q, p), qInv);
+
+	return rotated.v;
 }
 
 float Mathf::Det (const Matrix3f & m)

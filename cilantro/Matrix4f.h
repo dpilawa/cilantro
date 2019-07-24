@@ -159,19 +159,19 @@ inline Matrix4f operator* (Matrix4f m, const Matrix4f& n)
 {
 	m *= n;
 	return m;
-};
+}
 
 // binary operator for matrix by float multiplication
 inline Matrix4f operator* (Matrix4f m, float f)
 {
 	m *= f;
 	return m;
-};
+}
 
 inline Matrix4f operator* (float f, Matrix4f m)
 {
 	m *= f;
 	return m;
-};
+}
 
 #endif

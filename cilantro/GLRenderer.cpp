@@ -288,7 +288,7 @@ void GLRenderer::InitializeLightBuffers ()
 		uniformPointLightsBlockIndex = glGetUniformBlockIndex (shaderProgramId, "UniformPointLightsBlock");
 		if (uniformPointLightsBlockIndex == GL_INVALID_INDEX)
 		{
-			LogMessage (__func__) << "Unable to locate uniform block for program id " << shaderModel.second.GetProgramId();
+			LogMessage (__func__) << "Unable to locate uniform block for program id" << shaderModel.second.GetProgramId();
 		}
 		else {
 			glUniformBlockBinding(shaderProgramId, uniformPointLightsBlockIndex, BindingPoint::BP_POINTLIGHTS);

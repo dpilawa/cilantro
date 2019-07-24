@@ -138,19 +138,19 @@ inline Matrix3f operator* (Matrix3f m, const Matrix3f& n)
 {
 	m *= n;
 	return m;
-};
+}
 
 // binary operator for matrix by float multiplication
 inline Matrix3f operator* (Matrix3f m, float f)
 {
 	m *= f;
 	return m;
-};
+}
 
 inline Matrix3f operator* (float f, Matrix3f m)
 {
 	m *= f;
 	return m;
-};
+}
 
 #endif

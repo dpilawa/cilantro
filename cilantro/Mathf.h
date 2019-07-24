@@ -6,6 +6,7 @@
 #include "Vector4f.h"
 #include "Matrix3f.h"
 #include "Matrix4f.h"
+#include "Quaternion.h"
 
 // Math constants
 #define cPI 3.14159265358979323846f
@@ -23,8 +24,18 @@ public:
 	__EAPI static float Length (const Vector3f& v);
 	// normalize vector
 	__EAPI static Vector3f Normalize (const Vector3f& v);
+	// dot product of two vectors
+	__EAPI static float Dot (const Vector3f& v1, const Vector3f& v2);
 	// cross product of two vectors
 	__EAPI static Vector3f Cross (const Vector3f& v1, const Vector3f& v2);
+
+	// quaterion operations
+	__EAPI static float Norm (const Quaternion& q);
+	__EAPI static Quaternion Normalize (const Quaternion& q);
+	__EAPI static Quaternion Conjugate (const Quaternion& q);
+	__EAPI static Quaternion Invert (const Quaternion& q);	
+	__EAPI static Quaternion Product (const Quaternion& q, const Quaternion& r);
+	__EAPI static Vector3f Rotate (const Vector3f& v, const Vector3f& axis, float theta);
 
 	// matrix operations
 	__EAPI static float Det (const Matrix3f& m);

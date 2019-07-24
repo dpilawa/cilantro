@@ -38,7 +38,7 @@ std::string gNormalsFragmentShader = R"V0G0N(
 		float attenuationQuadratic;
 	};
 
-	layout (std140) uniform UniformPointLightsBlock 
+	layout(std140) uniform UniformPointLightsBlock 
 	{
 		int pointLightCount;
 		PointLightStruct pointLights[MAX_LIGHTS];
