@@ -21,21 +21,10 @@ PointLight::~PointLight ()
 {
 }
 
-void PointLight::Enable ()
+void PointLight::SetEnabled (bool value)
 {
-	isEnabled = true;	
+	Light::SetEnabled (value);	
 	InvokeCallbacks ("OnUpdatePointLight", this->GetHandle ());
-}
-
-void PointLight::Disable ()
-{
-	isEnabled = false;
-	InvokeCallbacks ("OnUpdatePointLight", this->GetHandle ());
-}
-
-bool PointLight::IsEnabled () const
-{
-	return isEnabled;
 }
 
 PointLight& PointLight::SetLightColor (Vector3f color)

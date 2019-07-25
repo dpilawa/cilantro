@@ -72,7 +72,7 @@ int main (int argc, char* argv [])
 	sunLight.SetLightColor (Vector3f (1.0f, 1.0f, 1.0f));
 	sunLight.SetSpecularPower (0.7f);
 	sunLight.SetAmbiencePower (0.1f);
-	sunLight.Enable ();
+	sunLight.SetEnabled (true);
 
 	game.Run ();
 

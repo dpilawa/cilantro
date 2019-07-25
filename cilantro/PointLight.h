@@ -11,10 +11,7 @@ public:
 	__EAPI PointLight ();
 	__EAPI ~PointLight ();
 
-	__EAPI void Enable ();
-	__EAPI void Disable ();
-
-	__EAPI bool IsEnabled () const;
+	__EAPI void SetEnabled (bool value);
 
 	// set color of the light
 	__EAPI PointLight& SetLightColor (const Vector3f color);

@@ -1,18 +1,18 @@
 #include "cilantroengine.h"
 #include "LogMessage.h"
 #include "RenderTarget.h"
-#include "FrameBufferRenderTarget.h"
+#include "GLFramebufferRenderTarget.h"
 
-FrameBufferRenderTarget::FrameBufferRenderTarget (int xRes, int yRes) : RenderTarget (xRes, yRes)
+GLFramebufferRenderTarget::GLFramebufferRenderTarget (int xRes, int yRes) : RenderTarget (xRes, yRes)
 {
 }
 
 
-FrameBufferRenderTarget::~FrameBufferRenderTarget ()
+GLFramebufferRenderTarget::~GLFramebufferRenderTarget ()
 {
 }
 
-void FrameBufferRenderTarget::Initialize ()
+void GLFramebufferRenderTarget::Initialize ()
 {
 	// Note: FrameBufferRenderTarget requires GL context already created and extensions (e.g. GLEW) loaded.
 	// It only prepares a target for off-screen rendering.
@@ -49,24 +49,25 @@ void FrameBufferRenderTarget::Initialize ()
 		LogMessage (__func__) << "FrameBufferRenderTarget started";
 	}
 
-	glBindFramebuffer (GL_FRAMEBUFFER, 0);
 }
 
-void FrameBufferRenderTarget::Deinitialize ()
+void GLFramebufferRenderTarget::Deinitialize ()
 {
 	glDeleteRenderbuffers (1, &RBO);
 	glDeleteTextures (1, &textureColorBuffer);
 	glDeleteFramebuffers (1, &FBO);
 }
 
-void FrameBufferRenderTarget::BeforeFrame ()
+void GLFramebufferRenderTarget::Bind () 
 {
 	// bind framebuffer
 	glBindFramebuffer (GL_FRAMEBUFFER, FBO);
 }
 
-void FrameBufferRenderTarget::AfterFrame ()
+void GLFramebufferRenderTarget::BeforeFrame ()
 {
-	// bind default framebuffer
-	glBindFramebuffer (GL_FRAMEBUFFER, 0);
+}
+
+void GLFramebufferRenderTarget::AfterFrame ()
+{
 }

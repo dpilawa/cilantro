@@ -90,6 +90,12 @@ void GLFWRenderTarget::Deinitialize ()
 	glfwDestroyWindow (window);
 }
 
+void GLFWRenderTarget::Bind ()
+{
+	// bind default window framebuffer
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
 void GLFWRenderTarget::BeforeFrame ()
 {
 
@@ -101,6 +107,7 @@ void GLFWRenderTarget::BeforeFrame ()
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+
 }
 
 void GLFWRenderTarget::AfterFrame ()
@@ -132,8 +139,6 @@ void GLFWRenderTarget::AfterFrame ()
 	// swap front and back buffers
 	glfwSwapBuffers (window);
 
-	// poll input
-	glfwPollEvents ();
 }
 
 GLFWwindow** GLFWRenderTarget::GetWindow ()

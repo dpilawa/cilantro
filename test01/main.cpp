@@ -85,7 +85,7 @@ int main (int argc, char* argv[])
 	light1.SetSpecularPower (0.7f);
 	light1.SetAmbiencePower (0.1f);
 	light1.SetLinearAttenuationFactor (0.2f).SetQuadraticAttenuationFactor (0.2f);
-	light1.Enable ();
+	light1.SetEnabled (true);
 
 	game.Run ();
 

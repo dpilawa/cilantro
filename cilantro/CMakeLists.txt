@@ -25,8 +25,6 @@ Camera.cpp
 Camera.h
 cilantroengine.h
 default.vs.h
-FrameBufferRenderTarget.cpp
-FrameBufferRenderTarget.h
 GameLoop.cpp
 GameLoop.h
 GameObject.cpp
@@ -37,6 +35,8 @@ GLFWInputController.cpp
 GLFWInputController.h
 GLFWRenderTarget.cpp
 GLFWRenderTarget.h
+GLFramebufferRenderTarget.cpp
+GLFramebufferRenderTarget.h
 GLRenderer.cpp
 GLRenderer.h
 GLShader.cpp

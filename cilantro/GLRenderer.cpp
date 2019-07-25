@@ -56,6 +56,8 @@ void GLRenderer::Initialize ()
 	// initialize uniform buffers of lights
 	InitializeLightBuffers ();
 
+	// initialize framebuffer
+
 	// set callback for new MeshObjects
 	renderedScene->RegisterCallback ("OnUpdateMeshObject", [ & ](unsigned int objectHandle) { LoadObjectBuffers (objectHandle); });
 
@@ -84,6 +86,9 @@ void GLRenderer::RenderFrame ()
 
 	// load uniform buffers
 	LoadMatrixUniformBuffers ();
+
+	// bind render target
+	renderTarget->Bind ();
 
 	// draw all objects scene
 	for (GameObject* gameObject : renderedScene->GetGameObjects ())
@@ -147,7 +152,7 @@ GLShaderModel & GLRenderer::GetShaderModel (std::string shaderModelName)
 
 void GLRenderer::Draw (MeshObject & meshObject)
 {
-	//TODO: get uniform location queries to be moved to initialization and invoked one time
+	//TODO: get uniform location queries to be moved to initialization and called one time
 	GLuint ambientColorId;
 	GLuint diffuseColorId;
 	GLuint specularColorId;

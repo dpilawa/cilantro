@@ -10,10 +10,11 @@ public:
 	Light ();
 	virtual ~Light ();
 
-	virtual void Enable () = 0;
-	virtual void Disable () = 0;
+	virtual void SetEnabled (bool value);
+	
+	__EAPI bool IsEnabled () const;
 
-protected:
+private:
 
 	bool isEnabled;
 };

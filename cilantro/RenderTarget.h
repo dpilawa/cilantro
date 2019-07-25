@@ -9,6 +9,7 @@ public:
 
 	virtual void Initialize () = 0;
 	virtual void Deinitialize () = 0;
+	virtual void Bind () = 0;	
 	virtual void BeforeFrame () = 0;
 	virtual void AfterFrame () = 0;
 

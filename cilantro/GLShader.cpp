@@ -16,12 +16,12 @@ GLShader::GLShader (std::string sourceCode, ShaderType type) : shaderType(type),
 
 	switch (shaderType)
 	{
-	case ShaderType::VERTEX_SHADER:
-		shaderId = glCreateShader (GL_VERTEX_SHADER);
-		break;
-	case ShaderType::FRAGMENT_SHADER:
-		shaderId = glCreateShader (GL_FRAGMENT_SHADER);
-		break;
+		case ShaderType::VERTEX_SHADER:
+			shaderId = glCreateShader (GL_VERTEX_SHADER);
+			break;
+		case ShaderType::FRAGMENT_SHADER:
+			shaderId = glCreateShader (GL_FRAGMENT_SHADER);
+			break;
 	}
 
 	cSourceStr = shaderSourceCode.c_str ();

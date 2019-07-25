@@ -13,7 +13,7 @@ public:
 
 	__EAPI void Initialize ();
 	__EAPI void Deinitialize ();
-
+	__EAPI void Bind ();
 	__EAPI void BeforeFrame ();
 	__EAPI void AfterFrame ();
 

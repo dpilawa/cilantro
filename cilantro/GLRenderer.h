@@ -101,7 +101,7 @@ private:
 
 	// GL buffers for uniforms shared by entire scene:
 	// * view and projection matrix
-	// * vrray of lights
+	// * array of lights
 	SceneBuffers sceneBuffers;
 
 	// data structures for uniforms
