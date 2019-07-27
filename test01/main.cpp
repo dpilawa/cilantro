@@ -5,6 +5,7 @@
 #include "PerspectiveCamera.h"
 #include "MeshObject.h"
 #include "PointLight.h"
+#include "DirectionalLight.h"
 #include "GLRenderer.h"
 #include "GLFWRenderTarget.h"
 #include "GLFWInputController.h"
@@ -18,8 +19,8 @@ int main (int argc, char* argv[])
 	GLFWRenderTarget target (800, 600);
 	target.SetDebugVisible (true);
 	target.SetVSync (true);
-	target.SetFullscreen (false);
 	target.SetResizable (true);
+	target.SetFullscreen (false);
 
 	GLFWInputController controller (target.GetWindow ());
 
@@ -81,11 +82,18 @@ int main (int argc, char* argv[])
 
 	PointLight& light1 = dynamic_cast<PointLight&>(scene.AddGameObject (new PointLight ()));
 	light1.SetParentObject (lamp);
-	light1.SetLightColor (Vector3f (1.0f, 1.0f, 1.0f));
+	light1.SetColor (Vector3f (1.0f, 1.0f, 1.0f));
 	light1.SetSpecularPower (0.7f);
 	light1.SetAmbiencePower (0.1f);
 	light1.SetLinearAttenuationFactor (0.2f).SetQuadraticAttenuationFactor (0.2f);
 	light1.SetEnabled (true);
+
+	DirectionalLight& light2 = dynamic_cast<DirectionalLight&>(scene.AddGameObject (new DirectionalLight ()));
+	light2.SetDirection (Vector3f(1.0f, 1.0f, 1.0f));
+	light2.SetColor (Vector3f (1.0f, 1.0f, 1.0f));
+	light2.SetSpecularPower (0.7f);
+	light2.SetAmbiencePower (0.0f);
+	light2.SetEnabled (true);
 
 	game.Run ();
 

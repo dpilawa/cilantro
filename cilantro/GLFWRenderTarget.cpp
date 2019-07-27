@@ -29,6 +29,21 @@ GLFWRenderTarget::~GLFWRenderTarget ()
 
 void GLFWRenderTarget::Initialize ()
 {
+	GLFWmonitor* monitor; 
+
+	// check fullscreen
+	if (isFullscreen)
+	{
+		monitor = glfwGetPrimaryMonitor ();
+
+		xResolution = glfwGetVideoMode (monitor)->width;
+		yResolution = glfwGetVideoMode (monitor)->height;
+	}
+	else
+	{
+		monitor = nullptr;
+	}
+
     // create temporary window to detect GL version
 	glfwWindowHint (GLFW_VISIBLE, 0);
     window = glfwCreateWindow (xResolution, yResolution, "GL", nullptr, nullptr);
@@ -59,7 +74,7 @@ void GLFWRenderTarget::Initialize ()
 	glfwWindowHint (GLFW_VISIBLE, 1);
 
 	// create window
-	window = glfwCreateWindow (xResolution, yResolution, "GL", nullptr, nullptr);
+	window = glfwCreateWindow (xResolution, yResolution, "GL", monitor, nullptr);
 	if (window == NULL)
 	{
 		LogMessage (__func__, EXIT_FAILURE) << "GLFW unable to create window";

@@ -10,7 +10,7 @@
 #include "RenderTarget.h"
 #include <cstring>
 
-#define MAX_LIGHTS 100
+#define MAX_POINT_LIGHTS 64
 
 enum VBOType { VBO_VERTICES = 0, VBO_NORMALS, VBO_UVS };
 enum UBOType { UBO_MATRICES = 0, UBO_POINTLIGHTS };
@@ -64,7 +64,7 @@ public:
 	// pad to std140 specification
 	GLint pad[3];
 	// array of active point lights
-	PointLightStruct pointLights[MAX_LIGHTS];
+	PointLightStruct pointLights[MAX_POINT_LIGHTS];
 };
 
 class GLRenderer : public Renderer
@@ -108,8 +108,8 @@ private:
 	UniformMatrixBuffer uniformMatrixBuffer;
 	UniformPointLightBuffer uniformPointLightBuffer;
 
-	// active lights collection
-	std::unordered_map<unsigned int, bool> pointLights;
+	// maps light gameobject handle to index in uniformPointLightBuffer
+	std::unordered_map<unsigned int, unsigned int> pointLights;
 
 	// check for GL errors
 	void CheckGLError (std::string functionName);
@@ -124,13 +124,16 @@ private:
 	// initialize uniform buffers of lights
 	void InitializeLightBuffers ();
 
-	// re(load) object buffers of mesh objects
-	void LoadObjectBuffers (unsigned int objectHandle);
-	// reload uniform buffers of view and projection matrices
-	void LoadMatrixUniformBuffers ();
+	// update object buffers of mesh objects
+	void UpdateObjectBuffers (unsigned int objectHandle);
 	// reload buffers of lights
-	void LoadLightBuffers (unsigned int objectHandle);
-	void LoadLightUniformBuffers ();
+	void UpdateLightBuffer (unsigned int objectHandle);
+	void UpdateLightBufferRecursive (unsigned int objectHandle);
+
+	// update uniform buffers of view and projection matrices
+	void LoadMatrixUniformBuffers ();
+	// update uniform buffers of lights
+	void LoadLightUniformBuffers (unsigned int lightIndex);
 
 };
 

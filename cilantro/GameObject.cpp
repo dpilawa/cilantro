@@ -14,9 +14,11 @@ GameObject::GameObject ()
 	parentObject = nullptr;
 	myGameScene = nullptr;
 
+	isLight = false;
+
 	// set callbacks on transform modification
 	// this is just a passthrough of callbacks to subscribers (Scene)
-	modelTransform.RegisterCallback ("OnUpdateTransform", [ & ](unsigned int objectHandle) { InvokeCallbacks ("OnUpdateTransform", objectHandle); });
+	modelTransform.RegisterCallback ("OnUpdateTransform", [ & ](unsigned int objectHandle) { InvokeCallbacks ("OnUpdateTransform", this->GetHandle ()); });
 
 }
 
@@ -37,7 +39,18 @@ unsigned int GameObject::GetHandle () const
 void GameObject::SetParentObject (GameObject & parent)
 {
 	parentObject = &parent;
+	parent.childObjects.push_back (this);
 	InvokeCallbacks ("OnUpdateSceneGraph", this->GetHandle ());
+}
+
+GameObject* GameObject::GetParentObject ()
+{
+	return parentObject;
+}
+
+std::vector<GameObject*> GameObject::GetChildObjects ()
+{
+	return childObjects;
 }
 
 void GameObject::SetGameScene (GameScene & scene)
@@ -102,4 +115,9 @@ Vector3f GameObject::GetForward ()
 	Matrix4f modelTransforMatrix = GetModelTransformMatrix ();
 
 	return Mathf::Normalize (Vector3f (modelTransforMatrix[0][2], modelTransforMatrix[1][2], modelTransforMatrix[2][2]));
+}
+
+bool GameObject::IsLight ()
+{
+	return isLight;
 }

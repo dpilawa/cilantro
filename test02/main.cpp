@@ -13,10 +13,10 @@ int main (int argc, char* argv [])
 {
 	GameScene scene;
 
-	GLFWRenderTarget target (1680, 720);
+	GLFWRenderTarget target (800, 600);
 	target.SetDebugVisible (true);
 	target.SetVSync (true);
-	target.SetFullscreen (false);
+	target.SetFullscreen (true);
 
 	GLFWInputController controller (target.GetWindow ());
 
@@ -43,7 +43,7 @@ int main (int argc, char* argv [])
 	scene.SetActiveCamera (&cam);
 
 	MeshObject& sun = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-	sun.InitUnitSphere (5, true).GetModelTransform ().Scale (10.0f);
+	sun.InitUnitSphere (8, true).GetModelTransform ().Scale (10.0f);
 	sun.SetMaterial (sunM);
 
 	Orbiter& earthOrbiter = dynamic_cast<Orbiter&>(scene.AddGameObject (new Orbiter (365.256f)));
@@ -69,7 +69,7 @@ int main (int argc, char* argv [])
 
 	PointLight& sunLight = dynamic_cast<PointLight&>(scene.AddGameObject (new PointLight ()));
 	sunLight.SetParentObject (sun);
-	sunLight.SetLightColor (Vector3f (1.0f, 1.0f, 1.0f));
+	sunLight.SetColor (Vector3f (1.0f, 1.0f, 1.0f));
 	sunLight.SetSpecularPower (0.7f);
 	sunLight.SetAmbiencePower (0.1f);
 	sunLight.SetEnabled (true);

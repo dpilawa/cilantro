@@ -25,6 +25,8 @@ Camera.cpp
 Camera.h
 cilantroengine.h
 default.vs.h
+DirectionalLight.cpp
+DirectionalLight.h
 GameLoop.cpp
 GameLoop.h
 GameObject.cpp

@@ -28,7 +28,7 @@ Vector3f Mathf::Cross (const Vector3f & v1, const Vector3f & v2)
 
 float Mathf::Norm (const Quaternion& q)
 {
-	return std::sqrtf (q.s * q.s + q.v[0] * q.v[0] + q.v[1] * q.v[1] + q.v[2] * q.v[2]);
+	return std::sqrt (q.s * q.s + q.v[0] * q.v[0] + q.v[1] * q.v[1] + q.v[2] * q.v[2]);
 }
 
 Quaternion Mathf::Normalize (const Quaternion& q)
@@ -63,8 +63,8 @@ Vector3f Mathf::Rotate (const Vector3f& v, const Vector3f& axis, float theta)
 	Vector3f axisNormalized = Mathf::Normalize (axis);
 	Quaternion q (rad, axisNormalized);
 
-	q.s *= std::cosf (rad * 0.5f);
-	q.v *= std::sinf (rad * 0.5f);
+	q.s *= std::cos (rad * 0.5f);
+	q.v *= std::sin (rad * 0.5f);
 
 	Quaternion qInv = Mathf::Invert (q);
 	Quaternion rotated = Mathf::Product (Mathf::Product (q, p), qInv);
@@ -238,7 +238,6 @@ Matrix4f Mathf::GenRotationXMatrix(float angle)
 	return m;
 }
 
-
 Matrix4f Mathf::GenRotationYMatrix (float angle)
 {
 	Matrix4f m;
@@ -251,7 +250,6 @@ Matrix4f Mathf::GenRotationYMatrix (float angle)
 
 	return m;
 }
-
 
 Matrix4f Mathf::GenRotationZMatrix (float angle)
 {

@@ -59,16 +59,16 @@ void GLRenderer::Initialize ()
 	// initialize framebuffer
 
 	// set callback for new MeshObjects
-	renderedScene->RegisterCallback ("OnUpdateMeshObject", [ & ](unsigned int objectHandle) { LoadObjectBuffers (objectHandle); });
+	renderedScene->RegisterCallback ("OnUpdateMeshObject", [ & ](unsigned int objectHandle) { UpdateObjectBuffers (objectHandle); });
 
 	// set callback for new or modified PointLights
-	renderedScene->RegisterCallback ("OnUpdatePointLight", [ & ](unsigned int objectHandle) { LoadLightBuffers (objectHandle); });
+	renderedScene->RegisterCallback ("OnUpdatePointLight", [ & ](unsigned int objectHandle) { UpdateLightBuffer (objectHandle); });
 
 	// set callback for modified scene graph (currently this only requires to reload light buffers)
-	renderedScene->RegisterCallback ("OnUpdateSceneGraph", [ & ](unsigned int objectHandle) { LoadLightUniformBuffers (); });
+	renderedScene->RegisterCallback ("OnUpdateSceneGraph", [ & ](unsigned int objectHandle) { UpdateLightBufferRecursive (objectHandle); });
 
 	// set callback for modified transforms (currently this only requires to reload light buffers)
-	renderedScene->RegisterCallback ("OnUpdateTransform", [ & ](unsigned int objectHandle) { LoadLightUniformBuffers (); });
+	renderedScene->RegisterCallback ("OnUpdateTransform", [ & ](unsigned int objectHandle) { UpdateLightBufferRecursive (objectHandle); });
 
 	// check for any outstanding errors
 	CheckGLError (__func__);
@@ -247,7 +247,7 @@ void GLRenderer::InitializeObjectBuffers ()
 		// load buffers for MeshObject only
 		if (dynamic_cast<MeshObject*>(gameObject) != nullptr)
 		{
-			LoadObjectBuffers (objectHandle);
+			UpdateObjectBuffers (objectHandle);
 		}
 	}
 }
@@ -264,7 +264,7 @@ void GLRenderer::InitializeMatrixUniformBuffers ()
 	glBindBufferBase (GL_UNIFORM_BUFFER, BindingPoint::BP_MATRICES, sceneBuffers.UBO[UBO_MATRICES]);
 
 	// set uniform block bindings
-	for (auto &shaderModel : shaderModels)
+	for (auto&& shaderModel : shaderModels)
 	{
 		shaderProgramId = shaderModel.second.GetProgramId ();
 		uniformMatricesBlockIndex = glGetUniformBlockIndex (shaderProgramId, "UniformMatricesBlock");
@@ -286,14 +286,14 @@ void GLRenderer::InitializeLightBuffers ()
 	glBufferData (GL_UNIFORM_BUFFER, sizeof (UniformPointLightBuffer), &uniformPointLightBuffer, GL_STATIC_DRAW);
 	glBindBufferBase (GL_UNIFORM_BUFFER, BindingPoint::BP_POINTLIGHTS, sceneBuffers.UBO[UBO_POINTLIGHTS]);
 
-	// set uniform block bindings in shaders
-	for (auto &shaderModel : shaderModels)
+	// set uniform block bindings in shaders which have it
+	for (auto&& shaderModel : shaderModels)
 	{
 		shaderProgramId = shaderModel.second.GetProgramId ();
 		uniformPointLightsBlockIndex = glGetUniformBlockIndex (shaderProgramId, "UniformPointLightsBlock");
 		if (uniformPointLightsBlockIndex == GL_INVALID_INDEX)
 		{
-			LogMessage (__func__) << "Unable to locate uniform block for program id" << shaderModel.second.GetProgramId();
+			LogMessage (__func__) << "Program id" << shaderModel.second.GetProgramId() << "has no UniformPointLightsBlock";
 		}
 		else {
 			glUniformBlockBinding(shaderProgramId, uniformPointLightsBlockIndex, BindingPoint::BP_POINTLIGHTS);
@@ -303,17 +303,20 @@ void GLRenderer::InitializeLightBuffers ()
 	// scan objects vector for point lights and populate point lights collection
 	for (GameObject* gameObject : renderedScene->GetGameObjects ())
 	{
-		unsigned int objectHandle = gameObject->GetHandle ();
-		// populate collection for PointLight only
-		if (dynamic_cast<PointLight*>(gameObject) != nullptr)
+		if (gameObject->IsLight ())
 		{
-			LoadLightBuffers (objectHandle);
-		}
+			unsigned int objectHandle = gameObject->GetHandle ();
+			// populate collection for PointLight only
+			if (dynamic_cast<PointLight*>(gameObject) != nullptr)
+			{
+				UpdateLightBuffer (objectHandle);
+			}
+		}	
 	}
 
 }
 
-void GLRenderer::LoadObjectBuffers (unsigned int objectHandle)
+void GLRenderer::UpdateObjectBuffers (unsigned int objectHandle)
 {
 	MeshObject* myMeshObject = dynamic_cast<MeshObject*>(renderedScene->GetGameObjects ()[objectHandle]);
 
@@ -384,6 +387,69 @@ void GLRenderer::LoadObjectBuffers (unsigned int objectHandle)
 	}
 }
 
+void GLRenderer::UpdateLightBuffer (unsigned int objectHandle)
+{
+	unsigned int lightId;
+	PointLight* myPointLightObject = dynamic_cast<PointLight*>(renderedScene->GetGameObjects ()[objectHandle]);
+
+	if (myPointLightObject != nullptr) 
+	{
+		// check if light is already in collection
+		auto find = pointLights.find (objectHandle);
+
+		if (find == pointLights.end ())
+		{
+			LogMessage (__func__) << "New PointLight" << objectHandle;
+			lightId = uniformPointLightBuffer.pointLightCount++;
+			pointLights.insert ({ objectHandle, lightId });
+		}
+		else
+		{
+			// LogMessage (__func__) << "Modified PointLight" << objectHandle;
+			lightId = pointLights[objectHandle];
+		}
+
+		// copy position
+		Vector4f lightPosition = myPointLightObject->GetPosition ();
+		uniformPointLightBuffer.pointLights[lightId].lightPosition[0] = lightPosition[0];
+		uniformPointLightBuffer.pointLights[lightId].lightPosition[1] = lightPosition[1];
+		uniformPointLightBuffer.pointLights[lightId].lightPosition[2] = lightPosition[2];
+
+		// copy ambience and specular powers
+		uniformPointLightBuffer.pointLights[lightId].ambiencePower = myPointLightObject->GetAmbiencePower ();
+		uniformPointLightBuffer.pointLights[lightId].specularPower = myPointLightObject->GetSpecularPower ();
+
+		// copy attenuation factors
+		uniformPointLightBuffer.pointLights[lightId].attenuationConst = myPointLightObject->GetConstantAttenuationFactor ();
+		uniformPointLightBuffer.pointLights[lightId].attenuationLinear = myPointLightObject->GetLinearAttenuationFactor ();
+		uniformPointLightBuffer.pointLights[lightId].attenuationQuadratic = myPointLightObject->GetQuadraticAttenuationFactor ();
+
+		// copy color
+		uniformPointLightBuffer.pointLights[lightId].lightColor[0] = myPointLightObject->GetColor ()[0];
+		uniformPointLightBuffer.pointLights[lightId].lightColor[1] = myPointLightObject->GetColor ()[1];
+		uniformPointLightBuffer.pointLights[lightId].lightColor[2] = myPointLightObject->GetColor ()[2];
+
+		LoadLightUniformBuffers (lightId);
+
+	}
+
+}
+
+void GLRenderer::UpdateLightBufferRecursive (unsigned int objectHandle)
+{
+	GameObject* gameObject = renderedScene->GetGameObjects ()[objectHandle];
+
+	if (gameObject->IsLight ())
+	{
+		UpdateLightBuffer (gameObject->GetHandle ());
+	}
+
+	for (auto&& childObject : gameObject->GetChildObjects ())
+	{
+		UpdateLightBufferRecursive (childObject->GetHandle ());
+	}
+}
+
 void GLRenderer::LoadMatrixUniformBuffers ()
 {
 	Camera* activeCamera;
@@ -409,77 +475,20 @@ void GLRenderer::LoadMatrixUniformBuffers ()
 
 }
 
-void GLRenderer::LoadLightBuffers (unsigned int objectHandle)
+void GLRenderer::LoadLightUniformBuffers (unsigned int lightIndex)
 {
-	PointLight* myPointLightObject = dynamic_cast<PointLight*>(renderedScene->GetGameObjects ()[objectHandle]);
+	unsigned int offset;
 
-	// check if light is already in collection
-	auto find = pointLights.find (objectHandle);
-
-	if (find == pointLights.end ())
-	{
-		LogMessage (__func__) << "New PointLight" << objectHandle;
-		pointLights.insert ({ objectHandle, myPointLightObject->IsEnabled () });
-	}
-	else
-	{
-		LogMessage (__func__) << "Modified PointLight" << objectHandle;
-		pointLights[objectHandle] = myPointLightObject->IsEnabled ();
-	}
-
-	// load uniform buffers
-	LoadLightUniformBuffers ();
-}
-
-void GLRenderer::LoadLightUniformBuffers ()
-{
-	unsigned int lightId = 0;
-	PointLight* myPointLightObject;
-
-	// clear buffer
-	uniformPointLightBuffer.pointLightCount = 0;
-
-	// copy collection to light struct
-	for (auto pointLight : pointLights)
-	{
-		lightId = uniformPointLightBuffer.pointLightCount;
-		myPointLightObject = dynamic_cast<PointLight*>(renderedScene->GetGameObjects ()[pointLight.first]);
-
-		// copy only active lights
-		if (pointLight.second == true)
-		{
-
-			uniformPointLightBuffer.pointLightCount++;
-
-			// copy position
-			Vector4f lightPosition = myPointLightObject->GetPosition ();
-			uniformPointLightBuffer.pointLights[lightId].lightPosition[0] = lightPosition[0];
-			uniformPointLightBuffer.pointLights[lightId].lightPosition[1] = lightPosition[1];
-			uniformPointLightBuffer.pointLights[lightId].lightPosition[2] = lightPosition[2];
-
-			// copy ambience and specular powers
-			uniformPointLightBuffer.pointLights[lightId].ambiencePower = myPointLightObject->GetAmbiencePower ();
-			uniformPointLightBuffer.pointLights[lightId].specularPower = myPointLightObject->GetSpecularPower ();
-
-			// copy attenuation factors
-			uniformPointLightBuffer.pointLights[lightId].attenuationConst = myPointLightObject->GetConstantAttenuationFactor ();
-			uniformPointLightBuffer.pointLights[lightId].attenuationLinear = myPointLightObject->GetLinearAttenuationFactor ();
-			uniformPointLightBuffer.pointLights[lightId].attenuationQuadratic = myPointLightObject->GetQuadraticAttenuationFactor ();
-
-			// copy color
-			uniformPointLightBuffer.pointLights[lightId].lightColor[0] = myPointLightObject->GetColor ()[0];
-			uniformPointLightBuffer.pointLights[lightId].lightColor[1] = myPointLightObject->GetColor ()[1];
-			uniformPointLightBuffer.pointLights[lightId].lightColor[2] = myPointLightObject->GetColor ()[2];
-
-		}
-
-	}
-
-	// load uniform buffer for point lights
 	glBindBuffer (GL_UNIFORM_BUFFER, sceneBuffers.UBO[UBO_POINTLIGHTS]);
-	glBufferSubData (GL_UNIFORM_BUFFER, 0, sizeof (UniformPointLightBuffer), &uniformPointLightBuffer);
-	glBindBuffer (GL_UNIFORM_BUFFER, 0);
 
+	// load light counts
+	glBufferSubData (GL_UNIFORM_BUFFER, 0, sizeof (uniformPointLightBuffer.pointLightCount), &uniformPointLightBuffer.pointLightCount);
+
+	// load uniform buffer for a light at given index
+	offset = sizeof (uniformPointLightBuffer.pointLightCount) + 3 * sizeof (GLint) + lightIndex * sizeof (PointLightStruct);
+	glBufferSubData (GL_UNIFORM_BUFFER, offset, sizeof (PointLightStruct), &uniformPointLightBuffer.pointLights[lightIndex]);
+
+	glBindBuffer (GL_UNIFORM_BUFFER, 0);
 }
 
 

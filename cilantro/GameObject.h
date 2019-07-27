@@ -5,6 +5,7 @@
 #include "CallbackProvider.h"
 #include "Transform.h"
 #include <string>
+#include <vector>
 
 class GameScene;
 class Renderer;
@@ -21,6 +22,10 @@ public:
 
 	// set pointer to parent object (i.e. put current object inside hierarchy)
 	__EAPI void SetParentObject (GameObject & parent);
+
+	// get related objects
+	__EAPI GameObject* GetParentObject ();
+	__EAPI std::vector<GameObject*> GetChildObjects ();
 
 	// set pointer to game scene
 	__EAPI void SetGameScene (GameScene & scene);
@@ -51,12 +56,23 @@ public:
 	__EAPI Vector3f GetUp ();
 	__EAPI Vector3f GetForward ();	
 
+	// check if object is a light
+	__EAPI bool IsLight ();
+
+protected:
+
+	// is object a light
+	bool isLight;
+
 private:
+
 	// object's handle (index in vector inside GameScene)
 	unsigned int objectHandle;
 
 	// pointer to parent object (objects may form a hierarchy)
 	GameObject* parentObject;
+	// vector of child objects
+	std::vector<GameObject*> childObjects;
 
 	// pointer to a game scene
 	GameScene* myGameScene;
