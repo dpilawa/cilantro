@@ -3,6 +3,7 @@
 #include "GameScene.h"
 #include "GameLoop.h"
 #include "PerspectiveCamera.h"
+#include "OrthographicCamera.h"
 #include "MeshObject.h"
 #include "PointLight.h"
 #include "GLRenderer.h"
@@ -13,10 +14,10 @@ int main (int argc, char* argv [])
 {
 	GameScene scene;
 
-	GLFWRenderTarget target (800, 600);
+	GLFWRenderTarget target (960, 600);
 	target.SetDebugVisible (true);
 	target.SetVSync (true);
-	target.SetFullscreen (true);
+	target.SetFullscreen (false);
 
 	GLFWInputController controller (target.GetWindow ());
 
@@ -38,8 +39,10 @@ int main (int argc, char* argv [])
 	moonM.SetDiffuseColor (Vector3f (0.3f, 0.3f, 0.3f));
 	moonM.SetSpecularColor (Vector3f (0.0f, 0.0f, 0.0f));
 
-	PerspectiveCamera& cam = dynamic_cast<PerspectiveCamera&>(scene.AddGameObject (new PerspectiveCamera (45.0f, 0.1f, 1000.0f)));
-	cam.GetModelTransform ().Translate (0.0f, 0.0f, 70.0f);
+	PerspectiveCamera& cam = dynamic_cast<PerspectiveCamera&>(scene.AddGameObject (new PerspectiveCamera (25.0f, 1.0f, 500.0f)));
+	cam.GetModelTransform ().Translate (0.0f, 0.0f, 160.0f);
+	//OrthographicCamera& cam = dynamic_cast<OrthographicCamera&>(scene.AddGameObject (new OrthographicCamera (110.0f, 1.0f, 150.0f)));
+	//cam.GetModelTransform ().Translate (0.0f, 0.0f, 70.0f);
 	scene.SetActiveCamera (&cam);
 
 	MeshObject& sun = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));

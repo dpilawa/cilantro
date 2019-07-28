@@ -3,6 +3,7 @@
 #include "GameScene.h"
 #include "GameLoop.h"
 #include "PerspectiveCamera.h"
+#include "OrthographicCamera.h"
 #include "MeshObject.h"
 #include "PointLight.h"
 #include "DirectionalLight.h"
@@ -56,7 +57,8 @@ int main (int argc, char* argv[])
 	Material& lampM = scene.AddMaterial (new Material ());
 	lampM.SetEmissiveColor (Vector3f (0.9f, 0.9f, 0.9f)).SetDiffuseColor (Vector3f (0.2f, 0.2f, 0.2f));
 
-	PerspectiveCamera& cam = dynamic_cast<PerspectiveCamera&>(scene.AddGameObject (new PerspectiveCamera (60.0f, 0.1f, 100.0f)));
+	//PerspectiveCamera& cam = dynamic_cast<PerspectiveCamera&>(scene.AddGameObject (new PerspectiveCamera (60.0f, 0.1f, 100.0f)));
+	OrthographicCamera& cam = dynamic_cast<OrthographicCamera&>(scene.AddGameObject (new OrthographicCamera (10.0f, 0.1f, 100.0f)));
 	cam.GetModelTransform ().Translate (5.0f, 1.5f, 5.0f).Rotate (-20.0f, -45.0f, 0.0f);
 	scene.SetActiveCamera (&cam);
 
