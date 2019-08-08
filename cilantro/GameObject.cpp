@@ -70,6 +70,10 @@ void GameObject::OnDraw (Renderer& renreder)
 {
 }
 
+void GameObject::OnUpdate (Renderer& renreder)
+{
+}
+
 void GameObject::OnEnd ()
 {
 }

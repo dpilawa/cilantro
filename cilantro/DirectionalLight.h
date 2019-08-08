@@ -17,10 +17,8 @@ public:
     // getters
     __EAPI Vector3f GetDirection () const;
 
-protected:
-
-	// callback on light update to notify rendered
-	void InvokeOnUpdateCallbacks ();
+	// invoked by game loop on update	
+    void OnUpdate (Renderer& renderer);
 
 private:
 

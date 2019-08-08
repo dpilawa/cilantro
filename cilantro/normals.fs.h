@@ -15,35 +15,6 @@ std::string gNormalsFragmentShader = R"V0G0N(
 	/* fragment normal */
 	in vec3 fNormal;
 
-	/* material properties */
-	uniform vec3 fAmbientColor;
-	uniform vec3 fDiffuseColor;
-	uniform vec3 fSpecularColor;
-	uniform float fSpecularShininess;
-	uniform vec3 fEmissiveColor;
-
-	/* eye position in world space */
-	uniform vec3 eyePosition;
-
-	/* point lights data structures */
-
-	struct PointLightStruct
-	{
-		vec3 lightPosition;	/* world space */
-		vec3 lightColor;
-		float ambiencePower;
-		float specularPower;
-		float attenuationConst;
-		float attenuationLinear;
-		float attenuationQuadratic;
-	};
-
-	layout(std140) uniform UniformPointLightsBlock 
-	{
-		int pointLightCount;
-		PointLightStruct pointLights[MAX_LIGHTS];
-	};
-
 	/* output color */
 	out vec4 color;
 

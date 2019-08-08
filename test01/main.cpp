@@ -51,14 +51,15 @@ int main (int argc, char* argv[])
 	green.SetSpecularColor (Vector3f (1.0f, 1.0f, 1.0f)).SetSpecularShininess (128.0f);
 
 	Material& red = scene.AddMaterial (new Material ());
-	red.SetColor (Vector3f (0.75f, 0.1f, 0.1f));
-	red.SetSpecularColor (Vector3f (1.0f, 0.0f, 0.0f)).SetSpecularShininess (8.0f);
+    red.SetShaderModelName ("blinnphong_shader");
+    red.SetColor (Vector3f (0.75f, 0.1f, 0.1f));
+    red.SetSpecularColor (Vector3f (1.0f, 0.0f, 0.0f)).SetSpecularShininess (8.0f);
 
 	Material& lampM = scene.AddMaterial (new Material ());
 	lampM.SetEmissiveColor (Vector3f (0.9f, 0.9f, 0.9f)).SetDiffuseColor (Vector3f (0.2f, 0.2f, 0.2f));
 
-	//PerspectiveCamera& cam = dynamic_cast<PerspectiveCamera&>(scene.AddGameObject (new PerspectiveCamera (60.0f, 0.1f, 100.0f)));
-	OrthographicCamera& cam = dynamic_cast<OrthographicCamera&>(scene.AddGameObject (new OrthographicCamera (10.0f, 0.1f, 100.0f)));
+	PerspectiveCamera& cam = dynamic_cast<PerspectiveCamera&>(scene.AddGameObject (new PerspectiveCamera (60.0f, 0.1f, 100.0f)));
+	//OrthographicCamera& cam = dynamic_cast<OrthographicCamera&>(scene.AddGameObject (new OrthographicCamera (10.0f, 0.1f, 100.0f)));
 	cam.GetModelTransform ().Translate (5.0f, 1.5f, 5.0f).Rotate (-20.0f, -45.0f, 0.0f);
 	scene.SetActiveCamera (&cam);
 
@@ -91,9 +92,9 @@ int main (int argc, char* argv[])
 	light1.SetEnabled (true);
 
 	DirectionalLight& light2 = dynamic_cast<DirectionalLight&>(scene.AddGameObject (new DirectionalLight ()));
-	light2.SetDirection (Vector3f(1.0f, 1.0f, 1.0f));
-	light2.SetColor (Vector3f (1.0f, 1.0f, 1.0f));
-	light2.SetSpecularPower (0.7f);
+	light2.SetDirection (Vector3f(1.0f, 2.0f, 1.0f));
+	light2.SetColor (Vector3f (0.5f, 0.5f, 0.5f));
+	light2.SetSpecularPower (2.0f);
 	light2.SetAmbiencePower (0.0f);
 	light2.SetEnabled (true);
 

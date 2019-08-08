@@ -11,10 +11,11 @@
 #include <cstring>
 
 #define MAX_POINT_LIGHTS 64
+#define MAX_DIRECTIONAL_LIGHTS 16
 
 enum VBOType { VBO_VERTICES = 0, VBO_NORMALS, VBO_UVS };
-enum UBOType { UBO_MATRICES = 0, UBO_POINTLIGHTS };
-enum BindingPoint { BP_MATRICES = 1, BP_POINTLIGHTS };
+enum UBOType { UBO_MATRICES = 0, UBO_POINTLIGHTS, UBO_DIRECTIONALLIGHTS };
+enum BindingPoint { BP_MATRICES = 1, BP_POINTLIGHTS, BP_DIRECTIONALLIGHTS };
 
 struct ObjectBuffers
 {
@@ -30,8 +31,8 @@ public:
 struct SceneBuffers
 {
 public:
-	// Uniform Buffer Objects (view & projection matrices, lights)
-	GLuint UBO[2];
+	// Uniform Buffer Objects (view & projection matrices, point lights, directional lights)
+	GLuint UBO[3];
 };
 
 struct UniformMatrixBuffer
@@ -56,6 +57,16 @@ public:
 	GLfloat attenuationQuadratic;
 };
 
+struct DirectionalLightStruct
+{
+public:
+	GLfloat lightDirection[3];
+	GLfloat pad1;
+	GLfloat lightColor[3];
+	GLfloat ambiencePower;
+	GLfloat specularPower;
+};
+
 struct UniformPointLightBuffer
 {
 public:
@@ -65,6 +76,17 @@ public:
 	GLint pad[3];
 	// array of active point lights
 	PointLightStruct pointLights[MAX_POINT_LIGHTS];
+};
+
+struct UniformDirectionalLightBuffer
+{
+public:
+	// number of active directional lights
+	GLint directionalLightCount;
+	// pad to std140 specification
+	GLint pad[3];
+	// array of active point lights
+    DirectionalLightStruct directionalLights[MAX_DIRECTIONAL_LIGHTS];
 };
 
 class GLRenderer : public Renderer
@@ -85,8 +107,11 @@ public:
 	__EAPI virtual void AddShaderToModel (std::string shaderModelName, std::string shaderName);
 	__EAPI GLShaderModel& GetShaderModel (std::string shaderModelName);
 
-	// object drawing functions
+	// object drawing and updating
 	__EAPI void Draw (MeshObject& meshObject);
+	__EAPI void Update (MeshObject& meshObject);
+	__EAPI void Update (PointLight& pointLight);
+	__EAPI void Update (DirectionalLight& directionalLight);	
 
 private:
 
@@ -107,9 +132,12 @@ private:
 	// data structures for uniforms
 	UniformMatrixBuffer uniformMatrixBuffer;
 	UniformPointLightBuffer uniformPointLightBuffer;
+    UniformDirectionalLightBuffer uniformDirectionalLightBuffer;
 
-	// maps light gameobject handle to index in uniformPointLightBuffer
+    // maps gameobject handle to index in uniformPointLightBuffer
 	std::unordered_map<unsigned int, unsigned int> pointLights;
+	// maps gameobject handle to index in uniformDirectionalLightBuffer
+	std::unordered_map<unsigned int, unsigned int> directionalLights;
 
 	// check for GL errors
 	void CheckGLError (std::string functionName);
@@ -122,18 +150,13 @@ private:
 	// initialize uniform buffers of view and projection matrices
 	void InitializeMatrixUniformBuffers ();
 	// initialize uniform buffers of lights
-	void InitializeLightBuffers ();
+	void InitializeLightUniformBuffers ();
 
-	// update object buffers of mesh objects
-	void UpdateObjectBuffers (unsigned int objectHandle);
-	// reload buffers of lights
-	void UpdateLightBuffer (unsigned int objectHandle);
+	// recursively reload buffers of lights
 	void UpdateLightBufferRecursive (unsigned int objectHandle);
 
 	// update uniform buffers of view and projection matrices
 	void LoadMatrixUniformBuffers ();
-	// update uniform buffers of lights
-	void LoadLightUniformBuffers (unsigned int lightIndex);
 
 };
 

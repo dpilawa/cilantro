@@ -21,10 +21,8 @@ public:
 	__EAPI float GetLinearAttenuationFactor () const;
 	__EAPI float GetQuadraticAttenuationFactor () const;
 
-protected:
-
-	// callback on light update to notify rendered
-	void InvokeOnUpdateCallbacks ();
+	// invoked by game loop on update
+    void OnUpdate (Renderer &renderer);
 
 private:
 

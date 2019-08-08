@@ -7,7 +7,8 @@ std::string gBlinnPhongFragmentShader = R"V0G0N(
 
 	#version 140
 
-	#define MAX_LIGHTS 100
+	#define MAX_POINT_LIGHTS 64
+	#define MAX_DIRECTIONAL_LIGHTS 16
 
 	/* fragment position in world space */
 	in vec3 fPosition;
@@ -38,10 +39,24 @@ std::string gBlinnPhongFragmentShader = R"V0G0N(
 		float attenuationQuadratic;
 	};
 
+	struct DirectionalLightStruct
+	{
+		vec3 lightDirection;
+		vec3 lightColor;
+		float ambiencePower;
+		float specularPower;
+	};
+
 	layout(std140) uniform UniformPointLightsBlock
 	{
 		int pointLightCount;
-		PointLightStruct pointLights[MAX_LIGHTS];
+		PointLightStruct pointLights[MAX_POINT_LIGHTS];
+	};
+
+	layout(std140) uniform UniformDirectionalLightsBlock
+	{
+		int directionalLightCount;
+		DirectionalLightStruct directionalLights[MAX_DIRECTIONAL_LIGHTS];
 	};
 
 	/* output color */
@@ -75,6 +90,30 @@ std::string gBlinnPhongFragmentShader = R"V0G0N(
 		return vec4 (outputColor, 1.0);
 	}
 
+	/* calculate contribution of one directional light */
+	vec4 CalculateDirectionalLight (DirectionalLightStruct light)
+	{
+		/* normalize again to account for interpolated normals */
+		vec3 fNormal_N = normalize (fNormal);
+
+		/* ambient component */
+		float ambientCoefficient = light.ambiencePower;
+
+		/* diffuse component */
+		vec3 lightDirection = normalize (light.lightDirection);
+		float n_dot_l = dot (fNormal_N, lightDirection);
+		float diffuseCoefficient = clamp (n_dot_l, 0.0, 1.0);
+
+		/* specular component */
+		vec3 viewDirection = normalize (eyePosition - fPosition);
+		vec3 halfwayDirection = normalize(lightDirection + viewDirection);
+		float specularCoefficient = pow(clamp(dot(fNormal_N, halfwayDirection), 0.0, 1.0), fSpecularShininess) * light.specularPower * smoothstep(0.0, 0.5, n_dot_l);
+		
+		/* aggregate output */
+		vec3 outputColor = (ambientCoefficient * fAmbientColor + diffuseCoefficient * fDiffuseColor + specularCoefficient * fSpecularColor) * light.lightColor;
+		return vec4 (outputColor, 1.0);
+	}
+
 	void main()
 	{
 		color = vec4 (fEmissiveColor, 1.0);
@@ -82,6 +121,11 @@ std::string gBlinnPhongFragmentShader = R"V0G0N(
 		for (int i=0; i < pointLightCount; i++)
 		{
 			color += CalculatePointLight (pointLights[i]);
+		}
+
+		for (int i=0; i < directionalLightCount; i++)
+		{
+			color += CalculateDirectionalLight (directionalLights[i]);
 		}
 	} 
 	

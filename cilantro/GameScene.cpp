@@ -30,7 +30,7 @@ GameObject& GameScene::AddGameObject (GameObject* gameObject)
 	// set callbacks on object modification
 	// this is just a passthrough of callbacks to subscribers (e.g. Renderer)
 	gameObject->RegisterCallback ("OnUpdateMeshObject", [ & ](unsigned int objectHandle) { InvokeCallbacks ("OnUpdateMeshObject", objectHandle); });
-	gameObject->RegisterCallback ("OnUpdatePointLight", [ & ](unsigned int objectHandle) { InvokeCallbacks ("OnUpdatePointLight", objectHandle); });
+	gameObject->RegisterCallback ("OnUpdateLight", [ & ](unsigned int objectHandle) { InvokeCallbacks ("OnUpdateLight", objectHandle); });
 	gameObject->RegisterCallback ("OnUpdateSceneGraph", [ & ](unsigned int objectHandle) { InvokeCallbacks ("OnUpdateSceneGraph", objectHandle); });
 	gameObject->RegisterCallback ("OnUpdateTransform", [ & ](unsigned int objectHandle) { InvokeCallbacks ("OnUpdateTransform", objectHandle); });
 

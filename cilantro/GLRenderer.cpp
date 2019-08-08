@@ -54,15 +54,15 @@ void GLRenderer::Initialize ()
 	InitializeMatrixUniformBuffers ();
 
 	// initialize uniform buffers of lights
-	InitializeLightBuffers ();
+	InitializeLightUniformBuffers ();
 
 	// initialize framebuffer
 
 	// set callback for new MeshObjects
-	renderedScene->RegisterCallback ("OnUpdateMeshObject", [ & ](unsigned int objectHandle) { UpdateObjectBuffers (objectHandle); });
+    renderedScene->RegisterCallback ("OnUpdateMeshObject", [&](unsigned int objectHandle) { renderedScene->GetGameObjects ()[objectHandle]->OnUpdate (*this); });
 
-	// set callback for new or modified PointLights
-	renderedScene->RegisterCallback ("OnUpdatePointLight", [ & ](unsigned int objectHandle) { UpdateLightBuffer (objectHandle); });
+    // set callback for new or modified PointLights
+	renderedScene->RegisterCallback ("OnUpdateLight", [ & ](unsigned int objectHandle) { renderedScene->GetGameObjects ()[objectHandle]->OnUpdate (*this); });
 
 	// set callback for modified scene graph (currently this only requires to reload light buffers)
 	renderedScene->RegisterCallback ("OnUpdateSceneGraph", [ & ](unsigned int objectHandle) { UpdateLightBufferRecursive (objectHandle); });
@@ -170,35 +170,234 @@ void GLRenderer::Draw (MeshObject & meshObject)
 
 	// get material properties for drawn objects and set uniform value
 	ambientColorId = glGetUniformLocation (shaderProgramId, "fAmbientColor");
-	glUniform3fv (ambientColorId, 1, &meshObject.GetMaterial ().GetAmbientColor ()[0]);
+	if (ambientColorId != GL_INVALID_INDEX)
+	{
+		glUniform3fv (ambientColorId, 1, &meshObject.GetMaterial ().GetAmbientColor ()[0]);
+	}
 
 	diffuseColorId = glGetUniformLocation (shaderProgramId, "fDiffuseColor");
-	glUniform3fv (diffuseColorId, 1, &meshObject.GetMaterial ().GetDiffuseColor ()[0]);
+	if (diffuseColorId != GL_INVALID_INDEX)
+	{
+		glUniform3fv (diffuseColorId, 1, &meshObject.GetMaterial ().GetDiffuseColor ()[0]);
+	}
 
 	emissiveColorId = glGetUniformLocation (shaderProgramId, "fEmissiveColor");
-	glUniform3fv (emissiveColorId, 1, &meshObject.GetMaterial ().GetEmissiveColor ()[0]);
+	if (emissiveColorId != GL_INVALID_INDEX)
+	{
+		glUniform3fv (emissiveColorId, 1, &meshObject.GetMaterial ().GetEmissiveColor ()[0]);
+	}
 
 	specularColorId = glGetUniformLocation (shaderProgramId, "fSpecularColor");
-	glUniform3fv (specularColorId, 1, &meshObject.GetMaterial ().GetSpecularColor ()[0]);
+	if (specularColorId != GL_INVALID_INDEX)
+	{
+		glUniform3fv (specularColorId, 1, &meshObject.GetMaterial ().GetSpecularColor ()[0]);
+	}
+
 	specularShininessId = glGetUniformLocation (shaderProgramId, "fSpecularShininess");
-	glUniform1f (specularShininessId, meshObject.GetMaterial ().GetSpecularShininess ());
+	if (specularShininessId != GL_INVALID_INDEX)
+	{
+		glUniform1f (specularShininessId, meshObject.GetMaterial ().GetSpecularShininess ());
+	}
 
 	// get camera position in world space and set uniform value
 	eyePositionId = glGetUniformLocation (shaderProgramId, "eyePosition");
-	glUniform3fv (eyePositionId, 1, &renderedScene->GetActiveCamera ()->GetPosition ()[0]);
+	if (eyePositionId != GL_INVALID_INDEX)
+	{
+		glUniform3fv (eyePositionId, 1, &renderedScene->GetActiveCamera ()->GetPosition ()[0]);
+	}
 
 	// get world matrix for drawn objects and set uniform value
 	modelMatrixId = glGetUniformLocation (shaderProgramId, "mModel");
-	glUniformMatrix4fv (modelMatrixId, 1, GL_TRUE, meshObject.GetModelTransformMatrix ()[0]);
+	if (modelMatrixId != GL_INVALID_INDEX)
+	{
+		glUniformMatrix4fv (modelMatrixId, 1, GL_TRUE, meshObject.GetModelTransformMatrix ()[0]);
+	}
 
 	// calculate normal matrix for drawn objects and set uniform value
 	normalMatrixId = glGetUniformLocation (shaderProgramId, "mNormal");
-	glUniformMatrix3fv (normalMatrixId, 1, GL_TRUE, Mathf::Invert (Mathf::Transpose (Matrix3f (meshObject.GetModelTransformMatrix ())))[0]);
+	if (normalMatrixId != GL_INVALID_INDEX)
+	{
+		glUniformMatrix3fv (normalMatrixId, 1, GL_TRUE, Mathf::Invert (Mathf::Transpose (Matrix3f (meshObject.GetModelTransformMatrix ())))[0]);
+	}
 
 	// draw mesh
 	glBindVertexArray (objectBuffers[meshObject.GetHandle ()].VAO);
 	glDrawElements (GL_TRIANGLES, meshObject.GetFaceCount () * 3, GL_UNSIGNED_INT, 0);
 	glBindVertexArray (0);
+}
+
+void GLRenderer::Update (MeshObject& meshObject)
+{
+    unsigned int objectHandle = meshObject.GetHandle ();
+
+    // check of object's buffers are already initialized
+	auto find = objectBuffers.find (objectHandle);
+
+	if (find == objectBuffers.end ())
+	{
+		// it is a new object, perform full buffers initialization and load data
+
+		objectBuffers.insert ({ objectHandle, ObjectBuffers () });
+
+		LogMessage (__func__) << "New MeshObject" << objectHandle;
+
+		// generate and bind Vertex Array Object (VAO)
+		glGenVertexArrays (1, &objectBuffers[objectHandle].VAO);
+		glBindVertexArray (objectBuffers[objectHandle].VAO);
+
+		// generate vertex buffer and copy vertices to GPU
+		glGenBuffers (1, &objectBuffers[objectHandle].VBO[VBOType::VBO_VERTICES]);
+		glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_VERTICES]);
+		glBufferData (GL_ARRAY_BUFFER, meshObject.GetVertexCount () * sizeof (float), meshObject.GetVerticesData (), GL_STATIC_DRAW);
+		// location = 0 (vertex position)
+		glVertexAttribPointer (VBOType::VBO_VERTICES, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (void*)0);
+
+		// generate normals buffer and copy normals to GPU
+		glGenBuffers (1, &objectBuffers[objectHandle].VBO[VBOType::VBO_NORMALS]);
+		glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_NORMALS]);
+		glBufferData (GL_ARRAY_BUFFER, meshObject.GetVertexCount () * sizeof (float), meshObject.GetNormalsData (), GL_STATIC_DRAW);
+		// location = 1 (vertex normal)
+		glVertexAttribPointer (VBOType::VBO_NORMALS, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (void*)0);
+
+		// generate index buffer and copy face indices to GPU
+		glGenBuffers (1, &objectBuffers[objectHandle].EBO);
+		glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, objectBuffers[objectHandle].EBO);
+		glBufferData (GL_ELEMENT_ARRAY_BUFFER, meshObject.GetFaceCount () * sizeof (unsigned int), meshObject.GetFacesData (), GL_STATIC_DRAW);
+
+		// enable VBO arrays
+		glEnableVertexAttribArray (VBOType::VBO_VERTICES);
+		glEnableVertexAttribArray (VBOType::VBO_NORMALS);
+
+		// unbind VAO
+		glBindVertexArray (0);
+	}
+	else
+	{
+		// it is an existing object which has been modified
+
+		// bind Vertex Array Object (VAO)
+		glBindVertexArray (objectBuffers[objectHandle].VAO);
+
+		// load vertex buffer
+		glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_VERTICES]);
+		glBufferData (GL_ARRAY_BUFFER, meshObject.GetVertexCount () * sizeof (float), meshObject.GetVerticesData (), GL_STATIC_DRAW);
+
+		// load normals buffer
+		glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_NORMALS]);
+		glBufferData (GL_ARRAY_BUFFER, meshObject.GetVertexCount () * sizeof (float), meshObject.GetNormalsData (), GL_STATIC_DRAW);
+
+		// load index buffer
+		glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, objectBuffers[objectHandle].EBO);
+		glBufferData (GL_ELEMENT_ARRAY_BUFFER, meshObject.GetFaceCount () * sizeof (unsigned int), meshObject.GetFacesData (), GL_STATIC_DRAW);
+
+		// unbind VAO
+		glBindVertexArray (0);
+
+	}
+}
+
+void GLRenderer::Update (PointLight& pointLight)
+{
+    unsigned int objectHandle = pointLight.GetHandle ();
+    unsigned int lightId;
+    unsigned int uniformBufferOffset;
+
+    // check if light is already in collection
+	auto find = pointLights.find (objectHandle);
+
+    if (find == pointLights.end ())
+	{
+		LogMessage (__func__) << "New PointLight" << objectHandle;
+		lightId = uniformPointLightBuffer.pointLightCount++;
+		pointLights.insert ({ objectHandle, lightId });
+	}
+	else
+	{
+		// existing light modified
+		lightId = pointLights[objectHandle];
+	}
+
+	// copy position
+	Vector4f lightPosition = pointLight.GetPosition ();
+	uniformPointLightBuffer.pointLights[lightId].lightPosition[0] = lightPosition[0];
+	uniformPointLightBuffer.pointLights[lightId].lightPosition[1] = lightPosition[1];
+	uniformPointLightBuffer.pointLights[lightId].lightPosition[2] = lightPosition[2];
+
+	// copy ambience and specular powers
+	uniformPointLightBuffer.pointLights[lightId].ambiencePower = pointLight.GetAmbiencePower ();
+	uniformPointLightBuffer.pointLights[lightId].specularPower = pointLight.GetSpecularPower ();
+
+	// copy attenuation factors
+	uniformPointLightBuffer.pointLights[lightId].attenuationConst = pointLight.GetConstantAttenuationFactor ();
+	uniformPointLightBuffer.pointLights[lightId].attenuationLinear = pointLight.GetLinearAttenuationFactor ();
+	uniformPointLightBuffer.pointLights[lightId].attenuationQuadratic = pointLight.GetQuadraticAttenuationFactor ();
+
+	// copy color
+	uniformPointLightBuffer.pointLights[lightId].lightColor[0] = pointLight.GetColor ()[0];
+	uniformPointLightBuffer.pointLights[lightId].lightColor[1] = pointLight.GetColor ()[1];
+	uniformPointLightBuffer.pointLights[lightId].lightColor[2] = pointLight.GetColor ()[2];
+
+	// copy to GPU memory
+	glBindBuffer (GL_UNIFORM_BUFFER, sceneBuffers.UBO[UBO_POINTLIGHTS]);
+
+	// load light counts
+	glBufferSubData (GL_UNIFORM_BUFFER, 0, sizeof (uniformPointLightBuffer.pointLightCount), &uniformPointLightBuffer.pointLightCount);
+
+	// load uniform buffer for a light at given index
+	uniformBufferOffset = sizeof (uniformPointLightBuffer.pointLightCount) + 3 * sizeof (GLint) + lightId * sizeof (PointLightStruct);
+	glBufferSubData (GL_UNIFORM_BUFFER, uniformBufferOffset, sizeof (PointLightStruct), &uniformPointLightBuffer.pointLights[lightId]);
+
+	glBindBuffer (GL_UNIFORM_BUFFER, 0);
+
+}
+
+void GLRenderer::Update (DirectionalLight& directionalLight)
+{
+    unsigned int objectHandle = directionalLight.GetHandle ();
+    unsigned int lightId;
+    unsigned int uniformBufferOffset;
+
+    // check if light is already in collection
+	auto find = directionalLights.find (objectHandle);
+
+    if (find == directionalLights.end ())
+	{
+		LogMessage (__func__) << "New DirectionalLight" << objectHandle;
+		lightId = uniformDirectionalLightBuffer.directionalLightCount++;
+		directionalLights.insert ({ objectHandle, lightId });
+	}
+	else
+	{
+		// existing light modified
+		lightId = directionalLights[objectHandle];
+	}
+
+	// copy direction
+	Vector3f lightDirection = directionalLight.GetDirection ();
+	uniformDirectionalLightBuffer.directionalLights[lightId].lightDirection[0] = lightDirection[0];
+	uniformDirectionalLightBuffer.directionalLights[lightId].lightDirection[1] = lightDirection[1];
+	uniformDirectionalLightBuffer.directionalLights[lightId].lightDirection[2] = lightDirection[2];
+
+	// copy ambience and specular powers
+	uniformDirectionalLightBuffer.directionalLights[lightId].ambiencePower = directionalLight.GetAmbiencePower ();
+	uniformDirectionalLightBuffer.directionalLights[lightId].specularPower = directionalLight.GetSpecularPower ();
+
+	// copy color
+	uniformDirectionalLightBuffer.directionalLights[lightId].lightColor[0] = directionalLight.GetColor ()[0];
+	uniformDirectionalLightBuffer.directionalLights[lightId].lightColor[1] = directionalLight.GetColor ()[1];
+	uniformDirectionalLightBuffer.directionalLights[lightId].lightColor[2] = directionalLight.GetColor ()[2];
+
+	// copy to GPU memory
+	glBindBuffer (GL_UNIFORM_BUFFER, sceneBuffers.UBO[UBO_DIRECTIONALLIGHTS]);
+
+	// load light counts
+	glBufferSubData (GL_UNIFORM_BUFFER, 0, sizeof (uniformDirectionalLightBuffer.directionalLightCount), &uniformDirectionalLightBuffer.directionalLightCount);
+
+	// load uniform buffer for a light at given index
+	uniformBufferOffset = sizeof (uniformDirectionalLightBuffer.directionalLightCount) + 3 * sizeof (GLint) + lightId * sizeof (DirectionalLightStruct);
+	glBufferSubData (GL_UNIFORM_BUFFER, uniformBufferOffset, sizeof (DirectionalLightStruct), &uniformDirectionalLightBuffer.directionalLights[lightId]);
+
+	glBindBuffer (GL_UNIFORM_BUFFER, 0);
 }
 
 void GLRenderer::CheckGLError (std::string functionName)
@@ -243,11 +442,10 @@ void GLRenderer::InitializeObjectBuffers ()
 	// load object buffers for all existing objects
 	for (GameObject* gameObject : renderedScene->GetGameObjects ())
 	{
-		unsigned int objectHandle = gameObject->GetHandle ();
 		// load buffers for MeshObject only
 		if (dynamic_cast<MeshObject*>(gameObject) != nullptr)
 		{
-			UpdateObjectBuffers (objectHandle);
+			gameObject->OnUpdate (*this);
 		}
 	}
 }
@@ -272,24 +470,33 @@ void GLRenderer::InitializeMatrixUniformBuffers ()
 	}
 }
 
-void GLRenderer::InitializeLightBuffers ()
+void GLRenderer::InitializeLightUniformBuffers ()
 {
 	GLuint shaderProgramId;
 	GLuint uniformPointLightsBlockIndex;
+	GLuint uniformDirectionalLightsBlockIndex;
 
-	// initialize struct
+	// initialize structs
 	uniformPointLightBuffer.pointLightCount = 0;
+    uniformDirectionalLightBuffer.directionalLightCount = 0;
 
-	// create uniform buffer for point lights
+    // create uniform buffer for point lights
 	glGenBuffers (1, &sceneBuffers.UBO[UBO_POINTLIGHTS]);
 	glBindBuffer (GL_UNIFORM_BUFFER, sceneBuffers.UBO[UBO_POINTLIGHTS]);
 	glBufferData (GL_UNIFORM_BUFFER, sizeof (UniformPointLightBuffer), &uniformPointLightBuffer, GL_STATIC_DRAW);
 	glBindBufferBase (GL_UNIFORM_BUFFER, BindingPoint::BP_POINTLIGHTS, sceneBuffers.UBO[UBO_POINTLIGHTS]);
 
+    // create uniform buffer for directional lights
+	glGenBuffers (1, &sceneBuffers.UBO[UBO_DIRECTIONALLIGHTS]);
+	glBindBuffer (GL_UNIFORM_BUFFER, sceneBuffers.UBO[UBO_DIRECTIONALLIGHTS]);
+	glBufferData (GL_UNIFORM_BUFFER, sizeof (UniformDirectionalLightBuffer), &uniformDirectionalLightBuffer, GL_STATIC_DRAW);
+	glBindBufferBase (GL_UNIFORM_BUFFER, BindingPoint::BP_DIRECTIONALLIGHTS, sceneBuffers.UBO[UBO_DIRECTIONALLIGHTS]);
+
 	// set uniform block bindings in shaders which have it
 	for (auto&& shaderModel : shaderModels)
 	{
 		shaderProgramId = shaderModel.second.GetProgramId ();
+		
 		uniformPointLightsBlockIndex = glGetUniformBlockIndex (shaderProgramId, "UniformPointLightsBlock");
 		if (uniformPointLightsBlockIndex == GL_INVALID_INDEX)
 		{
@@ -298,139 +505,25 @@ void GLRenderer::InitializeLightBuffers ()
 		else {
 			glUniformBlockBinding(shaderProgramId, uniformPointLightsBlockIndex, BindingPoint::BP_POINTLIGHTS);
 		}
+
+		uniformDirectionalLightsBlockIndex = glGetUniformBlockIndex (shaderProgramId, "UniformDirectionalLightsBlock");
+		if (uniformDirectionalLightsBlockIndex == GL_INVALID_INDEX)
+		{
+			LogMessage (__func__) << "Program id" << shaderModel.second.GetProgramId() << "has no UniformDirectionalLightsBlock";
+		}
+		else {
+			glUniformBlockBinding(shaderProgramId, uniformDirectionalLightsBlockIndex, BindingPoint::BP_DIRECTIONALLIGHTS);
+		}
+
 	}
 
-	// scan objects vector for point lights and populate point lights collection
+	// scan objects vector for lights and populate light buffers
 	for (GameObject* gameObject : renderedScene->GetGameObjects ())
 	{
 		if (gameObject->IsLight ())
 		{
-			unsigned int objectHandle = gameObject->GetHandle ();
-			// populate collection for PointLight only
-			if (dynamic_cast<PointLight*>(gameObject) != nullptr)
-			{
-				UpdateLightBuffer (objectHandle);
-			}
+			gameObject -> OnUpdate (*this);
 		}	
-	}
-
-}
-
-void GLRenderer::UpdateObjectBuffers (unsigned int objectHandle)
-{
-	MeshObject* myMeshObject = dynamic_cast<MeshObject*>(renderedScene->GetGameObjects ()[objectHandle]);
-
-	// check of object's buffers are already initialized
-	auto find = objectBuffers.find (objectHandle);
-
-	if (find == objectBuffers.end ())
-	{
-		// it is a new object, perform full buffers initialization and load data
-
-		objectBuffers.insert ({ objectHandle, ObjectBuffers () });
-
-		LogMessage (__func__) << "New MeshObject" << objectHandle;
-
-		// generate and bind Vertex Array Object (VAO)
-		glGenVertexArrays (1, &objectBuffers[objectHandle].VAO);
-		glBindVertexArray (objectBuffers[objectHandle].VAO);
-
-		// generate vertex buffer and copy vertices to GPU
-		glGenBuffers (1, &objectBuffers[objectHandle].VBO[VBOType::VBO_VERTICES]);
-		glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_VERTICES]);
-		glBufferData (GL_ARRAY_BUFFER, myMeshObject->GetVertexCount () * sizeof (float), myMeshObject->GetVerticesData (), GL_STATIC_DRAW);
-		// location = 0 (vertex position)
-		glVertexAttribPointer (VBOType::VBO_VERTICES, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (void*)0);
-
-		// generate normals buffer and copy normals to GPU
-		glGenBuffers (1, &objectBuffers[objectHandle].VBO[VBOType::VBO_NORMALS]);
-		glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_NORMALS]);
-		glBufferData (GL_ARRAY_BUFFER, myMeshObject->GetVertexCount () * sizeof (float), myMeshObject->GetNormalsData (), GL_STATIC_DRAW);
-		// location = 1 (vertex normal)
-		glVertexAttribPointer (VBOType::VBO_NORMALS, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (void*)0);
-
-		// generate index buffer and copy face indices to GPU
-		glGenBuffers (1, &objectBuffers[objectHandle].EBO);
-		glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, objectBuffers[objectHandle].EBO);
-		glBufferData (GL_ELEMENT_ARRAY_BUFFER, myMeshObject->GetFaceCount () * sizeof (unsigned int), myMeshObject->GetFacesData (), GL_STATIC_DRAW);
-
-		// enable VBO arrays
-		glEnableVertexAttribArray (VBOType::VBO_VERTICES);
-		glEnableVertexAttribArray (VBOType::VBO_NORMALS);
-
-		// unbind VAO
-		glBindVertexArray (0);
-	}
-	else
-	{
-		// it is an existing object which has been modified
-		LogMessage (__func__) << "Modified MeshObject" << objectHandle;
-
-		// bind Vertex Array Object (VAO)
-		glBindVertexArray (objectBuffers[objectHandle].VAO);
-
-		// load vertex buffer
-		glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_VERTICES]);
-		glBufferData (GL_ARRAY_BUFFER, myMeshObject->GetVertexCount () * sizeof (float), myMeshObject->GetVerticesData (), GL_STATIC_DRAW);
-
-		// load normals buffer
-		glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_NORMALS]);
-		glBufferData (GL_ARRAY_BUFFER, myMeshObject->GetVertexCount () * sizeof (float), myMeshObject->GetNormalsData (), GL_STATIC_DRAW);
-
-		// load index buffer
-		glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, objectBuffers[objectHandle].EBO);
-		glBufferData (GL_ELEMENT_ARRAY_BUFFER, myMeshObject->GetFaceCount () * sizeof (unsigned int), myMeshObject->GetFacesData (), GL_STATIC_DRAW);
-
-		// unbind VAO
-		glBindVertexArray (0);
-
-	}
-}
-
-void GLRenderer::UpdateLightBuffer (unsigned int objectHandle)
-{
-	unsigned int lightId;
-	PointLight* myPointLightObject = dynamic_cast<PointLight*>(renderedScene->GetGameObjects ()[objectHandle]);
-
-	if (myPointLightObject != nullptr) 
-	{
-		// check if light is already in collection
-		auto find = pointLights.find (objectHandle);
-
-		if (find == pointLights.end ())
-		{
-			LogMessage (__func__) << "New PointLight" << objectHandle;
-			lightId = uniformPointLightBuffer.pointLightCount++;
-			pointLights.insert ({ objectHandle, lightId });
-		}
-		else
-		{
-			// LogMessage (__func__) << "Modified PointLight" << objectHandle;
-			lightId = pointLights[objectHandle];
-		}
-
-		// copy position
-		Vector4f lightPosition = myPointLightObject->GetPosition ();
-		uniformPointLightBuffer.pointLights[lightId].lightPosition[0] = lightPosition[0];
-		uniformPointLightBuffer.pointLights[lightId].lightPosition[1] = lightPosition[1];
-		uniformPointLightBuffer.pointLights[lightId].lightPosition[2] = lightPosition[2];
-
-		// copy ambience and specular powers
-		uniformPointLightBuffer.pointLights[lightId].ambiencePower = myPointLightObject->GetAmbiencePower ();
-		uniformPointLightBuffer.pointLights[lightId].specularPower = myPointLightObject->GetSpecularPower ();
-
-		// copy attenuation factors
-		uniformPointLightBuffer.pointLights[lightId].attenuationConst = myPointLightObject->GetConstantAttenuationFactor ();
-		uniformPointLightBuffer.pointLights[lightId].attenuationLinear = myPointLightObject->GetLinearAttenuationFactor ();
-		uniformPointLightBuffer.pointLights[lightId].attenuationQuadratic = myPointLightObject->GetQuadraticAttenuationFactor ();
-
-		// copy color
-		uniformPointLightBuffer.pointLights[lightId].lightColor[0] = myPointLightObject->GetColor ()[0];
-		uniformPointLightBuffer.pointLights[lightId].lightColor[1] = myPointLightObject->GetColor ()[1];
-		uniformPointLightBuffer.pointLights[lightId].lightColor[2] = myPointLightObject->GetColor ()[2];
-
-		LoadLightUniformBuffers (lightId);
-
 	}
 
 }
@@ -441,7 +534,7 @@ void GLRenderer::UpdateLightBufferRecursive (unsigned int objectHandle)
 
 	if (gameObject->IsLight ())
 	{
-		UpdateLightBuffer (gameObject->GetHandle ());
+		gameObject->OnUpdate (*this);
 	}
 
 	for (auto&& childObject : gameObject->GetChildObjects ())
@@ -473,22 +566,6 @@ void GLRenderer::LoadMatrixUniformBuffers ()
 	glBufferSubData (GL_UNIFORM_BUFFER, 0, 2 * 16 * sizeof (GLfloat), &uniformMatrixBuffer);
 	glBindBuffer (GL_UNIFORM_BUFFER, 0);
 
-}
-
-void GLRenderer::LoadLightUniformBuffers (unsigned int lightIndex)
-{
-	unsigned int offset;
-
-	glBindBuffer (GL_UNIFORM_BUFFER, sceneBuffers.UBO[UBO_POINTLIGHTS]);
-
-	// load light counts
-	glBufferSubData (GL_UNIFORM_BUFFER, 0, sizeof (uniformPointLightBuffer.pointLightCount), &uniformPointLightBuffer.pointLightCount);
-
-	// load uniform buffer for a light at given index
-	offset = sizeof (uniformPointLightBuffer.pointLightCount) + 3 * sizeof (GLint) + lightIndex * sizeof (PointLightStruct);
-	glBufferSubData (GL_UNIFORM_BUFFER, offset, sizeof (PointLightStruct), &uniformPointLightBuffer.pointLights[lightIndex]);
-
-	glBindBuffer (GL_UNIFORM_BUFFER, 0);
 }
 
 

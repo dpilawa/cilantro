@@ -33,11 +33,12 @@ public:
 	// invoked by game loop during initializaton
 	__EAPI virtual void OnStart ();
 
-	// invoked by game loop on each frame
+	// invoked by game loop on each frame or on update (e.g. transform change)
 	__EAPI virtual void OnFrame ();
 	__EAPI virtual void OnDraw (Renderer& renderer);
+    __EAPI virtual void OnUpdate (Renderer &renderer);
 
-	// invoked by game loop during deinitialization
+    // invoked by game loop during deinitialization
 	__EAPI virtual void OnEnd ();
 
 	// get transformation object's reference

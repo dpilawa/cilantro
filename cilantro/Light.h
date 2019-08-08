@@ -3,6 +3,9 @@
 
 #include "cilantroengine.h"
 #include "GameObject.h"
+#include "Vector3f.h"
+
+class Renderer;
 
 class Light : public GameObject
 {
@@ -25,10 +28,13 @@ public:
 	__EAPI float GetAmbiencePower () const;
 	__EAPI float GetSpecularPower () const;
 
+	// invoked by game loop on update	
+    virtual void OnUpdate (Renderer& renderer);
+
 protected:
 
 	// callback on light update to notify rendered
-	virtual void InvokeOnUpdateCallbacks () = 0;
+	virtual void InvokeOnUpdateCallbacks ();
 
 private:
 

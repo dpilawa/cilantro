@@ -47,9 +47,10 @@ public:
 	// get faces raw data
 	__EAPI unsigned int* GetFacesData ();
 
-	// invoked by game loop on each frame
-	__EAPI virtual void OnFrame ();
-	__EAPI virtual void OnDraw (Renderer& renderer);
+	// invoked by game loop on each frame or on update (e.g. transform)
+	virtual void OnFrame ();
+	virtual void OnDraw (Renderer& renderer);
+	virtual void OnUpdate (Renderer& renderer);
 
 private:
 

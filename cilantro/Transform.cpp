@@ -26,7 +26,7 @@ Transform::~Transform ()
 
 Matrix4f& Transform::GetModelMatrix ()
 {
-	// multiply transformation matrices (scale, rotate, then translate)
+	// multiply transformation matrices (first scale, then rotate, then translate)
 	if (isValid == false) 
 	{
 		modelMatrix = translationMatrix * rotationMatrix * scalingMatrix;

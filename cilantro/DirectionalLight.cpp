@@ -1,8 +1,8 @@
 #include "cilantroengine.h"
 #include "DirectionalLight.h"
 #include "Light.h"
-#include "GameObject.h"
 #include "Vector3f.h"
+#include "Renderer.h"
 #include "CallbackProvider.h"
 
 DirectionalLight::DirectionalLight () : Light()
@@ -27,7 +27,8 @@ Vector3f DirectionalLight::GetDirection () const
     return direction;
 }
 
-void DirectionalLight::InvokeOnUpdateCallbacks ()
+void DirectionalLight::OnUpdate (Renderer& renderer)
 {
-	InvokeCallbacks ("OnUpdateDirectionalLight", this->GetHandle ());
+	Light::OnUpdate (renderer);
+	renderer.Update (*this);
 }

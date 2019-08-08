@@ -4,6 +4,8 @@
 #include "CallbackProvider.h"
 #include "GameScene.h"
 #include "MeshObject.h"
+#include "PointLight.h"
+#include "DirectionalLight.h"
 #include "RenderTarget.h"
 #include <string>
 
@@ -24,8 +26,11 @@ public:
 	virtual void AddShader (std::string shaderName, std::string shaderSourceCode, ShaderType shaderType) = 0;
 	virtual void AddShaderToModel (std::string shaderModelName, std::string shaderName) = 0;
 
-	// object drawing functions
-	virtual void Draw (MeshObject& meshobject) = 0;
+	// object drawing and updating
+	virtual void Draw (MeshObject& meshObject) = 0;
+	virtual void Update (MeshObject& meshObject) = 0;
+	virtual void Update (PointLight& pointLight) = 0;
+	virtual void Update (DirectionalLight& pointLight) = 0;
 
 protected:
 

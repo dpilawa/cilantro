@@ -279,6 +279,13 @@ void MeshObject::OnDraw (Renderer& renderer)
 	renderer.Draw (*this);
 }
 
+
+void MeshObject::OnUpdate (Renderer& renderer)
+{
+	GameObject::OnUpdate (renderer);
+	renderer.Update (*this);
+}
+
 void MeshObject::AddVertex (const Vector3f & vertex)
 {
 	vertices.push_back (vertex[0]);

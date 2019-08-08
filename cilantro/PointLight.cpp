@@ -1,8 +1,8 @@
 #include "cilantroengine.h"
 #include "PointLight.h"
 #include "Light.h"
-#include "GameObject.h"
 #include "Vector3f.h"
+#include "Renderer.h"
 #include "CallbackProvider.h"
 
 PointLight::PointLight () : Light()
@@ -52,7 +52,8 @@ float PointLight::GetQuadraticAttenuationFactor () const
 	return attenuationQuadratic;
 }
 
-void PointLight::InvokeOnUpdateCallbacks ()
+void PointLight::OnUpdate (Renderer& renderer)
 {
-	InvokeCallbacks ("OnUpdatePointLight", this->GetHandle ());
+	Light::OnUpdate (renderer);
+	renderer.Update (*this);
 }

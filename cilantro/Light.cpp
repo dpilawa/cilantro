@@ -84,3 +84,13 @@ float Light::GetSpecularPower () const
 		return 0.0f;
 	}
 }
+
+void Light::OnUpdate (Renderer& renderer)
+{
+    GameObject::OnUpdate (renderer);
+}
+
+void Light::InvokeOnUpdateCallbacks ()
+{
+	InvokeCallbacks ("OnUpdateLight", this->GetHandle ());
+}
