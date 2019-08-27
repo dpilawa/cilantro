@@ -7,14 +7,16 @@ std::string gPhongFragmentShader = R"V0G0N(
 
 	#version 140
 
-	#define MAX_LIGHTS 100
+	#define MAX_POINT_LIGHTS 64
+	#define MAX_DIRECTIONAL_LIGHTS 16
 
 	/* fragment position in world space */
 	in vec3 fPosition;
 
 	/* fragment normal */
 	in vec3 fNormal;
-	
+	vec3 fNormal_N;
+
 	/* material properties */
 	uniform vec3 fAmbientColor;
 	uniform vec3 fDiffuseColor;
@@ -38,51 +40,106 @@ std::string gPhongFragmentShader = R"V0G0N(
 		float attenuationQuadratic;
 	};
 
+	struct DirectionalLightStruct
+	{
+		vec3 lightDirection;
+		vec3 lightColor;
+		float ambiencePower;
+		float specularPower;
+	};
+
 	layout(std140) uniform UniformPointLightsBlock
 	{
 		int pointLightCount;
-		PointLightStruct pointLights[MAX_LIGHTS];
+		PointLightStruct pointLights[MAX_POINT_LIGHTS];
+	};
+
+	layout(std140) uniform UniformDirectionalLightsBlock
+	{
+		int directionalLightCount;
+		DirectionalLightStruct directionalLights[MAX_DIRECTIONAL_LIGHTS];
 	};
 
 	/* output color */
 	out vec4 color;
 
+	/* calculate diffuse coefficient */
+	float CalculateDiffuse (float n_dot_l)
+	{
+		return clamp (n_dot_l, 0.0, 1.0);
+	}
+
+	float CalculateSpecular (vec3 lightDirection, float n_dot_l, float lightSpecularPower)
+	{
+		vec3 viewDirection = normalize (eyePosition - fPosition);
+		vec3 reflectionDirection = reflect (-lightDirection, fNormal_N);
+		return pow(clamp(dot(viewDirection, reflectionDirection), 0.0, 1.0), fSpecularShininess) * lightSpecularPower * smoothstep(0.0, 0.15, n_dot_l);
+	}
+
+	vec3 CalculateOutputColor (float ambientCoefficient, float diffuseCoefficient, float attenuationFactor, float specularCoefficient, vec3 lightColor)
+	{
+		return (ambientCoefficient * fAmbientColor + diffuseCoefficient * fDiffuseColor * attenuationFactor + specularCoefficient * fSpecularColor) * lightColor;
+	}
+
 	/* calculate contribution of one point light */
 	vec4 CalculatePointLight (PointLightStruct light)
 	{
-		/* normalize again to account for interpolated normals */
-		vec3 fNormal_N = normalize (fNormal);
-
 		/* ambient component */
 		float ambientCoefficient = light.ambiencePower;
 
 		/* diffuse component */
 		vec3 lightDirection = normalize (light.lightPosition - fPosition);
 		float n_dot_l = dot (fNormal_N, lightDirection);
-		float diffuseCoefficient = clamp (n_dot_l, 0.0, 1.0);
-
+		float diffuseCoefficient = CalculateDiffuse (n_dot_l);
+		
 		/* specular component */
-		vec3 viewDirection = normalize (eyePosition - fPosition);
-		vec3 reflectionDirection = reflect (-lightDirection, fNormal_N);
-		float specularCoefficient = pow(clamp(dot(viewDirection, reflectionDirection), 0.0, 1.0), fSpecularShininess) * light.specularPower * smoothstep(0.0, 0.15, n_dot_l);
-
+		float specularCoefficient = CalculateSpecular (lightDirection, n_dot_l, light.specularPower);
+		
 		/* attenuation */
 		float distanceToLight = length (light.lightPosition - fPosition);
-		float attenuationFactor = 1.0 / (light.attenuationConst + light.attenuationLinear * distanceToLight + light.attenuationQuadratic * distanceToLight * distanceToLight);
+		float attenuationFactor = 1.0f / (light.attenuationConst + light.attenuationLinear * distanceToLight + light.attenuationQuadratic * distanceToLight * distanceToLight);
 
 		/* aggregate output */
-		vec3 outputColor = (ambientCoefficient * fAmbientColor + diffuseCoefficient * fDiffuseColor * attenuationFactor + specularCoefficient * fSpecularColor) * light.lightColor;
-		return vec4 (outputColor, 1.0);
+		return vec4 (CalculateOutputColor (ambientCoefficient, diffuseCoefficient, attenuationFactor, specularCoefficient, light.lightColor), 1.0);
+	}
+
+	/* calculate contribution of one directional light */
+	vec4 CalculateDirectionalLight (DirectionalLightStruct light)
+	{
+		/* ambient component */
+		float ambientCoefficient = light.ambiencePower;
+
+		/* diffuse component */
+		vec3 lightDirection = normalize (light.lightDirection);
+		float n_dot_l = dot (fNormal_N, lightDirection);		
+		float diffuseCoefficient = CalculateDiffuse (n_dot_l);
+
+		/* specular component */
+		float specularCoefficient = CalculateSpecular (lightDirection, n_dot_l, light.specularPower);
+
+		/* attenuation */
+		float attenuationFactor = 1.0f;
+
+		/* aggregate output */
+		return vec4 (CalculateOutputColor (ambientCoefficient, diffuseCoefficient, attenuationFactor, specularCoefficient, light.lightColor), 1.0);
 	}
 
 	void main()
 	{
 		color = vec4 (fEmissiveColor, 1.0);
+		
+		/* normalize normal again to fix interpolated normals */
+		fNormal_N = normalize (fNormal);
 
 		for (int i=0; i < pointLightCount; i++)
 		{
 			color += CalculatePointLight (pointLights[i]);
-		} 
+		}
+
+		for (int i=0; i < directionalLightCount; i++)
+		{
+			color += CalculateDirectionalLight (directionalLights[i]);
+		}
 	} 
 	
 )V0G0N";

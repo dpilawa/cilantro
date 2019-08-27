@@ -51,7 +51,7 @@ int main (int argc, char* argv[])
 	green.SetSpecularColor (Vector3f (1.0f, 1.0f, 1.0f)).SetSpecularShininess (128.0f);
 
 	Material& red = scene.AddMaterial (new Material ());
-    red.SetShaderModelName ("blinnphong_shader");
+    red.SetShaderModelName ("phong_shader");
     red.SetColor (Vector3f (0.75f, 0.1f, 0.1f));
     red.SetSpecularColor (Vector3f (1.0f, 0.0f, 0.0f)).SetSpecularShininess (8.0f);
 
