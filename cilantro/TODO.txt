@@ -1,5 +1,4 @@
 * internally use quaternions in Transform class
-* directional lights
 * spot lights
 * Texture class + loader
 * extent Material class with textures
