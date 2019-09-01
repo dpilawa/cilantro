@@ -6,6 +6,7 @@
 #include "MeshObject.h"
 #include "PointLight.h"
 #include "DirectionalLight.h"
+#include "SpotLight.h"
 #include "RenderTarget.h"
 #include <string>
 
@@ -31,6 +32,7 @@ public:
 	virtual void Update (MeshObject& meshObject) = 0;
 	virtual void Update (PointLight& pointLight) = 0;
 	virtual void Update (DirectionalLight& pointLight) = 0;
+	virtual void Update (SpotLight& pointLight) = 0;
 
 protected:
 

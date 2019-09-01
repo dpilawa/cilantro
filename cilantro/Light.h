@@ -29,7 +29,7 @@ public:
 	__EAPI float GetSpecularPower () const;
 
 	// invoked by game loop on update	
-    virtual void OnUpdate (Renderer& renderer);
+    void OnUpdate (Renderer& renderer);
 
 protected:
 

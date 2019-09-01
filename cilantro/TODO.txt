@@ -1,5 +1,5 @@
-* internally use quaternions in Transform class
-* spot lights
-* Texture class + loader
-* extent Material class with textures
-* shadows
+* quaternions in Transform class
+* animation
+* textures (class, loader, material extension)
+* shadow maps
+* fix render target

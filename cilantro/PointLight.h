@@ -9,7 +9,7 @@ class PointLight : public Light
 {
 public:
 	__EAPI PointLight ();
-	__EAPI ~PointLight ();
+	__EAPI virtual ~PointLight ();
 
 	// set attenuation factors
 	__EAPI PointLight& SetConstantAttenuationFactor (const float attenuation);

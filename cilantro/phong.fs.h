@@ -8,7 +8,8 @@ std::string gPhongFragmentShader = R"V0G0N(
 	#version 140
 
 	#define MAX_POINT_LIGHTS 64
-	#define MAX_DIRECTIONAL_LIGHTS 16
+	#define MAX_DIRECTIONAL_LIGHTS 64
+	#define MAX_SPOT_LIGHTS 64
 
 	/* fragment position in world space */
 	in vec3 fPosition;
@@ -48,6 +49,20 @@ std::string gPhongFragmentShader = R"V0G0N(
 		float specularPower;
 	};
 
+	struct SpotLightStruct
+	{
+		vec3 lightPosition;	/* world space */		
+		vec3 lightDirection;
+		vec3 lightColor;
+		float ambiencePower;
+		float specularPower;
+		float attenuationConst;
+		float attenuationLinear;
+		float attenuationQuadratic;		
+		float innerCutoffCosine;
+		float outerCutoffCosine;
+	};
+
 	layout(std140) uniform UniformPointLightsBlock
 	{
 		int pointLightCount;
@@ -60,6 +75,12 @@ std::string gPhongFragmentShader = R"V0G0N(
 		DirectionalLightStruct directionalLights[MAX_DIRECTIONAL_LIGHTS];
 	};
 
+	layout(std140) uniform UniformSpotLightsBlock
+	{
+		int spotLightCount;
+		SpotLightStruct spotLights[MAX_SPOT_LIGHTS];
+	};
+
 	/* output color */
 	out vec4 color;
 
@@ -68,7 +89,7 @@ std::string gPhongFragmentShader = R"V0G0N(
 	{
 		return clamp (n_dot_l, 0.0, 1.0);
 	}
-
+	
 	float CalculateSpecular (vec3 lightDirection, float n_dot_l, float lightSpecularPower)
 	{
 		vec3 viewDirection = normalize (eyePosition - fPosition);
@@ -84,11 +105,12 @@ std::string gPhongFragmentShader = R"V0G0N(
 	/* calculate contribution of one point light */
 	vec4 CalculatePointLight (PointLightStruct light)
 	{
+		vec3 lightDirection = normalize (light.lightPosition - fPosition);
+
 		/* ambient component */
 		float ambientCoefficient = light.ambiencePower;
 
 		/* diffuse component */
-		vec3 lightDirection = normalize (light.lightPosition - fPosition);
 		float n_dot_l = dot (fNormal_N, lightDirection);
 		float diffuseCoefficient = CalculateDiffuse (n_dot_l);
 		
@@ -106,11 +128,12 @@ std::string gPhongFragmentShader = R"V0G0N(
 	/* calculate contribution of one directional light */
 	vec4 CalculateDirectionalLight (DirectionalLightStruct light)
 	{
+		vec3 lightDirection = normalize (-light.lightDirection);
+
 		/* ambient component */
 		float ambientCoefficient = light.ambiencePower;
 
 		/* diffuse component */
-		vec3 lightDirection = normalize (light.lightDirection);
 		float n_dot_l = dot (fNormal_N, lightDirection);		
 		float diffuseCoefficient = CalculateDiffuse (n_dot_l);
 
@@ -122,6 +145,34 @@ std::string gPhongFragmentShader = R"V0G0N(
 
 		/* aggregate output */
 		return vec4 (CalculateOutputColor (ambientCoefficient, diffuseCoefficient, attenuationFactor, specularCoefficient, light.lightColor), 1.0);
+	}
+
+	/* calculate contribution of one spot light */
+	vec4 CalculateSpotLight (SpotLightStruct light)
+	{
+		vec3 lightDirection = normalize (light.lightPosition - fPosition);
+
+		/* ambient component */
+		float ambientCoefficient = light.ambiencePower;
+
+		/* check if in cone */
+		float theta = dot(lightDirection, normalize(-light.lightDirection));
+		float epsilon = light.innerCutoffCosine - light.outerCutoffCosine;
+		float intensity = clamp ((theta - light.outerCutoffCosine) / epsilon, 0.0, 1.0); 		
+
+		/* diffuse component */
+		float n_dot_l = dot (fNormal_N, lightDirection);
+		float diffuseCoefficient = CalculateDiffuse (n_dot_l);
+		
+		/* specular component */
+		float specularCoefficient = CalculateSpecular (lightDirection, n_dot_l, light.specularPower);
+		
+		/* attenuation */
+		float distanceToLight = length (light.lightPosition - fPosition);
+		float attenuationFactor = 1.0f / (light.attenuationConst + light.attenuationLinear * distanceToLight + light.attenuationQuadratic * distanceToLight * distanceToLight);
+			
+		/* aggregate output */
+		return vec4 (CalculateOutputColor (ambientCoefficient, diffuseCoefficient, attenuationFactor, specularCoefficient, light.lightColor) * intensity, 1.0);
 	}
 
 	void main()
@@ -140,6 +191,11 @@ std::string gPhongFragmentShader = R"V0G0N(
 		{
 			color += CalculateDirectionalLight (directionalLights[i]);
 		}
+
+		for (int i=0; i < spotLightCount; i++)
+		{
+			color += CalculateSpotLight (spotLights[i]);
+		}		
 	} 
 	
 )V0G0N";

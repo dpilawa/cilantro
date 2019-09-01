@@ -11,11 +11,12 @@
 #include <cstring>
 
 #define MAX_POINT_LIGHTS 64
-#define MAX_DIRECTIONAL_LIGHTS 16
+#define MAX_DIRECTIONAL_LIGHTS 64
+#define MAX_SPOT_LIGHTS 64
 
 enum VBOType { VBO_VERTICES = 0, VBO_NORMALS, VBO_UVS };
-enum UBOType { UBO_MATRICES = 0, UBO_POINTLIGHTS, UBO_DIRECTIONALLIGHTS };
-enum BindingPoint { BP_MATRICES = 1, BP_POINTLIGHTS, BP_DIRECTIONALLIGHTS };
+enum UBOType { UBO_MATRICES = 0, UBO_POINTLIGHTS, UBO_DIRECTIONALLIGHTS, UBO_SPOTLIGHTS };
+enum BindingPoint { BP_MATRICES = 1, BP_POINTLIGHTS, BP_DIRECTIONALLIGHTS, BP_SPOTLIGHTS };
 
 struct ObjectBuffers
 {
@@ -31,8 +32,8 @@ public:
 struct SceneBuffers
 {
 public:
-	// Uniform Buffer Objects (view & projection matrices, point lights, directional lights)
-	GLuint UBO[3];
+	// Uniform Buffer Objects (view & projection matrices, point lights, directional lights, spot lights)
+	GLuint UBO[4];
 };
 
 struct UniformMatrixBuffer
@@ -67,6 +68,23 @@ public:
 	GLfloat specularPower;
 };
 
+struct SpotLightStruct
+{
+public:
+	GLfloat lightPosition[3];
+	GLfloat pad1;
+	GLfloat lightDirection[3];
+	GLfloat pad2;
+	GLfloat lightColor[3];
+	GLfloat ambiencePower;
+	GLfloat specularPower;
+	GLfloat attenuationConst;
+	GLfloat attenuationLinear;
+    GLfloat attenuationQuadratic;
+    GLfloat innerCutoffCosine;
+	GLfloat outerCutoffCosine;
+};
+
 struct UniformPointLightBuffer
 {
 public:
@@ -87,6 +105,17 @@ public:
 	GLint pad[3];
 	// array of active point lights
     DirectionalLightStruct directionalLights[MAX_DIRECTIONAL_LIGHTS];
+};
+
+struct UniformSpotLightBuffer
+{
+public:
+	// number of active spot lights
+	GLint spotLightCount;
+	// pad to std140 specification
+	GLint pad[3];
+	// array of active point lights
+    SpotLightStruct spotLights[MAX_SPOT_LIGHTS];
 };
 
 class GLRenderer : public Renderer
@@ -112,6 +141,7 @@ public:
 	__EAPI void Update (MeshObject& meshObject);
 	__EAPI void Update (PointLight& pointLight);
 	__EAPI void Update (DirectionalLight& directionalLight);	
+	__EAPI void Update (SpotLight& spotLight);
 
 private:
 
@@ -133,11 +163,15 @@ private:
 	UniformMatrixBuffer uniformMatrixBuffer;
 	UniformPointLightBuffer uniformPointLightBuffer;
     UniformDirectionalLightBuffer uniformDirectionalLightBuffer;
+	UniformSpotLightBuffer uniformSpotLightBuffer;
 
-    // maps gameobject handle to index in uniformPointLightBuffer
+    // maps gameobject handle to index in 
+	// uniformPointLightBuffer
+	// uniformDirectionalLightBuffer
+	// uniformSpotLightBuffer
 	std::unordered_map<unsigned int, unsigned int> pointLights;
-	// maps gameobject handle to index in uniformDirectionalLightBuffer
 	std::unordered_map<unsigned int, unsigned int> directionalLights;
+	std::unordered_map<unsigned int, unsigned int> spotLights;
 
 	// check for GL errors
 	void CheckGLError (std::string functionName);

@@ -8,6 +8,8 @@
 #include "MeshObject.h"
 #include "Light.h"
 #include "PointLight.h"
+#include "DirectionalLight.h"
+#include "SpotLight.h"
 #include "Camera.h"
 #include "RenderTarget.h"
 #include "CallbackProvider.h"
@@ -15,6 +17,7 @@
 #include "LogMessage.h"
 #include "Timer.h"
 #include <unordered_map>
+#include <cmath>
 
 #include "default.vs.h"
 #include "phong.fs.h"
@@ -373,7 +376,7 @@ void GLRenderer::Update (DirectionalLight& directionalLight)
 	}
 
 	// copy direction
-	Vector3f lightDirection = directionalLight.GetDirection ();
+	Vector3f lightDirection = directionalLight.GetForward ();
 	uniformDirectionalLightBuffer.directionalLights[lightId].lightDirection[0] = lightDirection[0];
 	uniformDirectionalLightBuffer.directionalLights[lightId].lightDirection[1] = lightDirection[1];
 	uniformDirectionalLightBuffer.directionalLights[lightId].lightDirection[2] = lightDirection[2];
@@ -396,6 +399,70 @@ void GLRenderer::Update (DirectionalLight& directionalLight)
 	// load uniform buffer for a light at given index
 	uniformBufferOffset = sizeof (uniformDirectionalLightBuffer.directionalLightCount) + 3 * sizeof (GLint) + lightId * sizeof (DirectionalLightStruct);
 	glBufferSubData (GL_UNIFORM_BUFFER, uniformBufferOffset, sizeof (DirectionalLightStruct), &uniformDirectionalLightBuffer.directionalLights[lightId]);
+
+	glBindBuffer (GL_UNIFORM_BUFFER, 0);
+}
+
+void GLRenderer::Update (SpotLight& spotLight)
+{
+    unsigned int objectHandle = spotLight.GetHandle ();
+    unsigned int lightId;
+    unsigned int uniformBufferOffset;
+
+    // check if light is already in collection
+	auto find = spotLights.find (objectHandle);
+
+    if (find == spotLights.end ())
+	{
+		LogMessage (__func__) << "New SpotLight" << objectHandle;
+		lightId = uniformSpotLightBuffer.spotLightCount++;
+		spotLights.insert ({ objectHandle, lightId });
+	}
+	else
+	{
+		// existing light modified
+		lightId = spotLights[objectHandle];
+	}
+
+	// copy position
+	Vector4f lightPosition = spotLight.GetPosition ();
+	uniformSpotLightBuffer.spotLights[lightId].lightPosition[0] = lightPosition[0];
+	uniformSpotLightBuffer.spotLights[lightId].lightPosition[1] = lightPosition[1];
+	uniformSpotLightBuffer.spotLights[lightId].lightPosition[2] = lightPosition[2];
+
+	// copy direction
+	Vector3f lightDirection = spotLight.GetForward ();
+	uniformSpotLightBuffer.spotLights[lightId].lightDirection[0] = lightDirection[0];
+	uniformSpotLightBuffer.spotLights[lightId].lightDirection[1] = lightDirection[1];
+	uniformSpotLightBuffer.spotLights[lightId].lightDirection[2] = lightDirection[2];
+
+	// copy ambience and specular powers
+	uniformSpotLightBuffer.spotLights[lightId].ambiencePower = spotLight.GetAmbiencePower ();
+	uniformSpotLightBuffer.spotLights[lightId].specularPower = spotLight.GetSpecularPower ();
+	
+	// copy attenuation factors
+	uniformSpotLightBuffer.spotLights[lightId].attenuationConst = spotLight.GetConstantAttenuationFactor ();
+	uniformSpotLightBuffer.spotLights[lightId].attenuationLinear = spotLight.GetLinearAttenuationFactor ();
+	uniformSpotLightBuffer.spotLights[lightId].attenuationQuadratic = spotLight.GetQuadraticAttenuationFactor ();
+
+	// copy cutoff angles
+	uniformSpotLightBuffer.spotLights[lightId].innerCutoffCosine = std::cos (Mathf::Deg2Rad (spotLight.GetInnerCutoff ()));
+	uniformSpotLightBuffer.spotLights[lightId].outerCutoffCosine = std::cos (Mathf::Deg2Rad (spotLight.GetOuterCutoff ()));
+
+	// copy color
+	uniformSpotLightBuffer.spotLights[lightId].lightColor[0] = spotLight.GetColor ()[0];
+	uniformSpotLightBuffer.spotLights[lightId].lightColor[1] = spotLight.GetColor ()[1];
+	uniformSpotLightBuffer.spotLights[lightId].lightColor[2] = spotLight.GetColor ()[2];
+
+	// copy to GPU memory
+	glBindBuffer (GL_UNIFORM_BUFFER, sceneBuffers.UBO[UBO_SPOTLIGHTS]);
+
+	// load light counts
+	glBufferSubData (GL_UNIFORM_BUFFER, 0, sizeof (uniformSpotLightBuffer.spotLightCount), &uniformSpotLightBuffer.spotLightCount);
+
+	// load uniform buffer for a light at given index
+	uniformBufferOffset = sizeof (uniformSpotLightBuffer.spotLightCount) + 3 * sizeof (GLint) + lightId * sizeof (SpotLightStruct);
+	glBufferSubData (GL_UNIFORM_BUFFER, uniformBufferOffset, sizeof (SpotLightStruct), &uniformSpotLightBuffer.spotLights[lightId]);
 
 	glBindBuffer (GL_UNIFORM_BUFFER, 0);
 }
@@ -475,10 +542,12 @@ void GLRenderer::InitializeLightUniformBuffers ()
 	GLuint shaderProgramId;
 	GLuint uniformPointLightsBlockIndex;
 	GLuint uniformDirectionalLightsBlockIndex;
+	GLuint uniformSpotLightsBlockIndex;
 
 	// initialize structs
 	uniformPointLightBuffer.pointLightCount = 0;
     uniformDirectionalLightBuffer.directionalLightCount = 0;
+	uniformSpotLightBuffer.spotLightCount = 0;
 
     // create uniform buffer for point lights
 	glGenBuffers (1, &sceneBuffers.UBO[UBO_POINTLIGHTS]);
@@ -491,6 +560,12 @@ void GLRenderer::InitializeLightUniformBuffers ()
 	glBindBuffer (GL_UNIFORM_BUFFER, sceneBuffers.UBO[UBO_DIRECTIONALLIGHTS]);
 	glBufferData (GL_UNIFORM_BUFFER, sizeof (UniformDirectionalLightBuffer), &uniformDirectionalLightBuffer, GL_STATIC_DRAW);
 	glBindBufferBase (GL_UNIFORM_BUFFER, BindingPoint::BP_DIRECTIONALLIGHTS, sceneBuffers.UBO[UBO_DIRECTIONALLIGHTS]);
+
+    // create uniform buffer for spot lights
+	glGenBuffers (1, &sceneBuffers.UBO[UBO_SPOTLIGHTS]);
+	glBindBuffer (GL_UNIFORM_BUFFER, sceneBuffers.UBO[UBO_SPOTLIGHTS]);
+	glBufferData (GL_UNIFORM_BUFFER, sizeof (UniformSpotLightBuffer), &uniformSpotLightBuffer, GL_STATIC_DRAW);
+	glBindBufferBase (GL_UNIFORM_BUFFER, BindingPoint::BP_SPOTLIGHTS, sceneBuffers.UBO[UBO_SPOTLIGHTS]);
 
 	// set uniform block bindings in shaders which have it
 	for (auto&& shaderModel : shaderModels)
@@ -513,6 +588,15 @@ void GLRenderer::InitializeLightUniformBuffers ()
 		}
 		else {
 			glUniformBlockBinding(shaderProgramId, uniformDirectionalLightsBlockIndex, BindingPoint::BP_DIRECTIONALLIGHTS);
+		}
+
+		uniformSpotLightsBlockIndex = glGetUniformBlockIndex (shaderProgramId, "UniformSpotLightsBlock");
+		if (uniformSpotLightsBlockIndex == GL_INVALID_INDEX)
+		{
+			LogMessage (__func__) << "Program id" << shaderModel.second.GetProgramId() << "has no UniformSpotLightsBlock";
+		}
+		else {
+			glUniformBlockBinding(shaderProgramId, uniformSpotLightsBlockIndex, BindingPoint::BP_SPOTLIGHTS);
 		}
 
 	}

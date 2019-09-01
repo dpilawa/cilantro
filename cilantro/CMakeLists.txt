@@ -75,6 +75,8 @@ Renderer.cpp
 Renderer.h
 RenderTarget.cpp
 RenderTarget.h
+SpotLight.cpp
+SpotLight.h
 Timer.cpp
 Timer.h
 Transform.cpp

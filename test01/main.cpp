@@ -7,6 +7,7 @@
 #include "MeshObject.h"
 #include "PointLight.h"
 #include "DirectionalLight.h"
+#include "SpotLight.h"
 #include "GLRenderer.h"
 #include "GLFWRenderTarget.h"
 #include "GLFWInputController.h"
@@ -48,7 +49,7 @@ int main (int argc, char* argv[])
 	green.SetShaderModelName ("blinnphong_shader");
 	green.SetColor (Vector3f (0.1f, 0.4f, 0.1f));
 	green.SetAmbientColor (Vector3f (0.5f, 0.5f, 0.5f));
-	green.SetSpecularColor (Vector3f (1.0f, 1.0f, 1.0f)).SetSpecularShininess (128.0f);
+	green.SetSpecularColor (Vector3f (1.0f, 1.0f, 1.0f)).SetSpecularShininess (32.0f);
 
 	Material& red = scene.AddMaterial (new Material ());
     red.SetShaderModelName ("phong_shader");
@@ -92,13 +93,21 @@ int main (int argc, char* argv[])
 	light1.SetEnabled (true);
 
 	DirectionalLight& light2 = dynamic_cast<DirectionalLight&>(scene.AddGameObject (new DirectionalLight ()));
-	light2.SetDirection (Vector3f(1.0f, 2.0f, 1.0f));
-	light2.SetColor (Vector3f (0.5f, 0.5f, 0.5f));
+	light2.GetModelTransform ().Rotate (135.0f, -45.0f, 0.0f);
+	light2.SetColor (Vector3f (0.7f, 0.7f, 0.7f));
 	light2.SetSpecularPower (2.0f);
 	light2.SetAmbiencePower (0.0f);
-	light2.SetEnabled (true);
+	light2.SetEnabled (false);
 
-	game.Run ();
+	SpotLight& light3 = dynamic_cast<SpotLight&>(scene.AddGameObject (new SpotLight ()));
+	light3.GetModelTransform ().Translate (2.0f, 10.0f, 0.0f).Rotate (90.0f, 0.0f, 0.0f);
+	light3.SetColor (Vector3f (1.0f, 1.0f, 1.0f));
+	light3.SetSpecularPower (1.0f);
+    light3.SetInnerCutoff (5.0f);
+	light3.SetOuterCutoff (12.0f);
+    light3.SetEnabled (true);
+
+    game.Run ();
 
 	return 0;
 }
