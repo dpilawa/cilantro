@@ -35,9 +35,11 @@ public:
 	__EAPI static Quaternion Conjugate (const Quaternion& q);
 	__EAPI static Quaternion Invert (const Quaternion& q);	
 	__EAPI static Quaternion Product (const Quaternion& q, const Quaternion& r);
-	__EAPI static Vector3f Rotate (const Vector3f& v, const Vector3f& axis, float theta);
+    __EAPI static Quaternion GenRotationQuaternion (const Vector3f& axis, float theta);
+	__EAPI static Vector3f Rotate (const Vector3f &v, const Quaternion& q);
+    __EAPI static Vector3f Rotate (const Vector3f &v, const Vector3f& axis, float theta);
 
-	// matrix operations
+    // matrix operations
 	__EAPI static float Det (const Matrix3f& m);
 	__EAPI static float Det (const Matrix4f& m);
 	__EAPI static Matrix3f Transpose (const Matrix3f& m);
@@ -70,7 +72,10 @@ public:
 	__EAPI static Matrix4f GenRotationXYZMatrix (float x, float y, float z);
 	__EAPI static Matrix4f GenRotationXYZMatrix (const Vector3f& r);
 
-	// generate translation matrix along 3 axes
+	// generate rotation matrix from quaternion
+    __EAPI static Matrix4f GenRotationMatrix (const Quaternion &q);
+
+    // generate translation matrix along 3 axes
 	__EAPI static Matrix4f GenTranslationMatrix (float x, float y, float z);
 	__EAPI static Matrix4f GenTranslationMatrix (const Vector3f& t);
 

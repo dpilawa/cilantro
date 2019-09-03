@@ -56,20 +56,30 @@ Quaternion Mathf::Product (const Quaternion& q, const Quaternion& r)
 	return Quaternion (q.s * r.s - Mathf::Dot (q.v, r.v), q.s * r.v + r.s * q.v + Mathf::Cross (q.v, r.v));
 }
 
-Vector3f Mathf::Rotate (const Vector3f& v, const Vector3f& axis, float theta)
+Quaternion Mathf::GenRotationQuaternion (const Vector3f& axis, float theta)
 {
 	float rad = Mathf::Deg2Rad (theta);
-	Quaternion p (0.0f, v);
 	Vector3f axisNormalized = Mathf::Normalize (axis);
 	Quaternion q (rad, axisNormalized);
 
 	q.s *= std::cos (rad * 0.5f);
 	q.v *= std::sin (rad * 0.5f);
 
+    return q;
+}
+
+Vector3f Mathf::Rotate (const Vector3f& v, const Quaternion& q)
+{
+	Quaternion p (0.0f, v);
 	Quaternion qInv = Mathf::Invert (q);
 	Quaternion rotated = Mathf::Product (Mathf::Product (q, p), qInv);
 
 	return rotated.v;
+}
+
+Vector3f Mathf::Rotate (const Vector3f& v, const Vector3f& axis, float theta)
+{
+    return Mathf::Rotate (v, Mathf::GenRotationQuaternion (axis, theta));
 }
 
 float Mathf::Det (const Matrix3f & m)
@@ -272,6 +282,36 @@ Matrix4f Mathf::GenRotationXYZMatrix (float x, float y, float z)
 Matrix4f Mathf::GenRotationXYZMatrix (const Vector3f& r)
 {
 	return GenRotationXYZMatrix (r[0], r[1], r[2]);
+}
+
+Matrix4f Mathf::GenRotationMatrix (const Quaternion &q)
+{
+    Matrix4f m;
+    Quaternion qn = Mathf::Normalize (q);
+
+    m.InitIdentity ();
+
+    float qx = q.v[0];
+	float qy = q.v[1];
+	float qz = q.v[2];
+    float sqs = q.s * q.s;
+    float sqx = qx * qx;
+    float sqy = qy * qy;
+	float sqz = qz * qz;
+
+    m[0][0] = 1.0f - 2.0f * sqy - 2.0f * sqz;
+    m[0][1] = 2.0f * qx * qy - 2.0f * qz * q.s;
+    m[0][2] = 2.0f * qx * qz + 2.0f * qy * q.s;
+
+    m[1][0] = 2.0f * qx * qy + 2.0f * qz * q.s;
+    m[1][1] = 1.0f - 2.0f * sqx - 2.0f * sqz;
+    m[1][2] = 2.0f * qy * qz - 2.0f * qx * q.s;
+
+    m[2][0] = 2.0f * qx * qz - 2.0f * qy * q.s;
+    m[2][1] = 2.0f * qy * qz + 2.0f * qx * q.s;
+    m[2][2] = 1.0f - 2.0f * sqx - 2.0f * sqy;
+
+    return m;
 }
 
 Matrix4f Mathf::GenTranslationMatrix (float x, float y, float z)
