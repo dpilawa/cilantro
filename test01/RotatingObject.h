@@ -11,8 +11,13 @@ public:
 
 	void OnFrame ();
 private:
+	
 	// rotation speed in degrees per second
 	float rotationSpeed;
+
+	// current angle
+    float angle;
+
 };
 
 #endif

@@ -11,6 +11,8 @@
 #include "GLRenderer.h"
 #include "GLFWRenderTarget.h"
 #include "GLFWInputController.h"
+#include "Mathf.h"
+#include "LogMessage.h"
 
 #include <iostream>
 
@@ -61,13 +63,13 @@ int main (int argc, char* argv[])
 
 	PerspectiveCamera& cam = dynamic_cast<PerspectiveCamera&>(scene.AddGameObject (new PerspectiveCamera (60.0f, 0.1f, 100.0f)));
 	//OrthographicCamera& cam = dynamic_cast<OrthographicCamera&>(scene.AddGameObject (new OrthographicCamera (10.0f, 0.1f, 100.0f)));
-	cam.GetModelTransform ().Translate (5.0f, 1.5f, 5.0f).Rotate (-20.0f, -45.0f, 0.0f);
+	cam.GetModelTransform ().Translate (5.0f, 1.5f, 5.0f).Rotate (-20.0f, 45.0f, 0.0f);
 	scene.SetActiveCamera (&cam);
 
-    controller.BindInputAxis ("moveright", [&](float a) { cam.GetModelTransform ().Translate (cam.GetRight () * a * 0.1f); });
-	controller.BindInputAxis ("moveforward", [&](float a) { cam.GetModelTransform ().Translate (-cam.GetForward () * a * 0.1f); });
-	controller.BindInputAxis ("camerapitch", [&](float a) { cam.GetModelTransform ().Rotate (a * 0.25f, 0.0f, 0.0f); });
-	controller.BindInputAxis ("camerayaw", [&](float a) { cam.GetModelTransform ().Rotate (0.0f, -a * 0.25f, 0.0f); });
+    controller.BindInputAxis ("moveright", [&](float a) { cam.GetModelTransform ().TranslateBy (cam.GetRight () * a * 0.1f); });
+	controller.BindInputAxis ("moveforward", [&](float a) { cam.GetModelTransform ().TranslateBy (-cam.GetForward () * a * 0.1f); });
+	controller.BindInputAxis ("camerapitch", [&](float a) { cam.GetModelTransform ().RotateBy (a * 0.25f, 0.0f, 0.0f); });
+	controller.BindInputAxis ("camerayaw", [&](float a) { cam.GetModelTransform ().RotateBy (0.0f, a * 0.25f, 0.0f); });
 
     MeshObject& cube = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
 	cube.InitUnitCube ();
@@ -97,7 +99,7 @@ int main (int argc, char* argv[])
 	light2.SetColor (Vector3f (0.7f, 0.7f, 0.7f));
 	light2.SetSpecularPower (2.0f);
 	light2.SetAmbiencePower (0.0f);
-	light2.SetEnabled (false);
+	light2.SetEnabled (true);
 
 	SpotLight& light3 = dynamic_cast<SpotLight&>(scene.AddGameObject (new SpotLight ()));
 	light3.GetModelTransform ().Translate (2.0f, 10.0f, 0.0f).Rotate (90.0f, 0.0f, 0.0f);

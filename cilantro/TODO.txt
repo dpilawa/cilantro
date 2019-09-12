@@ -1,5 +1,5 @@
-* quaternions in Transform class
 * animation
-* textures (class, loader, material extension)
-* shadow maps
-* fix render target
+* textures (class, loader, material extensions)
+* shadows
+* model loader
+* glad for gl3w

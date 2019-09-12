@@ -58,12 +58,10 @@ Quaternion Mathf::Product (const Quaternion& q, const Quaternion& r)
 
 Quaternion Mathf::GenRotationQuaternion (const Vector3f& axis, float theta)
 {
-	float rad = Mathf::Deg2Rad (theta);
 	Vector3f axisNormalized = Mathf::Normalize (axis);
-	Quaternion q (rad, axisNormalized);
+	Quaternion q (std::cos (theta * 0.5f), axisNormalized);
 
-	q.s *= std::cos (rad * 0.5f);
-	q.v *= std::sin (rad * 0.5f);
+	q.v *= std::sin (theta * 0.5f);
 
     return q;
 }
@@ -80,6 +78,65 @@ Vector3f Mathf::Rotate (const Vector3f& v, const Quaternion& q)
 Vector3f Mathf::Rotate (const Vector3f& v, const Vector3f& axis, float theta)
 {
     return Mathf::Rotate (v, Mathf::GenRotationQuaternion (axis, theta));
+}
+
+Vector3f Mathf::QuaternionToEuler (const Quaternion& q)
+{
+    Vector3f euler;
+    float pole;
+
+    pole = q.v[0] * q.v[1] + q.v[2] * q.s;
+
+    // pitch
+    euler[0] = std::atan2(2.0f * (q.s * q.v[0] - q.v[1] * q.v[2]), 1.0f - 2.0f * (q.v[0] * q.v[0] + q.v[2] * q.v[2]));
+
+	// yaw
+    euler[1] = std::atan2 (2.0f * (q.s * q.v[1] - q.v[0] * q.v[2]), 1.0f - 2.0f * (q.v[1] * q.v[1] + q.v[2] * q.v[2]));
+
+	// roll
+    euler[2] = std::asin (2.0f * (q.v[0] * q.v[1] + q.s * q.v[2]));
+
+	if (pole > 0.499f)
+	{
+		// north pole        
+        euler[0] = Mathf::Pi () * 0.5f;
+		euler[1] = 2.0f * std::atan2 (q.v[1], q.s);
+        euler[2] = 0.0f;
+    }
+    else if (pole < -0.499f)
+	{
+		// south pole
+		euler[0] = -Mathf::Pi () * 0.5f;
+		euler[1] = -2.0f * std::atan2 (q.v[1], q.s);
+        euler[2] = 0.0f;		
+	}
+
+    return euler;
+}
+
+Quaternion Mathf::EulerToQuaterion (const Vector3f& euler)
+{
+    Quaternion q;
+
+	// pitch (X)
+    float cp = std::cos (euler[0] * 0.5f);
+    float sp = std::sin (euler[0] * 0.5f);
+
+	// yaw (Y)
+	float cy = std::cos (euler[1] * 0.5f);
+    float sy = std::sin (euler[1] * 0.5f);
+
+	// roll (Z)
+    float cr = std::cos (euler[2] * 0.5f);
+    float sr = std::sin (euler[2] * 0.5f);
+
+	// yaw, then pitch, then roll
+    q.s = cy * cp * cr + sy * sp * sr;
+    q.v[0] = cy * sp * cr + sy * cp * sr;
+    q.v[1] = sy * cp * cr - cy * sp * sr;
+    q.v[2] = cy * cp * sr - sy * sp * cr;
+
+    return q;
 }
 
 float Mathf::Det (const Matrix3f & m)
@@ -224,9 +281,31 @@ float Mathf::Deg2Rad (float degrees)
 	return degrees * Mathf::Pi() / 180.f;
 }
 
+Vector3f Mathf::Deg2Rad (const Vector3f& degrees)
+{
+    Vector3f radians;
+
+    radians[0] = Mathf::Deg2Rad (degrees[0]);
+	radians[1] = Mathf::Deg2Rad (degrees[1]);
+	radians[2] = Mathf::Deg2Rad (degrees[2]);
+
+    return radians;
+}
+
 float Mathf::Rad2Deg (float radians)
 {
 	return radians * 180.f / Mathf::Pi();
+}
+
+Vector3f Mathf::Rad2Deg (const Vector3f& radians)
+{
+    Vector3f degrees;
+
+    degrees[0] = Mathf::Rad2Deg (radians[0]);
+	degrees[1] = Mathf::Rad2Deg (radians[1]);
+	degrees[2] = Mathf::Rad2Deg (radians[2]);
+
+    return degrees;
 }
 
 Vector3f Mathf::Spherical2Cartesian (float theta, float phi, float r)

@@ -38,6 +38,8 @@ public:
     __EAPI static Quaternion GenRotationQuaternion (const Vector3f& axis, float theta);
 	__EAPI static Vector3f Rotate (const Vector3f &v, const Quaternion& q);
     __EAPI static Vector3f Rotate (const Vector3f &v, const Vector3f& axis, float theta);
+    __EAPI static Vector3f QuaternionToEuler (const Quaternion& q);
+    __EAPI static Quaternion EulerToQuaterion (const Vector3f& euler);
 
     // matrix operations
 	__EAPI static float Det (const Matrix3f& m);
@@ -49,8 +51,10 @@ public:
 
 	// convert degrees to radians
 	__EAPI static float Deg2Rad (float degrees);
-	// convert radians to degrees
-	__EAPI static float Rad2Deg (float radians);
+    __EAPI static Vector3f Deg2Rad (const Vector3f &degrees);
+    // convert radians to degrees
+    __EAPI static float Rad2Deg (float radians);
+	__EAPI static Vector3f Rad2Deg (const Vector3f &radians);
 
 	// convert spherical to cartesian coordinates (theta and pi in radians)
 	__EAPI static Vector3f Spherical2Cartesian (float theta, float phi, float r);

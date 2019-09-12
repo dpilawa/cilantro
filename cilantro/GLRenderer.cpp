@@ -24,6 +24,8 @@
 #include "blinnphong.fs.h"
 #include "normals.fs.h"
 
+#include "imgui.h"
+
 GLRenderer::GLRenderer (GameScene& scene, RenderTarget& target) : Renderer (scene, target)
 {
 }
@@ -103,7 +105,16 @@ void GLRenderer::RenderFrame ()
 	Timer::Tock ();
 
 	// invoke rendering target's post-frame function
-	renderTarget->AfterFrame ();
+    
+	Vector3f cameraPos = renderedScene->GetActiveCamera ()->GetModelTransform ().GetTranslation ();
+	Vector3f cameraAngles = renderedScene->GetActiveCamera ()->GetModelTransform ().GetRotation ();
+
+    ImGui::Text ("Camera");
+    ImGui::InputFloat3 ("Position", &cameraPos[0], 3);
+	ImGui::InputFloat3 ("Angles", &cameraAngles[0], 3);
+    ImGui::Spacing ();
+	
+    renderTarget->AfterFrame ();
 }
 
 void GLRenderer::Deinitialize ()

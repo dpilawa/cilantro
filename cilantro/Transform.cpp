@@ -6,10 +6,7 @@
 #include "Mathf.h"
 #include <string>
 
-Transform::Transform () : 
-translateX (0.0f), translateY (0.0f), translateZ (0.0f),
-scaleX (1.0f), scaleY (1.0f), scaleZ (1.0f),
-rotateX (0.0f), rotateY (0.0f), rotateZ (0.0f)
+Transform::Transform ()
 {
 	isValid = true;
 
@@ -51,105 +48,161 @@ Matrix4f& Transform::GetRotationMatrix ()
 	return rotationMatrix;
 }
 
-Transform& Transform::SetTranslation (float x, float y, float z)
-{
-	isValid = false;
-
-	translateX = x;
-	translateY = y;
-	translateZ = z;
-
-	translationMatrix = Mathf::GenTranslationMatrix (translateX, translateY, translateZ);
-
-	InvokeCallbacks ("OnUpdateTransform", 0u);
-
-	return *this;
-}
-
-Transform& Transform::SetTranslation (const Vector3f & t)
-{
-	return SetTranslation (t[0], t[1], t[2]);
-}
-
 Transform& Transform::Translate (float x, float y, float z)
 {
-	return SetTranslation (translateX + x, translateY + y, translateZ + z);
+    return Translate (Vector3f (x, y, z));
 }
 
 Transform& Transform::Translate (const Vector3f & t)
 {
-	return SetTranslation (translateX + t[0], translateY + t[1], translateZ + t[2]);
-}
-
-Transform& Transform::SetScaling (float x, float y, float z) 
-{
 	isValid = false;
 
-	scaleX = x;
-	scaleY = y;
-	scaleZ = z;
-
-	scalingMatrix = Mathf::GenScalingMatrix (scaleX, scaleY, scaleZ);
+    translate = t;
+    translationMatrix = Mathf::GenTranslationMatrix (translate);
 
 	InvokeCallbacks ("OnUpdateTransform", 0u);
 
 	return *this;
 }
 
-Transform& Transform::SetScaling (const Vector3f & s)
+Vector3f Transform::GetTranslation () const
 {
-	return SetScaling (s[0], s[1], s[2]);
+    Vector3f t;
+
+    t[0] = translationMatrix[0][3];
+    t[1] = translationMatrix[1][3];
+    t[2] = translationMatrix[2][3];
+
+    return t;
+}
+
+Transform& Transform::TranslateBy (float x, float y, float z)
+{
+    return TranslateBy (Vector3f (x, y, z));
+}
+
+Transform& Transform::TranslateBy (const Vector3f& t) 
+{
+    return Translate (GetTranslation () + t);
 }
 
 Transform& Transform::Scale (float x, float y, float z) 
 {
-	return SetScaling (scaleX * x, scaleY * y, scaleZ * z);
+    return Scale (Vector3f (x, y, z));
 }
 
-Transform& Transform::Scale (const Vector3f & s)
-{
-	return SetScaling (scaleX * s[0], scaleY * s[1], scaleZ * s[2]);
-}
-
-Transform& Transform::SetScaling (float s)
-{
-	return SetScaling (s, s, s);
-}
-
-Transform& Transform::Scale (float s)
-{
-	return Scale (s, s, s);
-}
-
-Transform& Transform::SetRotation (float x, float y, float z)
+Transform& Transform::Scale (const Vector3f& s)
 {
 	isValid = false;
 
-	rotateX = x;
-	rotateY = y;
-	rotateZ = z;
-
-	rotationMatrix = Mathf::GenRotationXYZMatrix (Mathf::Deg2Rad (rotateX), Mathf::Deg2Rad (rotateY), Mathf::Deg2Rad (rotateZ));
+    scale = s;
+	scalingMatrix = Mathf::GenScalingMatrix (scale);
 
 	InvokeCallbacks ("OnUpdateTransform", 0u);
 
 	return *this;
 }
 
-Transform& Transform::SetRotation (const Vector3f & r)
+Vector3f Transform::GetScale () const
 {
-	return SetRotation (r[0], r[1], r[2]);
+    Vector3f s;
+
+    s[0] = scalingMatrix[0][0];
+    s[1] = scalingMatrix[1][1];
+    s[2] = scalingMatrix[2][2];
+
+    return s;
+}
+
+Transform& Transform::ScaleBy (float x, float y, float z)
+{
+    return ScaleBy (Vector3f (x, y, z));
+}
+
+Transform& Transform::ScaleBy (const Vector3f& s) 
+{
+    Vector3f sNew;
+
+    sNew = GetScale ();
+
+    sNew[0] = sNew[0] * s[0];
+	sNew[0] = sNew[0] * s[0];
+	sNew[0] = sNew[0] * s[0];
+
+    return Scale (sNew);
+}
+
+Transform& Transform::Scale (float s)
+{
+	return Scale (Vector3f (s, s, s));
+}
+
+Transform& Transform::ScaleBy (float s)
+{
+    return Scale (GetScale () * s);
 }
 
 Transform& Transform::Rotate (float x, float y, float z)
 {
-	return SetRotation (rotateX + x, rotateY + y, rotateZ + z);
+	return Rotate (Vector3f (x, y, z));
 }
 
-Transform& Transform::Rotate (const Vector3f & r)
+Transform& Transform::Rotate (const Vector3f& euler)
 {
-	return SetRotation (rotateX + r[0], rotateY + r[1], rotateZ + r[2]);
+	isValid = false;
+
+    rotate = Mathf::EulerToQuaterion (Mathf::Deg2Rad (euler));
+    rotationMatrix = Mathf::GenRotationMatrix (rotate);
+
+    InvokeCallbacks ("OnUpdateTransform", 0u);
+
+	return *this;
 }
 
+Transform& Transform::Rotate (const Quaternion& q)
+{
+    isValid = false;
 
+    rotate = q;
+	rotationMatrix = Mathf::GenRotationMatrix (rotate);
 
+	InvokeCallbacks ("OnUpdateTransform", 0u);
+
+    return *this;
+}
+
+Transform& Transform::Rotate (const Vector3f& axis, float theta)
+{
+    isValid = false;
+
+    rotate = Mathf::GenRotationQuaternion (axis, Mathf::Deg2Rad (theta));
+	rotationMatrix = Mathf::GenRotationMatrix (rotate);
+
+	InvokeCallbacks ("OnUpdateTransform", 0u);
+
+    return *this;
+}
+
+Vector3f Transform::GetRotation () const
+{
+    return (Mathf::Rad2Deg (Mathf::QuaternionToEuler (rotate)));
+}
+
+Transform& Transform::RotateBy (float x, float y, float z)
+{
+    return RotateBy (Vector3f (x, y, z));
+}
+
+Transform& Transform::RotateBy (const Vector3f& r) 
+{
+    return Rotate (GetRotation () + r);
+}
+
+Transform& Transform::RotateBy (const Quaternion& q)
+{
+    Quaternion newRotation;
+
+    newRotation = Mathf::Product (q, rotate);
+
+    return Rotate (newRotation);
+}

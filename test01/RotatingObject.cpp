@@ -1,12 +1,13 @@
 #include "cilantroengine.h"
 #include "RotatingObject.h"
 #include "Timer.h"
+#include <cmath>
 
 RotatingObject::RotatingObject ()
 {
 	rotationSpeed = 90.0f;
+    angle = 0.0f;
 }
-
 
 RotatingObject::~RotatingObject ()
 {
@@ -14,5 +15,7 @@ RotatingObject::~RotatingObject ()
 
 void RotatingObject::OnFrame ()
 {
-	GetModelTransform ().Rotate (0.0f, rotationSpeed * Timer::GetFrameDeltaTime (), 0.0f);
+    angle = std::fmod (angle + rotationSpeed * Timer::GetFrameDeltaTime (), 360.0f);
+
+    GetModelTransform ().Rotate (0.0f, angle, 0.0f);
 }

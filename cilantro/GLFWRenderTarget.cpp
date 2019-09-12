@@ -145,8 +145,8 @@ void GLFWRenderTarget::AfterFrame ()
 
 
 	ImGui::Text ("FPS: %.1f", splitFrameCount / timeSinceLastSplit);
-	ImGui::Text ("Frame time: %.1f ms", frameRenderTimeInLastSplit / splitFrameCount * 1000.0f);
-
+	ImGui::Text ("Frame: %.1f ms", frameRenderTimeInLastSplit / splitFrameCount * 1000.0f);
+	
 	// render imgui
 	ImGui::Render ();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
