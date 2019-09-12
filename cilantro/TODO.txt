@@ -2,4 +2,3 @@
 * textures (class, loader, material extensions)
 * shadows
 * model loader
-* glad for gl3w
