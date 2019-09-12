@@ -2,7 +2,7 @@
 #define _GLFRAMEBUFFERRENDERTARGET_H_
 
 #include "cilantroengine.h"
-#include "GL/gl3w.h"
+#include "glad/glad.h"
 #include "RenderTarget.h"
 
 class GLFramebufferRenderTarget : public RenderTarget

@@ -1,5 +1,5 @@
 #include "cilantroengine.h"
-#include "GL/gl3w.h"
+#include "glad/glad.h"
 #include "imgui.h"
 #include "examples/imgui_impl_glfw.h"
 #include "examples/imgui_impl_opengl3.h"
@@ -54,12 +54,12 @@ void GLFWRenderTarget::Initialize ()
 	glfwMakeContextCurrent (window);
 
 	// initialize GLEW
-	if (gl3wInit ())
-	{
-		LogMessage (__func__, EXIT_FAILURE) << "GLEW initialization failed";
-	}
+    if (!gladLoadGLLoader ((GLADloadproc)glfwGetProcAddress))
+    {
+        LogMessage (__func__, EXIT_FAILURE) << "GL context initialization failed";
+    }
 
-	// display GL version information
+    // display GL version information
 	LogMessage (__func__) << "Version:" << (char*) glGetString (GL_VERSION);
     LogMessage (__func__) << "Shader language version:" << (char*) glGetString (GL_SHADING_LANGUAGE_VERSION);
 	LogMessage (__func__) << "Renderer:" << (char*) glGetString (GL_RENDERER);

@@ -2,7 +2,7 @@
 #define _GLRENDERER_H_
 
 #include "cilantroengine.h"
-#include "GL/gl3w.h"
+#include "glad/glad.h"
 #include "GLShader.h"
 #include "GLShaderModel.h"
 #include "Renderer.h"
