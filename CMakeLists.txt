@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 project (cilantro)
 
-option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 add_subdirectory (ext/glfw)
 add_subdirectory (ext/glad)
