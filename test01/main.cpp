@@ -2,8 +2,7 @@
 #include "RotatingObject.h"
 #include "GameScene.h"
 #include "GameLoop.h"
-#include "PerspectiveCamera.h"
-#include "OrthographicCamera.h"
+#include "ControlledCamera.h"
 #include "MeshObject.h"
 #include "PointLight.h"
 #include "DirectionalLight.h"
@@ -20,32 +19,24 @@ int main (int argc, char* argv[])
 {
 	GameScene scene;
 	
-	GLFWRenderTarget target (800, 600);
-	target.SetDebugVisible (true);
-	target.SetVSync (true);
+	GLFWRenderTarget target;
+    target.SetResolution (800, 600);
+    target.SetDebugVisible (true);
+    target.SetVSync (true);
 	target.SetResizable (true);
 	target.SetFullscreen (false);
 
-	GLFWInputController controller (target.GetWindow ());
+	GLFWInputController controller;
+    controller.SetGLFWWindow (target.GetWindow ());
 
-	GLRenderer renderer (scene, target);
-	GameLoop game (scene, controller, renderer);
+    GLRenderer renderer;
+	GameLoop game (scene, controller, renderer, target);
 
 	controller.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
 	controller.BindInputEvent ("exit", [ & ]() { game.Stop (); });
 
 	controller.CreateInputEvent ("mousemode", InputKey::KeySpace, InputTrigger::Release, {});
 	controller.BindInputEvent ("mousemode", [ & ]() { controller.SetMouseGameMode (!controller.IsGameMode ()); });
-
-    controller.CreateInputAxis ("moveforward", InputKey::KeyW, {}, 1.0f);
-    controller.CreateInputAxis ("moveforward", InputKey::KeyS, {}, -1.0f);	
-
-	controller.CreateInputAxis ("moveright", InputKey::KeyD, {}, 1.0f);
-    controller.CreateInputAxis ("moveright", InputKey::KeyA, {}, -1.0f);
-
-    controller.CreateInputAxis ("camerapitch", InputAxis::MouseY, 1.0f);
-    controller.CreateInputAxis ("camerayaw", InputAxis::MouseX, 1.0f);
-	
 
     Material& green = scene.AddMaterial (new Material ());
 	green.SetShaderModelName ("blinnphong_shader");
@@ -61,15 +52,10 @@ int main (int argc, char* argv[])
 	Material& lampM = scene.AddMaterial (new Material ());
 	lampM.SetEmissiveColor (Vector3f (0.9f, 0.9f, 0.9f)).SetDiffuseColor (Vector3f (0.2f, 0.2f, 0.2f));
 
-	PerspectiveCamera& cam = dynamic_cast<PerspectiveCamera&>(scene.AddGameObject (new PerspectiveCamera (60.0f, 0.1f, 100.0f)));
-	//OrthographicCamera& cam = dynamic_cast<OrthographicCamera&>(scene.AddGameObject (new OrthographicCamera (10.0f, 0.1f, 100.0f)));
-	cam.GetModelTransform ().Translate (5.0f, 1.5f, 5.0f).Rotate (-20.0f, 45.0f, 0.0f);
-	scene.SetActiveCamera (&cam);
-
-    controller.BindInputAxis ("moveright", [&](float a) { cam.GetModelTransform ().TranslateBy (cam.GetRight () * a * 0.1f); });
-	controller.BindInputAxis ("moveforward", [&](float a) { cam.GetModelTransform ().TranslateBy (-cam.GetForward () * a * 0.1f); });
-	controller.BindInputAxis ("camerapitch", [&](float a) { cam.GetModelTransform ().RotateBy (a * 0.25f, 0.0f, 0.0f); });
-	controller.BindInputAxis ("camerayaw", [&](float a) { cam.GetModelTransform ().RotateBy (0.0f, a * 0.25f, 0.0f); });
+	ControlledCamera& cam = dynamic_cast<ControlledCamera&>(scene.AddGameObject (new ControlledCamera (60.0f, 0.1f, 100.0f, 0.1f)));
+    cam.Initialize ();
+    cam.GetModelTransform ().Translate (5.0f, 1.5f, 5.0f).Rotate (-20.0f, 45.0f, 0.0f);
+    scene.SetActiveCamera (&cam);
 
     MeshObject& cube = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
 	cube.InitUnitCube ();

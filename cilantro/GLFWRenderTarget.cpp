@@ -8,7 +8,7 @@
 #include "LogMessage.h"
 #include "Timer.h"
 
-GLFWRenderTarget::GLFWRenderTarget (int xRes, int yRes) : RenderTarget (xRes, yRes)
+GLFWRenderTarget::GLFWRenderTarget () : RenderTarget ()
 {
 	isFullscreen = false;
 	isResizable = false;
@@ -115,10 +115,10 @@ void GLFWRenderTarget::BeforeFrame ()
 {
 
 	// resize viewport (window size may have changed)
-	glfwGetFramebufferSize (window, &xResolution, &yResolution);
-	glViewport (0, 0, xResolution, yResolution);
+    glfwGetFramebufferSize (window, (int*)&xResolution, (int*)&yResolution);
+    glViewport (0, 0, xResolution, yResolution);
 
-	// tick imgui
+    // tick imgui
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();

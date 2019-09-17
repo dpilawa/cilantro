@@ -6,8 +6,13 @@
 #include "LogMessage.h"
 #include "Timer.h"
 
-GameLoop::GameLoop (GameScene & scene, InputController & inputController, Renderer & renderer) :
-	gameScene (scene), gameRenderer (renderer), gameInputController (inputController)
+void GameLoopChild::AttachToGame (GameLoop* parentGameLoop)
+{
+    gameLoop = parentGameLoop;
+}
+
+GameLoop::GameLoop (GameScene& scene, InputController& inputController, Renderer& renderer, RenderTarget& renderTarget) :
+	gameScene (scene), gameRenderer (renderer), gameInputController (inputController), gameRenderTarget(renderTarget)
 {
 	LogMessage (__func__) << "Engine starting";
 
@@ -23,9 +28,17 @@ GameLoop::GameLoop (GameScene & scene, InputController & inputController, Render
 		gameObject->OnStart ();
 	}
 
+	// set parent relationships
+    gameScene.AttachToGame (this);
+    gameRenderer.AttachToGame (this);
+    gameRenderTarget.AttachToGame (this);
+    gameInputController.AttachToGame (this);
+
 	// initialize renderer & controller
-	gameRenderer.Initialize ();
-	gameInputController.Initialize ();
+    gameRenderTarget.Initialize ();
+    gameRenderer.Initialize ();
+    gameInputController.Initialize ();
+
 }
 
 GameLoop::~GameLoop ()
@@ -33,8 +46,9 @@ GameLoop::~GameLoop ()
 	// deinitialize renderer & controller
 	gameInputController.Deinitialize ();
 	gameRenderer.Deinitialize ();
+    gameRenderTarget.Deinitialize ();
 
-	// deinitialize all game objects
+    // deinitialize all game objects
 	for (auto gameObject : gameScene.GetGameObjects ())
 	{
 		gameObject->OnEnd ();
@@ -81,8 +95,19 @@ GameScene& GameLoop::GetScene ()
 	return gameScene;
 }
 
+RenderTarget& GameLoop::GetRenderTarget ()
+{
+	return gameRenderTarget;
+}
+
 Renderer& GameLoop::GetRenderer ()
 {
 	return gameRenderer;
 }
+
+InputController& GameLoop::GetInputController ()
+{
+	return gameInputController;
+}
+
 

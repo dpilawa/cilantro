@@ -39,8 +39,10 @@ class GLFWInputController : public InputController
 {
 public:
 
-    __EAPI GLFWInputController (GLFWwindow** window);
+    __EAPI GLFWInputController ();
     __EAPI ~GLFWInputController ();
+
+    __EAPI void SetGLFWWindow (GLFWwindow** glfwWindow);
 
     __EAPI void Initialize ();
     __EAPI void Deinitialize ();

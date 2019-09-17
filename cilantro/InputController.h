@@ -2,6 +2,7 @@
 #define _INPUTCONTROLLER_H_
 
 #include "cilantroengine.h"
+#include "GameLoop.h"
 #include "CallbackProvider.h"
 #include "Input.h"
 #include <string>
@@ -11,7 +12,7 @@
 #include <vector>
 
 
-class InputController : public CallbackProvider <std::string, float>
+class InputController : public CallbackProvider <std::string, float>, public GameLoopChild
 {
 public:
 

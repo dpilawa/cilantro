@@ -14,15 +14,17 @@ int main (int argc, char* argv [])
 {
 	GameScene scene;
 
-	GLFWRenderTarget target (960, 600);
-	target.SetDebugVisible (true);
-	target.SetVSync (true);
+	GLFWRenderTarget target;
+    target.SetResolution (960, 600);
+    target.SetDebugVisible (true);
+    target.SetVSync (true);
 	target.SetFullscreen (false);
 
-	GLFWInputController controller (target.GetWindow ());
+	GLFWInputController controller;
+    controller.SetGLFWWindow (target.GetWindow ());
 
-	GLRenderer renderer (scene, target);
-	GameLoop game (scene, controller, renderer);
+    GLRenderer renderer;
+	GameLoop game (scene, controller, renderer, target);
 
 	controller.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
 	controller.BindInputEvent ("exit", [ & ]() { game.Stop (); });

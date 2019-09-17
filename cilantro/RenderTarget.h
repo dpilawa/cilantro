@@ -1,26 +1,30 @@
 #ifndef _RENDERTARGET_H_
 #define _RENDERTARGET_H_
 
-class RenderTarget
+#include "GameLoop.h"
+
+class RenderTarget : public GameLoopChild
 {
 public:
-	RenderTarget (int xRes, int yRes);
+	RenderTarget ();
 	virtual ~RenderTarget ();
 
-	virtual void Initialize () = 0;
+    __EAPI void SetResolution (unsigned int xRes, unsigned int yRes);
+
+    virtual void Initialize () = 0;
 	virtual void Deinitialize () = 0;
 	virtual void Bind () = 0;	
 	virtual void BeforeFrame () = 0;
 	virtual void AfterFrame () = 0;
 
-	int GetXResolution ();
-	int GetYResolution ();
+	unsigned int GetXResolution ();
+	unsigned int GetYResolution ();
 
 protected:
 
 	// rendering resolution
-	int xResolution;
-	int yResolution;
+	unsigned int xResolution;
+	unsigned int yResolution;
 
 };
 

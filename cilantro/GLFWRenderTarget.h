@@ -8,7 +8,7 @@
 class GLFWRenderTarget : public RenderTarget
 {
 public:
-	__EAPI GLFWRenderTarget (int xRes, int yRes);
+	__EAPI GLFWRenderTarget ();
 	__EAPI ~GLFWRenderTarget ();
 
 	__EAPI void Initialize ();

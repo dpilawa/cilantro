@@ -21,10 +21,10 @@ GameObject& GameScene::AddGameObject (GameObject* gameObject)
 	// set object's handle
 	gameObject->SetHandle (gameObjectsCount++);
 
-	// set object's pointer to scene
-	gameObject->SetGameScene (*this);
+	// attach to game
+    gameObject->AttachToGame (gameLoop);
 
-	// insert into collection
+    // insert into collection
 	gameObjects.push_back (gameObject);
 
 	// set callbacks on object modification

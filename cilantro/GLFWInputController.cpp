@@ -59,7 +59,7 @@ std::unordered_map<InputKey, int, InputKeyHash> GLFWInputController::glfwKeyMap 
         {InputKey::MouseRight, GLFW_MOUSE_BUTTON_RIGHT}
 };
 
-GLFWInputController::GLFWInputController(GLFWwindow** window) : window (window)
+GLFWInputController::GLFWInputController ()
 {
     axisMouseX = nullptr;
     axisMouseY = nullptr;
@@ -69,8 +69,13 @@ GLFWInputController::GLFWInputController(GLFWwindow** window) : window (window)
     isGameMode = false;
 }
 
-GLFWInputController::~GLFWInputController()
+GLFWInputController::~GLFWInputController ()
 {
+}
+
+void GLFWInputController::SetGLFWWindow (GLFWwindow** glfwWindow)
+{
+    window = glfwWindow;
 }
 
 void GLFWInputController::Initialize () 

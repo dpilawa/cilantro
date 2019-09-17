@@ -5,12 +5,12 @@
 #include "MeshObject.h"
 #include <string>
 
-Renderer::Renderer (GameScene& scene, RenderTarget& target)
+Renderer::Renderer ()
 {
-	renderedScene = &scene;
-	renderTarget = &target;
+
 }
 
 Renderer::~Renderer ()
 {
+
 }

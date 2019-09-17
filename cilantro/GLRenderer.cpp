@@ -26,7 +26,7 @@
 
 #include "imgui.h"
 
-GLRenderer::GLRenderer (GameScene& scene, RenderTarget& target) : Renderer (scene, target)
+GLRenderer::GLRenderer () : Renderer ()
 {
 }
 
@@ -36,9 +36,6 @@ GLRenderer::~GLRenderer ()
 
 void GLRenderer::Initialize ()
 {
-	// initialize render target
-	renderTarget->Initialize ();
-
 	// enable depth test
 	glEnable (GL_DEPTH_TEST);
 
@@ -64,18 +61,18 @@ void GLRenderer::Initialize ()
 	// initialize framebuffer
 
 	// set callback for new MeshObjects
-    renderedScene->RegisterCallback ("OnUpdateMeshObject", [&](unsigned int objectHandle) { renderedScene->GetGameObjects ()[objectHandle]->OnUpdate (*this); });
+    gameLoop->GetScene ().RegisterCallback ("OnUpdateMeshObject", [&](unsigned int objectHandle) { gameLoop->GetScene ().GetGameObjects ()[objectHandle]->OnUpdate (*this); });
 
     // set callback for new or modified PointLights
-	renderedScene->RegisterCallback ("OnUpdateLight", [ & ](unsigned int objectHandle) { renderedScene->GetGameObjects ()[objectHandle]->OnUpdate (*this); });
+    gameLoop->GetScene ().RegisterCallback ("OnUpdateLight", [&](unsigned int objectHandle) { gameLoop->GetScene ().GetGameObjects ()[objectHandle]->OnUpdate (*this); });
 
-	// set callback for modified scene graph (currently this only requires to reload light buffers)
-	renderedScene->RegisterCallback ("OnUpdateSceneGraph", [ & ](unsigned int objectHandle) { UpdateLightBufferRecursive (objectHandle); });
+    // set callback for modified scene graph (currently this only requires to reload light buffers)
+    gameLoop->GetScene ().RegisterCallback ("OnUpdateSceneGraph", [&](unsigned int objectHandle) { UpdateLightBufferRecursive (objectHandle); });
 
-	// set callback for modified transforms (currently this only requires to reload light buffers)
-	renderedScene->RegisterCallback ("OnUpdateTransform", [ & ](unsigned int objectHandle) { UpdateLightBufferRecursive (objectHandle); });
+    // set callback for modified transforms (currently this only requires to reload light buffers)
+    gameLoop->GetScene ().RegisterCallback ("OnUpdateTransform", [&](unsigned int objectHandle) { UpdateLightBufferRecursive (objectHandle); });
 
-	// check for any outstanding errors
+    // check for any outstanding errors
 	CheckGLError (__func__);
 
 	LogMessage (__func__) << "GLRenderer started";
@@ -84,7 +81,7 @@ void GLRenderer::Initialize ()
 void GLRenderer::RenderFrame ()
 {
 	// invoke rendering target's pre-frame function
-	renderTarget->BeforeFrame ();
+	gameLoop->GetRenderTarget().BeforeFrame ();
 
 	// clear frame and depth buffers
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -93,10 +90,10 @@ void GLRenderer::RenderFrame ()
 	LoadMatrixUniformBuffers ();
 
 	// bind render target
-	renderTarget->Bind ();
+    gameLoop->GetRenderTarget ().Bind ();
 
-	// draw all objects scene
-	for (GameObject* gameObject : renderedScene->GetGameObjects ())
+    // draw all objects scene
+	for (GameObject* gameObject : gameLoop->GetScene ().GetGameObjects ())
 	{
 		gameObject->OnDraw (*this);
 	}
@@ -105,16 +102,16 @@ void GLRenderer::RenderFrame ()
 	Timer::Tock ();
 
 	// invoke rendering target's post-frame function
-    
-	Vector3f cameraPos = renderedScene->GetActiveCamera ()->GetModelTransform ().GetTranslation ();
-	Vector3f cameraAngles = renderedScene->GetActiveCamera ()->GetModelTransform ().GetRotation ();
+
+    Vector3f cameraPos = gameLoop->GetScene ().GetActiveCamera ()->GetModelTransform ().GetTranslation ();
+    Vector3f cameraAngles = gameLoop->GetScene ().GetActiveCamera ()->GetModelTransform ().GetRotation ();
 
     ImGui::Text ("Camera");
     ImGui::InputFloat3 ("Position", &cameraPos[0], 3);
 	ImGui::InputFloat3 ("Angles", &cameraAngles[0], 3);
     ImGui::Spacing ();
-	
-    renderTarget->AfterFrame ();
+
+    gameLoop->GetRenderTarget ().AfterFrame ();
 }
 
 void GLRenderer::Deinitialize ()
@@ -123,9 +120,6 @@ void GLRenderer::Deinitialize ()
 	pointLights.clear ();
 	shaders.clear ();
 	shaderModels.clear ();
-
-	// deinitialize render target
-	renderTarget->Deinitialize ();
 }
 
 void GLRenderer::AddShader (std::string shaderName, std::string shaderSourceCode, ShaderType shaderType)
@@ -217,7 +211,7 @@ void GLRenderer::Draw (MeshObject & meshObject)
 	eyePositionId = glGetUniformLocation (shaderProgramId, "eyePosition");
 	if (eyePositionId != GL_INVALID_INDEX)
 	{
-		glUniform3fv (eyePositionId, 1, &renderedScene->GetActiveCamera ()->GetPosition ()[0]);
+		glUniform3fv (eyePositionId, 1, &gameLoop->GetScene ().GetActiveCamera ()->GetPosition ()[0]);
 	}
 
 	// get world matrix for drawn objects and set uniform value
@@ -518,7 +512,7 @@ void GLRenderer::InitializeShaderLibrary ()
 void GLRenderer::InitializeObjectBuffers ()
 {
 	// load object buffers for all existing objects
-	for (GameObject* gameObject : renderedScene->GetGameObjects ())
+	for (GameObject* gameObject : gameLoop->GetScene().GetGameObjects ())
 	{
 		// load buffers for MeshObject only
 		if (dynamic_cast<MeshObject*>(gameObject) != nullptr)
@@ -613,7 +607,7 @@ void GLRenderer::InitializeLightUniformBuffers ()
 	}
 
 	// scan objects vector for lights and populate light buffers
-	for (GameObject* gameObject : renderedScene->GetGameObjects ())
+	for (GameObject* gameObject : gameLoop->GetScene ().GetGameObjects ())
 	{
 		if (gameObject->IsLight ())
 		{
@@ -625,7 +619,7 @@ void GLRenderer::InitializeLightUniformBuffers ()
 
 void GLRenderer::UpdateLightBufferRecursive (unsigned int objectHandle)
 {
-	GameObject* gameObject = renderedScene->GetGameObjects ()[objectHandle];
+	GameObject* gameObject = gameLoop->GetScene ().GetGameObjects ()[objectHandle];
 
 	if (gameObject->IsLight ())
 	{
@@ -643,7 +637,7 @@ void GLRenderer::LoadMatrixUniformBuffers ()
 	Camera* activeCamera;
 
 	// get active camera of rendered scene
-	activeCamera = renderedScene->GetActiveCamera ();
+	activeCamera = gameLoop->GetScene ().GetActiveCamera ();
 
 	if (activeCamera == nullptr)
 	{
@@ -654,7 +648,7 @@ void GLRenderer::LoadMatrixUniformBuffers ()
 	std::memcpy (uniformMatrixBuffer.viewMatrix, Mathf::Transpose (activeCamera->GetViewMatrix ())[0], 16 * sizeof (GLfloat));
 
 	// load projection matrix
-	std::memcpy (uniformMatrixBuffer.projectionMatrix, Mathf::Transpose (activeCamera->GetProjectionMatrix (renderTarget->GetXResolution (), renderTarget->GetYResolution ()))[0], 16 * sizeof (GLfloat));
+	std::memcpy (uniformMatrixBuffer.projectionMatrix, Mathf::Transpose (activeCamera->GetProjectionMatrix (gameLoop->GetRenderTarget ().GetXResolution (), gameLoop->GetRenderTarget ().GetYResolution ()))[0], 16 * sizeof (GLfloat));
 
 	// load to GPU
 	glBindBuffer (GL_UNIFORM_BUFFER, sceneBuffers.UBO[UBO_MATRICES]);

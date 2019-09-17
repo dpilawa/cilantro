@@ -1,20 +1,28 @@
 #include "cilantroengine.h"
 #include "RenderTarget.h"
 
-RenderTarget::RenderTarget (int xRes, int yRes) : xResolution (xRes), yResolution (yRes)
+RenderTarget::RenderTarget ()
 {
+    xResolution = 256;
+    yResolution = 256;
 }
 
 RenderTarget::~RenderTarget ()
 {
 }
 
-int RenderTarget::GetXResolution ()
+void RenderTarget::SetResolution(unsigned int xRes, unsigned int yRes)
+{
+    xResolution = xRes;
+    yResolution = yRes;
+}
+
+unsigned int RenderTarget::GetXResolution ()
 {
 	return xResolution;
 }
 
-int RenderTarget::GetYResolution ()
+unsigned int RenderTarget::GetYResolution ()
 {
 	return yResolution;
 }

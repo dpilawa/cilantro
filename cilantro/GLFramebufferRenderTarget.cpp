@@ -3,7 +3,7 @@
 #include "RenderTarget.h"
 #include "GLFramebufferRenderTarget.h"
 
-GLFramebufferRenderTarget::GLFramebufferRenderTarget (int xRes, int yRes) : RenderTarget (xRes, yRes)
+GLFramebufferRenderTarget::GLFramebufferRenderTarget () : RenderTarget ()
 {
 }
 

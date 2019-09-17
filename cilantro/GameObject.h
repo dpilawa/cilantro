@@ -2,6 +2,7 @@
 #define _GAMEOBJECT_H_
 
 #include "cilantroengine.h"
+#include "GameLoop.h"
 #include "CallbackProvider.h"
 #include "Transform.h"
 #include <string>
@@ -10,7 +11,7 @@
 class GameScene;
 class Renderer;
 
-class GameObject : public CallbackProvider<std::string, unsigned int>
+class GameObject : public CallbackProvider<std::string, unsigned int>, public GameLoopChild
 {
 public:
 	__EAPI GameObject ();
@@ -21,14 +22,11 @@ public:
 	__EAPI unsigned int GetHandle () const;
 
 	// set pointer to parent object (i.e. put current object inside hierarchy)
-	__EAPI void SetParentObject (GameObject & parent);
+	__EAPI void SetParentObject (GameObject& parent);
 
 	// get related objects
 	__EAPI GameObject* GetParentObject ();
 	__EAPI std::vector<GameObject*> GetChildObjects ();
-
-	// set pointer to game scene
-	__EAPI void SetGameScene (GameScene & scene);
 
 	// invoked by game loop during initializaton
 	__EAPI virtual void OnStart ();
@@ -72,11 +70,9 @@ private:
 
 	// pointer to parent object (objects may form a hierarchy)
 	GameObject* parentObject;
+	
 	// vector of child objects
 	std::vector<GameObject*> childObjects;
-
-	// pointer to a game scene
-	GameScene* myGameScene;
 
 	// object's transformation from local space to world space
 	Transform modelTransform;

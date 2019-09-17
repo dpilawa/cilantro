@@ -121,7 +121,7 @@ public:
 class GLRenderer : public Renderer
 {
 public:
-	__EAPI GLRenderer (GameScene& scene, RenderTarget& target);
+	__EAPI GLRenderer ();
 	__EAPI ~GLRenderer ();
 
 	// initialize renderer

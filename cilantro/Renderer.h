@@ -2,6 +2,7 @@
 #define _RENDERER_H_
 
 #include "CallbackProvider.h"
+#include "GameLoop.h"
 #include "GameScene.h"
 #include "MeshObject.h"
 #include "PointLight.h"
@@ -12,10 +13,10 @@
 
 enum class ShaderType { VERTEX_SHADER, FRAGMENT_SHADER };
 
-class Renderer
+class Renderer : public GameLoopChild
 {
 public:
-	Renderer (GameScene& scene, RenderTarget& target);
+	Renderer ();
 	virtual ~Renderer ();
 
 	// abstract functions declarations
@@ -33,14 +34,6 @@ public:
 	virtual void Update (PointLight& pointLight) = 0;
 	virtual void Update (DirectionalLight& pointLight) = 0;
 	virtual void Update (SpotLight& pointLight) = 0;
-
-protected:
-
-	// GameScene being rendered
-	GameScene* renderedScene;
-
-	// RenderTarget in use
-	RenderTarget* renderTarget;
 
 };
 

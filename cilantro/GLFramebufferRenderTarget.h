@@ -8,7 +8,7 @@
 class GLFramebufferRenderTarget : public RenderTarget
 {
 public:
-	__EAPI GLFramebufferRenderTarget (int xRes, int yRes);
+	__EAPI GLFramebufferRenderTarget ();
 	__EAPI ~GLFramebufferRenderTarget ();
 
 	__EAPI void Initialize ();

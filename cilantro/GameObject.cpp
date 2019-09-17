@@ -12,7 +12,7 @@
 GameObject::GameObject ()
 {
 	parentObject = nullptr;
-	myGameScene = nullptr;
+	//myGameScene = nullptr;
 
 	isLight = false;
 
@@ -36,7 +36,7 @@ unsigned int GameObject::GetHandle () const
 	return objectHandle;
 }
 
-void GameObject::SetParentObject (GameObject & parent)
+void GameObject::SetParentObject (GameObject& parent)
 {
 	parentObject = &parent;
 	parent.childObjects.push_back (this);
@@ -51,11 +51,6 @@ GameObject* GameObject::GetParentObject ()
 std::vector<GameObject*> GameObject::GetChildObjects ()
 {
 	return childObjects;
-}
-
-void GameObject::SetGameScene (GameScene & scene)
-{
-	myGameScene = &scene;
 }
 
 void GameObject::OnStart ()
