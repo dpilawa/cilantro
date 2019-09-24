@@ -7,6 +7,8 @@
 #include "GLFWRenderTarget.h"
 #include "LogMessage.h"
 #include "Timer.h"
+#include "Vector3f.h"
+#include "GameScene.h"
 
 GLFWRenderTarget::GLFWRenderTarget () : RenderTarget ()
 {
@@ -143,10 +145,17 @@ void GLFWRenderTarget::AfterFrame ()
 
 	frameRenderTimeSinceLastSplit += Timer::GetFrameRenderTime ();
 
-
 	ImGui::Text ("FPS: %.1f", splitFrameCount / timeSinceLastSplit);
 	ImGui::Text ("Frame: %.1f ms", frameRenderTimeInLastSplit / splitFrameCount * 1000.0f);
-	
+
+    Vector3f cameraPos = gameLoop->GetScene ().GetActiveCamera ()->GetModelTransform ().GetTranslation ();
+    Vector3f cameraAngles = gameLoop->GetScene ().GetActiveCamera ()->GetModelTransform ().GetRotation ();
+
+	ImGui::Spacing ();
+    ImGui::Text ("Camera");
+    ImGui::InputFloat3 ("Position", &cameraPos[0], 3);
+	ImGui::InputFloat3 ("Angles", &cameraAngles[0], 3);
+
 	// render imgui
 	ImGui::Render ();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

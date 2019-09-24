@@ -93,24 +93,15 @@ void GLRenderer::RenderFrame ()
     gameLoop->GetRenderTarget ().Bind ();
 
     // draw all objects scene
-	for (GameObject* gameObject : gameLoop->GetScene ().GetGameObjects ())
+	for (auto gameObject : gameLoop->GetScene ().GetGameObjects ())
 	{
-		gameObject->OnDraw (*this);
+		gameObject.second->OnDraw (*this);
 	}
 
 	// update game clocks (Tock)
 	Timer::Tock ();
 
 	// invoke rendering target's post-frame function
-
-    Vector3f cameraPos = gameLoop->GetScene ().GetActiveCamera ()->GetModelTransform ().GetTranslation ();
-    Vector3f cameraAngles = gameLoop->GetScene ().GetActiveCamera ()->GetModelTransform ().GetRotation ();
-
-    ImGui::Text ("Camera");
-    ImGui::InputFloat3 ("Position", &cameraPos[0], 3);
-	ImGui::InputFloat3 ("Angles", &cameraAngles[0], 3);
-    ImGui::Spacing ();
-
     gameLoop->GetRenderTarget ().AfterFrame ();
 }
 
@@ -512,12 +503,12 @@ void GLRenderer::InitializeShaderLibrary ()
 void GLRenderer::InitializeObjectBuffers ()
 {
 	// load object buffers for all existing objects
-	for (GameObject* gameObject : gameLoop->GetScene().GetGameObjects ())
+	for (auto gameObject : gameLoop->GetScene().GetGameObjects ())
 	{
 		// load buffers for MeshObject only
-		if (dynamic_cast<MeshObject*>(gameObject) != nullptr)
+		if (dynamic_cast<MeshObject*>(gameObject.second) != nullptr)
 		{
-			gameObject->OnUpdate (*this);
+			gameObject.second->OnUpdate (*this);
 		}
 	}
 }
@@ -607,13 +598,13 @@ void GLRenderer::InitializeLightUniformBuffers ()
 	}
 
 	// scan objects vector for lights and populate light buffers
-	for (GameObject* gameObject : gameLoop->GetScene ().GetGameObjects ())
+	for (auto gameObject : gameLoop->GetScene ().GetGameObjects ())
 	{
-		if (gameObject->IsLight ())
+		if (gameObject.second->IsLight ())
 		{
-			gameObject -> OnUpdate (*this);
-		}	
-	}
+            gameObject.second->OnUpdate (*this);
+        }
+    }
 
 }
 

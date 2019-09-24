@@ -19,20 +19,16 @@ public:
 	__EAPI static const float Pi () { return cPI; };
 
 	// vector operations
-
-	// returns vector length
 	__EAPI static float Length (const Vector3f& v);
-	// normalize vector
 	__EAPI static Vector3f Normalize (const Vector3f& v);
-	// dot product of two vectors
 	__EAPI static float Dot (const Vector3f& v1, const Vector3f& v2);
-	// cross product of two vectors
 	__EAPI static Vector3f Cross (const Vector3f& v1, const Vector3f& v2);
 
 	// quaterion operations
 	__EAPI static float Norm (const Quaternion& q);
-	__EAPI static Quaternion Normalize (const Quaternion& q);
-	__EAPI static Quaternion Conjugate (const Quaternion& q);
+    __EAPI static float Dot (const Quaternion& q1, const Quaternion& q2);
+    __EAPI static Quaternion Normalize (const Quaternion& q);
+    __EAPI static Quaternion Conjugate (const Quaternion& q);
 	__EAPI static Quaternion Invert (const Quaternion& q);	
 	__EAPI static Quaternion Product (const Quaternion& q, const Quaternion& r);
     __EAPI static Quaternion GenRotationQuaternion (const Vector3f& axis, float theta);
@@ -40,6 +36,15 @@ public:
     __EAPI static Vector3f Rotate (const Vector3f &v, const Vector3f& axis, float theta);
     __EAPI static Vector3f QuaternionToEuler (const Quaternion& q);
     __EAPI static Quaternion EulerToQuaterion (const Vector3f& euler);
+
+	// interpolations
+    __EAPI static float Clamp (float v0, float v1, float vt);
+    __EAPI static float Step (float v0, float v1, float vt);
+	__EAPI static float Smoothstep (float v0, float v1, float vt);
+
+    __EAPI static float Lerp (float v0, float v1, float t);
+	__EAPI static Vector3f Lerp (const Vector3f& v0, const Vector3f& v1, float t);
+    __EAPI static Quaternion Slerp (const Quaternion& q0, const Quaternion& q1, float t);
 
     // matrix operations
 	__EAPI static float Det (const Matrix3f& m);
@@ -49,26 +54,19 @@ public:
 	__EAPI static Matrix3f Invert (const Matrix3f& m);
 	__EAPI static Matrix4f Invert (const Matrix4f& m);
 
-	// convert degrees to radians
+	// convert between degrees and radians
 	__EAPI static float Deg2Rad (float degrees);
     __EAPI static Vector3f Deg2Rad (const Vector3f &degrees);
-    // convert radians to degrees
     __EAPI static float Rad2Deg (float radians);
 	__EAPI static Vector3f Rad2Deg (const Vector3f &radians);
 
 	// convert spherical to cartesian coordinates (theta and pi in radians)
 	__EAPI static Vector3f Spherical2Cartesian (float theta, float phi, float r);
 
-	// generate rotation matrix to rotate around X axis
+	// generate rotation matrix
 	// angle provided in radians
 	__EAPI static Matrix4f GenRotationXMatrix (float angle);
-
-	// generate rotation matrix to rotate around Y axis
-	// angle provided in radians
 	__EAPI static Matrix4f GenRotationYMatrix (float angle);
-
-	// generate rotation matrix to rotate around Z axis
-	// angle provided in radians
 	__EAPI static Matrix4f GenRotationZMatrix (float angle);
 
 	// generate rotation matrix to rotate around X, then Y, then Z axis

@@ -17,6 +17,8 @@ add_library(cilantro SHARED
 ../ext/imgui/imstb_rectpack.h
 ../ext/imgui/imstb_textedit.h
 ../ext/imgui/imstb_truetype.h
+AnimatedObject.cpp
+AnimatedObject.h
 blinnphong.fs.h
 CallbackProvider.h
 Camera.cpp
@@ -61,6 +63,8 @@ Matrix4f.h
 MeshObject.cpp
 MeshObject.h
 normals.fs.h
+NURBS.cpp
+NURBS.h
 OrthographicCamera.cpp
 OrthographicCamera.h
 PerspectiveCamera.cpp

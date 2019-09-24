@@ -20,12 +20,15 @@ public:
 	// returns reference to that added object
 	__EAPI GameObject& AddGameObject (GameObject* gameObject);
 
-	// add material to the scene 
+	// get game object by its handle
+    __EAPI GameObject& GetObjectByHandle (unsigned int handle);
+
+    // add material to the scene 
 	// returns reference to that material
 	__EAPI Material& AddMaterial (Material* material);
 
 	// return reference to GameObject vector
-	__EAPI std::vector <GameObject*>& GetGameObjects ();
+	__EAPI std::unordered_map <unsigned int, GameObject*>& GetGameObjects ();
 
 	// return number of scene's GameObjects
 	__EAPI unsigned int getGameObjectsCount () const;
@@ -37,7 +40,7 @@ public:
 private:
 	
 	// vector of all GameObjects in the scene
-	std::vector <GameObject*> gameObjects;
+	std::unordered_map <unsigned int, GameObject*> gameObjects;
 
 	// vector of all Materials in the scene
 	std::vector <Material*> materials;

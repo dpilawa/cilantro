@@ -11,17 +11,17 @@ float Mathf::Length (const Vector3f & v)
 	return std::sqrt (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
 }
 
-Vector3f Mathf::Normalize (const Vector3f & v)
+Vector3f Mathf::Normalize (const Vector3f& v)
 {
 	return v * (1.0f / Length (v));
 }
 
-float Mathf::Dot (const Vector3f & v1, const Vector3f & v2)
+float Mathf::Dot (const Vector3f& v1, const Vector3f& v2)
 {
 	return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
 }
 
-Vector3f Mathf::Cross (const Vector3f & v1, const Vector3f & v2)
+Vector3f Mathf::Cross (const Vector3f& v1, const Vector3f& v2)
 {
 	return Vector3f (v1[1] * v2[2] - v1[2] * v2[1], v1[2] * v2[0] - v1[0] * v2[2], v1[0] * v2[1] - v1[1] * v2[0]);
 }
@@ -29,6 +29,11 @@ Vector3f Mathf::Cross (const Vector3f & v1, const Vector3f & v2)
 float Mathf::Norm (const Quaternion& q)
 {
 	return std::sqrt (q.s * q.s + q.v[0] * q.v[0] + q.v[1] * q.v[1] + q.v[2] * q.v[2]);
+}
+
+float Mathf::Dot (const Quaternion& q1, const Quaternion& q2)
+{
+    return q1.s * q2.s + Mathf::Dot (q1.v, q2.v);
 }
 
 Quaternion Mathf::Normalize (const Quaternion& q)
@@ -137,6 +142,72 @@ Quaternion Mathf::EulerToQuaterion (const Vector3f& euler)
     q.v[2] = cy * cp * sr - sy * sp * cr;
 
     return q;
+}
+
+float Mathf::Clamp (float v0, float v1, float vt)
+{
+	if (vt > v1)
+	{
+        return v1;
+    }
+	else if (vt < v0)
+	{
+        return v0;
+    }
+    return vt;
+}
+
+float Mathf::Step (float v0, float v1, float vt)
+{
+    return Mathf::Clamp ((vt - v1) / (v1 - v0), 0.0f, 1.0f);
+}
+
+float Mathf::Smoothstep (float v0, float v1, float vt)
+{
+    float x = Mathf::Step (v0, v1, vt);
+    return x * x * (3.0f - 2.0f * x);
+}
+
+float Mathf::Lerp (float v0, float v1, float t)
+{
+    return (1.0f - t) * v0 + t * v1;
+}
+
+Vector3f Mathf::Lerp (const Vector3f& v0, const Vector3f& v1, float t)
+{
+	return (1.0f - t) * v0 + t * v1;
+}
+
+Quaternion Mathf::Slerp (const Quaternion& q0, const Quaternion& q1, float t)
+{
+    Quaternion result;
+    Quaternion q0n = Mathf::Normalize (q0);
+    Quaternion q1n = Mathf::Normalize (q1);
+
+    float cos_theta = Mathf::Dot (q0n, q1n);
+
+	if (cos_theta < 0.0f)
+	{
+        q1n = -q1n;
+        cos_theta = -cos_theta;
+    }
+
+	if (cos_theta > 0.995f)
+	{
+        result = (1.0f - t) * q0n + t * q1n;
+        return Mathf::Normalize (result);
+    }
+
+    float theta = std::acos (cos_theta);
+    float theta_t = theta * t;
+    float sin_theta = std::sin (theta);
+    float sin_theta_t = std::sin (theta_t);
+
+    float s0 = std::cos (theta_t) - cos_theta * sin_theta_t / sin_theta;
+    float s1 = sin_theta_t / sin_theta;
+
+    result = s0 * q0n + s1 * q1n;
+    return Mathf::Normalize (result);
 }
 
 float Mathf::Det (const Matrix3f & m)

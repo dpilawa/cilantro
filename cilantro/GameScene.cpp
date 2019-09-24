@@ -4,6 +4,7 @@
 #include "Camera.h"
 #include "CallbackProvider.h"
 #include "Material.h"
+#include "LogMessage.h"
 #include <vector>
 
 GameScene::GameScene()
@@ -19,23 +20,39 @@ GameScene::~GameScene()
 GameObject& GameScene::AddGameObject (GameObject* gameObject)
 {
 	// set object's handle
-	gameObject->SetHandle (gameObjectsCount++);
+    unsigned int handle = gameObjectsCount++;
+    gameObject->SetHandle (handle);
 
-	// attach to game
+    // attach to game
     gameObject->AttachToGame (gameLoop);
 
     // insert into collection
-	gameObjects.push_back (gameObject);
+    gameObjects[handle] = gameObject;
 
-	// set callbacks on object modification
+    // set callbacks on object modification
 	// this is just a passthrough of callbacks to subscribers (e.g. Renderer)
 	gameObject->RegisterCallback ("OnUpdateMeshObject", [ & ](unsigned int objectHandle) { InvokeCallbacks ("OnUpdateMeshObject", objectHandle); });
 	gameObject->RegisterCallback ("OnUpdateLight", [ & ](unsigned int objectHandle) { InvokeCallbacks ("OnUpdateLight", objectHandle); });
 	gameObject->RegisterCallback ("OnUpdateSceneGraph", [ & ](unsigned int objectHandle) { InvokeCallbacks ("OnUpdateSceneGraph", objectHandle); });
-	gameObject->RegisterCallback ("OnUpdateTransform", [ & ](unsigned int objectHandle) { InvokeCallbacks ("OnUpdateTransform", objectHandle); });
+    gameObject->RegisterCallback ("OnUpdateTransform", [&](unsigned int objectHandle) { 
+		InvokeCallbacks ("OnUpdateTransform", objectHandle);
+        this->GetObjectByHandle (objectHandle).CalculateModelTransformMatrix ();
+    });
 
-	// return object
+    // return object
 	return *gameObject;
+}
+
+GameObject& GameScene::GetObjectByHandle (unsigned int handle)
+{
+    auto find = gameObjects.find (handle);
+
+	if (find == gameObjects.end ())
+	{
+        LogMessage (__func__, EXIT_FAILURE) << "Unable to find object by handle" << handle;
+    }
+
+    return *(find->second);
 }
 
 Material& GameScene::AddMaterial (Material* material)
@@ -47,7 +64,7 @@ Material& GameScene::AddMaterial (Material* material)
 	return *material;
 }
 
-std::vector<GameObject*>& GameScene::GetGameObjects ()
+std::unordered_map<unsigned int, GameObject*>& GameScene::GetGameObjects ()
 {
 	return gameObjects;
 }

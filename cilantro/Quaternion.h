@@ -40,6 +40,7 @@ public:
 	Quaternion& operator*= (float f);
 	Quaternion& operator+= (const Quaternion& other);
 	Quaternion& operator-= (const Quaternion& other);
+	friend inline Quaternion operator- (Quaternion v);
 
 	friend class Mathf;
 
@@ -95,6 +96,14 @@ inline Quaternion operator- (Quaternion q, const Quaternion& r)
 	q -= r;
 	return q;
 };
+
+inline Quaternion operator- (Quaternion q)
+{
+	q.s = -q.s;
+    q.v = -q.v;
+
+    return q;
+}
 
 #endif
 

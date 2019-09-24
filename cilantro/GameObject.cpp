@@ -12,14 +12,13 @@
 GameObject::GameObject ()
 {
 	parentObject = nullptr;
-	//myGameScene = nullptr;
-
 	isLight = false;
 
-	// set callbacks on transform modification
-	// this is just a passthrough of callbacks to subscribers (Scene)
-	modelTransform.RegisterCallback ("OnUpdateTransform", [ & ](unsigned int objectHandle) { InvokeCallbacks ("OnUpdateTransform", this->GetHandle ()); });
+    CalculateModelTransformMatrix ();
 
+    // set callbacks on transform modification
+	// this is just a passthrough of callbacks to subscribers (Scene)
+    modelTransform.RegisterCallback ("OnUpdateTransform", [&](unsigned int objectHandle) { InvokeCallbacks ("OnUpdateTransform", this->GetHandle ()); });
 }
 
 GameObject::~GameObject ()
@@ -73,21 +72,31 @@ void GameObject::OnEnd ()
 {
 }
 
-Transform & GameObject::GetModelTransform ()
+Transform& GameObject::GetModelTransform ()
 {
 	return modelTransform;
 }
 
 Matrix4f GameObject::GetModelTransformMatrix ()
 {
-	if (parentObject == nullptr)
+    return modelTransformMatrix;
+}
+
+void GameObject::CalculateModelTransformMatrix ()
+{
+	if (parentObject != nullptr)
 	{
-		return modelTransform.GetModelMatrix ();
+		modelTransformMatrix = parentObject->GetModelTransformMatrix () * modelTransform.GetModelMatrix ();
 	}
 	else
 	{
-		return parentObject->GetModelTransformMatrix () * modelTransform.GetModelMatrix ();
-	}
+        modelTransformMatrix = modelTransform.GetModelMatrix ();
+    }
+
+	for (auto&& childObject : childObjects)
+	{
+        childObject->CalculateModelTransformMatrix ();
+    }
 }
 
 Vector4f GameObject::GetPosition ()

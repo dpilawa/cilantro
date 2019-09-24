@@ -46,6 +46,7 @@ public:
 
 	// get transformation matrices
 	__EAPI Matrix4f GetModelTransformMatrix ();
+	__EAPI void CalculateModelTransformMatrix ();
 
 	// get object origin's position in world space
 	__EAPI Vector4f GetPosition ();
@@ -76,6 +77,9 @@ private:
 
 	// object's transformation from local space to world space
 	Transform modelTransform;
+
+	// transform matrix starting from object's scene root
+    Matrix4f modelTransformMatrix;
 };
 
 #endif

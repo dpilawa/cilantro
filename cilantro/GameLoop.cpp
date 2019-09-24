@@ -25,7 +25,7 @@ GameLoop::GameLoop (GameScene& scene, InputController& inputController, Renderer
 	// initialize all game objects
 	for (auto gameObject : gameScene.GetGameObjects ())
 	{
-		gameObject->OnStart ();
+		gameObject.second->OnStart ();
 	}
 
 	// set parent relationships
@@ -51,10 +51,10 @@ GameLoop::~GameLoop ()
     // deinitialize all game objects
 	for (auto gameObject : gameScene.GetGameObjects ())
 	{
-		gameObject->OnEnd ();
-	}
+        gameObject.second->OnEnd ();
+    }
 
-	LogMessage (__func__) << "Engine stopped";
+    LogMessage (__func__) << "Engine stopped";
 
 }
 
@@ -80,7 +80,7 @@ void GameLoop::Step ()
     // update all game objects
 	for (auto gameObject : gameScene.GetGameObjects ())
 	{
-		gameObject->OnFrame ();
+		gameObject.second->OnFrame ();
 	}
 
 	// process controller events
