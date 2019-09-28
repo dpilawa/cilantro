@@ -144,7 +144,7 @@ Quaternion Mathf::EulerToQuaterion (const Vector3f& euler)
     return q;
 }
 
-float Mathf::Clamp (float v0, float v1, float vt)
+float Mathf::Clamp (float vt, float v0, float v1)
 {
 	if (vt > v1)
 	{
@@ -159,7 +159,7 @@ float Mathf::Clamp (float v0, float v1, float vt)
 
 float Mathf::Step (float v0, float v1, float vt)
 {
-    return Mathf::Clamp ((vt - v1) / (v1 - v0), 0.0f, 1.0f);
+    return Mathf::Clamp ((vt - v0) / (v1 - v0), 0.0f, 1.0f);
 }
 
 float Mathf::Smoothstep (float v0, float v1, float vt)
@@ -170,12 +170,20 @@ float Mathf::Smoothstep (float v0, float v1, float vt)
 
 float Mathf::Lerp (float v0, float v1, float t)
 {
+    t = Mathf::Clamp (t, 0.0f, 1.0f);
     return (1.0f - t) * v0 + t * v1;
 }
 
 Vector3f Mathf::Lerp (const Vector3f& v0, const Vector3f& v1, float t)
 {
+	t = Mathf::Clamp (t, 0.0f, 1.0f);
 	return (1.0f - t) * v0 + t * v1;
+}
+
+Quaternion Mathf::Lerp (const Quaternion& q0, const Quaternion& q1, float t)
+{
+	t = Mathf::Clamp (t, 0.0f, 1.0f);
+	return (1.0f - t) * q0 + t * q1;
 }
 
 Quaternion Mathf::Slerp (const Quaternion& q0, const Quaternion& q1, float t)
@@ -184,6 +192,7 @@ Quaternion Mathf::Slerp (const Quaternion& q0, const Quaternion& q1, float t)
     Quaternion q0n = Mathf::Normalize (q0);
     Quaternion q1n = Mathf::Normalize (q1);
 
+    t = Mathf::Clamp (t, 0.0f, 1.0f);
     float cos_theta = Mathf::Dot (q0n, q1n);
 
 	if (cos_theta < 0.0f)

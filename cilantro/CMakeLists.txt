@@ -17,8 +17,9 @@ add_library(cilantro SHARED
 ../ext/imgui/imstb_rectpack.h
 ../ext/imgui/imstb_textedit.h
 ../ext/imgui/imstb_truetype.h
-AnimatedObject.cpp
-AnimatedObject.h
+AnimationObject.cpp
+AnimationObject.h
+AnimationProperty.h
 blinnphong.fs.h
 CallbackProvider.h
 Camera.cpp
