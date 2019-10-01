@@ -59,8 +59,8 @@ int main (int argc, char* argv[])
     scene.SetActiveCamera (&cam);
 
     MeshObject& cube = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-	cube.InitUnitCube ();
-	cube.SetMaterial (red);
+    cube.InitUnitCube ();
+    cube.SetMaterial (red);
 
 	RotatingObject& lampPivot = dynamic_cast<RotatingObject&>(scene.AddGameObject (new RotatingObject ()));
 	MeshObject& lamp = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
@@ -70,7 +70,6 @@ int main (int argc, char* argv[])
 
 	MeshObject& plane = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
 	plane.InitUnitCube ().GetModelTransform ().Scale (5.0f, 0.1f, 5.0f).Translate (0.0f, -1.0f, 0.0f);
-	//plane.SetParentObject (cube);
 	plane.SetMaterial (green);
 
 	PointLight& light1 = dynamic_cast<PointLight&>(scene.AddGameObject (new PointLight ()));
@@ -95,13 +94,6 @@ int main (int argc, char* argv[])
     light3.SetInnerCutoff (5.0f);
 	light3.SetOuterCutoff (12.0f);
     light3.SetEnabled (true);
-
-    AnimationObject& anim1 = dynamic_cast<AnimationObject&> (scene.AddGameObject (new AnimationObject ()));
-    anim1.AddAnimationProperty ("cubesize", Vector3f (0.0f, 0.0f, 0.0f), [&](Vector3f r) { cube.GetModelTransform ().Rotate (r); }, [](Vector3f v0, Vector3f v1, float t) { return Mathf::Lerp (v0, v1, t); });
-    anim1.AddKeyframe ("cubesize", 3.0f, Vector3f(-90.0f, 180.0f, 90.0f));
-    anim1.AddKeyframe ("cubesize", 6.0f, Vector3f(0.0f, 0.0f, 0.0f));
-    anim1.SetLooping (true);
-    anim1.Play ();
 
     game.Run ();
 

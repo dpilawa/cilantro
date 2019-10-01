@@ -170,7 +170,7 @@ void AnimationObject::OnFrame ()
         }
         else
         {
-            playedTime = 0.0f;
+            playedTime = maxAnimationTime;
             isPlaying = false;
 
             return;

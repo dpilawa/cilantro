@@ -1,4 +1,4 @@
-* animation
+* NURBS
 * textures (class, loader, material extensions)
 * shadows
 * model loader

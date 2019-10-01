@@ -15,8 +15,9 @@ add_subdirectory (ext/glad)
 add_subdirectory (cilantro)
 add_subdirectory (test01)
 add_subdirectory (test02)
+add_subdirectory (test03)
 
 target_link_libraries (cilantro glfw glad)
 target_link_libraries (test01 cilantro)
 target_link_libraries (test02 cilantro)
-
+target_link_libraries (test03 cilantro)
