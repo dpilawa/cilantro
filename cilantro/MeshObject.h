@@ -9,13 +9,21 @@
 
 class Renderer;
 
+enum class MeshType
+{
+	Points,
+	Lines,
+	Triangles,
+	Quads
+};
+
 // Represents a 3d mesh, inherits from GameObject
 // 3d mesh has a collection of vertices and a collection of vertex indices to represent mesh faces (polygons)
 // 3d mesh may have only one material assigned to it
 class MeshObject : public GameObject
 {
 public:
-	__EAPI MeshObject ();
+	__EAPI MeshObject (MeshType type = MeshType::Triangles);
 	__EAPI virtual ~MeshObject ();
 
 	// Cleans up contents of used collections
@@ -30,9 +38,9 @@ public:
 
 	// get mesh counts
 	__EAPI unsigned int GetVertexCount ();
-	__EAPI unsigned int GetFaceCount ();
+	__EAPI unsigned int GetIndexCount ();
 
-	// set mesh material
+    // set mesh material
 	__EAPI void SetMaterial (Material& material);
 
 	// get mesh material
@@ -47,6 +55,15 @@ public:
 	// get faces raw data
 	__EAPI unsigned int* GetFacesData ();
 
+	// get mesh type
+    __EAPI MeshType GetMeshType ();
+
+    // add vertices and primitives
+	__EAPI void AddVertex (const Vector3f& vertex);
+	__EAPI void AddPoint (unsigned int v, bool rendererUpdate = true);
+	__EAPI void AddLine (unsigned int v1, unsigned int v2, bool rendererUpdate = true);
+	__EAPI void AddFace (unsigned int v1, unsigned int v2, unsigned int v3, bool rendererUpdate = true);
+
 	// invoked by game loop on each frame or on update (e.g. transform)
 	virtual void OnFrame ();
 	virtual void OnDraw (Renderer& renderer);
@@ -54,13 +71,11 @@ public:
 
 private:
 
-	void AddVertex (const Vector3f& vertex);
-	void AddFace (unsigned int v1, unsigned int v2, unsigned int v3);
+    MeshType meshType;
+    Material* objectMaterial;
 
-	Material* objectMaterial;
-
-	std::vector<float> vertices;
-	std::vector<unsigned int> faces;
+    std::vector<float> vertices;
+	std::vector<unsigned int> indices;
 
 	std::vector<float> normals;
 	std::vector<float> uvs;

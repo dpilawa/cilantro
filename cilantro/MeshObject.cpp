@@ -8,8 +8,9 @@
 #include "Mathf.h"
 #include <vector>
 
-MeshObject::MeshObject ()
+MeshObject::MeshObject (MeshType type)
 {
+    meshType = type;
 }
 
 MeshObject::~MeshObject ()
@@ -21,7 +22,7 @@ MeshObject& MeshObject::Clear ()
 {
 	vertices.clear ();
 	normals.clear ();
-	faces.clear ();
+	indices.clear ();
 
 	InvokeCallbacks ("OnUpdateMeshObject", this->GetHandle ());
 
@@ -81,7 +82,7 @@ MeshObject& MeshObject::InitUnitCube ()
 
 	for (unsigned int i = 0; i < 36; i += 3)
 	{
-		AddFace (i, i + 1, i + 2);
+		AddFace (i, i + 1, i + 2, false);
 	};
 	
 	CalculateVertexNormals ();
@@ -133,7 +134,7 @@ __EAPI MeshObject & MeshObject::InitUnitSphere (unsigned int subdivisions, bool 
 			AddVertex (Mathf::Spherical2Cartesian (theta + step, phi, 1.0f));
 			AddVertex (Mathf::Spherical2Cartesian (theta, phi, 1.0f));
 			AddVertex (Mathf::Spherical2Cartesian (theta + step, phi + step, 1.0f));
-		}
+        }
 
 		theta = Mathf::Pi ();
 		for (unsigned int j = 0; j <= lonSteps - 1; j++)
@@ -148,7 +149,7 @@ __EAPI MeshObject & MeshObject::InitUnitSphere (unsigned int subdivisions, bool 
 		// generate faces
 		for (unsigned int i = 0; i < latSteps * lonSteps * 3 * 2; i += 3)
 		{
-			AddFace (i, i + 1, i + 2);
+			AddFace (i, i + 1, i + 2, false);
 		}
 
 	}
@@ -175,8 +176,8 @@ __EAPI MeshObject & MeshObject::InitUnitSphere (unsigned int subdivisions, bool 
 		{
 			for (unsigned int j = 0; j <= lonSteps - 1; j++)
 			{
-				AddFace (i * lonSteps + j, i * lonSteps + (j + 1) % lonSteps, (i + 1) * lonSteps + j);
-				AddFace (i * lonSteps + (j + 1) % lonSteps, (i + 1) * lonSteps + (j + 1) % lonSteps, (i + 1) * lonSteps + j);
+				AddFace (i * lonSteps + j, i * lonSteps + (j + 1) % lonSteps, (i + 1) * lonSteps + j, false);
+				AddFace (i * lonSteps + (j + 1) % lonSteps, (i + 1) * lonSteps + (j + 1) % lonSteps, (i + 1) * lonSteps + j, false);
 			}
 		}
 
@@ -185,8 +186,8 @@ __EAPI MeshObject & MeshObject::InitUnitSphere (unsigned int subdivisions, bool 
 
 		for (unsigned int j = 0; j <= lonSteps - 1; j++)
 		{
-			AddFace (nIndex, (j + 1) % lonSteps, j);
-			AddFace (sIndex, nIndex - 1 - (j + 1) % lonSteps, nIndex - 1 - j);
+			AddFace (nIndex, (j + 1) % lonSteps, j, false);
+			AddFace (sIndex, nIndex - 1 - (j + 1) % lonSteps, nIndex - 1 - j, false);
 		}
 
 	}
@@ -211,13 +212,13 @@ void MeshObject::CalculateVertexNormals ()
 		normal = Vector3f (0.0f, 0.0f, 0.0f);
 
 		// loop through all faces and if face contains vertex, add face normal to vertex normal
-		for (unsigned int f = 0; f < faces.size (); f += 3)
+		for (unsigned int f = 0; f < indices.size (); f += 3)
 		{
-			if ((faces[f] * 3 == v) || (faces[f + 1] * 3 == v) || (faces[f + 2] * 3 == v))
+			if ((indices[f] * 3 == v) || (indices[f + 1] * 3 == v) || (indices[f + 2] * 3 == v))
 			{
-				v1 = Vector3f (vertices[faces[f] * 3], vertices[faces[f] * 3 + 1], vertices[faces[f] * 3 + 2]);
-				v2 = Vector3f (vertices[faces[f + 1] * 3], vertices[faces[f + 1] * 3 + 1], vertices[faces[f + 1] * 3 + 2]);
-				v3 = Vector3f (vertices[faces[f + 2] * 3], vertices[faces[f + 2] * 3 + 1], vertices[faces[f + 2] * 3 + 2]);
+				v1 = Vector3f (vertices[indices[f] * 3], vertices[indices[f] * 3 + 1], vertices[indices[f] * 3 + 2]);
+				v2 = Vector3f (vertices[indices[f + 1] * 3], vertices[indices[f + 1] * 3 + 1], vertices[indices[f + 1] * 3 + 2]);
+				v3 = Vector3f (vertices[indices[f + 2] * 3], vertices[indices[f + 2] * 3 + 1], vertices[indices[f + 2] * 3 + 2]);
 
 				normal += Mathf::Cross (v2 - v1, v3 - v1);
 			}
@@ -235,12 +236,12 @@ void MeshObject::CalculateVertexNormals ()
 
 unsigned int MeshObject::GetVertexCount ()
 {
-	return (unsigned int) vertices.size ();
+	return (unsigned int) (vertices.size () / 3);
 }
 
-unsigned int MeshObject::GetFaceCount ()
+unsigned int MeshObject::GetIndexCount ()
 {
-	return (unsigned int) faces.size ();
+	return (unsigned int) indices.size ();
 }
 
 void MeshObject::SetMaterial (Material & material)
@@ -265,7 +266,52 @@ float* MeshObject::GetNormalsData ()
 
 unsigned int* MeshObject::GetFacesData ()
 {
-	return faces.data ();
+	return indices.data ();
+}
+
+MeshType MeshObject::GetMeshType ()
+{
+    return meshType;
+}
+
+void MeshObject::AddVertex (const Vector3f & vertex)
+{
+	vertices.push_back (vertex[0]);
+	vertices.push_back (vertex[1]);
+	vertices.push_back (vertex[2]);
+}
+
+void MeshObject::AddPoint (unsigned int v, bool renrererUpdate)
+{
+	indices.push_back (v);
+	
+	if (renrererUpdate)
+	{
+		InvokeCallbacks ("OnUpdateMeshObject", this->GetHandle ());
+	}
+}
+
+void MeshObject::AddLine (unsigned int v1, unsigned int v2, bool renrererUpdate)
+{
+	indices.push_back (v1);
+	indices.push_back (v2);
+
+	if (renrererUpdate)
+	{
+		InvokeCallbacks ("OnUpdateMeshObject", this->GetHandle ());
+	}
+}
+
+void MeshObject::AddFace (unsigned int v1, unsigned int v2, unsigned int v3, bool renrererUpdate)
+{
+	indices.push_back (v1);
+	indices.push_back (v2);
+	indices.push_back (v3);
+
+	if (renrererUpdate)
+	{
+		InvokeCallbacks ("OnUpdateMeshObject", this->GetHandle ());
+	}
 }
 
 void MeshObject::OnFrame ()
@@ -286,19 +332,6 @@ void MeshObject::OnUpdate (Renderer& renderer)
 	renderer.Update (*this);
 }
 
-void MeshObject::AddVertex (const Vector3f & vertex)
-{
-	vertices.push_back (vertex[0]);
-	vertices.push_back (vertex[1]);
-	vertices.push_back (vertex[2]);
-}
-
-void MeshObject::AddFace (unsigned int v1, unsigned int v2, unsigned int v3)
-{
-	faces.push_back (v1);
-	faces.push_back (v2);
-	faces.push_back (v3);
-}
 
 
 

@@ -1,4 +1,6 @@
-* NURBS
+* NURBS / interpolation
+* rendertarget cleanup
 * textures (class, loader, material extensions)
-* shadows
 * model loader
+* post-processing
+* shadows

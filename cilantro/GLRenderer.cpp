@@ -23,6 +23,7 @@
 #include "phong.fs.h"
 #include "blinnphong.fs.h"
 #include "normals.fs.h"
+#include "emissive.fs.h"
 
 #include "imgui.h"
 
@@ -162,7 +163,9 @@ void GLRenderer::Draw (MeshObject & meshObject)
 	GLuint normalMatrixId;
 	GLuint shaderProgramId;
 
-	// pick shader
+    GLuint drawMode;
+
+    // pick shader
 	GLShaderModel& shaderProgram = GetShaderModel (meshObject.GetMaterial ().GetShaderModelName ());
 	shaderProgramId = shaderProgram.GetProgramId ();
 	shaderProgram.Use ();
@@ -221,7 +224,32 @@ void GLRenderer::Draw (MeshObject & meshObject)
 
 	// draw mesh
 	glBindVertexArray (objectBuffers[meshObject.GetHandle ()].VAO);
-	glDrawElements (GL_TRIANGLES, meshObject.GetFaceCount () * 3, GL_UNSIGNED_INT, 0);
+
+	switch (meshObject.GetMeshType ())
+	{
+		case MeshType::Points:
+            drawMode = GL_POINTS;
+            break;
+
+		case MeshType::Lines:
+            drawMode = GL_LINES;
+            break;
+
+        case MeshType::Triangles:
+            drawMode = GL_TRIANGLES;
+            break;
+
+        case MeshType::Quads:
+            drawMode = GL_QUADS;
+            break;
+
+        default:
+            drawMode = GL_TRIANGLES;
+            break;
+
+    }
+
+	glDrawElements (drawMode, meshObject.GetIndexCount (), GL_UNSIGNED_INT, nullptr);
 	glBindVertexArray (0);
 }
 
@@ -247,21 +275,21 @@ void GLRenderer::Update (MeshObject& meshObject)
 		// generate vertex buffer and copy vertices to GPU
 		glGenBuffers (1, &objectBuffers[objectHandle].VBO[VBOType::VBO_VERTICES]);
 		glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_VERTICES]);
-		glBufferData (GL_ARRAY_BUFFER, meshObject.GetVertexCount () * sizeof (float), meshObject.GetVerticesData (), GL_STATIC_DRAW);
+		glBufferData (GL_ARRAY_BUFFER, meshObject.GetVertexCount () * sizeof (float) * 3, meshObject.GetVerticesData (), GL_STATIC_DRAW);
 		// location = 0 (vertex position)
 		glVertexAttribPointer (VBOType::VBO_VERTICES, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (void*)0);
 
 		// generate normals buffer and copy normals to GPU
 		glGenBuffers (1, &objectBuffers[objectHandle].VBO[VBOType::VBO_NORMALS]);
 		glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_NORMALS]);
-		glBufferData (GL_ARRAY_BUFFER, meshObject.GetVertexCount () * sizeof (float), meshObject.GetNormalsData (), GL_STATIC_DRAW);
+		glBufferData (GL_ARRAY_BUFFER, meshObject.GetVertexCount () * sizeof (float) * 3, meshObject.GetNormalsData (), GL_STATIC_DRAW);
 		// location = 1 (vertex normal)
 		glVertexAttribPointer (VBOType::VBO_NORMALS, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (void*)0);
 
 		// generate index buffer and copy face indices to GPU
 		glGenBuffers (1, &objectBuffers[objectHandle].EBO);
 		glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, objectBuffers[objectHandle].EBO);
-		glBufferData (GL_ELEMENT_ARRAY_BUFFER, meshObject.GetFaceCount () * sizeof (unsigned int), meshObject.GetFacesData (), GL_STATIC_DRAW);
+		glBufferData (GL_ELEMENT_ARRAY_BUFFER, meshObject.GetIndexCount () * sizeof (unsigned int), meshObject.GetFacesData (), GL_STATIC_DRAW);
 
 		// enable VBO arrays
 		glEnableVertexAttribArray (VBOType::VBO_VERTICES);
@@ -279,15 +307,15 @@ void GLRenderer::Update (MeshObject& meshObject)
 
 		// load vertex buffer
 		glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_VERTICES]);
-		glBufferData (GL_ARRAY_BUFFER, meshObject.GetVertexCount () * sizeof (float), meshObject.GetVerticesData (), GL_STATIC_DRAW);
+		glBufferData (GL_ARRAY_BUFFER, meshObject.GetVertexCount () * sizeof (float) * 3, meshObject.GetVerticesData (), GL_STATIC_DRAW);
 
 		// load normals buffer
 		glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_NORMALS]);
-		glBufferData (GL_ARRAY_BUFFER, meshObject.GetVertexCount () * sizeof (float), meshObject.GetNormalsData (), GL_STATIC_DRAW);
+		glBufferData (GL_ARRAY_BUFFER, meshObject.GetVertexCount () * sizeof (float) * 3, meshObject.GetNormalsData (), GL_STATIC_DRAW);
 
 		// load index buffer
 		glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, objectBuffers[objectHandle].EBO);
-		glBufferData (GL_ELEMENT_ARRAY_BUFFER, meshObject.GetFaceCount () * sizeof (unsigned int), meshObject.GetFacesData (), GL_STATIC_DRAW);
+		glBufferData (GL_ELEMENT_ARRAY_BUFFER, meshObject.GetIndexCount () * sizeof (unsigned int), meshObject.GetFacesData (), GL_STATIC_DRAW);
 
 		// unbind VAO
 		glBindVertexArray (0);
@@ -480,8 +508,9 @@ void GLRenderer::InitializeShaderLibrary ()
 	AddShader ("phong_fragment_shader", gPhongFragmentShader, ShaderType::FRAGMENT_SHADER);
 	AddShader ("blinnphong_fragment_shader", gBlinnPhongFragmentShader, ShaderType::FRAGMENT_SHADER);
 	AddShader ("normals_fragment_shader", gNormalsFragmentShader, ShaderType::FRAGMENT_SHADER);
+	AddShader ("emissive_fragment_shader", gEmissiveFragmentShader, ShaderType::FRAGMENT_SHADER);
 
-	// Phong model
+    // Phong model
 	AddShaderToModel ("phong_shader", "default_vertex_shader");
 	AddShaderToModel ("phong_shader", "phong_fragment_shader");
 	glBindAttribLocation(GetShaderModel("phong_shader").GetProgramId(), 0, "vPosition");
@@ -496,6 +525,12 @@ void GLRenderer::InitializeShaderLibrary ()
 	// Normals visualization model
 	AddShaderToModel ("normals_shader", "default_vertex_shader");
 	AddShaderToModel ("normals_shader", "normals_fragment_shader");
+	glBindAttribLocation(GetShaderModel("normals_shader").GetProgramId(), 0, "vPosition");
+	glBindAttribLocation(GetShaderModel("normals_shader").GetProgramId(), 1, "vNormal");
+
+	// Only emissive color rendering (no lights calculation)
+	AddShaderToModel ("emissive_shader", "default_vertex_shader");
+	AddShaderToModel ("emissive_shader", "emissive_fragment_shader");
 	glBindAttribLocation(GetShaderModel("normals_shader").GetProgramId(), 0, "vPosition");
 	glBindAttribLocation(GetShaderModel("normals_shader").GetProgramId(), 1, "vNormal");
 }

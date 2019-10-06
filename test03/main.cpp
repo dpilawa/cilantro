@@ -43,34 +43,37 @@ int main (int argc, char* argv[])
 	m.SetSpecularColor (Vector3f (1.0f, 1.0f, 1.0f)).SetSpecularShininess (64.0f);
 
     Material& red = scene.AddMaterial (new Material ());
-	red.SetShaderModelName ("blinnphong_shader");
-	red.SetColor (Vector3f (1.0f, 0.0f, 0.0f));
+	red.SetShaderModelName ("emissive_shader");
+	red.SetEmissiveColor (Vector3f (1.0f, 0.0f, 0.0f));
 
 	Material& green = scene.AddMaterial (new Material ());
-	green.SetShaderModelName ("blinnphong_shader");
-	green.SetColor (Vector3f (0.0f, 1.0f, 0.0f));
+	green.SetShaderModelName ("emissive_shader");
+	green.SetEmissiveColor (Vector3f (0.0f, 1.0f, 0.0f));
 
 	Material& blue = scene.AddMaterial (new Material ());
-	blue.SetShaderModelName ("blinnphong_shader");
-	blue.SetColor (Vector3f (0.0f, 0.0f, 1.0f));
+	blue.SetShaderModelName ("emissive_shader");
+	blue.SetEmissiveColor (Vector3f (0.0f, 0.0f, 1.0f));
 
 	PerspectiveCamera& cam = dynamic_cast<PerspectiveCamera&>(scene.AddGameObject (new PerspectiveCamera (45.0f, 0.1f, 100.0f)));
     cam.GetModelTransform ().Translate (15.0f, 15.0f, 15.0f).Rotate (-35.0f, 45.0f, 0.0f);
     scene.SetActiveCamera (&cam);
 
-	MeshObject& x = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-    x.GetModelTransform ().Scale (10.0f, 0.1f, 0.1f).Translate (5.0f, 0.0f, 0.0f);
-    x.InitUnitCube ();
+	MeshObject& x = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject (MeshType::Lines)));
+    x.AddVertex (Vector3f (0.0f, 0.0f, 0.0f));
+    x.AddVertex (Vector3f (10.0f, 0.0f, 0.0f));
+    x.AddLine (0, 1);
     x.SetMaterial (red);
 
-	MeshObject& y = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-    y.GetModelTransform ().Scale (0.1f, 10.0f, 0.1f).Translate (0.0f, 5.0f, 0.0f);
-    y.InitUnitCube ();
+    MeshObject& y = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject (MeshType::Lines)));
+    y.AddVertex (Vector3f (0.0f, 0.0f, 0.0f));
+    y.AddVertex (Vector3f (0.0f, 10.0f, 0.0f));
+    y.AddLine (0, 1);
     y.SetMaterial (green);
 
-	MeshObject& z = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-    z.GetModelTransform ().Scale (0.1f, 0.1f, 10.0f).Translate (0.0f, 0.0f, 5.0f);
-    z.InitUnitCube ();
+	MeshObject& z = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject (MeshType::Lines)));
+    z.AddVertex (Vector3f (0.0f, 0.0f, 0.0f));
+    z.AddVertex (Vector3f (0.0f, 0.0f, 10.0f));
+    z.AddLine (0, 1);
     z.SetMaterial (blue);
 
     GameObject& plane = scene.AddGameObject (new GameObject ());
@@ -112,9 +115,6 @@ int main (int argc, char* argv[])
 	anim1.AddKeyframe<Quaternion> ("rotation", 5.0f, Mathf::EulerToQuaterion (Mathf::Deg2Rad (Vector3f (-35.0f, 20.0f, -45.0f))));
 	anim1.AddKeyframe<Quaternion> ("rotation", 11.0f, Mathf::EulerToQuaterion (Mathf::Deg2Rad (Vector3f (-35.0f, -20.0f, 45.0f))));
     anim1.AddKeyframe<Quaternion> ("rotation", 14.0f, Mathf::EulerToQuaterion (Mathf::Deg2Rad (Vector3f (-0.0f, 0.0f, 0.0f))));
-    //anim1.AddAnimationProperty ("rotation", Vector3f (0.0f, 0.0f, 0.0f), [&](Vector3f v) { plane.GetModelTransform ().Rotate (Vector3f(v)); }, [](Vector3f v0, Vector3f v1, float t) { return Mathf::Lerp (v0, v1, t); });
-    //anim1.AddKeyframe ("rotation", 3.0f, Vector3f (90.0f, -90.0f, -90.0f));
-    //anim1.AddKeyframe ("rotation", 6.0f, Vector3f (0.0f, 0.0f, 0.0f));
     anim1.SetLooping (true);
     anim1.Play ();
 
