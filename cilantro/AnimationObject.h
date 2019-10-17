@@ -18,10 +18,10 @@ public:
     __EAPI virtual ~AnimationObject ();
 
     template <typename P>
-    __EAPI void AddAnimationProperty (std::string propertyName, P startValue, std::function<void (P)> updateFunc, std::function<P (P, P, float)> interpolateFunc);
+    void AddAnimationProperty (std::string propertyName, P startValue, std::function<void (P)> updateFunction, std::function<P (P, P, float)> interpolateFunc);
 
     template <typename P>
-    __EAPI void AddKeyframe (std::string propertyName, float time, P value);
+    void AddKeyframe (std::string propertyName, float time, P value);
     
     __EAPI void Play ();
     __EAPI void Stop ();

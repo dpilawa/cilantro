@@ -29,15 +29,15 @@ public:
 	__EAPI std::vector<GameObject*> GetChildObjects ();
 
 	// invoked by game loop during initializaton
-	virtual void OnStart ();
+	__EAPI virtual void OnStart ();
 
 	// invoked by game loop on each frame or on update (e.g. transform change)
-	virtual void OnFrame ();
-	virtual void OnDraw (Renderer& renderer);
-    virtual void OnUpdate (Renderer &renderer);
+	__EAPI virtual void OnFrame ();
+	__EAPI virtual void OnDraw (Renderer& renderer);
+    __EAPI virtual void OnUpdate (Renderer &renderer);
 
     // invoked by game loop during deinitialization
-	virtual void OnEnd ();
+	__EAPI virtual void OnEnd ();
 
 	// get transformation object's reference
 	// this function is recursive and concatenates world-space

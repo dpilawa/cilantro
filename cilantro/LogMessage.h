@@ -1,16 +1,17 @@
 #ifndef _LOGMESSAGE_H_
 #define _LOGMESSAGE_H_
 
+#include "cilantroengine.h"
 #include <string>
 #include <iostream>
 
 class LogMessage
 {
 public:
-	LogMessage ();
-	LogMessage (std::string label);
-	LogMessage (std::string label, int code);
-	~LogMessage ();
+	__EAPI LogMessage ();
+	__EAPI LogMessage (std::string label);
+	__EAPI LogMessage (std::string label, int code);
+	__EAPI ~LogMessage ();
 
 	template <class P> 
 	LogMessage& operator<<(const P& message);

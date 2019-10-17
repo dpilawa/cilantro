@@ -453,7 +453,6 @@ Matrix4f Mathf::GenRotationMatrix (const Quaternion &q)
     float qx = q.v[0];
 	float qy = q.v[1];
 	float qz = q.v[2];
-    float sqs = q.s * q.s;
     float sqx = qx * qx;
     float sqy = qy * qy;
 	float sqz = qz * qz;

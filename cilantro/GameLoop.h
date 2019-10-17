@@ -52,8 +52,8 @@ private:
 	// and renderer interface
     GameScene& gameScene;
     Renderer& gameRenderer;
+	InputController& gameInputController;
     RenderTarget& gameRenderTarget;
-    InputController& gameInputController;
 
     // bool flags to control the game loop
 	bool shouldStop;

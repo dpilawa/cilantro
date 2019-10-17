@@ -9,7 +9,6 @@
 #include "GLFWRenderTarget.h"
 #include "GLFWInputController.h"
 #include "Mathf.h"
-#include "LogMessage.h"
 
 #include <iostream>
 
