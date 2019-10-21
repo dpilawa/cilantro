@@ -239,10 +239,6 @@ void GLRenderer::Draw (MeshObject & meshObject)
             drawMode = GL_TRIANGLES;
             break;
 
-        case MeshType::Quads:
-            drawMode = GL_QUADS;
-            break;
-
         default:
             drawMode = GL_TRIANGLES;
             break;

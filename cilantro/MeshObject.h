@@ -13,8 +13,7 @@ enum class MeshType
 {
 	Points,
 	Lines,
-	Triangles,
-	Quads
+	Triangles
 };
 
 // Represents a 3d mesh, inherits from GameObject
