@@ -1,7 +1,7 @@
 #ifndef _ORBITER_H_
 #define _ORBITER_H_
 
-#include "GameObject.h"
+#include "scene/GameObject.h"
 
 class Orbiter : public GameObject
 {

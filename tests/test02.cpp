@@ -1,14 +1,15 @@
 #include "cilantroengine.h"
+#include "game/GameLoop.h"
+#include "scene/GameScene.h"
+#include "scene/PerspectiveCamera.h"
+#include "scene/OrthographicCamera.h"
+#include "scene/MeshObject.h"
+#include "scene/PointLight.h"
+#include "graphics/GLRenderer.h"
+#include "graphics/GLFWRenderTarget.h"
+#include "input/GLFWInputController.h"
+
 #include "Orbiter.h"
-#include "GameScene.h"
-#include "GameLoop.h"
-#include "PerspectiveCamera.h"
-#include "OrthographicCamera.h"
-#include "MeshObject.h"
-#include "PointLight.h"
-#include "GLRenderer.h"
-#include "GLFWRenderTarget.h"
-#include "GLFWInputController.h"
 
 int main (int argc, char* argv [])
 {

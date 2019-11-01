@@ -1,6 +1,6 @@
 #include "ControlledCamera.h"
-#include "Input.h"
-#include "GLFWInputController.h"
+#include "input/Input.h"
+#include "input/GLFWInputController.h"
 
 ControlledCamera::ControlledCamera (float fov, float near, float far, float sensitivity) : PerspectiveCamera (fov, near, far), sensitivity (sensitivity)
 {

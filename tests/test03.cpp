@@ -1,14 +1,15 @@
 #include "cilantroengine.h"
-#include "AnimationObject.h"
-#include "GameScene.h"
-#include "GameLoop.h"
-#include "MeshObject.h"
+#include "game/GameLoop.h"
+#include "scene/AnimationObject.h"
+#include "scene/GameScene.h"
+#include "scene/MeshObject.h"
+#include "scene/DirectionalLight.h"
+#include "graphics/GLRenderer.h"
+#include "graphics/GLFWRenderTarget.h"
+#include "input/GLFWInputController.h"
+#include "math/Mathf.h"
+
 #include "ControlledCamera.h"
-#include "DirectionalLight.h"
-#include "GLRenderer.h"
-#include "GLFWRenderTarget.h"
-#include "GLFWInputController.h"
-#include "Mathf.h"
 
 #include <iostream>
 

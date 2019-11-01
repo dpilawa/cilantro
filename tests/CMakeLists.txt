@@ -1,4 +1,4 @@
-include_directories ("${PROJECT_SOURCE_DIR}/cilantro")
+include_directories ("${PROJECT_SOURCE_DIR}/cilantro/include")
 
 add_executable(test01
 test01.cpp

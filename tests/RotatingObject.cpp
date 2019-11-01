@@ -1,6 +1,6 @@
 #include "cilantroengine.h"
 #include "RotatingObject.h"
-#include "Timer.h"
+#include "util/Timer.h"
 #include <cmath>
 
 RotatingObject::RotatingObject ()
