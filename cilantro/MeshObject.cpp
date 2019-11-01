@@ -92,7 +92,7 @@ MeshObject& MeshObject::InitUnitCube ()
 	return *this;
 }
 
-__EAPI MeshObject & MeshObject::InitUnitSphere (unsigned int subdivisions, bool sharedVertices)
+MeshObject& MeshObject::InitUnitSphere (unsigned int subdivisions, bool sharedVertices)
 {
 	float step;
 	float theta, phi;
@@ -199,6 +199,40 @@ __EAPI MeshObject & MeshObject::InitUnitSphere (unsigned int subdivisions, bool 
 	return *this;
 }
 
+MeshObject& MeshObject::InitSpline (const Spline<Vector3f>& spline, unsigned int segments, bool showControlLines)
+{
+    Clear ();
+
+    for (int i = 0; i <= segments; i++)
+	{
+        float t = static_cast<float>(i) / static_cast<float>(segments);
+        Vector3f p = spline.GetSplinePoint (t);
+		
+        AddVertex (p);
+		if (i > 0)
+		{
+            AddLine (i - 1, i);
+        }
+    }
+
+	if (showControlLines)
+	{
+        for (int i = 0; i < spline.GetControlPointsCount (); i++)
+		{
+            AddVertex (spline.GetControlPoint (i));
+			
+			if (i > 0)
+			{
+                AddLine (i + segments, i + segments + 1);
+            }
+        }
+    }
+
+    InvokeCallbacks ("OnUpdateMeshObject", this->GetHandle ());
+
+	return *this;
+}
+
 void MeshObject::CalculateVertexNormals ()
 {
 	Vector3f normal;
@@ -274,11 +308,13 @@ MeshType MeshObject::GetMeshType ()
     return meshType;
 }
 
-void MeshObject::AddVertex (const Vector3f & vertex)
+unsigned int MeshObject::AddVertex (const Vector3f & vertex)
 {
 	vertices.push_back (vertex[0]);
 	vertices.push_back (vertex[1]);
 	vertices.push_back (vertex[2]);
+
+    return GetVertexCount () - 1;
 }
 
 void MeshObject::AddPoint (unsigned int v, bool renrererUpdate)

@@ -8,7 +8,7 @@ class Vector3f
 {
 public:
 	// constructors
-	Vector3f () { };
+	Vector3f () : v { 0.0f, 0.0f, 0.0f } { };
 	Vector3f (float x, float y, float z) : v { x, y, z } { };
 
 	// copy constructor

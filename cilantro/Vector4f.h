@@ -9,7 +9,7 @@ class Vector4f
 {
 public:
 	// constructors
-	Vector4f () {};
+	Vector4f () : v { 0.0f, 0.0f, 0.0f, 0.0f } {};
 	Vector4f (float x, float y, float z, float w) : v { x, y, z, w } {};
 	Vector4f (float x, float y, float z) : v { x, y, z, 1.0f } {};
 	Vector4f (const Vector3f& v3, float w) : v { v3[0], v3[1], v3[2], w } {};

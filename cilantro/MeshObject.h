@@ -5,6 +5,7 @@
 #include "GameObject.h"
 #include "Material.h"
 #include "Vector3f.h"
+#include "Spline.h"
 #include <vector>
 
 class Renderer;
@@ -31,8 +32,9 @@ public:
 	// Initialize mesh in local space as unit primitives with center in space origin
 	__EAPI MeshObject& InitUnitCube ();
 	__EAPI MeshObject& InitUnitSphere (unsigned int subdivisions, bool sharedVertices = false);
+    __EAPI MeshObject& InitSpline (const Spline<Vector3f>& spline, unsigned int segments, bool showControlLines = false);
 
-	// calculate vertex normals
+    // calculate vertex normals
 	__EAPI void CalculateVertexNormals ();
 
 	// get mesh counts
@@ -58,7 +60,7 @@ public:
     __EAPI MeshType GetMeshType ();
 
     // add vertices and primitives
-	__EAPI void AddVertex (const Vector3f& vertex);
+	__EAPI unsigned int AddVertex (const Vector3f& vertex);
 	__EAPI void AddPoint (unsigned int v, bool rendererUpdate = true);
 	__EAPI void AddLine (unsigned int v1, unsigned int v2, bool rendererUpdate = true);
 	__EAPI void AddFace (unsigned int v1, unsigned int v2, unsigned int v3, bool rendererUpdate = true);

@@ -26,6 +26,7 @@ cilantroengine.h
 AnimationObject.cpp
 AnimationObject.h
 AnimationProperty.h
+BSpline.h
 CallbackProvider.h
 Camera.cpp
 Camera.h
@@ -66,7 +67,6 @@ Matrix4f.cpp
 Matrix4f.h
 MeshObject.cpp
 MeshObject.h
-NURBS.cpp
 NURBS.h
 OrthographicCamera.cpp
 OrthographicCamera.h
@@ -79,6 +79,7 @@ Renderer.cpp
 Renderer.h
 RenderTarget.cpp
 RenderTarget.h
+Spline.h
 SpotLight.cpp
 SpotLight.h
 Timer.cpp

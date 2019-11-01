@@ -3,7 +3,7 @@
 #include "GameScene.h"
 #include "GameLoop.h"
 #include "MeshObject.h"
-#include "PerspectiveCamera.h"
+#include "ControlledCamera.h"
 #include "DirectionalLight.h"
 #include "GLRenderer.h"
 #include "GLFWRenderTarget.h"
@@ -53,7 +53,8 @@ int main (int argc, char* argv[])
 	blue.SetShaderModelName ("emissive_shader");
 	blue.SetEmissiveColor (Vector3f (0.0f, 0.0f, 1.0f));
 
-	PerspectiveCamera& cam = dynamic_cast<PerspectiveCamera&>(scene.AddGameObject (new PerspectiveCamera (45.0f, 0.1f, 100.0f)));
+    ControlledCamera& cam = dynamic_cast<ControlledCamera&>(scene.AddGameObject (new ControlledCamera (60.0f, 0.1f, 100.0f, 0.1f)));
+    cam.Initialize ();
     cam.GetModelTransform ().Translate (15.0f, 15.0f, 15.0f).Rotate (-35.0f, 45.0f, 0.0f);
     scene.SetActiveCamera (&cam);
 
