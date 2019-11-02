@@ -10,10 +10,11 @@ option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
 option(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
 option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
 
-set(GLAD_API "gl=3.1")
+set(GLAD_API "gl=4.6")
 set(GLAD_PROFILE "core")
 
-set(CILANTRO_MIN_GL_VERSION "32")
+add_compile_definitions(CILANTRO_MIN_GL_VERSION=460) # 140=3.1, 150=3.2, 330=3.3, ...
+add_compile_definitions(CILANTRO_USE_GLFW)
 
 add_subdirectory (ext/glfw)
 add_subdirectory (ext/glad)

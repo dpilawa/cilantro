@@ -3,9 +3,13 @@
 
 #include <string>
 
-std::string gEmissiveFragmentShader = R"V0G0N(
+#define xstr(a) str(a)
+#define str(a) #a
 
-	#version 140
+std::string gEmissiveFragmentShader = 
+R"(#version )"
+xstr(CILANTRO_MIN_GL_VERSION)
+R"V0G0N(
 
 	/* material properties */
 	uniform vec3 fEmissiveColor;

@@ -3,9 +3,13 @@
 
 #include <string>
 
-std::string gNormalsFragmentShader = R"V0G0N(
+#define xstr(a) str(a)
+#define str(a) #a
 
-	#version 140
+std::string gNormalsFragmentShader = 
+R"(#version )"
+xstr(CILANTRO_MIN_GL_VERSION)
+R"V0G0N(
 
 	#define MAX_LIGHTS 100
 

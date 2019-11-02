@@ -3,9 +3,13 @@
 
 #include <string>
 
-std::string gDefaultVertexShader = R"V0G0N(
+#define xstr(a) str(a)
+#define str(a) #a
 
-	#version 140
+std::string gDefaultVertexShader = 
+R"(#version )"
+xstr(CILANTRO_MIN_GL_VERSION)
+R"V0G0N(
 
 	/* transformation matrices */
 	uniform mat4 mModel;
@@ -16,10 +20,19 @@ std::string gDefaultVertexShader = R"V0G0N(
 		mat4 mView;
 		mat4 mProjection;
 	};
-
+)V0G0N"
+#if (CILANTRO_MIN_GL_VERSION >= 330)
+R"V0G0N(
+	layout (location = 0) in vec3 vPosition;
+	layout (location = 1) in vec3 vNormal;
+)V0G0N"
+#else
+R"V0G0N(
 	in vec3 vPosition;
 	in vec3 vNormal;
-
+)V0G0N"
+#endif	
+R"V0G0N(
 	out vec3 fPosition;
 	out vec3 fNormal;
 	out vec3 fNormal_View;
