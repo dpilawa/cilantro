@@ -55,7 +55,7 @@ int main (int argc, char* argv[])
 
     ControlledCamera& cam = dynamic_cast<ControlledCamera&>(scene.AddGameObject (new ControlledCamera (60.0f, 0.1f, 100.0f, 0.1f)));
     cam.Initialize ();
-    cam.GetModelTransform ().Translate (0.0f, 0.0f, 10.0f);
+    cam.GetModelTransform ().Translate (5.0f, 5.0f, 5.0f).Rotate(-25.0f, 45.0f, 0.0f);
     scene.SetActiveCamera (&cam);
 
     MeshObject& x = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject (MeshType::Lines)));
@@ -76,20 +76,24 @@ int main (int argc, char* argv[])
     z.AddLine (0, 1);
     z.SetMaterial (blue);
 
-    NURBS<Vector3f> spline;
-    std::vector<float> weights{1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
-    spline.SetDegree (2);
-    spline.AddControlPoint (Vector3f (-1.0f, 0.0f, 0.0f));
-    spline.AddControlPoint (Vector3f (0.0f, 1.0f, 0.0f));
-    spline.AddControlPoint (Vector3f (1.0f, 0.0f, 0.0f));
-    spline.AddControlPoint (Vector3f (2.0f, 2.0f, 0.0f));
-    spline.AddControlPoint (Vector3f (0.0f, 3.0f, 0.0f));
+    BSpline<Vector3f> spline;
+    Vector3f v{1.0f, 0.0f, 0.0f};
+    Quaternion q = Mathf::GenRotationQuaternion (Vector3f (0.0f, 1.0f, 0.0f), Mathf::Pi () / 8.0f);
+    float h = 0.0f;
+    spline.SetDegree (3);
+    for (int i=0; i<50; i++)
+    {
+        v = Mathf::Rotate (v, q);
+        h += 0.05f;
+        spline.AddControlPoint (v + Vector3f (0.0f, h, 0.0f));
+    }
+
     spline.CalculateKnotVector (KnotVectorType::Clamped);
-    spline.SetWeights (weights);
+
     if (spline.Validate ())
     {
         MeshObject& line = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject (MeshType::Lines)));
-        line.InitSpline (spline, 100, true);
+        line.InitSpline (spline, 250, false);
         line.SetMaterial (white);
     }
     else
