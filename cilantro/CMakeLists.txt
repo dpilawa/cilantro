@@ -77,10 +77,17 @@ src/graphics/Renderer.cpp
 src/graphics/RenderTarget.cpp
 src/input/GLFWInputController.cpp
 src/input/InputController.cpp
+src/math/BSpline.cpp
 src/math/Mathf.cpp
 src/math/Matrix3f.cpp
 src/math/Matrix4f.cpp
+src/math/NURBS.cpp
+src/math/Quaternion.cpp
+src/math/Spline.cpp
+src/math/Vector3f.cpp
+src/math/Vector4f.cpp
 src/scene/AnimationObject.cpp
+src/scene/AnimationProperty.cpp
 src/scene/Camera.cpp
 src/scene/DirectionalLight.cpp
 src/scene/GameObject.cpp

@@ -1,46 +1,35 @@
 #ifndef _QUATERNION_H_
 #define _QUATERNION_H_
 
+#include "cilantroengine.h"
 #include "math/Vector3f.h"
 
 class Quaternion
 {
 public:
 	// constructors
-	Quaternion () { };
-	Quaternion (float a, float b, float c, float d) : s (a), v {b, c, d} { };
-	Quaternion (float scalar, Vector3f vector) : s (scalar), v (vector) { };
+	__EAPI Quaternion ();
+	__EAPI Quaternion (float a, float b, float c, float d);
+	__EAPI Quaternion (float scalar, Vector3f vector);
 
 	// copy constructor
-	Quaternion (const Quaternion& other)
-	{
-		s = other.s;
-		v = other.v;
-	}
+    __EAPI Quaternion (const Quaternion& other);
 
-	// move constructor
-	Quaternion (Quaternion&& other) : Quaternion ()
-	{
-		std::swap (s, other.s);
-		v = std::move (other.v);
-	}
+    // move constructor
+    __EAPI Quaternion (Quaternion&& other);
 
-	// assignment operator
-	Quaternion& operator= (Quaternion other)
-	{
-		std::swap (s, other.s);
-		v = std::move (other.v);
-		return *this;
-	}
+    // assignment operator
+    __EAPI Quaternion& operator= (Quaternion other);
 
-	// destructor
-	~Quaternion () { };
+    // destructor
+	__EAPI ~Quaternion ();
 
 	// operators
-	Quaternion& operator*= (float f);
-	Quaternion& operator+= (const Quaternion& other);
-	Quaternion& operator-= (const Quaternion& other);
-	friend inline Quaternion operator- (Quaternion v);
+	__EAPI Quaternion& operator*= (float f);
+	__EAPI Quaternion& operator+= (const Quaternion& other);
+	__EAPI Quaternion& operator-= (const Quaternion& other);
+	
+	friend Quaternion operator- (Quaternion v);
 
 	friend class Mathf;
 
@@ -49,61 +38,11 @@ private:
 	Vector3f v;
 };
 
-inline Quaternion& Quaternion::operator*=(float f)
-{
-	s *= f;
-	v *= f;
-
-	return *this;
-};
-
-inline Quaternion& Quaternion::operator+=(const Quaternion& other)
-{
-	s += other.s;
-	v += other.v;
-
-	return *this;
-};
-
-inline Quaternion& Quaternion::operator-=(const Quaternion& other)
-{
-	s -= other.s;
-	v -= other.v;
-
-	return *this;
-};
-
-inline Quaternion operator* (Quaternion q, float f)
-{
-	q *= f;
-	return q;
-};
-
-inline Quaternion operator* (float f, Quaternion q)
-{
-	q *= f;
-	return q;
-};
-
-inline Quaternion operator+ (Quaternion q, const Quaternion& r)
-{
-	q += r;
-	return q;
-};
-
-inline Quaternion operator- (Quaternion q, const Quaternion& r)
-{
-	q -= r;
-	return q;
-};
-
-inline Quaternion operator- (Quaternion q)
-{
-	q.s = -q.s;
-    q.v = -q.v;
-
-    return q;
-}
+__EAPI Quaternion operator* (Quaternion q, float f);
+__EAPI Quaternion operator* (float f, Quaternion q);
+__EAPI Quaternion operator+ (Quaternion q, const Quaternion& r);
+__EAPI Quaternion operator- (Quaternion q, const Quaternion& r);
+__EAPI Quaternion operator- (Quaternion q);
 
 #endif
 
