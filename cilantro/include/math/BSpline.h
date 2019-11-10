@@ -15,15 +15,15 @@ template <typename T>
 class BSpline : public Spline<T>
 {
 public:
-    __EAPI BSpline ();
-    __EAPI virtual ~BSpline ();
+    BSpline ();
+    virtual ~BSpline ();
 
-    __EAPI virtual T GetSplinePoint (float t) const;
+    virtual T GetSplinePoint (float t) const;
 
-    __EAPI BSpline<T>& CalculateKnotVector (KnotVectorType type = KnotVectorType::Clamped);
-    __EAPI BSpline<T>& SetKnotVector (const std::vector<float>& knotVector);
+    BSpline<T>& CalculateKnotVector (KnotVectorType type = KnotVectorType::Clamped);
+    BSpline<T>& SetKnotVector (const std::vector<float>& knotVector);
 
-    __EAPI virtual bool Validate ();
+    virtual bool Validate ();
 
 protected:
     using Spline<T>::splineDegree;

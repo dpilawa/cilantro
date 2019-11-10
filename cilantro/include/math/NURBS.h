@@ -9,14 +9,14 @@ template <typename T>
 class NURBS : public BSpline<T>
 {
 public:
-    __EAPI NURBS ();
-    __EAPI virtual ~NURBS ();
+    NURBS ();
+    virtual ~NURBS ();
 
-    __EAPI T GetSplinePoint (float t) const;
+    T GetSplinePoint (float t) const;
 
-    __EAPI NURBS<T>& SetWeights (const std::vector<float>& weightVector);
+    NURBS<T>& SetWeights (const std::vector<float>& weightVector);
 
-    __EAPI bool Validate ();
+    bool Validate ();
 
 protected:
     using Spline<T>::splineDegree;

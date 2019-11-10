@@ -33,7 +33,7 @@ public:
 	__EAPI Vector3f& operator+= (const Vector3f& other);
 	__EAPI Vector3f& operator-= (const Vector3f& other);
 	
-	friend Vector3f operator- (Vector3f v);
+	__EAPI friend Vector3f operator- (Vector3f v);
 
 private:
 	float v[3];

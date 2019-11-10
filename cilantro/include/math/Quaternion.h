@@ -29,7 +29,7 @@ public:
 	__EAPI Quaternion& operator+= (const Quaternion& other);
 	__EAPI Quaternion& operator-= (const Quaternion& other);
 	
-	friend Quaternion operator- (Quaternion v);
+	__EAPI friend Quaternion operator- (Quaternion v);
 
 	friend class Mathf;
 

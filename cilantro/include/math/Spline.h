@@ -9,16 +9,16 @@ template <typename T>
 class Spline
 {
 public:
-    __EAPI Spline ();
-    __EAPI virtual ~Spline ();
+    Spline ();
+    virtual ~Spline ();
 
-    __EAPI Spline<T>& SetDegree (unsigned int degree);
-    __EAPI unsigned int GetDegree () const;
+    Spline<T>& SetDegree (unsigned int degree);
+    unsigned int GetDegree () const;
 
-    __EAPI Spline<T>& AddControlPoint (const T& point);
-    __EAPI Spline<T>& AddControlPoints (const std::vector<T>& points);
-    __EAPI unsigned int GetControlPointsCount () const;
-    __EAPI T GetControlPoint(unsigned int i) const;
+    Spline<T>& AddControlPoint (const T& point);
+    Spline<T>& AddControlPoints (const std::vector<T>& points);
+    unsigned int GetControlPointsCount () const;
+    T GetControlPoint(unsigned int i) const;
 
     virtual bool Validate () = 0;
     virtual T GetSplinePoint (float t) const = 0;

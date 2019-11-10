@@ -14,9 +14,6 @@ public:
 
 private:
 
-    // orbit game object
-    GameObject* orbit;
-
     // axis and plane of the orbit
     Vector3f orbitAxis;
     Vector3f orbitPlane;
