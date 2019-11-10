@@ -1,12 +1,15 @@
 #ifndef _ANIMATIONPROPERTY_H_
 #define _ANIMATIONPROPERTY_H_
 
+#include "cilantroengine.h"
 #include "util/LogMessage.h"
 #include "math/Vector3f.h"
 #include "math/Quaternion.h"
 #include <functional>
 #include <string>
 #include <map>
+
+template<typename P> class __EAPI AnimationProperty;
 
 template<typename P>
 class AnimationProperty 

@@ -5,6 +5,8 @@
 #include "math/Vector3f.h"
 #include <vector>
 
+template<typename P> class __EAPI Spline;
+
 template <typename T>
 class Spline
 {

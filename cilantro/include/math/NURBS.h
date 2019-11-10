@@ -5,6 +5,8 @@
 #include "math/BSpline.h"
 #include "math/Vector3f.h"
 
+template <typename T> class __EAPI NURBS;
+
 template <typename T>
 class NURBS : public BSpline<T>
 {

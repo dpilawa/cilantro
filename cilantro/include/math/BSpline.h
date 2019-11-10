@@ -5,6 +5,8 @@
 #include "math/Spline.h"
 #include "math/Vector3f.h"
 
+template <typename T> class __EAPI BSpline;
+
 enum class KnotVectorType
 {
 	Clamped,
