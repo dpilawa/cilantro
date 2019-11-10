@@ -9,8 +9,6 @@
 #include <string>
 #include <map>
 
-template<typename P> class __EAPI AnimationProperty;
-
 template<typename P>
 class AnimationProperty 
 {
@@ -33,10 +31,5 @@ private:
     std::map<float, P> keyframes;
 
 };
-
-// template instantiations
-template class AnimationProperty<float>;
-template class AnimationProperty<Vector3f>;
-template class AnimationProperty<Quaternion>;
 
 #endif

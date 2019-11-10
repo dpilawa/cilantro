@@ -2,7 +2,7 @@
 #include "math/Vector3f.h"
 
 // template instantiations
-template class BSpline<Vector3f>;
+template class __EAPI BSpline<Vector3f>;
 
 template <typename T>
 BSpline<T>::BSpline ()
@@ -148,3 +148,5 @@ float BSpline<T>::Nip (int i, int p, const std::vector<float>& U, float u) const
     return N[0];
 
 }
+
+
