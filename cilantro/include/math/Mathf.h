@@ -16,7 +16,7 @@ class Mathf
 {
 public:
 	// static constants
-	__EAPI static const float Pi () { return cPI; };
+	__EAPI static float Pi () { return cPI; }
 
 	// vector operations
 	__EAPI static float Length (const Vector3f& v);
