@@ -34,4 +34,9 @@ private:
 
 };
 
+// template instantiations
+template class AnimationProperty<float>;
+template class AnimationProperty<Vector3f>;
+template class AnimationProperty<Quaternion>;
+
 #endif
