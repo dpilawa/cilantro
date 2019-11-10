@@ -39,4 +39,4 @@ script:
      - cmake ../
      - make
      - cd cilantro
-     - nm -cd libcilantro.so | grep Spline
+     - nm -CD libcilantro.so | grep Spline

@@ -2,6 +2,8 @@
 #include "math/Vector3f.h"
 #include "math/Quaternion.h"
 
+template <typename P> class AnimationProperty;
+
 template<typename P>
 AnimationProperty<P>::AnimationProperty (std::function<void (P)> updateFunction, std::function<P (P, P, float)> interpolateFunction)
 : updateFunction (updateFunction), interpolateFunction(interpolateFunction)
@@ -67,3 +69,7 @@ std::function<P(P, P, float)> AnimationProperty<P>::GetInterpolateFunction ()
     return interpolateFunction;
 }
 
+// template instantiations
+template class AnimationProperty<float>;
+template class AnimationProperty<Vector3f>;
+template class AnimationProperty<Quaternion>;
