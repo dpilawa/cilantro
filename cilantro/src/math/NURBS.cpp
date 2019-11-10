@@ -2,7 +2,7 @@
 #include "math/Vector3f.h"
 
 // template instantiations
-template class __EAPI NURBS<Vector3f>;
+template class NURBS<Vector3f>;
 
 template <typename T>
 NURBS<T>::NURBS ()

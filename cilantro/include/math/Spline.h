@@ -6,7 +6,7 @@
 #include <vector>
 
 template <typename T>
-class Spline
+class __EAPI Spline
 {
 public:
     Spline ();

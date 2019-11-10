@@ -6,7 +6,7 @@
 #include "math/Vector3f.h"
 
 template <typename T>
-class NURBS : public BSpline<T>
+class __EAPI NURBS : public BSpline<T>
 {
 public:
     NURBS ();

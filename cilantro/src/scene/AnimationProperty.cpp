@@ -3,9 +3,9 @@
 #include "math/Quaternion.h"
 
 // template instantiations
-template class __EAPI AnimationProperty<float>;
-template class __EAPI AnimationProperty<Vector3f>;
-template class __EAPI AnimationProperty<Quaternion>;
+template class AnimationProperty<float>;
+template class AnimationProperty<Vector3f>;
+template class AnimationProperty<Quaternion>;
 
 template<typename P>
 AnimationProperty<P>::AnimationProperty (std::function<void (P)> updateFunction, std::function<P (P, P, float)> interpolateFunction)

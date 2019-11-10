@@ -10,7 +10,7 @@
 #include <map>
 
 template<typename P>
-class AnimationProperty 
+class __EAPI AnimationProperty 
 {
 public:
     AnimationProperty (std::function<void (P)> updateFunction, std::function<P (P, P, float)> interpolateFunction);

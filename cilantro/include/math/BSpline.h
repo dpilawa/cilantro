@@ -12,7 +12,7 @@ enum class KnotVectorType
 };
 
 template <typename T>
-class BSpline : public Spline<T>
+class __EAPI BSpline : public Spline<T>
 {
 public:
     BSpline ();
