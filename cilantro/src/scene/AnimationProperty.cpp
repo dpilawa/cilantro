@@ -2,6 +2,8 @@
 #include "math/Vector3f.h"
 #include "math/Quaternion.h"
 
+template <typename P> class AnimationProperty;
+
 // template instantiations
 template class AnimationProperty<float>;
 template class AnimationProperty<Vector3f>;
