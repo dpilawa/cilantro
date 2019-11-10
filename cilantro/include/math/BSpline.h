@@ -35,6 +35,6 @@ protected:
 };
 
 // template instantiations
-template class BSpline<Vector3f>;
+template class __EAPI BSpline<Vector3f>;
 
 #endif

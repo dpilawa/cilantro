@@ -2,7 +2,6 @@
 #include "game/GameLoop.h"
 #include "scene/GameScene.h"
 #include "scene/PerspectiveCamera.h"
-#include "scene/OrthographicCamera.h"
 #include "scene/MeshObject.h"
 #include "scene/PointLight.h"
 #include "graphics/GLRenderer.h"
@@ -44,36 +43,30 @@ int main (int argc, char* argv [])
 
 	PerspectiveCamera& cam = dynamic_cast<PerspectiveCamera&>(scene.AddGameObject (new PerspectiveCamera (25.0f, 1.0f, 500.0f)));
 	cam.GetModelTransform ().Translate (0.0f, 0.0f, 160.0f);
-	//OrthographicCamera& cam = dynamic_cast<OrthographicCamera&>(scene.AddGameObject (new OrthographicCamera (110.0f, 1.0f, 150.0f)));
-	//cam.GetModelTransform ().Translate (0.0f, 0.0f, 70.0f);
 	scene.SetActiveCamera (&cam);
 
 	MeshObject& sun = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
 	sun.InitUnitSphere (8, true).GetModelTransform ().Scale (10.0f);
 	sun.SetMaterial (sunM);
 
-	Orbiter& earthOrbiter = dynamic_cast<Orbiter&>(scene.AddGameObject (new Orbiter (365.256f)));
-	GameObject& earthOrbit = dynamic_cast<GameObject&>(scene.AddGameObject (new GameObject ()));
-	earthOrbit.GetModelTransform ().Translate (0.0f, 0.0f, 50.0f);
-	earthOrbit.SetParentObject (earthOrbiter);
+	Orbiter& earthOrbit = dynamic_cast<Orbiter&>(scene.AddGameObject (new Orbiter (365.256f, 50.0f, 0.0f)));
+	Orbiter& earthRotor = dynamic_cast<Orbiter&>(scene.AddGameObject (new Orbiter (1.0f, 0.0f, -23.0f)));
+    earthRotor.SetParentObject (earthOrbit);
 
-	Orbiter& earthRotor = dynamic_cast<Orbiter&>(scene.AddGameObject (new Orbiter (1.0f)));
-	earthRotor.GetModelTransform ().Rotate (0.0f, 0.0f, -23.0f);
-	earthRotor.SetParentObject (earthOrbit);
-	MeshObject& earth = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
+    MeshObject& earth = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
 	earth.InitUnitSphere (5, true);
 	earth.SetMaterial (earthM);
 	earth.SetParentObject (earthRotor);
 
-	Orbiter& moonOrbiter = dynamic_cast<Orbiter&>(scene.AddGameObject (new Orbiter (27.321f)));
-	moonOrbiter.SetParentObject (earthOrbit);
-	moonOrbiter.GetModelTransform ().Rotate (0.0f, 0.0f, 5.14f);
-	MeshObject& moon = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-	moon.InitUnitSphere (5, true).GetModelTransform ().Scale (0.273f).Translate (5.0f, 0.0f, 0.0f);
-	moon.SetMaterial (moonM);
-	moon.SetParentObject (moonOrbiter);
+	Orbiter& moonOrbit = dynamic_cast<Orbiter&>(scene.AddGameObject (new Orbiter (27.321f, 5.0f, 15.14f)));
+    moonOrbit.SetParentObject (earthOrbit);
 
-	PointLight& sunLight = dynamic_cast<PointLight&>(scene.AddGameObject (new PointLight ()));
+    MeshObject& moon = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
+    moon.InitUnitSphere (5, true).GetModelTransform ().Scale (0.273f);
+    moon.SetMaterial (moonM);
+    moon.SetParentObject (moonOrbit);
+
+    PointLight& sunLight = dynamic_cast<PointLight&>(scene.AddGameObject (new PointLight ()));
 	sunLight.SetParentObject (sun);
 	sunLight.SetColor (Vector3f (1.0f, 1.0f, 1.0f));
 	sunLight.SetSpecularPower (0.7f);
