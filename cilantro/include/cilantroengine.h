@@ -14,7 +14,7 @@
   #endif
   #define DLL_LOCAL
 #else
-  #if __GNUC__ >= 4
+  #if __GNUC__ >= 4 || __clang__
     #define __EAPI __attribute__ ((visibility ("default")))
     #define __EAPI_LOCAL __attribute__ ((visibility ("hidden")))
   #else
