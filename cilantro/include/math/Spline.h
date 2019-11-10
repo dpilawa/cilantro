@@ -29,6 +29,6 @@ protected:
 };
 
 // template instantiations
-template class Spline<Vector3f>;
+template class __EAPI Spline<Vector3f>;
 
 #endif

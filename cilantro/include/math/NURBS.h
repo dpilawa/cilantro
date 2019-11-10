@@ -28,6 +28,6 @@ protected:
 };
 
 // template instantiations
-template class NURBS<Vector3f>;
+template class __EAPI NURBS<Vector3f>;
 
 #endif
