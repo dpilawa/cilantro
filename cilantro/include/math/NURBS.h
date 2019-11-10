@@ -27,7 +27,4 @@ protected:
     std::vector<float> weights;
 };
 
-// template instantiations
-template class __EAPI NURBS<Vector3f>;
-
 #endif

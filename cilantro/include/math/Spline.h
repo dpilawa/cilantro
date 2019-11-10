@@ -28,7 +28,4 @@ protected:
     std::vector<T> controlPoints;
 };
 
-// template instantiations
-template class __EAPI Spline<Vector3f>;
-
 #endif

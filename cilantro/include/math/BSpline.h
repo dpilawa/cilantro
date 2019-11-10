@@ -34,7 +34,4 @@ protected:
     std::vector<float> knots;
 };
 
-// template instantiations
-template class __EAPI BSpline<Vector3f>;
-
 #endif

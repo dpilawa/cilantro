@@ -1,6 +1,8 @@
 #include "math/NURBS.h"
 #include "math/Vector3f.h"
 
+template <typename T> class NURBS;
+
 template <typename T>
 NURBS<T>::NURBS ()
 {
@@ -62,3 +64,6 @@ bool NURBS<T>::Validate ()
         return false;
     }
 }
+
+// template instantiations
+template class NURBS<Vector3f>;

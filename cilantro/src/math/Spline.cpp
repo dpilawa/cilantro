@@ -1,6 +1,8 @@
 #include "math/Spline.h"
 #include "math/Vector3f.h"
 
+template <typename T> class Spline;
+
 template <typename T>
 Spline<T>::Spline ()
 {
@@ -53,3 +55,6 @@ T Spline<T>::GetControlPoint (unsigned int i) const
 {
     return controlPoints[i];
 }
+
+// template instantiations
+template class Spline<Vector3f>;
