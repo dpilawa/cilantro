@@ -1,6 +1,9 @@
 #include "math/Spline.h"
 #include "math/Vector3f.h"
 
+// template instantiations
+template class __EAPI Spline<Vector3f>;
+
 template <typename T>
 Spline<T>::Spline ()
 {

@@ -1,6 +1,9 @@
 #include "math/BSpline.h"
 #include "math/Vector3f.h"
 
+// template instantiations
+template class __EAPI BSpline<Vector3f>;
+
 template <typename T>
 BSpline<T>::BSpline ()
 {
