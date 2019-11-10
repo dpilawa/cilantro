@@ -273,19 +273,15 @@ void GLRenderer::Update (MeshObject& meshObject)
 		glGenBuffers (1, &objectBuffers[objectHandle].VBO[VBOType::VBO_VERTICES]);
 		glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_VERTICES]);
 		glBufferData (GL_ARRAY_BUFFER, meshObject.GetVertexCount () * sizeof (float) * 3, meshObject.GetVerticesData (), GL_STATIC_DRAW);
-#if (CILANTRO_MIN_GL_VERSION < 330)
 		// location = 0 (vertex position)
 		glVertexAttribPointer (VBOType::VBO_VERTICES, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (void*)0);
-#endif
 
 		// generate normals buffer and copy normals to GPU
 		glGenBuffers (1, &objectBuffers[objectHandle].VBO[VBOType::VBO_NORMALS]);
 		glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_NORMALS]);
 		glBufferData (GL_ARRAY_BUFFER, meshObject.GetVertexCount () * sizeof (float) * 3, meshObject.GetNormalsData (), GL_STATIC_DRAW);
-#if (CILANTRO_MIN_GL_VERSION < 330)		
 		// location = 1 (vertex normal)
 		glVertexAttribPointer (VBOType::VBO_NORMALS, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (void*)0);
-#endif
 
 		// generate index buffer and copy face indices to GPU
 		glGenBuffers (1, &objectBuffers[objectHandle].EBO);
@@ -514,26 +510,35 @@ void GLRenderer::InitializeShaderLibrary ()
     // Phong model
 	AddShaderToModel ("phong_shader", "default_vertex_shader");
 	AddShaderToModel ("phong_shader", "phong_fragment_shader");
+#if (CILANTRO_MIN_GL_VERSION < 330)
 	glBindAttribLocation(GetShaderModel("phong_shader").GetProgramId(), 0, "vPosition");
 	glBindAttribLocation(GetShaderModel("phong_shader").GetProgramId(), 1, "vNormal");
+#endif
 
 	// Blinn-Phong model
 	AddShaderToModel ("blinnphong_shader", "default_vertex_shader");
 	AddShaderToModel ("blinnphong_shader", "blinnphong_fragment_shader");
+#if (CILANTRO_MIN_GL_VERSION < 330)	
 	glBindAttribLocation(GetShaderModel("blinnphong_shader").GetProgramId(), 0, "vPosition");
 	glBindAttribLocation(GetShaderModel("blinnphong_shader").GetProgramId(), 1, "vNormal");
+#endif
 
 	// Normals visualization model
 	AddShaderToModel ("normals_shader", "default_vertex_shader");
 	AddShaderToModel ("normals_shader", "normals_fragment_shader");
+#if (CILANTRO_MIN_GL_VERSION < 330)
 	glBindAttribLocation(GetShaderModel("normals_shader").GetProgramId(), 0, "vPosition");
 	glBindAttribLocation(GetShaderModel("normals_shader").GetProgramId(), 1, "vNormal");
+#endif
 
 	// Only emissive color rendering (no lights calculation)
 	AddShaderToModel ("emissive_shader", "default_vertex_shader");
 	AddShaderToModel ("emissive_shader", "emissive_fragment_shader");
+#if (CILANTRO_MIN_GL_VERSION < 330)	
 	glBindAttribLocation(GetShaderModel("normals_shader").GetProgramId(), 0, "vPosition");
 	glBindAttribLocation(GetShaderModel("normals_shader").GetProgramId(), 1, "vNormal");
+#endif
+
 }
 
 void GLRenderer::InitializeObjectBuffers ()
