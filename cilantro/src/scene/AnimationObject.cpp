@@ -4,17 +4,17 @@
 #include "util/Timer.h"
 
 // template instantiations
-template __EAPI void AnimationObject::AddAnimationProperty<float> (std::string propertyName, float startValue, std::function<void(float)> updateFunction, std::function<float(float, float, float)> interpolateFunction);
-template __EAPI void AnimationObject::AddAnimationProperty<Vector3f> (std::string propertyName, Vector3f startValue, std::function<void(Vector3f)> updateFunction, std::function<Vector3f (Vector3f, Vector3f, float)> interpolateFunction);
-template __EAPI void AnimationObject::AddAnimationProperty<Quaternion> (std::string propertyName, Quaternion startValue, std::function<void(Quaternion)> updateFunction, std::function<Quaternion (Quaternion, Quaternion, float)> interpolateFunction);
+template void AnimationObject::AddAnimationProperty<float> (std::string propertyName, float startValue, std::function<void(float)> updateFunction, std::function<float(float, float, float)> interpolateFunction);
+template void AnimationObject::AddAnimationProperty<Vector3f> (std::string propertyName, Vector3f startValue, std::function<void(Vector3f)> updateFunction, std::function<Vector3f (Vector3f, Vector3f, float)> interpolateFunction);
+template void AnimationObject::AddAnimationProperty<Quaternion> (std::string propertyName, Quaternion startValue, std::function<void(Quaternion)> updateFunction, std::function<Quaternion (Quaternion, Quaternion, float)> interpolateFunction);
 
-template __EAPI void AnimationObject::AddKeyframe<float> (std::string propertyName, float time, float value);
-template __EAPI void AnimationObject::AddKeyframe<Vector3f> (std::string propertyName, float time, Vector3f value);
-template __EAPI void AnimationObject::AddKeyframe<Quaternion> (std::string propertyName, float time, Quaternion value);
+template void AnimationObject::AddKeyframe<float> (std::string propertyName, float time, float value);
+template void AnimationObject::AddKeyframe<Vector3f> (std::string propertyName, float time, Vector3f value);
+template void AnimationObject::AddKeyframe<Quaternion> (std::string propertyName, float time, Quaternion value);
 
-template __EAPI void AnimationObject::UpdateProperties<float> ();
-template __EAPI void AnimationObject::UpdateProperties<Vector3f> ();
-template __EAPI void AnimationObject::UpdateProperties<Quaternion> ();
+template void AnimationObject::UpdateProperties<float> ();
+template void AnimationObject::UpdateProperties<Vector3f> ();
+template void AnimationObject::UpdateProperties<Quaternion> ();
 
 AnimationObject::AnimationObject ()
 {

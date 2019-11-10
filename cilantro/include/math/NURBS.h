@@ -6,17 +6,17 @@
 #include "math/Vector3f.h"
 
 template <typename T>
-class __EAPI NURBS : public BSpline<T>
+class NURBS : public BSpline<T>
 {
 public:
-    NURBS ();
-    virtual ~NURBS ();
+    __EAPI NURBS ();
+    __EAPI virtual ~NURBS ();
 
-    T GetSplinePoint (float t) const;
+    __EAPI T GetSplinePoint (float t) const;
 
-    NURBS<T>& SetWeights (const std::vector<float>& weightVector);
+    __EAPI NURBS<T>& SetWeights (const std::vector<float>& weightVector);
 
-    bool Validate ();
+    __EAPI bool Validate ();
 
 protected:
     using Spline<T>::splineDegree;

@@ -12,18 +12,18 @@ enum class KnotVectorType
 };
 
 template <typename T>
-class __EAPI BSpline : public Spline<T>
+class BSpline : public Spline<T>
 {
 public:
-    BSpline ();
-    virtual ~BSpline ();
+    __EAPI BSpline ();
+    __EAPI virtual ~BSpline ();
 
-    virtual T GetSplinePoint (float t) const;
+    __EAPI virtual T GetSplinePoint (float t) const;
 
-    BSpline<T>& CalculateKnotVector (KnotVectorType type = KnotVectorType::Clamped);
-    BSpline<T>& SetKnotVector (const std::vector<float>& knotVector);
+    __EAPI BSpline<T>& CalculateKnotVector (KnotVectorType type = KnotVectorType::Clamped);
+    __EAPI BSpline<T>& SetKnotVector (const std::vector<float>& knotVector);
 
-    virtual bool Validate ();
+    __EAPI virtual bool Validate ();
 
 protected:
     using Spline<T>::splineDegree;

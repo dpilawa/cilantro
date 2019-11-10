@@ -10,17 +10,17 @@
 #include <map>
 
 template<typename P>
-class __EAPI AnimationProperty 
+class AnimationProperty 
 {
 public:
-    AnimationProperty (std::function<void (P)> updateFunction, std::function<P (P, P, float)> interpolateFunction);
-    ~AnimationProperty (){};
+    __EAPI AnimationProperty (std::function<void (P)> updateFunction, std::function<P (P, P, float)> interpolateFunction);
+    __EAPI virtual ~AnimationProperty (){};
 
-    bool AddKeyframe (float time, P propertyValue);
-    P GetFrame (float time);
+    __EAPI bool AddKeyframe (float time, P propertyValue);
+    __EAPI P GetFrame (float time);
 
-    std::function<void(P)> GetUpdateFunction ();
-    std::function<P(P, P, float)> GetInterpolateFunction ();
+    __EAPI std::function<void(P)> GetUpdateFunction ();
+    __EAPI std::function<P(P, P, float)> GetInterpolateFunction ();
 
 private:
     float maxKeyframeTime;
