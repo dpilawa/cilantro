@@ -38,3 +38,5 @@ script:
      - cd build
      - cmake ../
      - make
+     - cd cilantro
+     - nm -cd libcilantro.so | grep Spline
