@@ -12,14 +12,14 @@ template<typename P>
 class AnimationProperty 
 {
 public:
-    __EAPI AnimationProperty (std::function<void (P)> updateFunction, std::function<P (P, P, float)> interpolateFunction);
-    __EAPI ~AnimationProperty (){};
+    AnimationProperty (std::function<void (P)> updateFunction, std::function<P (P, P, float)> interpolateFunction);
+    ~AnimationProperty (){};
 
-    __EAPI bool AddKeyframe (float time, P propertyValue);
-    __EAPI P GetFrame (float time);
+    bool AddKeyframe (float time, P propertyValue);
+    P GetFrame (float time);
 
-    __EAPI std::function<void(P)> GetUpdateFunction ();
-    __EAPI std::function<P(P, P, float)> GetInterpolateFunction ();
+    std::function<void(P)> GetUpdateFunction ();
+    std::function<P(P, P, float)> GetInterpolateFunction ();
 
 private:
     float maxKeyframeTime;
