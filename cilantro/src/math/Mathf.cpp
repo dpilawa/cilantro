@@ -6,6 +6,12 @@
 #include "math/Mathf.h"
 
 #include <cmath>
+// remove below
+#include <iostream>
+#include <iomanip>
+
+// template instantiations
+template void Mathf::SolveSystemOfLinearEquations<float> (std::vector<std::vector<float>>& A, std::vector<float>& b);
 
 float Mathf::Length (const Vector3f & v)
 {
@@ -357,6 +363,30 @@ Matrix4f Mathf::Invert (const Matrix4f & m)
 	return z;
 }
 
+unsigned int Binomial (unsigned int n, unsigned int k)
+{
+    unsigned int c = 1;
+    unsigned int i;
+
+    if (k > n - k)
+	{
+        k = n - k;
+    }
+
+	for (i = 1; i <= k; i++)
+	{
+		if (c / i > std::numeric_limits<unsigned int>::max() / n)
+        {
+			// return 0 on overflow
+            return 0;
+        }
+        c = c / i * n + c % i * n / i;
+        --n;
+    }
+
+    return c;
+}
+
 float Mathf::Deg2Rad (float degrees)
 {
 	return degrees * Mathf::Pi() / 180.f;
@@ -559,3 +589,89 @@ Matrix4f Mathf::GenOrthographicProjectionMatrix (float aspect, float width, floa
 	return m;
 }
 
+template <typename T>
+void Mathf::SolveSystemOfLinearEquations (std::vector<std::vector<float>>& A, std::vector<T>& b)
+{
+    float max_abs;
+    int max_abs_row;
+    int m = b.size ();
+    int n;
+
+    // check matrix and vector sizes
+    if ((A.size () != m) || (m == 0))
+    {
+        return;
+    }
+	else
+	{
+        n = A[0].size ();
+    }
+
+    for (auto&& row : A)
+	{
+		if (row.size() != n)
+		{
+            return;
+        }
+    }
+
+	for (int j = 0; j < m; j++)
+	{    
+		// find pivot in current column
+        max_abs = std::abs (A[j][j]);
+        max_abs_row = j;
+        for (int i = j + 1; i < n; i++)
+        {
+			if (std::abs (A[i][j]) > max_abs)
+			{
+                max_abs = std::abs (A[i][j]);
+                max_abs_row = i;
+            }
+        }
+
+        // proceed only if pivot found
+		if (max_abs != 0)
+		{
+			// swap rows
+        	std::swap (A[j], A[max_abs_row]);
+            std::swap (b[j], b[max_abs_row]);
+
+            // lower part
+			for (int i = j + 1; i < n; i++)
+			{
+				float s = -A[i][j] / max_abs;
+                A[i][j] = 0;
+                for (int k = j + 1; k < m; k++)
+                {
+                    A[i][k] = A[i][k] + A[j][k] * s;
+                }
+                b[i] = b[i] + b[j] * s;
+            }
+
+			// upper part
+			for (int i = j - 1; i >= 0; i--)
+			{
+                float s = -A[i][j] / max_abs;
+                A[i][j] = 0;
+				for (int k = j + 1; k < m; k++)
+				{
+					A[i][k] = A[i][k] + A[j][k] * s;
+				}
+				b[i] = b[i] + b[j] * s;
+            }
+
+			// diagonal
+            float s = max_abs;
+            A[j][j] = 1;
+            for (int k = j + 1; k < m; k++)
+            {
+			   	A[j][k] = A[j][k] / s;
+            }
+			b[j] = b[j] / s;
+
+        }
+
+    }
+
+   
+}

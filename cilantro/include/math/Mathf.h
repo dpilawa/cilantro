@@ -7,6 +7,7 @@
 #include "math/Matrix3f.h"
 #include "math/Matrix4f.h"
 #include "math/Quaternion.h"
+#include <vector>
 
 // Math constants
 #define cPI 3.14159265358979323846f
@@ -55,7 +56,10 @@ public:
 	__EAPI static Matrix3f Invert (const Matrix3f& m);
 	__EAPI static Matrix4f Invert (const Matrix4f& m);
 
-	// convert between degrees and radians
+	// combinatorics
+    __EAPI static unsigned int Binomial (unsigned int n, unsigned int k);
+
+    // convert between degrees and radians
 	__EAPI static float Deg2Rad (float degrees);
     __EAPI static Vector3f Deg2Rad (const Vector3f &degrees);
     __EAPI static float Rad2Deg (float radians);
@@ -95,6 +99,10 @@ public:
 
 	// generate projection matrix (orthographic)
 	__EAPI static Matrix4f GenOrthographicProjectionMatrix (float aspect, float width, float nearZ, float farZ);
+
+	// system of linear equations
+    template <typename T>
+    __EAPI static void SolveSystemOfLinearEquations (std::vector<std::vector<float>>& A, std::vector<T>& b);
 };
 
 #endif
