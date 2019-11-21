@@ -25,7 +25,14 @@ public:
 	__EAPI static float Dot (const Vector3f& v1, const Vector3f& v2);
 	__EAPI static Vector3f Cross (const Vector3f& v1, const Vector3f& v2);
 
-	// quaterion operations
+	// homogenous coordinates
+    __EAPI static Vector4f CartesianToHomogenous (const Vector3f& v, float w);
+    __EAPI static std::vector<Vector4f> CartesianToHomogenous (const std::vector<Vector3f>& v, const std::vector<float>& w);	
+	__EAPI static Vector3f HomogenousToCartesianPerspective (const Vector4f& v);
+    __EAPI static Vector3f HomogenousToCartesianTruncate (const Vector4f& v);
+	__EAPI static float GetHomogenousWeight (const Vector4f& v);
+
+    // quaterion operations
 	__EAPI static float Norm (const Quaternion& q);
     __EAPI static float Dot (const Quaternion& q1, const Quaternion& q2);
     __EAPI static Quaternion Normalize (const Quaternion& q);

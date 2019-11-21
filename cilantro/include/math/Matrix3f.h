@@ -10,6 +10,9 @@ public:
 	// constructor
 	__EAPI Matrix3f ();
 
+	// initializer list constructor
+    __EAPI Matrix3f (std::initializer_list<float> i);
+
 	// copy constructor
     __EAPI Matrix3f (const Matrix3f& other);
 
@@ -37,6 +40,7 @@ public:
 
 	// operators
 	__EAPI Matrix3f& operator*= (const Matrix3f& m);
+	__EAPI Vector3f operator*(const Vector3f& v) const;
 	__EAPI Matrix3f& operator*= (float f);
 
 private:

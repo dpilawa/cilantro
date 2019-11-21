@@ -1,11 +1,23 @@
 #include "cilantroengine.h"
 #include "math/Matrix3f.h"
 #include <algorithm>
+#include <initializer_list>
 
 #define M3(i, j) m[i * 3 + j]
 
 // constructor
 Matrix3f::Matrix3f () { };
+
+// initializer list constructor
+Matrix3f::Matrix3f (std::initializer_list<float> initializer)
+{
+    float* mPtr = m;
+
+    for (auto&& i : initializer)
+    {
+        *mPtr++ = i;
+    }
+}
 
 // copy constructor
 Matrix3f::Matrix3f (const Matrix3f& other)
@@ -109,6 +121,18 @@ Matrix3f& Matrix3f::operator*=(const Matrix3f& other)
 	M3 (2, 2) = temp[2][0] * other[0][2] + temp[2][1] * other[1][2] + temp[2][2] * other[2][2];
 
 	return *this;
+}
+
+// matrix by vector pre-multiplication 
+Vector3f Matrix3f::operator*(const Vector3f& v) const
+{
+	Vector3f temp;
+
+    temp[0] = M3 (0, 0) * v[0] + M3 (0, 1) * v[1] + M3 (0, 2) * v[2];
+    temp[1] = M3 (1, 0) * v[0] + M3 (1, 1) * v[1] + M3 (1, 2) * v[2];
+    temp[2] = M3 (2, 0) * v[0] + M3 (2, 1) * v[1] + M3 (2, 2) * v[2];
+
+    return temp;
 }
 
 Matrix3f& Matrix3f::operator*=(float f)

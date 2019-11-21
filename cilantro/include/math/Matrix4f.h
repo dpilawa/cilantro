@@ -10,7 +10,10 @@ public:
 	// constructor
 	__EAPI Matrix4f ();
 	
-	// copy constructor
+	// initializer list constructor
+    __EAPI Matrix4f (std::initializer_list<float> i);
+
+    // copy constructor
     __EAPI Matrix4f (const Matrix4f& other);
 
     // copy constructor (column vectors)
@@ -34,7 +37,7 @@ public:
 
 	// operators
 	__EAPI Matrix4f& operator*= (const Matrix4f& m);
-	__EAPI Vector4f operator*(const Vector4f& v);
+	__EAPI Vector4f operator*(const Vector4f& v) const;
 	__EAPI Matrix4f& operator*= (float f);
 
 private:

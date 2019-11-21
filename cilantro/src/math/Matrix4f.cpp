@@ -1,10 +1,22 @@
 #include "cilantroengine.h"
 #include "math/Matrix4f.h"
+#include <initializer_list>
 
 #define M4(i, j) m[i * 4 + j]
 
 // constructor
 Matrix4f::Matrix4f () { };
+
+// initializer list constructor
+Matrix4f::Matrix4f (std::initializer_list<float> initializer)
+{
+    float* mPtr = m;
+
+    for (auto&& i : initializer)
+    {
+        *mPtr++ = i;
+    }
+}
 
 // copy constructor
 Matrix4f::Matrix4f (const Matrix4f& other)
@@ -119,7 +131,7 @@ Matrix4f& Matrix4f::operator*=(const Matrix4f& other)
 }
 
 // matrix by vector pre-multiplication 
-Vector4f Matrix4f::operator*(const Vector4f& v)
+Vector4f Matrix4f::operator*(const Vector4f& v) const
 {
 	Vector4f temp;
 

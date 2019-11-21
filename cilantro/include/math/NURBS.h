@@ -3,28 +3,34 @@
 
 #include "cilantroengine.h"
 #include "math/BSpline.h"
-#include "math/Vector3f.h"
+#include <vector>
 
-template <typename T>
-class NURBS : public BSpline<T>
+template <typename T, int d>
+class NURBS : public BSpline<T, d>
 {
 public:
     __EAPI NURBS ();
     __EAPI virtual ~NURBS ();
 
-    __EAPI T GetSplinePoint (float t) const;
+    __EAPI T GetCurvePoint (float t) const;
+    __EAPI T GetCurveTangent (float t) const;
 
-    __EAPI NURBS<T>& SetWeights (const std::vector<float>& weightVector);
+    __EAPI NURBS<T, d>& SetWeights (const std::vector<float>& weightVector);
 
     __EAPI bool Validate ();
 
 protected:
-    using Spline<T>::splineDegree;
-    using Spline<T>::controlPoints;
-    using BSpline<T>::knots;
-    using BSpline<T>::Nip;
+    using Curve<T, d>::degree;
+    using BSpline<T, d>::controlPoints;
+    using BSpline<T, d>::knots;
 
     std::vector<float> weights;
 };
+
+template <typename T>
+T EvaluateCurvePoint (unsigned int degree, const std::vector<T>& controlPoints, const std::vector<float>& knots, const std::vector<float>& weights, float u);
+
+template <typename T>
+T EvaluateCurveDerivative (unsigned int degree, const std::vector<T>& controlPoints, const std::vector<float>& knots, const std::vector<float>& weights, float u);
 
 #endif

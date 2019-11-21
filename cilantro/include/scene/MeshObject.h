@@ -5,7 +5,7 @@
 #include "scene/GameObject.h"
 #include "scene/Material.h"
 #include "math/Vector3f.h"
-#include "math/Spline.h"
+#include "math/Curve.h"
 #include <vector>
 
 class Renderer;
@@ -32,7 +32,9 @@ public:
 	// Initialize mesh in local space as unit primitives with center in space origin
 	__EAPI MeshObject& InitUnitCube ();
 	__EAPI MeshObject& InitUnitSphere (unsigned int subdivisions, bool sharedVertices = false);
-    __EAPI MeshObject& InitSpline (const Spline<Vector3f>& spline, unsigned int segments, bool showControlLines = false);
+	
+	template <int d>
+    __EAPI MeshObject& InitCurve (const Curve<Vector3f, d>& curve, unsigned int samples);
 
     // calculate vertex normals
 	__EAPI void CalculateVertexNormals ();
@@ -42,7 +44,7 @@ public:
 	__EAPI unsigned int GetIndexCount ();
 
     // set mesh material
-	__EAPI void SetMaterial (Material& material);
+	__EAPI MeshObject& SetMaterial (Material& material);
 
 	// get mesh material
 	__EAPI Material& GetMaterial () const;

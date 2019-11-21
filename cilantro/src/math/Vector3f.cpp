@@ -1,8 +1,22 @@
-#include "math/Vector3f.h"	
+#include "math/Vector3f.h"
+#include "math/Vector4f.h"
+#include <initializer_list>
     
 // constructors
 Vector3f::Vector3f () : v { 0.0f, 0.0f, 0.0f } { };
 Vector3f::Vector3f (float x, float y, float z) : v { x, y, z } { };
+Vector3f::Vector3f (const Vector4f& v4) : v { v4[0], v4[1], v4[2]} {};
+
+// initializer list constructor
+Vector3f::Vector3f (std::initializer_list<float> initializer)
+{
+    float* vPtr = v;
+
+    for (auto&& i : initializer)
+    {
+        *vPtr++ = i;
+    }
+}
 
 // copy constructor
 Vector3f::Vector3f (const Vector3f& other)

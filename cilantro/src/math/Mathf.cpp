@@ -6,12 +6,12 @@
 #include "math/Mathf.h"
 
 #include <cmath>
-// remove below
-#include <iostream>
-#include <iomanip>
+#include <vector>
 
 // template instantiations
 template void Mathf::SolveSystemOfLinearEquations<float> (std::vector<std::vector<float>>& A, std::vector<float>& b);
+template void Mathf::SolveSystemOfLinearEquations<Vector3f> (std::vector<std::vector<float>>& A, std::vector<Vector3f>& b);
+template void Mathf::SolveSystemOfLinearEquations<Vector4f> (std::vector<std::vector<float>>& A, std::vector<Vector4f>& b);
 
 float Mathf::Length (const Vector3f & v)
 {
@@ -31,6 +31,38 @@ float Mathf::Dot (const Vector3f& v1, const Vector3f& v2)
 Vector3f Mathf::Cross (const Vector3f& v1, const Vector3f& v2)
 {
 	return Vector3f (v1[1] * v2[2] - v1[2] * v2[1], v1[2] * v2[0] - v1[0] * v2[2], v1[0] * v2[1] - v1[1] * v2[0]);
+}
+
+Vector4f Mathf::CartesianToHomogenous (const Vector3f& v, float w)
+{
+    return Vector4f (v * w, w);
+}
+
+std::vector<Vector4f> Mathf::CartesianToHomogenous (const std::vector<Vector3f>& v, const std::vector<float>& w)
+{
+    std::vector<Vector4f> hv;
+
+    for (int i = 0; i < v.size(); i++)
+    {
+        hv.push_back (Mathf::CartesianToHomogenous (v[i], w[i]));
+    }
+
+    return hv;
+}
+
+Vector3f Mathf::HomogenousToCartesianPerspective (const Vector4f& v)
+{
+    return Vector3f (v * (1.0f / v[3]));
+}
+
+Vector3f Mathf::HomogenousToCartesianTruncate (const Vector4f& v)
+{
+    return Vector3f (v);
+}
+
+float Mathf::GetHomogenousWeight (const Vector4f& v)
+{
+    return v[3];
 }
 
 float Mathf::Norm (const Quaternion& q)
@@ -363,7 +395,7 @@ Matrix4f Mathf::Invert (const Matrix4f & m)
 	return z;
 }
 
-unsigned int Binomial (unsigned int n, unsigned int k)
+unsigned int Mathf::Binomial (unsigned int n, unsigned int k)
 {
     unsigned int c = 1;
     unsigned int i;
@@ -667,7 +699,7 @@ void Mathf::SolveSystemOfLinearEquations (std::vector<std::vector<float>>& A, st
             {
 			   	A[j][k] = A[j][k] / s;
             }
-			b[j] = b[j] / s;
+			b[j] = b[j] * (1.0f / s);
 
         }
 

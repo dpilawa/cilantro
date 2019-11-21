@@ -1,38 +1,41 @@
 #include "math/BSpline.h"
 #include "math/Vector3f.h"
+#include "math/Vector4f.h"
+#include "math/Mathf.h"
 
-template <typename T> class BSpline;
+template <typename T, int d> class BSpline;
 
-template <typename T>
-BSpline<T>::BSpline ()
+template <typename T, int d>
+BSpline<T, d>::BSpline ()
 {
- 
 }
 
-template <typename T>
-BSpline<T>::~BSpline ()
+template <typename T, int d>
+BSpline<T, d>::~BSpline ()
 {
-
 }
 
-template <typename T>
-T BSpline<T>::GetSplinePoint (float t) const
+template <typename T, int d>
+T BSpline<T, d>::GetCurvePoint (float t) const
 {
-    T point;
-
-    for (int i = 0; i < controlPoints.size (); i++)
-    {
-        point = point + controlPoints[i] * Nip (i, splineDegree, knots, t);
-    }
+    T point = EvaluateCurvePoint (degree, controlPoints, knots, t);
 
     return point;
 }
 
-template <typename T>
-BSpline<T>& BSpline<T>::CalculateKnotVector (KnotVectorType type)
+template <typename T, int d>
+T BSpline<T, d>::GetCurveTangent (float t) const
 {
-    unsigned int n = this->controlPoints.size ();
-    unsigned int p = this->splineDegree;
+    T derivative = EvaluateCurveDerivative (degree, controlPoints, knots, t);
+
+    return Mathf::Normalize (derivative);
+}
+
+template <typename T, int d>
+BSpline<T, d>& BSpline<T, d>::CalculateKnotVector (KnotVectorType type)
+{
+    unsigned int n = controlPoints.size ();
+    unsigned int p = degree;
 
     knots.clear ();
     knots.resize (n + p + 1);
@@ -65,8 +68,8 @@ BSpline<T>& BSpline<T>::CalculateKnotVector (KnotVectorType type)
     return *this;
 }
 
-template <typename T>
-BSpline<T>& BSpline<T>::SetKnotVector (const std::vector<float>& knotVector)
+template <typename T, int d>
+BSpline<T, d>& BSpline<T, d>::SetKnotVector (const std::vector<float>& knotVector)
 {
     knots.clear ();
 
@@ -78,12 +81,40 @@ BSpline<T>& BSpline<T>::SetKnotVector (const std::vector<float>& knotVector)
     return *this;
 }
 
-template <typename T>
-bool BSpline<T>::Validate ()
+template <typename T, int d>
+BSpline<T, d>& BSpline<T, d>::AddControlPoint (const T& point)
+{
+    controlPoints.push_back (point);
+
+    return *this;
+}
+
+template <typename T, int d>
+BSpline<T, d>& BSpline<T, d>::AddControlPoints (const std::vector<T>& points)
+{
+    controlPoints = points;
+
+    return *this;
+}
+
+template <typename T, int d>
+unsigned int BSpline<T, d>::GetControlPointsCount () const
+{
+    return controlPoints.size ();
+}
+
+template <typename T, int d>
+T BSpline<T, d>::GetControlPoint (unsigned int i) const
+{
+    return controlPoints[i];
+}
+
+template <typename T, int d>
+bool BSpline<T, d>::Validate ()
 {
     unsigned int m = knots.size ();
     unsigned int n = controlPoints.size ();
-    unsigned int p = splineDegree;
+    unsigned int p = degree;
 
     if (n == m - p - 1)
     {
@@ -96,8 +127,7 @@ bool BSpline<T>::Validate ()
 }
 
 // the original de Boor algorithm (source: "The BURBS Book")
-template <typename T>
-float BSpline<T>::Nip (int i, int p, const std::vector<float>& U, float u) const
+float Nip (int i, int p, const std::vector<float>& U, float u)
 {
     std::vector<float> N;
     N.resize (p + 1);
@@ -147,6 +177,39 @@ float BSpline<T>::Nip (int i, int p, const std::vector<float>& U, float u) const
     return N[0];
 }
 
+template <typename T>
+T EvaluateCurvePoint (unsigned int degree, const std::vector<T>& controlPoints, const std::vector<float>& knots, float u)
+{
+    T point;
+
+    for (int i = 0; i < controlPoints.size (); i++)
+    {
+        point = point + controlPoints[i] * Nip (i, degree, knots, u);
+    }
+
+    return point;
+}
+
+template <typename T>
+T EvaluateCurveDerivative (unsigned int degree, const std::vector<T>& controlPoints, const std::vector<float>& knots, float u)
+{
+    T derivative;
+
+    for (int i = 0; i < controlPoints.size () - 1; i++)
+    {
+        derivative = derivative + (controlPoints[i + 1] - controlPoints[i]) * (degree / (knots[i + degree + 1] - knots[i + 1])) * Nip (i + 1, degree - 1, knots, u);
+    }
+
+    return derivative;
+}
+
 // template instantiations
-template class BSpline<Vector3f>;
+template class BSpline<Vector3f, 2>;
+template class BSpline<Vector3f, 3>;
+
+template Vector3f EvaluateCurvePoint<Vector3f> (unsigned int degree, const std::vector<Vector3f>& controlPoints, const std::vector<float>& knots, float u);
+template Vector3f EvaluateCurveDerivative<Vector3f> (unsigned int degree, const std::vector<Vector3f>& controlPoints, const std::vector<float>& knots, float u);
+template Vector4f EvaluateCurvePoint<Vector4f> (unsigned int degree, const std::vector<Vector4f>& controlPoints, const std::vector<float>& knots, float u);
+template Vector4f EvaluateCurveDerivative<Vector4f> (unsigned int degree, const std::vector<Vector4f>& controlPoints, const std::vector<float>& knots, float u);
+
 

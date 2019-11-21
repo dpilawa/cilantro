@@ -1,9 +1,9 @@
-#ifndef _BSpline_H_
-#define _BSpline_H_
+#ifndef _BSPLINE_H_
+#define _BSPLINE_H_
 
 #include "cilantroengine.h"
-#include "math/Spline.h"
-#include "math/Vector3f.h"
+#include "math/Curve.h"
+#include <vector>
 
 enum class KnotVectorType
 {
@@ -11,27 +11,38 @@ enum class KnotVectorType
 	Uniform
 };
 
-template <typename T>
-class BSpline : public Spline<T>
+template <typename T, int d>
+class BSpline : public Curve<T, d>
 {
 public:
     __EAPI BSpline ();
     __EAPI virtual ~BSpline ();
 
-    __EAPI virtual T GetSplinePoint (float t) const;
+    __EAPI virtual T GetCurvePoint (float t) const;
+    __EAPI virtual T GetCurveTangent (float t) const;
 
-    __EAPI BSpline<T>& CalculateKnotVector (KnotVectorType type = KnotVectorType::Clamped);
-    __EAPI BSpline<T>& SetKnotVector (const std::vector<float>& knotVector);
+    __EAPI BSpline<T, d>& CalculateKnotVector (KnotVectorType type = KnotVectorType::Clamped);
+    __EAPI BSpline<T, d>& SetKnotVector (const std::vector<float>& knotVector);
+
+    __EAPI BSpline<T, d>& AddControlPoint (const T& point);
+    __EAPI BSpline<T, d>& AddControlPoints (const std::vector<T>& points);
+    __EAPI unsigned int GetControlPointsCount () const;
+    __EAPI T GetControlPoint(unsigned int i) const;
 
     __EAPI virtual bool Validate ();
 
 protected:
-    using Spline<T>::splineDegree;
-    using Spline<T>::controlPoints;
-
-    float Nip (int i, int p, const std::vector<float>& knots, float u) const;
-
+    using Curve<T, d>::degree;
+    std::vector<T> controlPoints;
     std::vector<float> knots;
 };
+
+float Nip (int i, int p, const std::vector<float>& knots, float u);
+
+template <typename T>
+T EvaluateCurvePoint (unsigned int degree, const std::vector<T>& controlPoints, const std::vector<float>& knots, float u);
+
+template <typename T>
+T EvaluateCurveDerivative (unsigned int degree, const std::vector<T>& controlPoints, const std::vector<float>& knots, float u);
 
 #endif

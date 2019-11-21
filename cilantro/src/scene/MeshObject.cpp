@@ -9,6 +9,10 @@
 
 #include <vector>
 
+// template instantiations
+template MeshObject& MeshObject::InitCurve (const Curve<Vector3f, 2>& curve, unsigned int samples);
+template MeshObject& MeshObject::InitCurve (const Curve<Vector3f, 3>& curve, unsigned int samples);
+
 MeshObject::MeshObject (MeshType type)
 {
     meshType = type;
@@ -17,7 +21,6 @@ MeshObject::MeshObject (MeshType type)
 MeshObject::~MeshObject ()
 {
 }
-
 
 MeshObject& MeshObject::Clear ()
 {
@@ -200,32 +203,20 @@ MeshObject& MeshObject::InitUnitSphere (unsigned int subdivisions, bool sharedVe
 	return *this;
 }
 
-MeshObject& MeshObject::InitSpline (const Spline<Vector3f>& spline, unsigned int segments, bool showControlLines)
+template <int d>
+MeshObject& MeshObject::InitCurve (const Curve<Vector3f, d>& curve, unsigned int samples)
 {
     Clear ();
-
-    for (int i = 0; i <= segments; i++)
-	{
-        float t = static_cast<float>(i) / static_cast<float>(segments);
-        Vector3f p = spline.GetSplinePoint (t);
+    
+    for (int i = 0; i <= samples; i++)
+    {
+        float t = static_cast<float>(i) / static_cast<float>(samples);
+        Vector3f p = curve.GetCurvePoint (t);
 		
         AddVertex (p);
 		if (i > 0)
 		{
             AddLine (i - 1, i);
-        }
-    }
-
-	if (showControlLines)
-	{
-        for (int i = 0; i < spline.GetControlPointsCount (); i++)
-		{
-            AddVertex (spline.GetControlPoint (i));
-			
-			if (i > 0)
-			{
-                AddLine (i + segments, i + segments + 1);
-            }
         }
     }
 
@@ -279,9 +270,11 @@ unsigned int MeshObject::GetIndexCount ()
 	return (unsigned int) indices.size ();
 }
 
-void MeshObject::SetMaterial (Material & material)
+MeshObject& MeshObject::SetMaterial (Material & material)
 {
 	objectMaterial = &material;
+
+    return *this;
 }
 
 Material & MeshObject::GetMaterial () const

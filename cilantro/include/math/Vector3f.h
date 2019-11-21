@@ -3,6 +3,9 @@
 
 #include "cilantroengine.h"
 #include <algorithm>
+#include <initializer_list>
+
+class Vector4f;
 
 // Represents 3-dimensional float vector
 class Vector3f
@@ -11,6 +14,10 @@ public:
 	// constructors
 	__EAPI Vector3f ();
 	__EAPI Vector3f (float x, float y, float z);
+    __EAPI Vector3f (const Vector4f& v4);	
+
+	// initializer list constructor
+    __EAPI Vector3f (std::initializer_list<float> i);
 
 	// copy constructor
     __EAPI Vector3f (const Vector3f& other);

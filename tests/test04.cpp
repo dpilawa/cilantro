@@ -7,12 +7,15 @@
 #include "input/GLFWInputController.h"
 #include "math/NURBS.h"
 #include "math/BSpline.h"
+#include "math/CubicHermite.h"
+#include "math/Bezier.h"
 #include "math/Mathf.h"
 #include "util/LogMessage.h"
 
 #include "ControlledCamera.h"
 
 #include <iostream>
+#include <cmath>
 
 int main (int argc, char* argv[])
 {
@@ -55,7 +58,7 @@ int main (int argc, char* argv[])
 
     ControlledCamera& cam = dynamic_cast<ControlledCamera&>(scene.AddGameObject (new ControlledCamera (60.0f, 0.1f, 100.0f, 0.1f)));
     cam.Initialize ();
-    cam.GetModelTransform ().Translate (5.0f, 5.0f, 5.0f).Rotate(-25.0f, 45.0f, 0.0f);
+    cam.GetModelTransform ().Translate (5.0f, 5.0f, 5.0f).Rotate(-30.0f, 45.0f, 0.0f);
     scene.SetActiveCamera (&cam);
 
     MeshObject& x = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject (MeshType::Lines)));
@@ -76,30 +79,60 @@ int main (int argc, char* argv[])
     z.AddLine (0, 1);
     z.SetMaterial (blue);
 
-    BSpline<Vector3f> spline;
-    Vector3f v{1.0f, 0.0f, 0.0f};
+    // Bspline
+    BSpline<Vector3f, 3> bspline;
+    Vector3f v {1.0f, 0.0f, 0.0f};
     Quaternion q = Mathf::GenRotationQuaternion (Vector3f (0.0f, 1.0f, 0.0f), Mathf::Pi () / 8.0f);
     float h = 0.0f;
-    spline.SetDegree (3);
     for (int i=0; i<50; i++)
     {
         v = Mathf::Rotate (v, q);
         h += 0.05f;
-        spline.AddControlPoint (v + Vector3f (0.0f, h, 0.0f));
+        bspline.AddControlPoint (v + Vector3f (0.0f, h, 0.0f));
     }
 
-    spline.CalculateKnotVector (KnotVectorType::Clamped);
+    bspline.CalculateKnotVector (KnotVectorType::Clamped);
 
-    if (spline.Validate ())
+    if (bspline.Validate ())
     {
-        MeshObject& line = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject (MeshType::Lines)));
-        line.InitSpline (spline, 250, false);
-        line.SetMaterial (white);
+        MeshObject& bsplineObject = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject (MeshType::Lines)));
+        bsplineObject.InitCurve (bspline, 250).SetMaterial (white);
     }
     else
     {
-        LogMessage() << "Spline validation error";
+        LogMessage() << "B-Spline validation error";
     }
+
+    // NURBS
+    NURBS<Vector3f, 2> nurbs;
+    float sqrt2by2 = std::sqrt (2.0f) / 2.0f;
+    nurbs.AddControlPoints ({{1.f, 0.f, 0.f}, {1.f, 1.f, 0.f}, {0.f, 1.f, 0.f}, {-1.f, 1.f, 0.f}, {-1.f, 0.f, 0.f}, {-1.f, -1.f, 0.f}, {0.f, -1.f, 0.f}, {1.f, -1.f, 0.f}, {1.f, 0.f, 0.f}});
+    nurbs.SetKnotVector ({0.0f, 0.0f, 0.0f, 0.25f, 0.25f, 0.5f, 0.5f, 0.75f, 0.75f, 1.0f, 1.0f, 1.0f});
+    nurbs.SetWeights ({1.0f, sqrt2by2, 1.0f, sqrt2by2, 1.0f, sqrt2by2, 1.0f, sqrt2by2, 1.0f});
+
+    if (nurbs.Validate ())
+    {
+        MeshObject& nurbsObject = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject (MeshType::Lines)));
+        nurbsObject.InitCurve (nurbs, 64).SetMaterial (white);
+        nurbsObject.GetModelTransform ().Rotate ({0.0f, 90.0f, 0.0f}).Translate ({0.0f, 0.0f, 3.0f});
+    }
+    else
+    {
+        LogMessage() << "NURBS validation error";
+    }
+
+    // Hermite curve
+    CubicHermite<Vector3f> hc (Vector3f(-1.0f, 0.0f, 0.0f), Vector3f(1.0f, 0.0f, 0.0f), Vector3f(-1.0f, 5.0f, 0.0f), Vector3f(-1.0f, 5.0f, 0.0f));
+    MeshObject& hcObject = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject (MeshType::Lines)));
+    hcObject.InitCurve (hc, 100);
+    hcObject.SetMaterial (white).GetModelTransform ().Translate ({3.0f, 0.0f, 0.0f});
+
+    // Bezier curve
+    Bezier<Vector3f, 3> b;
+    b.SetPoints ({{-1.0f, 0.0f, 0.0f}, {-1.0f, 0.0f, -1.0f}, {1.0f, 0.0f, -1.0f}, {1.0f, 0.0f, 0.0f}});
+    MeshObject& bezierObject = dynamic_cast<MeshObject&> (scene.AddGameObject (new MeshObject (MeshType::Lines)));
+    bezierObject.InitCurve (b, 100);
+    bezierObject.SetMaterial (white).GetModelTransform ().Translate ({3.0f, 0.0f, 2.0f});
 
     game.Run ();
 
