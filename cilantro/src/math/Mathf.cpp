@@ -4,6 +4,7 @@
 #include "math/Matrix3f.h"
 #include "math/Matrix4f.h"
 #include "math/Mathf.h"
+#include "math/GaussLegendreIntegrator.h"
 
 #include <cmath>
 #include <vector>
@@ -12,6 +13,8 @@
 template void Mathf::SolveSystemOfLinearEquations<float> (std::vector<std::vector<float>>& A, std::vector<float>& b);
 template void Mathf::SolveSystemOfLinearEquations<Vector3f> (std::vector<std::vector<float>>& A, std::vector<Vector3f>& b);
 template void Mathf::SolveSystemOfLinearEquations<Vector4f> (std::vector<std::vector<float>>& A, std::vector<Vector4f>& b);
+
+GaussLegendreIntegrator<INTEGRATOR_DEGREE> Mathf::integrator = GaussLegendreIntegrator<INTEGRATOR_DEGREE> ();
 
 float Mathf::Length (const Vector3f & v)
 {
@@ -256,6 +259,12 @@ Quaternion Mathf::Slerp (const Quaternion& q0, const Quaternion& q1, float t)
 
     result = s0 * q0n + s1 * q1n;
     return Mathf::Normalize (result);
+}
+
+
+float Mathf::Integral (float a, float b, std::function<float(float)> f)
+{
+    return integrator.Integral (a, b, f);
 }
 
 float Mathf::Det (const Matrix3f & m)

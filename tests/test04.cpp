@@ -15,7 +15,13 @@
 #include "ControlledCamera.h"
 
 #include <iostream>
+#include <iomanip>
 #include <cmath>
+
+float expfdaw(float x)
+{
+    return std::exp (x);
+}
 
 int main (int argc, char* argv[])
 {
@@ -136,6 +142,6 @@ int main (int argc, char* argv[])
 
     game.Run ();
 
-	return 0;
+    return 0;
 }
 

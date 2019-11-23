@@ -7,6 +7,7 @@
 #include "math/Matrix3f.h"
 #include "math/Matrix4f.h"
 #include "math/Quaternion.h"
+#include "math/GaussLegendreIntegrator.h"
 #include <vector>
 
 // Math constants
@@ -54,6 +55,9 @@ public:
 	__EAPI static Vector3f Lerp (const Vector3f& v0, const Vector3f& v1, float t);
     __EAPI static Quaternion Lerp (const Quaternion& q0, const Quaternion& q1, float t);	
     __EAPI static Quaternion Slerp (const Quaternion& q0, const Quaternion& q1, float t);
+
+	// numerical
+	__EAPI static float Integral (float a, float b, std::function<float(float)> f);
 
     // matrix operations
 	__EAPI static float Det (const Matrix3f& m);
@@ -110,6 +114,9 @@ public:
 	// system of linear equations
     template <typename T>
     __EAPI static void SolveSystemOfLinearEquations (std::vector<std::vector<float>>& A, std::vector<T>& b);
+
+private:
+    static GaussLegendreIntegrator<INTEGRATOR_DEGREE> integrator;
 };
 
 #endif

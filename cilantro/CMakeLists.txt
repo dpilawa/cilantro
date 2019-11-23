@@ -44,6 +44,7 @@ include/math/Bezier.h
 include/math/BSpline.h
 include/math/CubicHermite.h
 include/math/Curve.h
+include/math/GaussLegendreIntegrator.h
 include/math/Mathf.h
 include/math/Matrix3f.h
 include/math/Matrix4f.h
@@ -83,6 +84,7 @@ src/math/Bezier.cpp
 src/math/BSpline.cpp
 src/math/CubicHermite.cpp
 src/math/Curve.cpp
+src/math/GaussLegendreIntegrator.cpp
 src/math/Mathf.cpp
 src/math/Matrix3f.cpp
 src/math/Matrix4f.cpp
