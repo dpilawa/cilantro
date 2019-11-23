@@ -42,10 +42,10 @@ T Bezier<T,d>::GetCurvePoint (float t) const
 {
     T point;
 
-    point = std::powf (1.0f - t, static_cast<float>(degree)) * points[0] + std::powf (t, static_cast<float>(degree)) * points[degree];
+    point = std::pow (1.0f - t, static_cast<float>(degree)) * points[0] + std::pow (t, static_cast<float>(degree)) * points[degree];
     for (unsigned int i = 1; i <= degree - 1; i++)
     {
-		point += Mathf::Binomial (degree, i) * std::powf (1.0f - t, static_cast<float>(degree - i)) * std::powf (t, static_cast<float>(i)) * points[i];
+		point += Mathf::Binomial (degree, i) * std::pow (1.0f - t, static_cast<float>(degree - i)) * std::pow (t, static_cast<float>(i)) * points[i];
     }
 
     return point;
@@ -56,10 +56,10 @@ T Bezier<T,d>::GetCurveTangent (float t) const
 {
     T point;
 
-    point = std::powf (1.0f - t, static_cast<float>(degree - 1)) * (points[1] - points[0]) + std::powf (t, static_cast<float>(degree - 1)) * (points[degree] - points[degree - 1]);
+    point = std::pow (1.0f - t, static_cast<float>(degree - 1)) * (points[1] - points[0]) + std::pow (t, static_cast<float>(degree - 1)) * (points[degree] - points[degree - 1]);
     for (unsigned int i = 1; i <= degree - 2; i++)
     {
-        point += Mathf::Binomial (degree - 1, i) * std::powf (1.0f - t, static_cast<float>(degree - i)) * std::powf (t, static_cast<float>(i)) * (points[i + 1] - points[i]);
+        point += Mathf::Binomial (degree - 1, i) * std::pow (1.0f - t, static_cast<float>(degree - i)) * std::pow (t, static_cast<float>(i)) * (points[i + 1] - points[i]);
     }
     point *= static_cast<float>(degree);
 
