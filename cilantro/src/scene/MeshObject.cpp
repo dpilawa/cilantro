@@ -10,8 +10,8 @@
 #include <vector>
 
 // template instantiations
-template MeshObject& MeshObject::InitCurve (const Curve<Vector3f, 2>& curve, unsigned int samples);
-template MeshObject& MeshObject::InitCurve (const Curve<Vector3f, 3>& curve, unsigned int samples);
+template __EAPI MeshObject& MeshObject::InitCurve (const Curve<Vector3f, 2>& curve, unsigned int samples);
+template __EAPI MeshObject& MeshObject::InitCurve (const Curve<Vector3f, 3>& curve, unsigned int samples);
 
 MeshObject::MeshObject (MeshType type)
 {
@@ -208,7 +208,7 @@ MeshObject& MeshObject::InitCurve (const Curve<Vector3f, d>& curve, unsigned int
 {
     Clear ();
     
-    for (int i = 0; i <= samples; i++)
+    for (unsigned int i = 0; i <= samples; i++)
     {
         float t = static_cast<float>(i) / static_cast<float>(samples);
         Vector3f p = curve.GetCurvePoint (t);

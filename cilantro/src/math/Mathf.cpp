@@ -45,7 +45,7 @@ std::vector<Vector4f> Mathf::CartesianToHomogenous (const std::vector<Vector3f>&
 {
     std::vector<Vector4f> hv;
 
-    for (int i = 0; i < v.size(); i++)
+    for (unsigned int i = 0; i < v.size(); i++)
     {
         hv.push_back (Mathf::CartesianToHomogenous (v[i], w[i]));
     }

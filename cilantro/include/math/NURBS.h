@@ -28,9 +28,9 @@ protected:
 };
 
 template <typename T>
-T EvaluateCurvePoint (unsigned int degree, const std::vector<T>& controlPoints, const std::vector<float>& knots, const std::vector<float>& weights, float u);
+__EAPI T EvaluateCurvePoint (unsigned int degree, const std::vector<T>& controlPoints, const std::vector<float>& knots, const std::vector<float>& weights, float u);
 
 template <typename T>
-T EvaluateCurveDerivative (unsigned int degree, const std::vector<T>& controlPoints, const std::vector<float>& knots, const std::vector<float>& weights, float u);
+__EAPI T EvaluateCurveDerivative (unsigned int degree, const std::vector<T>& controlPoints, const std::vector<float>& knots, const std::vector<float>& weights, float u);
 
 #endif

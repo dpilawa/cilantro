@@ -42,24 +42,24 @@ BSpline<T, d>& BSpline<T, d>::CalculateKnotVector (KnotVectorType type)
 
     if (type == KnotVectorType::Clamped)
     {
-        for (int m = 0; m < p + 1; m++)
+        for (unsigned int m = 0; m < p + 1; m++)
         {
             knots[m] = 0.0f;
         }
 
-        for (int m = p + 1; m < n; m++)
+        for (unsigned int m = p + 1; m < n; m++)
         {
             knots[m] = static_cast<float>(m - p) / static_cast<float>(n - p);
         }
 
-        for (int m = n; m < n + p + 1; m++)
+        for (unsigned int m = n; m < n + p + 1; m++)
         {
             knots[m] = 1.0f;
         }
     }
     else
     {
-        for (int m = 0; m < n + p + 1; m++)
+        for (unsigned int m = 0; m < n + p + 1; m++)
         {
             knots[m] = static_cast<float>(m + 1) / static_cast<float>(n + p + 1);
         }
@@ -73,7 +73,7 @@ BSpline<T, d>& BSpline<T, d>::SetKnotVector (const std::vector<float>& knotVecto
 {
     knots.clear ();
 
-    for (int i = 0; i < knotVector.size (); i++)
+    for (unsigned int i = 0; i < knotVector.size (); i++)
     {
         knots.push_back (knotVector[i]);
     }
@@ -182,7 +182,7 @@ T EvaluateCurvePoint (unsigned int degree, const std::vector<T>& controlPoints, 
 {
     T point;
 
-    for (int i = 0; i < controlPoints.size (); i++)
+    for (unsigned int i = 0; i < controlPoints.size (); i++)
     {
         point = point + controlPoints[i] * Nip (i, degree, knots, u);
     }
@@ -195,7 +195,7 @@ T EvaluateCurveDerivative (unsigned int degree, const std::vector<T>& controlPoi
 {
     T derivative;
 
-    for (int i = 0; i < controlPoints.size () - 1; i++)
+    for (unsigned int i = 0; i < controlPoints.size () - 1; i++)
     {
         derivative = derivative + (controlPoints[i + 1] - controlPoints[i]) * (degree / (knots[i + degree + 1] - knots[i + 1])) * Nip (i + 1, degree - 1, knots, u);
     }

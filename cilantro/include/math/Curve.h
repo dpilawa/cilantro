@@ -15,7 +15,7 @@ public:
     __EAPI virtual T GetCurveTangent (float t) const = 0;
 
 protected:
-    int degree;
+    unsigned int degree;
 };
 
 #endif

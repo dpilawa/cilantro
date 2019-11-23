@@ -277,12 +277,12 @@ void GLFWInputController::MouseCursorCallback(double xPos, double yPos)
     {
         if (axisMouseX)
         {
-            axisMouseX->Set (prevAxisMouseX - xPos, true);
+            axisMouseX->Set (static_cast<float>(prevAxisMouseX - xPos), true);
         }
 
         if (axisMouseY)
         {
-            axisMouseY->Set (prevAxisMouseY - yPos, true);
+            axisMouseY->Set (static_cast<float>(prevAxisMouseY - yPos), true);
         }
     }
 
@@ -297,12 +297,12 @@ void GLFWInputController::MouseScrollCallback(double xOffset, double yOffset)
     {
         if (axisMouseScrollX)
         {
-            axisMouseScrollX->Set (xOffset);
+            axisMouseScrollX->Set (static_cast<float>(xOffset));
         }
 
         if (axisMouseScrollY)
         {
-            axisMouseScrollY->Set (yOffset);
+            axisMouseScrollY->Set (static_cast<float>(yOffset));
         }
     }
 }

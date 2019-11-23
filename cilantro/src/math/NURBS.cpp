@@ -37,7 +37,7 @@ NURBS<T, d>& NURBS<T, d>::SetWeights (const std::vector<float>& weightVector)
 {
     weights.clear ();
 
-    for (int i = 0; i < weightVector.size (); i++)
+    for (unsigned int i = 0; i < weightVector.size (); i++)
     {
         weights.push_back (weightVector[i]);
     }
@@ -70,12 +70,12 @@ T EvaluateCurvePoint (unsigned int degree, const std::vector<T>& controlPoints, 
 
     float rationalWeight = 0.0f;
 
-    for (int i = 0; i < controlPoints.size (); i++)
+    for (unsigned int i = 0; i < controlPoints.size (); i++)
     {
         rationalWeight += Nip (i, degree, knots, u) * weights[i];
     }
 
-    for (int i = 0; i < controlPoints.size (); i++)
+    for (unsigned int i = 0; i < controlPoints.size (); i++)
     {
         point = point + controlPoints[i] * (Nip (i, degree, knots, u) * weights[i] / rationalWeight);
     }
@@ -101,5 +101,3 @@ T EvaluateCurveDerivative (unsigned int degree, const std::vector<T>& controlPoi
 template class NURBS<Vector3f, 2>;
 template class NURBS<Vector3f, 3>;
 
-template Vector3f EvaluateCurvePoint<Vector3f> (unsigned int degree, const std::vector<Vector3f>& controlPoints, const std::vector<float>& knots, const std::vector<float>& weights, float u);
-template Vector3f EvaluateCurveDerivative<Vector3f> (unsigned int degree, const std::vector<Vector3f>& controlPoints, const std::vector<float>& knots, const std::vector<float>& weights, float u);

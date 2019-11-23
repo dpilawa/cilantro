@@ -29,8 +29,6 @@ public:
 
     __EAPI void SetLooping (float looping);
 
-    __EAPI float getPlayedTime ();
-
     void OnFrame ();
 
 private:
