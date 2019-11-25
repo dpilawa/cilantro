@@ -40,6 +40,12 @@ Vector4f& Vector4f::operator= (Vector4f other)
 // destructor
 Vector4f::~Vector4f () { };
 
+// vector dimenison
+unsigned int Vector4f::Dim () const
+{
+	return 4u;
+}
+
 // mutator
 float& Vector4f::operator[] (unsigned int index)
 {

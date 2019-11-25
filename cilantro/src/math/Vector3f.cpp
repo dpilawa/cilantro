@@ -40,6 +40,12 @@ Vector3f& Vector3f::operator= (Vector3f other)
 // destructor
 Vector3f::~Vector3f () { };
 
+// vector dimension
+unsigned int Vector3f::Dim () const
+{
+	return 3u;
+}
+
 // mutator
 float& Vector3f::operator[](unsigned int index)
 {

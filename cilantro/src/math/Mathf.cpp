@@ -21,7 +21,17 @@ float Mathf::Length (const Vector3f & v)
 	return std::sqrt (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
 }
 
+float Mathf::Length (const Vector4f & v)
+{
+	return std::sqrt (v[0] * v[0] + v[1] * v[1] + v[2] * v[2] + v[3] * v[3]);
+}
+
 Vector3f Mathf::Normalize (const Vector3f& v)
+{
+	return v * (1.0f / Length (v));
+}
+
+Vector4f Mathf::Normalize (const Vector4f& v)
 {
 	return v * (1.0f / Length (v));
 }

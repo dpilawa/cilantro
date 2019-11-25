@@ -56,7 +56,7 @@ T CubicHermite<T>::GetCurveTangent (float t) const
 
     derivative = vCoefficients[0] * 3 * t * t + vCoefficients[1] * 2 * t + vCoefficients[2];
 
-    return Mathf::Normalize (derivative);
+    return derivative;
 }
 
 // template instantiations

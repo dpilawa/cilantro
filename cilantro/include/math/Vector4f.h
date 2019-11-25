@@ -31,6 +31,9 @@ public:
     // destructor
     __EAPI ~Vector4f ();
 
+	// vector dimension
+	__EAPI unsigned int Dim () const;
+
     // accessor and mutator
 	__EAPI float& operator[] (unsigned int index);
 	__EAPI const float& operator[] (unsigned int index) const;

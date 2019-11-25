@@ -22,7 +22,9 @@ public:
 
 	// vector operations
 	__EAPI static float Length (const Vector3f& v);
+	__EAPI static float Length (const Vector4f& v);
 	__EAPI static Vector3f Normalize (const Vector3f& v);
+	__EAPI static Vector4f Normalize (const Vector4f& v);
 	__EAPI static float Dot (const Vector3f& v1, const Vector3f& v2);
 	__EAPI static Vector3f Cross (const Vector3f& v1, const Vector3f& v2);
 

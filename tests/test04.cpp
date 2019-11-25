@@ -128,7 +128,7 @@ int main (int argc, char* argv[])
     }
 
     // Hermite curve
-    CubicHermite<Vector3f> hc (Vector3f(-1.0f, 0.0f, 0.0f), Vector3f(1.0f, 0.0f, 0.0f), Vector3f(-1.0f, 5.0f, 0.0f), Vector3f(-1.0f, 5.0f, 0.0f));
+    CubicHermite<Vector3f> hc (Vector3f(-1.0f, 0.0f, 0.0f), Vector3f(1.0f, 0.0f, 0.0f), Vector3f(-1.0f, 6.0f, 0.0f), Vector3f(-1.0f, 6.0f, 0.0f));
     MeshObject& hcObject = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject (MeshType::Lines)));
     hcObject.InitCurve (hc, 100);
     hcObject.SetMaterial (white).GetModelTransform ().Translate ({3.0f, 0.0f, 0.0f});
@@ -139,6 +139,12 @@ int main (int argc, char* argv[])
     MeshObject& bezierObject = dynamic_cast<MeshObject&> (scene.AddGameObject (new MeshObject (MeshType::Lines)));
     bezierObject.InitCurve (b, 100);
     bezierObject.SetMaterial (white).GetModelTransform ().Translate ({3.0f, 0.0f, 2.0f});
+
+	std::cout << std::setprecision (10);
+	std::cout << nurbs.GetCurveLength () / 2.0f << std::endl;
+	std::cout << b.GetCurveLength () << std::endl;
+	std::cout << bspline.GetCurveLength () << std::endl;
+	std::cout << hc.GetCurveLength () << std::endl;
 
     game.Run ();
 

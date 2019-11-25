@@ -29,7 +29,7 @@ T NURBS<T, d>::GetCurveTangent (float t) const
 {
     T derivative = EvaluateCurveDerivative (degree, controlPoints, knots, weights, t);
 
-    return Mathf::Normalize (derivative);
+    return derivative;
 }
 
 template <typename T, int d>
@@ -92,7 +92,7 @@ T EvaluateCurveDerivative (unsigned int degree, const std::vector<T>& controlPoi
     auto cwd = EvaluateCurveDerivative (degree, cw, knots, u);
     auto point = EvaluateCurvePoint (degree, cw, knots, u);
 
-    derivative = Mathf::HomogenousToCartesianTruncate (cwd) - Mathf::GetHomogenousWeight (cwd) * Mathf::HomogenousToCartesianPerspective (point);
+	derivative = (Mathf::HomogenousToCartesianTruncate (cwd) - Mathf::GetHomogenousWeight (cwd) * Mathf::HomogenousToCartesianPerspective (point)) * (1.0f / point[point.Dim () - 1]);
 
     return derivative;
 }

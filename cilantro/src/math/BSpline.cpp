@@ -28,7 +28,7 @@ T BSpline<T, d>::GetCurveTangent (float t) const
 {
     T derivative = EvaluateCurveDerivative (degree, controlPoints, knots, t);
 
-    return Mathf::Normalize (derivative);
+    return derivative;
 }
 
 template <typename T, int d>

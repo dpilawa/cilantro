@@ -63,7 +63,7 @@ T Bezier<T,d>::GetCurveTangent (float t) const
     }
     point *= static_cast<float>(degree);
 
-    return Mathf::Normalize (point);
+    return point;
 }
 
 // template instantiations
