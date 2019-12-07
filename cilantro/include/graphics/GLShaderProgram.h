@@ -4,11 +4,11 @@
 #include "glad/glad.h"
 #include "graphics/GLShader.h"
 
-class GLShaderModel
+class GLShaderProgram
 {
 public:
-	GLShaderModel ();
-	~GLShaderModel ();
+	GLShaderProgram ();
+	~GLShaderProgram ();
 
 	// return program id
 	GLuint GetProgramId ();
@@ -16,7 +16,7 @@ public:
 	// attach shader to a program
 	void AttachShader (GLShader shader);
 
-	// use model
+	// use program
 	void Use ();
 
 private:

@@ -9,24 +9,11 @@ class RenderTarget;
 class InputController;
 class GameLoop;
 
-class GameLoopChild
-{
-public:
-    GameLoopChild () : gameLoop (nullptr) {};
-    ~GameLoopChild () {};
-
-    void AttachToGame (GameLoop* parentGameLoop);
-
-protected:
-
-    GameLoop* gameLoop;
-};
-
 class GameLoop
 {
 public:
 
-    __EAPI GameLoop (GameScene& scene, InputController& inputController, Renderer& renderer, RenderTarget& renderTarget);
+    __EAPI GameLoop ();
     __EAPI ~GameLoop ();
 
     // run a game loop
@@ -34,27 +21,13 @@ public:
 	__EAPI void Stop ();	
 	__EAPI void Step ();
 
-	// get scene reference
-	__EAPI GameScene& GetScene ();
-
-	// get renderer target reference
-	__EAPI RenderTarget& GetRenderTarget ();
-
-	// get renderer reference
-	__EAPI Renderer& GetRenderer ();
-
-	// get input controller reference
-	__EAPI InputController& GetInputController ();
+	// game loop components
+    GameScene* gameScene;
+    Renderer* gameRenderer;
+	InputController* gameInputController;
+    RenderTarget* gameRenderTarget;
 
 private:
-
-	// game loop requires a scene object
-	// and renderer interface
-    GameScene& gameScene;
-    Renderer& gameRenderer;
-	InputController& gameInputController;
-    RenderTarget& gameRenderTarget;
-
     // bool flags to control the game loop
 	bool shouldStop;
 

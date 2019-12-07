@@ -12,19 +12,19 @@
 
 int main (int argc, char* argv [])
 {
-	GameScene scene;
+	GameLoop game;
 
-	GLFWRenderTarget target;
-    target.SetResolution (960, 600);
-    target.SetDebugVisible (true);
-    target.SetVSync (true);
-	target.SetFullscreen (false);
+	GameScene scene (&game);
+	game.gameScene = &scene;
 
-	GLFWInputController controller;
-    controller.SetGLFWWindow (target.GetWindow ());
+	GLFWRenderTarget target (&game, "Test 4", 960, 600, false, true, true);
+	game.gameRenderTarget = &target;
 
-    GLRenderer renderer;
-	GameLoop game (scene, controller, renderer, target);
+	GLFWInputController controller (&game, target.GetWindow ());
+	game.gameInputController = &controller;
+
+    GLRenderer renderer (&game, 960, 600);
+	game.gameRenderer = &renderer;
 
 	controller.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
 	controller.BindInputEvent ("exit", [ & ]() { game.Stop (); });

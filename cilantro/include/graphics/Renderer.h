@@ -1,6 +1,7 @@
 #ifndef _RENDERER_H_
 #define _RENDERER_H_
 
+#include "cilantroengine.h"
 #include "util/CallbackProvider.h"
 #include "game/GameLoop.h"
 #include "scene/GameScene.h"
@@ -8,25 +9,30 @@
 #include "scene/PointLight.h"
 #include "scene/DirectionalLight.h"
 #include "scene/SpotLight.h"
+#include "graphics/Shader.h"
 #include "graphics/RenderTarget.h"
 #include <string>
 
-enum class ShaderType { VERTEX_SHADER, FRAGMENT_SHADER };
-
-class Renderer : public GameLoopChild
+class Renderer
 {
 public:
-	Renderer ();
-	virtual ~Renderer ();
+	__EAPI Renderer () = delete;
+	__EAPI Renderer (GameLoop* gameLoop, unsigned int width, unsigned int height);
+	__EAPI virtual ~Renderer ();
 
-	// abstract functions declarations
-	virtual void Initialize () = 0;
-	virtual void RenderFrame () = 0;
-	virtual void Deinitialize () = 0;
+	// render
+	__EAPI virtual void RenderFrame ();
+
+	// renderer state modifiers
+	__EAPI virtual void SetResolution (unsigned int width, unsigned int height);
+
+	// getters
+	__EAPI unsigned int GetWidth () const;
+	__EAPI unsigned int GetHeight () const;
 
 	// shader library manipulation
 	virtual void AddShader (std::string shaderName, std::string shaderSourceCode, ShaderType shaderType) = 0;
-	virtual void AddShaderToModel (std::string shaderModelName, std::string shaderName) = 0;
+	virtual void AddShaderToProgram (std::string shaderProgramName, std::string shaderName) = 0;
 
 	// object drawing and updating
 	virtual void Draw (MeshObject& meshObject) = 0;
@@ -35,6 +41,15 @@ public:
 	virtual void Update (DirectionalLight& pointLight) = 0;
 	virtual void Update (SpotLight& pointLight) = 0;
 
+protected:
+
+	GameLoop* gameLoop;
+
+	virtual void Initialize () = 0;
+	virtual void Deinitialize () = 0;
+
+	unsigned int width;
+	unsigned int height;
 };
 
 #endif

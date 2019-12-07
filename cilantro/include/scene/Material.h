@@ -12,7 +12,7 @@ public:
 	__EAPI ~Material ();
 
 	// setters
-	__EAPI Material& SetShaderModelName (std::string name);
+	__EAPI Material& SetShaderProgram (std::string name);
 	__EAPI Material& SetAmbientColor (const Vector3f& color);
 	__EAPI Material& SetDiffuseColor (const Vector3f& color);
 	__EAPI Material& SetSpecularColor (const Vector3f& color);
@@ -21,7 +21,7 @@ public:
 	__EAPI Material& SetColor (const Vector3f& color);
 
 	// getters
-	__EAPI std::string GetShaderModelName () const;
+	__EAPI std::string GetShaderProgramName () const;
 	__EAPI Vector3f GetAmbientColor () const;
 	__EAPI Vector3f GetDiffuseColor () const;
 	__EAPI Vector3f GetSpecularColor () const;
@@ -31,7 +31,7 @@ public:
 private:
 
 	// name of a shader program defined in renderer
-	std::string shaderModelName;
+	std::string shaderProgramName;
 
 	// ambient color
 	Vector3f ambientColor;

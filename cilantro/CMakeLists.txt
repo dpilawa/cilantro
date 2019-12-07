@@ -1,42 +1,31 @@
-add_compile_definitions(IMGUI_IMPL_OPENGL_LOADER_GLAD)
 add_compile_definitions(BUILDING_DLL)
 
 include_directories ("${PROJECT_SOURCE_DIR}/ext/glfw/include")
-include_directories ("${PROJECT_SOURCE_DIR}/ext/imgui")
 include_directories ("${PROJECT_SOURCE_DIR}/cilantro/include")
 
 add_library(cilantro SHARED
 
-../ext/imgui/examples/imgui_impl_glfw.cpp
-../ext/imgui/examples/imgui_impl_glfw.h
-../ext/imgui/examples/imgui_impl_opengl3.cpp
-../ext/imgui/examples/imgui_impl_opengl3.h
-../ext/imgui/imconfig.h
-../ext/imgui/imgui_demo.cpp
-../ext/imgui/imgui_draw.cpp
-../ext/imgui/imgui_internal.h
-../ext/imgui/imgui_widgets.cpp
-../ext/imgui/imgui.cpp
-../ext/imgui/imgui.h
-../ext/imgui/imstb_rectpack.h
-../ext/imgui/imstb_textedit.h
-../ext/imgui/imstb_truetype.h
-
 include/cilantroengine.h
 
-include/game/GameLoop.h
-include/graphics/blinnphong.fs.h
 include/graphics/default.vs.h
-include/graphics/emissive.fs.h
-include/graphics/GLFramebufferRenderTarget.h
-include/graphics/GLFWRenderTarget.h
-include/graphics/GLRenderer.h
-include/graphics/GLShader.h
-include/graphics/GLShaderModel.h
+include/graphics/flatquad.vs.h
 include/graphics/normals.fs.h
 include/graphics/phong.fs.h
+include/graphics/blinnphong.fs.h
+include/graphics/emissive.fs.h
+include/graphics/flatquad.fs.h
+include/graphics/post_gamma.fs.h
+
+include/game/GameLoop.h
+include/graphics/GLFWRenderTarget.h
+include/graphics/GLPostProcess.h
+include/graphics/GLRenderer.h
+include/graphics/GLShader.h
+include/graphics/GLShaderProgram.h
+include/graphics/PostProcess.h
 include/graphics/Renderer.h
 include/graphics/RenderTarget.h
+include/graphics/Shader.h
 include/input/GLFWInputController.h
 include/input/InputController.h
 include/input/Input.h
@@ -69,15 +58,16 @@ include/scene/Transform.h
 include/util/CallbackProvider.h
 include/util/LogMessage.h
 include/util/Timer.h
-
 src/game/GameLoop.cpp
-src/graphics/GLFramebufferRenderTarget.cpp
 src/graphics/GLFWRenderTarget.cpp
+src/graphics/GLPostProcess.cpp
 src/graphics/GLRenderer.cpp
 src/graphics/GLShader.cpp
-src/graphics/GLShaderModel.cpp
+src/graphics/GLShaderProgram.cpp
+src/graphics/PostProcess.cpp
 src/graphics/Renderer.cpp
 src/graphics/RenderTarget.cpp
+src/graphics/Shader.cpp
 src/input/GLFWInputController.cpp
 src/input/InputController.cpp
 src/math/Bezier.cpp

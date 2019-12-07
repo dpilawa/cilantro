@@ -1,27 +1,27 @@
 #include "cilantroengine.h"
 #include "graphics/GLShader.h"
-#include "graphics/GLShaderModel.h"
+#include "graphics/GLShaderProgram.h"
 #include "util/LogMessage.h"
 
 #include <iostream>
 
-GLShaderModel::GLShaderModel ()
+GLShaderProgram::GLShaderProgram ()
 {
 	shaderProgramId = glCreateProgram ();
 }
 
 
-GLShaderModel::~GLShaderModel ()
+GLShaderProgram::~GLShaderProgram ()
 {
 }
 
-GLuint GLShaderModel::GetProgramId ()
+GLuint GLShaderProgram::GetProgramId ()
 {
 	return shaderProgramId;
 }
 
 
-void GLShaderModel::AttachShader (GLShader shader)
+void GLShaderProgram::AttachShader (GLShader shader)
 {
 	GLint success;
 	char errorLog[512];
@@ -40,7 +40,7 @@ void GLShaderModel::AttachShader (GLShader shader)
 	}
 }
 
-void GLShaderModel::Use ()
+void GLShaderProgram::Use ()
 {
 	glUseProgram (shaderProgramId);
 }

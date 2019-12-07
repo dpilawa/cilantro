@@ -12,11 +12,11 @@
 #include <vector>
 
 
-class InputController : public CallbackProvider <std::string, float>, public GameLoopChild
+class InputController : public CallbackProvider <std::string, float>
 {
 public:
-
-    InputController ();
+    InputController () = delete;
+    InputController (GameLoop* gameLoop);
     virtual ~InputController ();
 
     virtual void Initialize () = 0;
@@ -43,6 +43,8 @@ private:
     std::unordered_map<std::string, std::vector<Input<float>*>> axes;
 
 protected:
+
+    GameLoop* gameLoop;
 
     bool isGameMode;
 

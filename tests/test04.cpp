@@ -18,27 +18,21 @@
 #include <iomanip>
 #include <cmath>
 
-float expfdaw(float x)
-{
-    return std::exp (x);
-}
-
 int main (int argc, char* argv[])
 {
-	GameScene scene;
-	
-	GLFWRenderTarget target;
-    target.SetResolution (800, 600);
-    target.SetDebugVisible (true);
-    target.SetVSync (true);
-	target.SetResizable (true);
-	target.SetFullscreen (false);
+	GameLoop game;
 
-	GLFWInputController controller;
-    controller.SetGLFWWindow (target.GetWindow ());
+	GameScene scene (&game);
+	game.gameScene = &scene;
 
-    GLRenderer renderer;
-	GameLoop game (scene, controller, renderer, target);
+	GLFWRenderTarget target (&game, "Test 4", 800, 600, false, true, true);
+	game.gameRenderTarget = &target;
+
+	GLFWInputController controller (&game, target.GetWindow ());
+	game.gameInputController = &controller;
+
+    GLRenderer renderer (&game, 800, 600);
+	game.gameRenderer = &renderer;
 
 	controller.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
 	controller.BindInputEvent ("exit", [ & ]() { game.Stop (); });
@@ -47,19 +41,19 @@ int main (int argc, char* argv[])
 	controller.BindInputEvent ("mousemode", [ & ]() { controller.SetMouseGameMode (!controller.IsGameMode ()); });
 
     Material& red = scene.AddMaterial (new Material ());
-	red.SetShaderModelName ("emissive_shader");
+	red.SetShaderProgram ("emissive_shader");
 	red.SetEmissiveColor (Vector3f (1.0f, 0.0f, 0.0f));
 
 	Material& green = scene.AddMaterial (new Material ());
-	green.SetShaderModelName ("emissive_shader");
+	green.SetShaderProgram ("emissive_shader");
 	green.SetEmissiveColor (Vector3f (0.0f, 1.0f, 0.0f));
 
 	Material& blue = scene.AddMaterial (new Material ());
-	blue.SetShaderModelName ("emissive_shader");
+	blue.SetShaderProgram ("emissive_shader");
 	blue.SetEmissiveColor (Vector3f (0.0f, 0.0f, 1.0f));
 
 	Material& white = scene.AddMaterial (new Material ());
-	white.SetShaderModelName ("emissive_shader");
+	white.SetShaderProgram ("emissive_shader");
 	white.SetEmissiveColor (Vector3f (1.0f, 1.0f, 1.0f));
 
     ControlledCamera& cam = dynamic_cast<ControlledCamera&>(scene.AddGameObject (new ControlledCamera (60.0f, 0.1f, 100.0f, 0.1f)));

@@ -4,31 +4,29 @@
 
 ControlledCamera::ControlledCamera (float fov, float near, float far, float sensitivity) : PerspectiveCamera (fov, near, far), sensitivity (sensitivity)
 {
-
 }
 
 ControlledCamera::~ControlledCamera()
 {
-    
 }
 
 void ControlledCamera::Initialize ()
 {
-    GLFWInputController& c = dynamic_cast<GLFWInputController&> (gameLoop->GetInputController ());
+    GLFWInputController* c = dynamic_cast<GLFWInputController*> (gameLoop->gameInputController);
 
-    c.CreateInputAxis ("moveforward", InputKey::KeyW, {}, 1.0f);
-    c.CreateInputAxis ("moveforward", InputKey::KeyS, {}, -1.0f);	
+    c->CreateInputAxis ("moveforward", InputKey::KeyW, {}, 1.0f);
+    c->CreateInputAxis ("moveforward", InputKey::KeyS, {}, -1.0f);	
 
-	c.CreateInputAxis ("moveright", InputKey::KeyD, {}, 1.0f);
-    c.CreateInputAxis ("moveright", InputKey::KeyA, {}, -1.0f);
+	c->CreateInputAxis ("moveright", InputKey::KeyD, {}, 1.0f);
+    c->CreateInputAxis ("moveright", InputKey::KeyA, {}, -1.0f);
 
-    c.CreateInputAxis ("camerapitch", InputAxis::MouseY, 1.0f);
-    c.CreateInputAxis ("camerayaw", InputAxis::MouseX, 1.0f);
+    c->CreateInputAxis ("camerapitch", InputAxis::MouseY, 1.0f);
+    c->CreateInputAxis ("camerayaw", InputAxis::MouseX, 1.0f);
 
-    c.BindInputAxis ("moveright", [&](float a) { MoveRight (a); });
-    c.BindInputAxis ("moveforward", [&](float a) { MoveForward (a); });
-    c.BindInputAxis ("camerapitch", [&](float a) { PitchBy (a); });
-    c.BindInputAxis ("camerayaw", [&](float a) { YawBy (a); });
+    c->BindInputAxis ("moveright", [&](float a) { MoveRight (a); });
+    c->BindInputAxis ("moveforward", [&](float a) { MoveForward (a); });
+    c->BindInputAxis ("camerapitch", [&](float a) { PitchBy (a); });
+    c->BindInputAxis ("camerayaw", [&](float a) { YawBy (a); });
 }
 
 void ControlledCamera::MoveRight (float offset)

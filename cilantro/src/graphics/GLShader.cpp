@@ -9,11 +9,14 @@ GLShader::GLShader ()
 {
 }
 
-GLShader::GLShader (std::string sourceCode, ShaderType type) : shaderType(type), shaderSourceCode(sourceCode)
+GLShader::GLShader (std::string sourceCode, ShaderType type)
 {
 	GLint success;
 	char errorLog[512];
 	const char * cSourceStr;
+
+	shaderType = type;
+	shaderSourceCode = sourceCode;
 
 	switch (shaderType)
 	{

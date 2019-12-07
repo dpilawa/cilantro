@@ -2,10 +2,11 @@
 #define _GLSHADER_H_
 
 #include "glad/glad.h"
+#include "graphics/Shader.h"
 #include "graphics/Renderer.h"
 #include <string>
 
-class GLShader
+class GLShader : public Shader
 {
 public:
 	GLShader ();
@@ -16,15 +17,8 @@ public:
 	GLuint GetShaderId ();
 
 private:
-
 	// ID of a shader
 	GLuint shaderId;
-
-	// shader type (vertex, fragment)
-	ShaderType shaderType;
-
-	// source code
-	std::string shaderSourceCode;
 };
 
 #endif

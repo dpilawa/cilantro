@@ -1,28 +1,24 @@
 #include "cilantroengine.h"
 #include "graphics/RenderTarget.h"
 
-RenderTarget::RenderTarget ()
+RenderTarget::RenderTarget (GameLoop* gameLoop, unsigned int width, unsigned int height)
 {
-    xResolution = 256;
-    yResolution = 256;
+    this->gameLoop = gameLoop;
+
+    this->width = width;
+    this->height = height;
 }
 
 RenderTarget::~RenderTarget ()
 {
 }
 
-void RenderTarget::SetResolution(unsigned int xRes, unsigned int yRes)
+unsigned int RenderTarget::GetWidth () const
 {
-    xResolution = xRes;
-    yResolution = yRes;
+	return width;
 }
 
-unsigned int RenderTarget::GetXResolution ()
+unsigned int RenderTarget::GetHeight () const
 {
-	return xResolution;
-}
-
-unsigned int RenderTarget::GetYResolution ()
-{
-	return yResolution;
+	return height;
 }

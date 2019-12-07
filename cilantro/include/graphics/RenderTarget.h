@@ -3,28 +3,28 @@
 
 #include "game/GameLoop.h"
 
-class RenderTarget : public GameLoopChild
+class RenderTarget
 {
 public:
-	RenderTarget ();
+	RenderTarget () = delete;
+	RenderTarget (GameLoop* gameLoop, unsigned int width, unsigned int height);
 	virtual ~RenderTarget ();
 
-    __EAPI void SetResolution (unsigned int xRes, unsigned int yRes);
+	virtual void OnFrame () = 0;
 
-    virtual void Initialize () = 0;
-	virtual void Deinitialize () = 0;
-	virtual void Bind () = 0;	
-	virtual void BeforeFrame () = 0;
-	virtual void AfterFrame () = 0;
-
-	unsigned int GetXResolution ();
-	unsigned int GetYResolution ();
+	unsigned int GetWidth () const;
+	unsigned int GetHeight () const;
 
 protected:
 
-	// rendering resolution
-	unsigned int xResolution;
-	unsigned int yResolution;
+	GameLoop* gameLoop;
+
+    virtual void Initialize () = 0;
+	virtual void Deinitialize () = 0;
+
+	// resolution
+	unsigned int width;
+	unsigned int height;
 
 };
 

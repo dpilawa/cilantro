@@ -10,10 +10,11 @@
 
 // This class represents a game world (a.k.a scene or level)
 // It contains all visible and invisible objects in a game
-class GameScene : public CallbackProvider<std::string, unsigned int>, public GameLoopChild
+class GameScene : public CallbackProvider<std::string, unsigned int>
 {
 public:
-	__EAPI GameScene();
+	GameScene() = delete;
+	__EAPI GameScene(GameLoop* gameLoop);
 	__EAPI ~GameScene();
 
 	// add GameObject to a scene
@@ -39,6 +40,8 @@ public:
 
 private:
 	
+	GameLoop* gameLoop;
+
 	// vector of all GameObjects in the scene
 	std::unordered_map <unsigned int, GameObject*> gameObjects;
 

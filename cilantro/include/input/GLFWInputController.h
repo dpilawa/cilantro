@@ -2,6 +2,7 @@
 #define _GLFWINPUTCONTROLLER_H_
 
 #include "cilantroengine.h"
+#include "game/GameLoop.h"
 #include "input/InputController.h"
 #include "GLFW/glfw3.h"
 #include <type_traits>
@@ -38,14 +39,9 @@ struct InputKeyHash
 class GLFWInputController : public InputController
 {
 public:
-
-    __EAPI GLFWInputController ();
+    __EAPI GLFWInputController () = delete;
+    __EAPI GLFWInputController (GameLoop* gameLoop, GLFWwindow** window);
     __EAPI ~GLFWInputController ();
-
-    __EAPI void SetGLFWWindow (GLFWwindow** glfwWindow);
-
-    __EAPI void Initialize ();
-    __EAPI void Deinitialize ();
 
     __EAPI void OnFrame ();
 
@@ -56,6 +52,10 @@ public:
     __EAPI void SetMouseGameMode(bool value);
 
 private:
+
+    void Initialize ();
+    void Deinitialize ();
+
     int GetGLFWKey (InputKey key);
     int GetGLFWTrigger (InputTrigger trigger);
     int GetGLFWModifiers (std::set<InputModifier> modifiers);

@@ -1,8 +1,4 @@
 #include "cilantroengine.h"
-#include "glad/glad.h"
-#include "imgui.h"
-#include "examples/imgui_impl_glfw.h"
-#include "examples/imgui_impl_opengl3.h"
 #include "graphics/RenderTarget.h"
 #include "graphics/GLFWRenderTarget.h"
 #include "util/LogMessage.h"
@@ -10,23 +6,43 @@
 #include "math/Vector3f.h"
 #include "scene/GameScene.h"
 
-GLFWRenderTarget::GLFWRenderTarget () : RenderTarget ()
+GLFWRenderTarget::GLFWRenderTarget (GameLoop* gameLoop, std::string windowCaption, unsigned int width, unsigned int height, bool isFullscreen, bool isResizable, bool isVSync) : RenderTarget (gameLoop, width, height)
 {
-	isFullscreen = false;
-	isResizable = false;
-	isVSync = true;
-	isDebugVisible = true;
+	this->windowCaption = windowCaption;
+	this->isFullscreen = isFullscreen;
+	this->isResizable = isResizable;
+	this->isVSync = isVSync;
 
+	// initialize
 	glfwInit ();
-
-	frameCount = 0;
-	lastFrameCount = 0;
-	splitFrameCount = 0;
+	this->Initialize ();
 }
 
 GLFWRenderTarget::~GLFWRenderTarget ()
 {
+	this->Deinitialize ();
 	glfwTerminate ();
+}
+
+void GLFWRenderTarget::OnFrame ()
+{
+	glRenderer = dynamic_cast<GLRenderer*>(gameLoop->gameRenderer);
+
+	// draw quad on screen
+	glBindFramebuffer (GL_FRAMEBUFFER, 0);
+	glDisable (GL_DEPTH_TEST);
+	glRenderer->GetShaderProgram ("flatquad_shader").Use ();
+	glBindVertexArray (targetVAO);
+	glBindTexture (GL_TEXTURE_2D, glRenderer->GetFrameBufferTexture ());
+	glDrawArrays (GL_TRIANGLES, 0, 6);
+
+	// swap front and back buffers
+	glfwSwapBuffers (window);
+}
+
+GLFWwindow** GLFWRenderTarget::GetWindow ()
+{
+	return &window;
 }
 
 void GLFWRenderTarget::Initialize ()
@@ -38,49 +54,35 @@ void GLFWRenderTarget::Initialize ()
 	{
 		monitor = glfwGetPrimaryMonitor ();
 
-		xResolution = glfwGetVideoMode (monitor)->width;
-		yResolution = glfwGetVideoMode (monitor)->height;
+		width = glfwGetVideoMode (monitor)->width;
+		height = glfwGetVideoMode (monitor)->height;
 	}
 	else
 	{
 		monitor = nullptr;
 	}
 
-    // create temporary window to detect GL version
-	glfwWindowHint (GLFW_VISIBLE, 0);
-    window = glfwCreateWindow (xResolution, yResolution, "GL", nullptr, nullptr);
-	if (window == NULL)
-	{
-		LogMessage (__func__, EXIT_FAILURE) << "GLFW unable to create window";
-	}
-	glfwMakeContextCurrent (window);
-
-	// initialize GLEW
-    if (!gladLoadGLLoader ((GLADloadproc)glfwGetProcAddress))
-    {
-        LogMessage (__func__, EXIT_FAILURE) << "GL context initialization failed";
-    }
-
-    // display GL version information
-	LogMessage (__func__) << "Version:" << (char*) glGetString (GL_VERSION);
-    LogMessage (__func__) << "Shader language version:" << (char*) glGetString (GL_SHADING_LANGUAGE_VERSION);
-	LogMessage (__func__) << "Renderer:" << (char*) glGetString (GL_RENDERER);
-	glfwDestroyWindow (window);
-
 	// set up GL & window properties
-	glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 1);
-	glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_ANY_PROFILE);
 	glfwWindowHint (GLFW_RESIZABLE, isResizable);
-	glfwWindowHint (GLFW_SAMPLES, 4);
 	glfwWindowHint (GLFW_VISIBLE, 1);
 
 	// create window
-	window = glfwCreateWindow (xResolution, yResolution, "GL", monitor, nullptr);
+	window = glfwCreateWindow (width, height, windowCaption.c_str (), monitor, nullptr);
+
 	if (window == NULL)
 	{
 		LogMessage (__func__, EXIT_FAILURE) << "GLFW unable to create window";
 	}
+
+	// set resize callback
+	glfwSetWindowUserPointer (window, this);
+
+	auto framebufferResizeCallback = [](GLFWwindow* window, int width, int height)
+    {
+        static_cast<GLFWRenderTarget*>(glfwGetWindowUserPointer (window))->FramebufferResizeCallback (width, height);
+    };
+
+	glfwSetFramebufferSizeCallback (window, framebufferResizeCallback);
 
 	// make openGL context active
 	glfwMakeContextCurrent (window);
@@ -88,104 +90,47 @@ void GLFWRenderTarget::Initialize ()
 	// set vsync on
 	glfwSwapInterval (isVSync);
 
-	// Setup ImGui binding
-	const char* glsl_version = "#version 140";
-	ImGui::CreateContext();
-	ImGui::StyleColorsDark();
-	ImGui_ImplGlfw_InitForOpenGL (window, true);
-    ImGui_ImplOpenGL3_Init(glsl_version);
+	// load GL
+    if (!gladLoadGL ())
+    {
+        LogMessage (__func__, EXIT_FAILURE) << "GL context initialization failed";
+    }
+
+	// set-up VAO and VBO for onscreen rendering
+ 	float quadVertices[] = {
+        -1.0f,  1.0f,  0.0f, 1.0f,
+        -1.0f, -1.0f,  0.0f, 0.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
+
+        -1.0f,  1.0f,  0.0f, 1.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
+         1.0f,  1.0f,  1.0f, 1.0f
+    };
+
+	glGenVertexArrays(1, &targetVAO);
+    glGenBuffers(1, &targetVBO);
+    glBindVertexArray(targetVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, targetVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof (quadVertices), &quadVertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);    
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof (float)));
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
 
 	LogMessage (__func__) << "GLFWRenderTarget started";
 }
 
 void GLFWRenderTarget::Deinitialize ()
 {
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
-
 	glfwDestroyWindow (window);
 }
 
-void GLFWRenderTarget::Bind ()
+void GLFWRenderTarget::FramebufferResizeCallback (int width, int height)
 {
-	// bind default window framebuffer
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	this->width = width;
+	this->height = height;
+
+	// update GL renderer texture size and viewport
+	glRenderer->SetResolution (this->width, this->height);
 }
 
-void GLFWRenderTarget::BeforeFrame ()
-{
-
-	// resize viewport (window size may have changed)
-    glfwGetFramebufferSize (window, (int*)&xResolution, (int*)&yResolution);
-    glViewport (0, 0, xResolution, yResolution);
-
-    // tick imgui
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
-
-}
-
-void GLFWRenderTarget::AfterFrame ()
-{
-	frameCount++;
-
-	// display debug messages
-
-	if (Timer::GetTimeSinceSplitTime () > 1.0f)
-	{
-		timeSinceLastSplit = Timer::GetTimeSinceSplitTime ();
-		Timer::ResetSplitTime ();
-		splitFrameCount = frameCount - lastFrameCount;
-		lastFrameCount = frameCount;
-		frameRenderTimeInLastSplit = frameRenderTimeSinceLastSplit;
-		frameRenderTimeSinceLastSplit = 0;
-	}
-
-	frameRenderTimeSinceLastSplit += Timer::GetFrameRenderTime ();
-
-	ImGui::Text ("FPS: %.1f", splitFrameCount / timeSinceLastSplit);
-	ImGui::Text ("Frame: %.1f ms", frameRenderTimeInLastSplit / splitFrameCount * 1000.0f);
-
-    Vector3f cameraPos = gameLoop->GetScene ().GetActiveCamera ()->GetModelTransform ().GetTranslation ();
-    Vector3f cameraAngles = gameLoop->GetScene ().GetActiveCamera ()->GetModelTransform ().GetRotation ();
-
-	ImGui::Spacing ();
-    ImGui::Text ("Camera");
-    ImGui::InputFloat3 ("Position", &cameraPos[0], 3);
-	ImGui::InputFloat3 ("Angles", &cameraAngles[0], 3);
-
-	// render imgui
-	ImGui::Render ();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-	// swap front and back buffers
-	glfwSwapBuffers (window);
-
-}
-
-GLFWwindow** GLFWRenderTarget::GetWindow ()
-{
-	return &window;
-}
-
-void GLFWRenderTarget::SetFullscreen (bool fullscreen)
-{
-	isFullscreen = fullscreen;
-}
-
-void GLFWRenderTarget::SetResizable (bool resizable)
-{
-	isResizable = resizable;
-}
-
-void GLFWRenderTarget::SetVSync (bool vsync)
-{
-	isVSync = vsync;
-}
-
-void GLFWRenderTarget::SetDebugVisible (bool debugvisible)
-{
-	isDebugVisible = debugvisible;
-}

@@ -4,7 +4,7 @@
 #include "cilantroengine.h"
 #include "glad/glad.h"
 #include "graphics/GLShader.h"
-#include "graphics/GLShaderModel.h"
+#include "graphics/GLShaderProgram.h"
 #include "graphics/Renderer.h"
 #include "graphics/RenderTarget.h"
 #include "scene/GameScene.h"
@@ -34,6 +34,14 @@ struct SceneBuffers
 public:
 	// Uniform Buffer Objects (view & projection matrices, point lights, directional lights, spot lights)
 	GLuint UBO[4];
+};
+
+struct FrameBuffers
+{
+public:
+	GLuint FBO;
+	GLuint RBO;
+	GLuint textureColorBuffer;
 };
 
 struct UniformMatrixBuffer
@@ -121,20 +129,26 @@ public:
 class GLRenderer : public Renderer
 {
 public:
-	__EAPI GLRenderer ();
+	__EAPI GLRenderer () = delete;
+	__EAPI GLRenderer (GameLoop* gameLoop, unsigned int width, unsigned int height);
 	__EAPI ~GLRenderer ();
 
-	// initialize renderer
-	__EAPI void Initialize ();
-	// render one frame
+	// render
 	__EAPI void RenderFrame ();
-	// deinitialize renderer
-	__EAPI void Deinitialize ();
+
+	// renderer state modifiers
+	__EAPI void SetResolution (unsigned int width, unsigned int height);
+
+	// get renderbuffer
+	__EAPI GLuint GetMultisampleFrameBufferTexture () const;
+	__EAPI GLuint GetMultisampleFrameBuffer () const;
+	__EAPI GLuint GetFrameBufferTexture () const;
+	__EAPI GLuint GetFrameBuffer () const;
 
 	// shader library manipulation
 	__EAPI virtual void AddShader (std::string shaderName, std::string shaderSourceCode, ShaderType shaderType);
-	__EAPI virtual void AddShaderToModel (std::string shaderModelName, std::string shaderName);
-	__EAPI GLShaderModel& GetShaderModel (std::string shaderModelName);
+	__EAPI virtual void AddShaderToProgram (std::string shaderProgramName, std::string shaderName);
+	__EAPI GLShaderProgram& GetShaderProgram (std::string shaderProgramName);
 
 	// object drawing and updating
 	__EAPI void Draw (MeshObject& meshObject);
@@ -147,7 +161,7 @@ private:
 
 	// GL shader library
 	std::unordered_map <std::string, GLShader> shaders;
-	std::unordered_map <std::string, GLShaderModel> shaderModels;
+	std::unordered_map <std::string, GLShaderProgram> shaderPrograms;
 
 	// GL buffers and arrays for scene objects
 	// These buffers contain data for objects to be rendered
@@ -158,6 +172,10 @@ private:
 	// * view and projection matrix
 	// * array of lights
 	SceneBuffers sceneBuffers;
+
+	// frame buffers
+	FrameBuffers multisampleFrameBuffers;
+	FrameBuffers frameBuffers;
 
 	// data structures for uniforms
 	UniformMatrixBuffer uniformMatrixBuffer;
@@ -173,12 +191,18 @@ private:
 	std::unordered_map<unsigned int, unsigned int> directionalLights;
 	std::unordered_map<unsigned int, unsigned int> spotLights;
 
+	// (de)initializers
+	void Initialize ();
+	void Deinitialize ();
+
 	// check for GL errors
 	void CheckGLError (std::string functionName);
 
+	// initialize framebuffer
+	void InitializeMultisampleFrameBuffers ();
+	void InitializeFrameBuffers ();
 	// initialize shader library
 	void InitializeShaderLibrary ();
-
 	// initialize object buffers
 	void InitializeObjectBuffers ();
 	// initialize uniform buffers of view and projection matrices

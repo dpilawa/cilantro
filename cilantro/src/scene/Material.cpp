@@ -5,7 +5,7 @@
 
 Material::Material ()
 {
-	shaderModelName = "phong_shader";
+	shaderProgramName = "phong_shader";
 	SetColor (Vector3f (1.0f, 1.0f, 1.0f));
 	SetEmissiveColor (Vector3f (0.0f, 0.0f, 0.0f));
 	SetSpecularShininess (32.0f);
@@ -15,9 +15,9 @@ Material::~Material ()
 {
 }
 
-Material & Material::SetShaderModelName (std::string name)
+Material & Material::SetShaderProgram (std::string name)
 {
-	shaderModelName = name;
+	shaderProgramName = name;
 
 	return *this;
 }
@@ -66,9 +66,9 @@ Material & Material::SetColor (const Vector3f & color)
 	return *this;
 }
 
-std::string Material::GetShaderModelName () const
+std::string Material::GetShaderProgramName () const
 {
-	return shaderModelName;
+	return shaderProgramName;
 }
 
 Vector3f Material::GetAmbientColor () const
