@@ -18,7 +18,7 @@ public:
 
 	__EAPI void OnFrame ();
 
-	__EAPI GLFWwindow** GetWindow ();
+	__EAPI GLFWwindow* GetWindow ();
 
 private:
 

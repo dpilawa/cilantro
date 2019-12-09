@@ -30,19 +30,22 @@ void GLFWRenderTarget::OnFrame ()
 
 	// draw quad on screen
 	glBindFramebuffer (GL_FRAMEBUFFER, 0);
+	glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
+	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glDisable (GL_DEPTH_TEST);
 	glRenderer->GetShaderProgram ("flatquad_shader").Use ();
 	glBindVertexArray (targetVAO);
 	glBindTexture (GL_TEXTURE_2D, glRenderer->GetFrameBufferTexture ());
+	glViewport (0, 0, this->width, this->height);
 	glDrawArrays (GL_TRIANGLES, 0, 6);
 
 	// swap front and back buffers
 	glfwSwapBuffers (window);
 }
 
-GLFWwindow** GLFWRenderTarget::GetWindow ()
+GLFWwindow* GLFWRenderTarget::GetWindow ()
 {
-	return &window;
+	return window;
 }
 
 void GLFWRenderTarget::Initialize ()
@@ -75,11 +78,11 @@ void GLFWRenderTarget::Initialize ()
 	}
 
 	// set resize callback
-	glfwSetWindowUserPointer (window, this);
+	glfwSetWindowUserPointer (window, reinterpret_cast<void *>(this));
 
 	auto framebufferResizeCallback = [](GLFWwindow* window, int width, int height)
     {
-        static_cast<GLFWRenderTarget*>(glfwGetWindowUserPointer (window))->FramebufferResizeCallback (width, height);
+        reinterpret_cast<GLFWRenderTarget*>(glfwGetWindowUserPointer (window))->FramebufferResizeCallback (width, height);
     };
 
 	glfwSetFramebufferSizeCallback (window, framebufferResizeCallback);
@@ -131,6 +134,6 @@ void GLFWRenderTarget::FramebufferResizeCallback (int width, int height)
 	this->height = height;
 
 	// update GL renderer texture size and viewport
-	glRenderer->SetResolution (this->width, this->height);
+	glRenderer->SetResolution (width, height);
 }
 

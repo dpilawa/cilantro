@@ -40,7 +40,7 @@ class GLFWInputController : public InputController
 {
 public:
     __EAPI GLFWInputController () = delete;
-    __EAPI GLFWInputController (GameLoop* gameLoop, GLFWwindow** window);
+    __EAPI GLFWInputController (GameLoop* gameLoop, GLFWwindow* window);
     __EAPI ~GLFWInputController ();
 
     __EAPI void OnFrame ();
@@ -64,7 +64,7 @@ private:
     void MouseCursorCallback (double xPos, double yPos);      
     void MouseScrollCallback (double xOffset, double yOffset);    
 
-    GLFWwindow** window;
+    GLFWwindow* window;
 
     Input<float>* axisMouseX;
     Input<float>* axisMouseY;

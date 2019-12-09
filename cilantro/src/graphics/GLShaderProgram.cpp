@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-GLShaderProgram::GLShaderProgram ()
+GLShaderProgram::GLShaderProgram () : ShaderProgram ()
 {
 	shaderProgramId = glCreateProgram ();
 }
@@ -21,12 +21,14 @@ GLuint GLShaderProgram::GetProgramId ()
 }
 
 
-void GLShaderProgram::AttachShader (GLShader shader)
+void GLShaderProgram::LinkShader (Shader& shader)
 {
 	GLint success;
 	char errorLog[512];
 
-	glAttachShader (shaderProgramId, shader.GetShaderId ());
+	GLShader* glShader = static_cast<GLShader*> (&shader);
+
+	glAttachShader (shaderProgramId, glShader->GetShaderId ());
 	glLinkProgram (shaderProgramId);
 
 	glGetProgramiv (shaderProgramId, GL_LINK_STATUS, &success);
@@ -36,7 +38,7 @@ void GLShaderProgram::AttachShader (GLShader shader)
 		glGetProgramInfoLog (shaderProgramId, 512, nullptr, errorLog);
 		glDeleteProgram (shaderProgramId);
 		LogMessage () << errorLog;
-		LogMessage (__func__, EXIT_FAILURE) << "Unable to link shader" << shader.GetShaderId () << " to program" << shaderProgramId;
+		LogMessage (__func__, EXIT_FAILURE) << "Unable to link shader" << glShader->GetShaderId () << " to program" << shaderProgramId;
 	}
 }
 

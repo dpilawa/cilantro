@@ -5,7 +5,7 @@
 
 #include <string>
 
-GLShader::GLShader ()
+GLShader::GLShader () : Shader ()
 {
 }
 

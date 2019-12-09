@@ -8,11 +8,17 @@
 class GLPostProcess : public PostProcess
 {
 public:
-    __EAPI GLPostProcess ();
+    GLPostProcess () = delete;
+    __EAPI GLPostProcess (ShaderProgram* shaderProgram);
     __EAPI virtual ~GLPostProcess ();
+
+    virtual void OnFrame ();
+
 private:
+    virtual void Initialize ();
 
     FrameBuffers frameBuffers;
+    
 };
 
 #endif

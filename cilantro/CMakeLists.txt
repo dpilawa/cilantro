@@ -26,6 +26,7 @@ include/graphics/PostProcess.h
 include/graphics/Renderer.h
 include/graphics/RenderTarget.h
 include/graphics/Shader.h
+include/graphics/ShaderProgram.h
 include/input/GLFWInputController.h
 include/input/InputController.h
 include/input/Input.h
@@ -68,6 +69,7 @@ src/graphics/PostProcess.cpp
 src/graphics/Renderer.cpp
 src/graphics/RenderTarget.cpp
 src/graphics/Shader.cpp
+src/graphics/ShaderProgram.cpp
 src/input/GLFWInputController.cpp
 src/input/InputController.cpp
 src/math/Bezier.cpp

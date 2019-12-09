@@ -43,6 +43,7 @@ void GLRenderer::RenderFrame ()
 	glBindFramebuffer (GL_FRAMEBUFFER, multisampleFrameBuffers.FBO);
 
 	// clear frame and depth buffers
+	glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// enable depth test
@@ -50,6 +51,9 @@ void GLRenderer::RenderFrame ()
 
 	// load uniform buffers
 	LoadMatrixUniformBuffers ();
+
+	// set viewport
+	glViewport (0, 0, this->width, this->height);
 
     // draw all objects scene
 	for (auto gameObject : gameLoop->gameScene->GetGameObjects ())
@@ -72,10 +76,16 @@ void GLRenderer::SetResolution (unsigned int width, unsigned int height)
 	Renderer::SetResolution (width, height);
 
 	// resize framebuffer texture and viewport
-	glBindTexture (GL_TEXTURE_2D, multisampleFrameBuffers.textureColorBuffer);
-	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	glViewport (0, 0, width, height);
+	glDeleteRenderbuffers (1, &multisampleFrameBuffers.RBO);
+	glDeleteTextures (1, &multisampleFrameBuffers.textureColorBuffer);
+	glDeleteFramebuffers (1, &multisampleFrameBuffers.FBO);
 
+	glDeleteRenderbuffers (1, &frameBuffers.RBO);
+	glDeleteTextures (1, &frameBuffers.textureColorBuffer);
+	glDeleteFramebuffers (1, &frameBuffers.FBO);
+
+	InitializeMultisampleFrameBuffers ();
+	InitializeFrameBuffers ();
 }
 
 GLuint GLRenderer::GetMultisampleFrameBufferTexture () const
@@ -114,7 +124,7 @@ void GLRenderer::AddShaderToProgram (std::string shaderProgramName, std::string 
 	}
 	else
 	{
-		shaderPrograms[shaderProgramName].AttachShader (searchShader->second);
+		shaderPrograms[shaderProgramName].LinkShader (searchShader->second);
 		if (searchProgram == shaderPrograms.end ())
 		{
 			LogMessage (__func__) << "Registered shader" << shaderProgramName << "with id" << shaderPrograms[shaderProgramName].GetProgramId ();
@@ -526,12 +536,18 @@ void GLRenderer::Deinitialize ()
 {
 	objectBuffers.clear ();
 	pointLights.clear ();
+	directionalLights.clear ();
+	spotLights.clear ();
 	shaders.clear ();
 	shaderPrograms.clear ();
 
 	glDeleteRenderbuffers (1, &multisampleFrameBuffers.RBO);
 	glDeleteTextures (1, &multisampleFrameBuffers.textureColorBuffer);
 	glDeleteFramebuffers (1, &multisampleFrameBuffers.FBO);
+
+	glDeleteRenderbuffers (1, &frameBuffers.RBO);
+	glDeleteTextures (1, &frameBuffers.textureColorBuffer);
+	glDeleteFramebuffers (1, &frameBuffers.FBO);
 }
 
 void GLRenderer::CheckGLError (std::string functionName)
@@ -553,7 +569,7 @@ void GLRenderer::InitializeMultisampleFrameBuffers ()
 	// create texture and attach to framebuffer as color attachment
 	glGenTextures (1, &multisampleFrameBuffers.textureColorBuffer);
 	glBindTexture (GL_TEXTURE_2D_MULTISAMPLE, multisampleFrameBuffers.textureColorBuffer);
-	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGB, width, height, GL_TRUE);
+	glTexImage2DMultisample (GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGB, width, height, GL_TRUE);
 	glBindTexture (GL_TEXTURE_2D_MULTISAMPLE, 0);
 
 	glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, multisampleFrameBuffers.textureColorBuffer, 0);
@@ -660,8 +676,8 @@ void GLRenderer::InitializeShaderLibrary ()
 	AddShaderToProgram ("post_gamma_shader", "flatquad_vertex_shader");
 	AddShaderToProgram ("post_gamma_shader", "post_gamma_fragment_shader");
 #if (CILANTRO_MIN_GL_VERSION < 330)	
-	glBindAttribLocation(GetShaderProgram("flatquad_shader").GetProgramId(), 0, "vPosition");
-	glBindAttribLocation(GetShaderProgram("flatquad_shader").GetProgramId(), 1, "vTextureCoordinates");
+	glBindAttribLocation(GetShaderProgram("post_gamma_shader").GetProgramId(), 0, "vPosition");
+	glBindAttribLocation(GetShaderProgram("post_gamma_shader").GetProgramId(), 1, "vTextureCoordinates");
 #endif
 
 }

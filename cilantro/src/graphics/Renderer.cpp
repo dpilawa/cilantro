@@ -38,3 +38,8 @@ unsigned int Renderer::GetHeight () const
 {
     return height;
 }
+
+void Renderer::AddPostProcess (PostProcess* postProcess)
+{
+    postProcesses.push_back (postProcess);
+}

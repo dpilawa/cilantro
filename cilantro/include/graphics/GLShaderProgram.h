@@ -2,9 +2,10 @@
 #define _GLSHADERPROGRAM_H_
 
 #include "glad/glad.h"
+#include "graphics/ShaderProgram.h"
 #include "graphics/GLShader.h"
 
-class GLShaderProgram
+class GLShaderProgram : public ShaderProgram
 {
 public:
 	GLShaderProgram ();
@@ -14,7 +15,7 @@ public:
 	GLuint GetProgramId ();
 
 	// attach shader to a program
-	void AttachShader (GLShader shader);
+	void LinkShader (Shader& shader);
 
 	// use program
 	void Use ();

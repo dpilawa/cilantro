@@ -8,6 +8,7 @@
 #include "scene/SpotLight.h"
 #include "graphics/GLRenderer.h"
 #include "graphics/GLFWRenderTarget.h"
+#include "graphics/GLPostProcess.h"
 #include "input/GLFWInputController.h"
 #include "math/Mathf.h"
 #include "util/LogMessage.h"
@@ -32,6 +33,9 @@ int main (int argc, char* argv[])
 
     GLRenderer renderer (&game, 800, 600);
 	game.gameRenderer = &renderer;
+
+	GLPostProcess gamma (&renderer.GetShaderProgram("post_gamma_shader"));
+	renderer.AddPostProcess (&gamma);
 
 	controller.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
 	controller.BindInputEvent ("exit", [ & ]() { game.Stop (); });
