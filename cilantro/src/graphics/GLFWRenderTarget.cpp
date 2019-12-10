@@ -77,18 +77,19 @@ void GLFWRenderTarget::Initialize ()
 		LogMessage (__func__, EXIT_FAILURE) << "GLFW unable to create window";
 	}
 
+	// make openGL context active
+	glfwMakeContextCurrent (window);
+
+
 	// set resize callback
-	glfwSetWindowUserPointer (window, reinterpret_cast<void *>(this));
+	glfwSetWindowUserPointer (window, this->gameLoop);
 
 	auto framebufferResizeCallback = [](GLFWwindow* window, int width, int height)
     {
-        reinterpret_cast<GLFWRenderTarget*>(glfwGetWindowUserPointer (window))->FramebufferResizeCallback (width, height);
+        static_cast<GLFWRenderTarget*>(static_cast<GameLoop*>(glfwGetWindowUserPointer (window))->gameRenderTarget)->FramebufferResizeCallback (width, height);
     };
 
 	glfwSetFramebufferSizeCallback (window, framebufferResizeCallback);
-
-	// make openGL context active
-	glfwMakeContextCurrent (window);
 
 	// set vsync on
 	glfwSwapInterval (isVSync);
