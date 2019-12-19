@@ -33,9 +33,10 @@ void GLFWRenderTarget::OnFrame ()
 	glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glDisable (GL_DEPTH_TEST);
+	glDisable (GL_FRAMEBUFFER_SRGB);
 	glRenderer->GetShaderProgram ("flatquad_shader").Use ();
 	glBindVertexArray (targetVAO);
-	glBindTexture (GL_TEXTURE_2D, glRenderer->GetFrameBufferTexture ());
+	glBindTexture (GL_TEXTURE_2D, glRenderer->GetRendererFramebufferTexture ());
 	glViewport (0, 0, this->width, this->height);
 	glDrawArrays (GL_TRIANGLES, 0, 6);
 
@@ -79,7 +80,6 @@ void GLFWRenderTarget::Initialize ()
 
 	// make openGL context active
 	glfwMakeContextCurrent (window);
-
 
 	// set resize callback
 	glfwSetWindowUserPointer (window, this->gameLoop);

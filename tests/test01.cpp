@@ -8,7 +8,7 @@
 #include "scene/SpotLight.h"
 #include "graphics/GLRenderer.h"
 #include "graphics/GLFWRenderTarget.h"
-#include "graphics/GLPostProcess.h"
+#include "graphics/GLPostprocess.h"
 #include "input/GLFWInputController.h"
 #include "math/Mathf.h"
 #include "util/LogMessage.h"
@@ -34,10 +34,11 @@ int main (int argc, char* argv[])
     GLRenderer renderer (&game, 800, 600);
 	game.gameRenderer = &renderer;
 
-	GLPostProcess gamma (&renderer.GetShaderProgram("post_gamma_shader"));
-	renderer.AddPostProcess (&gamma);
+	GLPostprocess gamma (&renderer, &renderer.GetShaderProgram("post_gamma_shader"));
+    gamma.SetPostprocessParameterFloat ("fGamma", 2.2f);
+    renderer.AddPostprocess (&gamma);
 
-	controller.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
+    controller.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
 	controller.BindInputEvent ("exit", [ & ]() { game.Stop (); });
 
 	controller.CreateInputEvent ("mousemode", InputKey::KeySpace, InputTrigger::Release, {});
@@ -78,23 +79,23 @@ int main (int argc, char* argv[])
 
 	PointLight& light1 = dynamic_cast<PointLight&>(scene.AddGameObject (new PointLight ()));
 	light1.SetParentObject (lamp);
-	light1.SetColor (Vector3f (1.0f, 1.0f, 1.0f));
-	light1.SetSpecularPower (0.7f);
-	light1.SetAmbiencePower (0.1f);
+	light1.SetColor (Vector3f (0.7f, 0.7f, 0.7f));
+	light1.SetSpecularPower (1.2f);
+	light1.SetAmbiencePower (0.0f);
 	light1.SetLinearAttenuationFactor (0.2f).SetQuadraticAttenuationFactor (0.2f);
 	light1.SetEnabled (true);
 
 	DirectionalLight& light2 = dynamic_cast<DirectionalLight&>(scene.AddGameObject (new DirectionalLight ()));
 	light2.GetModelTransform ().Rotate (135.0f, -45.0f, 0.0f);
-	light2.SetColor (Vector3f (0.7f, 0.7f, 0.7f));
+	light2.SetColor (Vector3f (0.5f, 0.5f, 0.5f));
 	light2.SetSpecularPower (2.0f);
 	light2.SetAmbiencePower (0.0f);
 	light2.SetEnabled (true);
 
 	SpotLight& light3 = dynamic_cast<SpotLight&>(scene.AddGameObject (new SpotLight ()));
 	light3.GetModelTransform ().Translate (2.0f, 10.0f, 0.0f).Rotate (90.0f, 0.0f, 0.0f);
-	light3.SetColor (Vector3f (1.0f, 1.0f, 1.0f));
-	light3.SetSpecularPower (1.0f);
+	light3.SetColor (Vector3f (0.7f, 0.7f, 0.7f));
+	light3.SetSpecularPower (0.7f);
     light3.SetInnerCutoff (5.0f);
 	light3.SetOuterCutoff (12.0f);
     light3.SetEnabled (true);

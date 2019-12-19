@@ -3,6 +3,7 @@
 
 #include "cilantroengine.h"
 #include "glad/glad.h"
+#include "graphics/GLMultisampleFramebuffer.h"
 #include "graphics/GLShader.h"
 #include "graphics/GLShaderProgram.h"
 #include "graphics/Renderer.h"
@@ -34,14 +35,6 @@ struct SceneBuffers
 public:
 	// Uniform Buffer Objects (view & projection matrices, point lights, directional lights, spot lights)
 	GLuint UBO[4];
-};
-
-struct FrameBuffers
-{
-public:
-	GLuint FBO;
-	GLuint RBO;
-	GLuint textureColorBuffer;
 };
 
 struct UniformMatrixBuffer
@@ -126,7 +119,7 @@ public:
     SpotLightStruct spotLights[MAX_SPOT_LIGHTS];
 };
 
-class GLRenderer : public Renderer
+class GLRenderer : public Renderer, public GLMultisampleFramebuffer
 {
 public:
 	__EAPI GLRenderer () = delete;
@@ -136,16 +129,12 @@ public:
 	// render
 	__EAPI void RenderFrame ();
 
-	// renderer state modifiers
-	__EAPI void SetResolution (unsigned int width, unsigned int height);
+	// renderbuffer
+    __EAPI void SetResolution (unsigned int width, unsigned int height);
+    __EAPI GLuint GetRendererFramebuffer () const;
+	__EAPI GLuint GetRendererFramebufferTexture () const;
 
-	// get renderbuffer
-	__EAPI GLuint GetMultisampleFrameBufferTexture () const;
-	__EAPI GLuint GetMultisampleFrameBuffer () const;
-	__EAPI GLuint GetFrameBufferTexture () const;
-	__EAPI GLuint GetFrameBuffer () const;
-
-	// shader library manipulation
+    // shader library manipulation
 	__EAPI virtual void AddShader (std::string shaderName, std::string shaderSourceCode, ShaderType shaderType);
 	__EAPI virtual void AddShaderToProgram (std::string shaderProgramName, std::string shaderName);
 	__EAPI GLShaderProgram& GetShaderProgram (std::string shaderProgramName);
@@ -173,10 +162,6 @@ private:
 	// * array of lights
 	SceneBuffers sceneBuffers;
 
-	// frame buffers
-	FrameBuffers multisampleFrameBuffers;
-	FrameBuffers frameBuffers;
-
 	// data structures for uniforms
 	UniformMatrixBuffer uniformMatrixBuffer;
 	UniformPointLightBuffer uniformPointLightBuffer;
@@ -198,9 +183,6 @@ private:
 	// check for GL errors
 	void CheckGLError (std::string functionName);
 
-	// initialize framebuffer
-	void InitializeMultisampleFrameBuffers ();
-	void InitializeFrameBuffers ();
 	// initialize shader library
 	void InitializeShaderLibrary ();
 	// initialize object buffers

@@ -11,7 +11,7 @@
 #include "scene/SpotLight.h"
 #include "graphics/Shader.h"
 #include "graphics/RenderTarget.h"
-#include "graphics/PostProcess.h"
+#include "graphics/Postprocess.h"
 #include <string>
 
 class Renderer
@@ -32,7 +32,7 @@ public:
 	__EAPI unsigned int GetHeight () const;
 
 	// post-processing
-	__EAPI virtual void AddPostProcess (PostProcess* postProcess);
+	__EAPI virtual void AddPostprocess (Postprocess* postprocess);
 
 	// shader library manipulation
 	virtual void AddShader (std::string shaderName, std::string shaderSourceCode, ShaderType shaderType) = 0;
@@ -55,7 +55,8 @@ protected:
 	unsigned int width;
 	unsigned int height;
 
-	std::vector<PostProcess*> postProcesses;
+    unsigned int postprocessStage;
+    std::vector<Postprocess*> postprocesses;
 };
 
 #endif

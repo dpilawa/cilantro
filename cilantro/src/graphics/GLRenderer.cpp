@@ -3,6 +3,7 @@
 #include "graphics/GLRenderer.h"
 #include "graphics/GLShader.h"
 #include "graphics/GLShaderProgram.h"
+#include "graphics/GLPostprocess.h"
 #include "scene/GameScene.h"
 #include "scene/GameObject.h"
 #include "scene/MeshObject.h"
@@ -27,7 +28,7 @@
 #include "graphics/flatquad.fs.h"
 #include "graphics/post_gamma.fs.h"
 
-GLRenderer::GLRenderer (GameLoop* gameLoop, unsigned int width, unsigned int height) : Renderer (gameLoop, width, height)
+GLRenderer::GLRenderer (GameLoop* gameLoop, unsigned int width, unsigned int height) : Renderer (gameLoop, width, height), GLMultisampleFramebuffer (width, height)
 {
 	this->Initialize ();
 }
@@ -40,7 +41,7 @@ GLRenderer::~GLRenderer ()
 void GLRenderer::RenderFrame ()
 {
 	// bind multisample framebuffer
-	glBindFramebuffer (GL_FRAMEBUFFER, multisampleFrameBuffers.FBO);
+	glBindFramebuffer (GL_FRAMEBUFFER, multisampleFramebuffers.FBO);
 
 	// clear frame and depth buffers
 	glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
@@ -62,12 +63,13 @@ void GLRenderer::RenderFrame ()
 	}
 
 	// blit multisample framebuffer to standard framebuffer
-	glBindFramebuffer (GL_READ_FRAMEBUFFER, multisampleFrameBuffers.FBO);
-	glBindFramebuffer (GL_DRAW_FRAMEBUFFER, frameBuffers.FBO);
+	glBindFramebuffer (GL_READ_FRAMEBUFFER, multisampleFramebuffers.FBO);
+	glBindFramebuffer (GL_DRAW_FRAMEBUFFER, framebuffers.FBO);
 	glBlitFramebuffer (0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST); 
 	glBindFramebuffer (GL_READ_FRAMEBUFFER, 0);
 	glBindFramebuffer (GL_DRAW_FRAMEBUFFER, 0);
 
+	// base class functions
 	Renderer::RenderFrame ();
 }
 
@@ -75,37 +77,36 @@ void GLRenderer::SetResolution (unsigned int width, unsigned int height)
 {
 	Renderer::SetResolution (width, height);
 
-	// resize framebuffer texture and viewport
-	glDeleteRenderbuffers (1, &multisampleFrameBuffers.RBO);
-	glDeleteTextures (1, &multisampleFrameBuffers.textureColorBuffer);
-	glDeleteFramebuffers (1, &multisampleFrameBuffers.FBO);
+    this->SetFramebufferResolution (width, height);
 
-	glDeleteRenderbuffers (1, &frameBuffers.RBO);
-	glDeleteTextures (1, &frameBuffers.textureColorBuffer);
-	glDeleteFramebuffers (1, &frameBuffers.FBO);
-
-	InitializeMultisampleFrameBuffers ();
-	InitializeFrameBuffers ();
+	for (auto&& postprocess : postprocesses)
+	{
+        dynamic_cast<GLPostprocess*> (postprocess)->SetFramebufferResolution (width, height);
+    }
 }
 
-GLuint GLRenderer::GetMultisampleFrameBufferTexture () const
+GLuint GLRenderer::GetRendererFramebuffer () const
 {
-	return multisampleFrameBuffers.textureColorBuffer;
+	if (postprocessStage==0) 
+	{
+        return this->GetFramebuffer ();
+    }
+    else 
+	{
+        return dynamic_cast<GLPostprocess*> (postprocesses[postprocessStage - 1])->GetFramebuffer ();
+    }
 }
 
-GLuint GLRenderer::GetMultisampleFrameBuffer () const
+GLuint GLRenderer::GetRendererFramebufferTexture () const
 {
-	return multisampleFrameBuffers.FBO;
-}
-
-GLuint GLRenderer::GetFrameBufferTexture () const
-{
-	return frameBuffers.textureColorBuffer;
-}
-
-GLuint GLRenderer::GetFrameBuffer () const
-{
-	return frameBuffers.FBO;
+	if (postprocessStage==0) 
+	{
+        return this->GetFramebufferTexture ();
+    }
+    else 
+	{
+        return dynamic_cast<GLPostprocess*> (postprocesses[postprocessStage - 1])->GetFramebufferTexture ();
+    }
 }
 
 void GLRenderer::AddShader (std::string shaderName, std::string shaderSourceCode, ShaderType shaderType)
@@ -498,10 +499,6 @@ void GLRenderer::Initialize ()
 	// enable multisampling
 	glEnable (GL_MULTISAMPLE);
 
-	// initialize framebuffer
-	InitializeMultisampleFrameBuffers ();
-	InitializeFrameBuffers ();
-
 	// initialize shader library
 	InitializeShaderLibrary ();
 
@@ -540,14 +537,6 @@ void GLRenderer::Deinitialize ()
 	spotLights.clear ();
 	shaders.clear ();
 	shaderPrograms.clear ();
-
-	glDeleteRenderbuffers (1, &multisampleFrameBuffers.RBO);
-	glDeleteTextures (1, &multisampleFrameBuffers.textureColorBuffer);
-	glDeleteFramebuffers (1, &multisampleFrameBuffers.FBO);
-
-	glDeleteRenderbuffers (1, &frameBuffers.RBO);
-	glDeleteTextures (1, &frameBuffers.textureColorBuffer);
-	glDeleteFramebuffers (1, &frameBuffers.FBO);
 }
 
 void GLRenderer::CheckGLError (std::string functionName)
@@ -557,66 +546,6 @@ void GLRenderer::CheckGLError (std::string functionName)
 	if ((errorCode = glGetError ()) != GL_NO_ERROR)
 	{
 		LogMessage (functionName, EXIT_FAILURE) << "glError:" << std::hex << std::showbase << errorCode;
-	}
-}
-
-void GLRenderer::InitializeMultisampleFrameBuffers ()
-{
-	// create and bind framebuffer
-	glGenFramebuffers (1, &multisampleFrameBuffers.FBO);
-	glBindFramebuffer (GL_FRAMEBUFFER, multisampleFrameBuffers.FBO);
-
-	// create texture and attach to framebuffer as color attachment
-	glGenTextures (1, &multisampleFrameBuffers.textureColorBuffer);
-	glBindTexture (GL_TEXTURE_2D_MULTISAMPLE, multisampleFrameBuffers.textureColorBuffer);
-	glTexImage2DMultisample (GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGB, width, height, GL_TRUE);
-	glBindTexture (GL_TEXTURE_2D_MULTISAMPLE, 0);
-
-	glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, multisampleFrameBuffers.textureColorBuffer, 0);
-
-	// create renderbuffer for a (combined) depth and stencil buffer
-	glGenRenderbuffers (1, &multisampleFrameBuffers.RBO);
-	glBindRenderbuffer (GL_RENDERBUFFER, multisampleFrameBuffers.RBO);
-	glRenderbufferStorageMultisample (GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, width, height);
-	glBindRenderbuffer (GL_RENDERBUFFER, 0);
-
-	glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, multisampleFrameBuffers.RBO);
-
-	// check status
-	if (glCheckFramebufferStatus (GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-	{
-		LogMessage (__func__, EXIT_FAILURE) << "Multisample framebuffer is not complete";
-	}
-}
-
-void GLRenderer::InitializeFrameBuffers ()
-{
-	// create and bind framebuffer
-	glGenFramebuffers (1, &frameBuffers.FBO);
-	glBindFramebuffer (GL_FRAMEBUFFER, frameBuffers.FBO);
-
-	// create texture and attach to framebuffer as color attachment
-	glGenTextures (1, &frameBuffers.textureColorBuffer);
-	glBindTexture (GL_TEXTURE_2D, frameBuffers.textureColorBuffer);
-	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glBindTexture (GL_TEXTURE_2D, 0);
-
-	glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, frameBuffers.textureColorBuffer, 0);
-
-	// create renderbuffer for a (combined) depth and stencil buffer
-	glGenRenderbuffers (1, &frameBuffers.RBO);
-	glBindRenderbuffer (GL_RENDERBUFFER, frameBuffers.RBO);
-	glRenderbufferStorage (GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-	glBindRenderbuffer (GL_RENDERBUFFER, 0);
-
-	glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, frameBuffers.RBO);
-
-	// check status
-	if (glCheckFramebufferStatus (GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-	{
-		LogMessage (__func__, EXIT_FAILURE) << "Framebuffer is not complete";
 	}
 }
 

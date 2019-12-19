@@ -17,12 +17,14 @@ include/graphics/flatquad.fs.h
 include/graphics/post_gamma.fs.h
 
 include/game/GameLoop.h
+include/graphics/GLFramebuffer.h
 include/graphics/GLFWRenderTarget.h
-include/graphics/GLPostProcess.h
+include/graphics/GLMultisampleFramebuffer.h
+include/graphics/GLPostprocess.h
 include/graphics/GLRenderer.h
 include/graphics/GLShader.h
 include/graphics/GLShaderProgram.h
-include/graphics/PostProcess.h
+include/graphics/Postprocess.h
 include/graphics/Renderer.h
 include/graphics/RenderTarget.h
 include/graphics/Shader.h
@@ -60,12 +62,14 @@ include/util/CallbackProvider.h
 include/util/LogMessage.h
 include/util/Timer.h
 src/game/GameLoop.cpp
+src/graphics/GLFramebuffer.cpp
 src/graphics/GLFWRenderTarget.cpp
-src/graphics/GLPostProcess.cpp
+src/graphics/GLMultisampleFramebuffer.cpp
+src/graphics/GLPostprocess.cpp
 src/graphics/GLRenderer.cpp
 src/graphics/GLShader.cpp
 src/graphics/GLShaderProgram.cpp
-src/graphics/PostProcess.cpp
+src/graphics/Postprocess.cpp
 src/graphics/Renderer.cpp
 src/graphics/RenderTarget.cpp
 src/graphics/Shader.cpp

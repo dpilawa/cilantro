@@ -19,7 +19,15 @@ Renderer::~Renderer ()
 
 void Renderer::RenderFrame ()
 {
-	// update game clocks (Tock)
+    // run post-processing
+    postprocessStage = 0;
+    for (auto&& postprocess : postprocesses)
+    {
+        postprocess->OnFrame ();
+        postprocessStage++;
+    }
+
+    // update game clocks (Tock)
 	Timer::Tock ();
 }
 
@@ -39,7 +47,7 @@ unsigned int Renderer::GetHeight () const
     return height;
 }
 
-void Renderer::AddPostProcess (PostProcess* postProcess)
+void Renderer::AddPostprocess (Postprocess* postprocess)
 {
-    postProcesses.push_back (postProcess);
+    postprocesses.push_back (postprocess);
 }
