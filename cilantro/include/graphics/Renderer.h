@@ -17,7 +17,7 @@
 class Renderer
 {
 public:
-	__EAPI Renderer () = delete;
+	Renderer () = delete;
 	__EAPI Renderer (GameLoop* gameLoop, unsigned int width, unsigned int height);
 	__EAPI virtual ~Renderer ();
 

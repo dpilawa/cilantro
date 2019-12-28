@@ -19,7 +19,9 @@ include/graphics/post_gamma.fs.h
 include/game/GameLoop.h
 include/graphics/GLFramebuffer.h
 include/graphics/GLFWRenderTarget.h
+#if(CILANTRO_MIN_GL_VERSION GREATER 310)
 include/graphics/GLMultisampleFramebuffer.h
+#endif
 include/graphics/GLPostprocess.h
 include/graphics/GLRenderer.h
 include/graphics/GLShader.h
@@ -64,7 +66,9 @@ include/util/Timer.h
 src/game/GameLoop.cpp
 src/graphics/GLFramebuffer.cpp
 src/graphics/GLFWRenderTarget.cpp
+#if(CILANTRO_MIN_GL_VERSION GREATER 310)
 src/graphics/GLMultisampleFramebuffer.cpp
+#endif
 src/graphics/GLPostprocess.cpp
 src/graphics/GLRenderer.cpp
 src/graphics/GLShader.cpp

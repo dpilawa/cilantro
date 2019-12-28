@@ -122,7 +122,7 @@ public:
 class GLRenderer : public Renderer, public GLMultisampleFramebuffer
 {
 public:
-	__EAPI GLRenderer () = delete;
+	GLRenderer () = delete;
 	__EAPI GLRenderer (GameLoop* gameLoop, unsigned int width, unsigned int height);
 	__EAPI ~GLRenderer ();
 

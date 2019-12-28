@@ -39,7 +39,7 @@ struct InputKeyHash
 class GLFWInputController : public InputController
 {
 public:
-    __EAPI GLFWInputController () = delete;
+    GLFWInputController () = delete;
     __EAPI GLFWInputController (GameLoop* gameLoop, GLFWwindow* window);
     __EAPI ~GLFWInputController ();
 

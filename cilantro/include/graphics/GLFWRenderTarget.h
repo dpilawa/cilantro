@@ -12,7 +12,7 @@
 class GLFWRenderTarget : public RenderTarget
 {
 public:
-	__EAPI GLFWRenderTarget () = delete;
+	GLFWRenderTarget () = delete;
 	__EAPI GLFWRenderTarget (GameLoop* gameLoop, std::string windowCaption,  unsigned int width, unsigned int height, bool isFullscreen, bool isResizable, bool isVSync);
 	__EAPI ~GLFWRenderTarget ();
 
