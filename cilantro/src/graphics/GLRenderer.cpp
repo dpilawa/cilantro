@@ -28,7 +28,12 @@
 #include "graphics/flatquad.fs.h"
 #include "graphics/post_gamma.fs.h"
 
-GLRenderer::GLRenderer (GameLoop* gameLoop, unsigned int width, unsigned int height) : Renderer (gameLoop, width, height), GLMultisampleFramebuffer (width, height)
+GLRenderer::GLRenderer (GameLoop* gameLoop, unsigned int width, unsigned int height) : Renderer (gameLoop, width, height), 
+#if (CILANTRO_MIN_GL_VERSION <= 140)
+GLFramebuffer (width, height)
+#elif
+GLMultisampleFramebuffer (width, height)
+#endif
 {
 	this->Initialize ();
 }
@@ -40,8 +45,8 @@ GLRenderer::~GLRenderer ()
 
 void GLRenderer::RenderFrame ()
 {
-	// bind multisample framebuffer
-	glBindFramebuffer (GL_FRAMEBUFFER, multisampleFramebuffers.FBO);
+	// bind framebuffer
+	BindFramebuffer ();
 
 	// clear frame and depth buffers
 	glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
@@ -62,12 +67,10 @@ void GLRenderer::RenderFrame ()
 		gameObject.second->OnDraw (*this);
 	}
 
-	// blit multisample framebuffer to standard framebuffer
-	glBindFramebuffer (GL_READ_FRAMEBUFFER, multisampleFramebuffers.FBO);
-	glBindFramebuffer (GL_DRAW_FRAMEBUFFER, framebuffers.FBO);
-	glBlitFramebuffer (0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST); 
-	glBindFramebuffer (GL_READ_FRAMEBUFFER, 0);
-	glBindFramebuffer (GL_DRAW_FRAMEBUFFER, 0);
+#if (CILANTRO_MIN_GL_VERSION > 140)
+	// blit framebuffer
+	BlitFramebuffer ();
+#endif
 
 	// base class functions
 	Renderer::RenderFrame ();

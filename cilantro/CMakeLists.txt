@@ -1,10 +1,29 @@
-add_compile_definitions(BUILDING_DLL)
-
 include_directories ("${PROJECT_SOURCE_DIR}/ext/glfw/include")
 include_directories ("${PROJECT_SOURCE_DIR}/cilantro/include")
 
-add_library(cilantro SHARED
+add_compile_definitions(CILANTRO_MIN_GL_VERSION=${CILANTRO_GL_VERSION})
 
+if(CILANTRO_BUILD_DLL)
+    add_compile_definitions(CILANTRO_BUILDING_DLL)
+endif()
+
+if(CILANTRO_WITH_GLFW)
+    set(CILANTRO_FILES ${CILANTRO_FILES}
+        include/graphics/GLFWRenderTarget.h
+        include/input/GLFWInputController.h
+        src/graphics/GLFWRenderTarget.cpp
+        src/input/GLFWInputController.cpp
+    )
+endif()
+
+if(CILANTRO_GL_VERSION GREATER 140)
+    set(CILANTRO_FILES ${CILANTRO_FILES}
+        include/graphics/GLMultisampleFramebuffer.h
+        src/graphics/GLMultisampleFramebuffer.cpp
+    )
+endif()
+
+set(CILANTRO_FILES ${CILANTRO_FILES}
 include/cilantroengine.h
 
 include/graphics/default.vs.h
@@ -18,10 +37,6 @@ include/graphics/post_gamma.fs.h
 
 include/game/GameLoop.h
 include/graphics/GLFramebuffer.h
-include/graphics/GLFWRenderTarget.h
-#if(CILANTRO_MIN_GL_VERSION GREATER 310)
-include/graphics/GLMultisampleFramebuffer.h
-#endif
 include/graphics/GLPostprocess.h
 include/graphics/GLRenderer.h
 include/graphics/GLShader.h
@@ -31,7 +46,6 @@ include/graphics/Renderer.h
 include/graphics/RenderTarget.h
 include/graphics/Shader.h
 include/graphics/ShaderProgram.h
-include/input/GLFWInputController.h
 include/input/InputController.h
 include/input/Input.h
 include/math/Bezier.h
@@ -65,10 +79,6 @@ include/util/LogMessage.h
 include/util/Timer.h
 src/game/GameLoop.cpp
 src/graphics/GLFramebuffer.cpp
-src/graphics/GLFWRenderTarget.cpp
-#if(CILANTRO_MIN_GL_VERSION GREATER 310)
-src/graphics/GLMultisampleFramebuffer.cpp
-#endif
 src/graphics/GLPostprocess.cpp
 src/graphics/GLRenderer.cpp
 src/graphics/GLShader.cpp
@@ -78,7 +88,6 @@ src/graphics/Renderer.cpp
 src/graphics/RenderTarget.cpp
 src/graphics/Shader.cpp
 src/graphics/ShaderProgram.cpp
-src/input/GLFWInputController.cpp
 src/input/InputController.cpp
 src/math/Bezier.cpp
 src/math/BSpline.cpp
@@ -109,3 +118,5 @@ src/scene/Transform.cpp
 src/util/LogMessage.cpp
 src/util/Timer.cpp
 )
+
+add_library(cilantro SHARED ${CILANTRO_FILES})

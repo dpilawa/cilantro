@@ -12,10 +12,11 @@ option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
 
 set(GLAD_API "gl=3.1")
 set(GLAD_PROFILE "core")
-set(GLAD_EXTENSIONS "")
+set(GLAD_EXTENSIONS "") 
 
-add_compile_definitions(CILANTRO_MIN_GL_VERSION=140) # 140=3.1, 150=3.2, 330=3.3, ..., 460=4.6
-add_compile_definitions(CILANTRO_USE_GLFW)
+set(CILANTRO_GL_VERSION 140) # 140=3.1, 150=3.2, 330=3.3, ..., 460=4.6
+option(CILANTRO_BUILD_DLL "Build as shared library" ON)
+option(CILANTRO_WITH_GLFW "Build with GLFW extensions" ON)
 
 add_subdirectory (ext/glfw)
 add_subdirectory (ext/glad)

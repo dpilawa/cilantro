@@ -20,6 +20,8 @@ public:
     GLFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight);
     virtual ~GLFramebuffer ();
 
+    __EAPI virtual void BindFramebuffer () const;
+
 	__EAPI void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight);
 
 	__EAPI GLuint GetFramebufferTexture () const;

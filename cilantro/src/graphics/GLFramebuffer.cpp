@@ -15,6 +15,11 @@ GLFramebuffer::~GLFramebuffer ()
     this->Deinitialize ();
 }
 
+void GLFramebuffer::BindFramebuffer () const
+{
+	glBindFramebuffer (GL_FRAMEBUFFER, framebuffers.FBO);
+}
+
 void GLFramebuffer::SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight)
 {
 	// resize framebuffer texture and viewport

@@ -3,7 +3,11 @@
 
 #include "cilantroengine.h"
 #include "glad/glad.h"
+#if (CILANTRO_MIN_GL_VERSION <= 140)
+#include "graphics/GLFramebuffer.h"
+#elif
 #include "graphics/GLMultisampleFramebuffer.h"
+#endif
 #include "graphics/GLShader.h"
 #include "graphics/GLShaderProgram.h"
 #include "graphics/Renderer.h"
@@ -119,7 +123,12 @@ public:
     SpotLightStruct spotLights[MAX_SPOT_LIGHTS];
 };
 
-class GLRenderer : public Renderer, public GLMultisampleFramebuffer
+class GLRenderer : public Renderer, 
+#if (CILANTRO_MIN_GL_VERSION <= 140)
+public GLFramebuffer
+#elif
+public GLMultisampleFramebuffer
+#endif
 {
 public:
 	GLRenderer () = delete;
