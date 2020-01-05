@@ -161,8 +161,6 @@ void GLRenderer::Draw (MeshObject & meshObject)
 	GLuint normalMatrixId;
 	GLuint shaderProgramId;
 
-    GLuint drawMode;
-
     // pick shader
 	GLShaderProgram& shaderProgram = GetShaderProgram (meshObject.GetMaterial ().GetShaderProgramName ());
 	shaderProgramId = shaderProgram.GetProgramId ();
@@ -222,28 +220,7 @@ void GLRenderer::Draw (MeshObject & meshObject)
 
 	// draw mesh
 	glBindVertexArray (objectBuffers[meshObject.GetHandle ()].VAO);
-
-	switch (meshObject.GetMeshType ())
-	{
-		case MeshType::Points:
-            drawMode = GL_POINTS;
-            break;
-
-		case MeshType::Lines:
-            drawMode = GL_LINES;
-            break;
-
-        case MeshType::Triangles:
-            drawMode = GL_TRIANGLES;
-            break;
-
-        default:
-            drawMode = GL_TRIANGLES;
-            break;
-
-    }
-
-	glDrawElements (drawMode, meshObject.GetIndexCount (), GL_UNSIGNED_INT, nullptr);
+	glDrawElements (GL_TRIANGLES, meshObject.GetIndexCount (), GL_UNSIGNED_INT, nullptr);
 	glBindVertexArray (0);
 }
 

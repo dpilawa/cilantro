@@ -58,24 +58,6 @@ int main (int argc, char* argv[])
     cam.GetModelTransform ().Translate (15.0f, 15.0f, 15.0f).Rotate (-35.0f, 45.0f, 0.0f);
     scene.SetActiveCamera (&cam);
 
-	MeshObject& x = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject (MeshType::Lines)));
-    x.AddVertex (Vector3f (0.0f, 0.0f, 0.0f));
-    x.AddVertex (Vector3f (10.0f, 0.0f, 0.0f));
-    x.AddLine (0, 1);
-    x.SetMaterial (red);
-
-    MeshObject& y = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject (MeshType::Lines)));
-    y.AddVertex (Vector3f (0.0f, 0.0f, 0.0f));
-    y.AddVertex (Vector3f (0.0f, 10.0f, 0.0f));
-    y.AddLine (0, 1);
-    y.SetMaterial (green);
-
-	MeshObject& z = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject (MeshType::Lines)));
-    z.AddVertex (Vector3f (0.0f, 0.0f, 0.0f));
-    z.AddVertex (Vector3f (0.0f, 0.0f, 10.0f));
-    z.AddLine (0, 1);
-    z.SetMaterial (blue);
-
     GameObject& plane = scene.AddGameObject (new GameObject ());
 
     MeshObject& fuselage = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));

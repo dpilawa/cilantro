@@ -9,13 +9,8 @@
 
 #include <vector>
 
-// template instantiations
-template __EAPI MeshObject& MeshObject::InitCurve (const Curve<Vector3f, 2>& curve, unsigned int samples);
-template __EAPI MeshObject& MeshObject::InitCurve (const Curve<Vector3f, 3>& curve, unsigned int samples);
-
-MeshObject::MeshObject (MeshType type)
+MeshObject::MeshObject ()
 {
-    meshType = type;
 }
 
 MeshObject::~MeshObject ()
@@ -86,7 +81,7 @@ MeshObject& MeshObject::InitUnitCube ()
 
 	for (unsigned int i = 0; i < 36; i += 3)
 	{
-		AddFace (i, i + 1, i + 2, false);
+		AddFace (i, i + 1, i + 2);
 	};
 	
 	CalculateVertexNormals ();
@@ -153,7 +148,7 @@ MeshObject& MeshObject::InitUnitSphere (unsigned int subdivisions, bool sharedVe
 		// generate faces
 		for (unsigned int i = 0; i < latSteps * lonSteps * 3 * 2; i += 3)
 		{
-			AddFace (i, i + 1, i + 2, false);
+			AddFace (i, i + 1, i + 2);
 		}
 
 	}
@@ -180,8 +175,8 @@ MeshObject& MeshObject::InitUnitSphere (unsigned int subdivisions, bool sharedVe
 		{
 			for (unsigned int j = 0; j <= lonSteps - 1; j++)
 			{
-				AddFace (i * lonSteps + j, i * lonSteps + (j + 1) % lonSteps, (i + 1) * lonSteps + j, false);
-				AddFace (i * lonSteps + (j + 1) % lonSteps, (i + 1) * lonSteps + (j + 1) % lonSteps, (i + 1) * lonSteps + j, false);
+				AddFace (i * lonSteps + j, i * lonSteps + (j + 1) % lonSteps, (i + 1) * lonSteps + j);
+				AddFace (i * lonSteps + (j + 1) % lonSteps, (i + 1) * lonSteps + (j + 1) % lonSteps, (i + 1) * lonSteps + j);
 			}
 		}
 
@@ -190,8 +185,8 @@ MeshObject& MeshObject::InitUnitSphere (unsigned int subdivisions, bool sharedVe
 
 		for (unsigned int j = 0; j <= lonSteps - 1; j++)
 		{
-			AddFace (nIndex, (j + 1) % lonSteps, j, false);
-			AddFace (sIndex, nIndex - 1 - (j + 1) % lonSteps, nIndex - 1 - j, false);
+			AddFace (nIndex, (j + 1) % lonSteps, j);
+			AddFace (sIndex, nIndex - 1 - (j + 1) % lonSteps, nIndex - 1 - j);
 		}
 
 	}
@@ -199,28 +194,6 @@ MeshObject& MeshObject::InitUnitSphere (unsigned int subdivisions, bool sharedVe
 	CalculateVertexNormals ();
 
 	InvokeCallbacks ("OnUpdateMeshObject", this->GetHandle ());
-
-	return *this;
-}
-
-template <int d>
-MeshObject& MeshObject::InitCurve (const Curve<Vector3f, d>& curve, unsigned int samples)
-{
-    Clear ();
-    
-    for (unsigned int i = 0; i <= samples; i++)
-    {
-        float t = static_cast<float>(i) / static_cast<float>(samples);
-        Vector3f p = curve.GetCurvePoint (t);
-		
-        AddVertex (p);
-		if (i > 0)
-		{
-            AddLine (i - 1, i);
-        }
-    }
-
-    InvokeCallbacks ("OnUpdateMeshObject", this->GetHandle ());
 
 	return *this;
 }
@@ -297,11 +270,6 @@ unsigned int* MeshObject::GetFacesData ()
 	return indices.data ();
 }
 
-MeshType MeshObject::GetMeshType ()
-{
-    return meshType;
-}
-
 unsigned int MeshObject::AddVertex (const Vector3f & vertex)
 {
 	vertices.push_back (vertex[0]);
@@ -311,37 +279,11 @@ unsigned int MeshObject::AddVertex (const Vector3f & vertex)
     return GetVertexCount () - 1;
 }
 
-void MeshObject::AddPoint (unsigned int v, bool renrererUpdate)
-{
-	indices.push_back (v);
-	
-	if (renrererUpdate)
-	{
-		InvokeCallbacks ("OnUpdateMeshObject", this->GetHandle ());
-	}
-}
-
-void MeshObject::AddLine (unsigned int v1, unsigned int v2, bool renrererUpdate)
-{
-	indices.push_back (v1);
-	indices.push_back (v2);
-
-	if (renrererUpdate)
-	{
-		InvokeCallbacks ("OnUpdateMeshObject", this->GetHandle ());
-	}
-}
-
-void MeshObject::AddFace (unsigned int v1, unsigned int v2, unsigned int v3, bool renrererUpdate)
+void MeshObject::AddFace (unsigned int v1, unsigned int v2, unsigned int v3)
 {
 	indices.push_back (v1);
 	indices.push_back (v2);
 	indices.push_back (v3);
-
-	if (renrererUpdate)
-	{
-		InvokeCallbacks ("OnUpdateMeshObject", this->GetHandle ());
-	}
 }
 
 void MeshObject::OnFrame ()

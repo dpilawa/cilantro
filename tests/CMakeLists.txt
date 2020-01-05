@@ -16,7 +16,3 @@ test03.cpp
 ControlledCamera.cpp ControlledCamera.h
 )
 
-add_executable(test04
-test04.cpp
-ControlledCamera.cpp ControlledCamera.h
-)

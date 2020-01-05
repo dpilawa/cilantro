@@ -10,20 +10,13 @@
 
 class Renderer;
 
-enum class MeshType
-{
-	Points,
-	Lines,
-	Triangles
-};
-
 // Represents a 3d mesh, inherits from GameObject
 // 3d mesh has a collection of vertices and a collection of vertex indices to represent mesh faces (polygons)
 // 3d mesh may have only one material assigned to it
 class MeshObject : public GameObject
 {
 public:
-	__EAPI MeshObject (MeshType type = MeshType::Triangles);
+	__EAPI MeshObject ();
 	__EAPI virtual ~MeshObject ();
 
 	// Cleans up contents of used collections
@@ -32,9 +25,6 @@ public:
 	// Initialize mesh in local space as unit primitives with center in space origin
 	__EAPI MeshObject& InitUnitCube ();
 	__EAPI MeshObject& InitUnitSphere (unsigned int subdivisions, bool sharedVertices = false);
-	
-	template <int d>
-    __EAPI MeshObject& InitCurve (const Curve<Vector3f, d>& curve, unsigned int samples);
 
     // calculate vertex normals
 	__EAPI void CalculateVertexNormals ();
@@ -58,14 +48,9 @@ public:
 	// get faces raw data
 	__EAPI unsigned int* GetFacesData ();
 
-	// get mesh type
-    __EAPI MeshType GetMeshType ();
-
     // add vertices and primitives
 	__EAPI unsigned int AddVertex (const Vector3f& vertex);
-	__EAPI void AddPoint (unsigned int v, bool rendererUpdate = true);
-	__EAPI void AddLine (unsigned int v1, unsigned int v2, bool rendererUpdate = true);
-	__EAPI void AddFace (unsigned int v1, unsigned int v2, unsigned int v3, bool rendererUpdate = true);
+	__EAPI void AddFace (unsigned int v1, unsigned int v2, unsigned int v3);
 
 	// invoked by game loop on each frame or on update (e.g. transform)
 	virtual void OnFrame ();
@@ -74,7 +59,6 @@ public:
 
 private:
 
-    MeshType meshType;
     Material* objectMaterial;
 
     std::vector<float> vertices;
