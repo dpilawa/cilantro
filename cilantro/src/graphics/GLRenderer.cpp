@@ -31,7 +31,7 @@
 GLRenderer::GLRenderer (GameLoop* gameLoop, unsigned int width, unsigned int height) : Renderer (gameLoop, width, height), 
 #if (CILANTRO_MIN_GL_VERSION <= 140)
 GLFramebuffer (width, height)
-#elif
+#else
 GLMultisampleFramebuffer (width, height)
 #endif
 {

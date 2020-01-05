@@ -5,7 +5,7 @@
 #include "glad/glad.h"
 #if (CILANTRO_MIN_GL_VERSION <= 140)
 #include "graphics/GLFramebuffer.h"
-#elif
+#else
 #include "graphics/GLMultisampleFramebuffer.h"
 #endif
 #include "graphics/GLShader.h"
@@ -126,7 +126,7 @@ public:
 class GLRenderer : public Renderer, 
 #if (CILANTRO_MIN_GL_VERSION <= 140)
 public GLFramebuffer
-#elif
+#else
 public GLMultisampleFramebuffer
 #endif
 {

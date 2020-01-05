@@ -10,11 +10,11 @@ option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
 option(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
 option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
 
-set(GLAD_API "gl=3.1")
+set(GLAD_API "gl=4.6")
 set(GLAD_PROFILE "core")
 set(GLAD_EXTENSIONS "") 
 
-set(CILANTRO_GL_VERSION 140) # 140=3.1, 150=3.2, 330=3.3, ..., 460=4.6
+set(CILANTRO_GL_VERSION 460) # 140=3.1, 150=3.2, 330=3.3, ..., 460=4.6
 option(CILANTRO_BUILD_DLL "Build as shared library" ON)
 option(CILANTRO_WITH_GLFW "Build with GLFW extensions" ON)
 

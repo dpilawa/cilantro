@@ -22,7 +22,7 @@ void GLMultisampleFramebuffer::BlitFramebuffer ()
 	// blit multisample framebuffer to standard framebuffer
 	glBindFramebuffer (GL_READ_FRAMEBUFFER, multisampleFramebuffers.FBO);
 	glBindFramebuffer (GL_DRAW_FRAMEBUFFER, framebuffers.FBO);
-	glBlitFramebuffer (0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST); 
+	glBlitFramebuffer (0, 0, bufferWidth, bufferHeight, 0, 0, bufferWidth, bufferHeight, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST); 
 	glBindFramebuffer (GL_READ_FRAMEBUFFER, 0);
 	glBindFramebuffer (GL_DRAW_FRAMEBUFFER, 0);
 }
