@@ -61,8 +61,8 @@ void GLRenderer::RenderFrame ()
 	// set viewport
 	glViewport (0, 0, this->width, this->height);
 
-    // draw all objects scene
-	for (auto gameObject : gameLoop->gameScene->GetGameObjects ())
+    // draw all objects in scene
+	for (auto&& gameObject : gameLoop->gameScene->GetGameObjects ())
 	{
 		gameObject.second->OnDraw (*this);
 	}
@@ -90,7 +90,7 @@ void GLRenderer::SetResolution (unsigned int width, unsigned int height)
 
 GLuint GLRenderer::GetRendererFramebuffer () const
 {
-	if (postprocessStage==0) 
+	if (postprocessStage == 0) 
 	{
         return this->GetFramebuffer ();
     }
@@ -102,7 +102,7 @@ GLuint GLRenderer::GetRendererFramebuffer () const
 
 GLuint GLRenderer::GetRendererFramebufferTexture () const
 {
-	if (postprocessStage==0) 
+	if (postprocessStage == 0) 
 	{
         return this->GetFramebufferTexture ();
     }
@@ -124,7 +124,7 @@ void GLRenderer::AddShaderToProgram (std::string shaderProgramName, std::string 
 
 	if (searchShader == shaders.end ())
 	{
-		LogMessage (__func__, EXIT_FAILURE) << "Shader " << shaderName << " not found when adding to model " << shaderProgramName;
+		LogMessage (__func__, EXIT_FAILURE) << "Shader " << shaderName << " not found when adding to program " << shaderProgramName;
 	}
 	else
 	{
@@ -136,7 +136,7 @@ void GLRenderer::AddShaderToProgram (std::string shaderProgramName, std::string 
 	}
 }
 
-GLShaderProgram & GLRenderer::GetShaderProgram (std::string shaderProgramName)
+GLShaderProgram& GLRenderer::GetShaderProgram (std::string shaderProgramName)
 {
 	auto searchProgram = shaderPrograms.find (shaderProgramName);
 
@@ -220,7 +220,7 @@ void GLRenderer::Draw (MeshObject & meshObject)
 
 	// draw mesh
 	glBindVertexArray (objectBuffers[meshObject.GetHandle ()].VAO);
-	glDrawElements (GL_TRIANGLES, meshObject.GetIndexCount (), GL_UNSIGNED_INT, nullptr);
+	glDrawElements (GL_TRIANGLES, meshObject.GetIndexCount (), GL_UNSIGNED_INT, 0);
 	glBindVertexArray (0);
 }
 
@@ -464,6 +464,9 @@ void GLRenderer::Update (SpotLight& spotLight)
 
 void GLRenderer::Initialize ()
 {
+    // set variable defaults
+    postprocessStage = 0;
+
     // display GL version information
 	LogMessage (__func__) << "Version:" << (char*) glGetString (GL_VERSION);
     LogMessage (__func__) << "Shader language version:" << (char*) glGetString (GL_SHADING_LANGUAGE_VERSION);
@@ -695,7 +698,7 @@ void GLRenderer::InitializeLightUniformBuffers ()
 	}
 
 	// scan objects vector for lights and populate light buffers
-	for (auto gameObject : gameLoop->gameScene->GetGameObjects ())
+	for (auto&& gameObject : gameLoop->gameScene->GetGameObjects ())
 	{
 		if (gameObject.second->IsLight ())
 		{

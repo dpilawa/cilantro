@@ -76,6 +76,11 @@ void GLMultisampleFramebuffer::Initialize ()
 	{
 		LogMessage (__func__, EXIT_FAILURE) << "Multisample framebuffer is not complete";
 	}
+    else
+    {
+        LogMessage (__func__) << "Initialized multisample framebuffer";
+    }
+    
 }
 
 void GLMultisampleFramebuffer::Deinitialize ()

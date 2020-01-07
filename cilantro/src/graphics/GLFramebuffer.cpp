@@ -72,6 +72,10 @@ void GLFramebuffer::Initialize ()
 	{
 		LogMessage (__func__, EXIT_FAILURE) << "Framebuffer is not complete";
 	}
+    else
+    {
+        LogMessage (__func__) << "Initialized framebuffer";
+    }
 }
 
 void GLFramebuffer::Deinitialize ()
