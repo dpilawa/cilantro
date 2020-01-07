@@ -3,9 +3,8 @@
 
 #include "cilantroengine.h"
 #include "glad/glad.h"
-#if (CILANTRO_MIN_GL_VERSION <= 140)
 #include "graphics/GLFramebuffer.h"
-#else
+#if (CILANTRO_MIN_GL_VERSION > 140)
 #include "graphics/GLMultisampleFramebuffer.h"
 #endif
 #include "graphics/GLShader.h"

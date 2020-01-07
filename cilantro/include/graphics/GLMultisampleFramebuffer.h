@@ -3,7 +3,7 @@
 
 #include "cilantroengine.h"
 #include "glad/glad.h"
-#include "GLFramebuffer.h"
+#include "graphics/GLFramebuffer.h"
 
 class GLMultisampleFramebuffer : public GLFramebuffer 
 {

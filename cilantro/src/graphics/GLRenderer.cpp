@@ -736,7 +736,7 @@ void GLRenderer::LoadMatrixUniformBuffers ()
 	std::memcpy (uniformMatrixBuffer.viewMatrix, Mathf::Transpose (activeCamera->GetViewMatrix ())[0], 16 * sizeof (GLfloat));
 
 	// load projection matrix
-	std::memcpy (uniformMatrixBuffer.projectionMatrix, Mathf::Transpose (activeCamera->GetProjectionMatrix (gameLoop->gameRenderTarget->GetWidth (), gameLoop->gameRenderTarget->GetHeight ()))[0], 16 * sizeof (GLfloat));
+	std::memcpy (uniformMatrixBuffer.projectionMatrix, Mathf::Transpose (activeCamera->GetProjectionMatrix (this->GetWidth (), this->GetHeight ()))[0], 16 * sizeof (GLfloat));
 
 	// load to GPU
 	glBindBuffer (GL_UNIFORM_BUFFER, sceneBuffers.UBO[UBO_MATRICES]);

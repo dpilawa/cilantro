@@ -17,7 +17,7 @@ int main (int argc, char* argv [])
 	GameScene scene (&game);
 	game.gameScene = &scene;
 
-	GLFWRenderTarget target (&game, "Test 4", 960, 600, false, true, true);
+	GLFWRenderTarget target (&game, "Test 2", 960, 600, false, true, true);
 	game.gameRenderTarget = &target;
 
 	GLFWInputController controller (&game, target.GetWindow ());
