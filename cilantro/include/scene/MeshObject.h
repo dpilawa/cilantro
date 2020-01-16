@@ -16,56 +16,56 @@ class Renderer;
 class MeshObject : public GameObject
 {
 public:
-	__EAPI MeshObject ();
-	__EAPI virtual ~MeshObject ();
+    __EAPI MeshObject ();
+    __EAPI virtual ~MeshObject ();
 
-	// Cleans up contents of used collections
-	__EAPI MeshObject& Clear ();
+    // Cleans up contents of used collections
+    __EAPI MeshObject& Clear ();
 
-	// Initialize mesh in local space as unit primitives with center in space origin
-	__EAPI MeshObject& InitUnitCube ();
-	__EAPI MeshObject& InitUnitSphere (unsigned int subdivisions, bool sharedVertices = false);
+    // Initialize mesh in local space as unit primitives with center in space origin
+    __EAPI MeshObject& InitUnitCube ();
+    __EAPI MeshObject& InitUnitSphere (unsigned int subdivisions, bool sharedVertices = false);
 
     // calculate vertex normals
-	__EAPI void CalculateVertexNormals ();
+    __EAPI void CalculateVertexNormals ();
 
-	// get mesh counts
-	__EAPI unsigned int GetVertexCount ();
-	__EAPI unsigned int GetIndexCount ();
+    // get mesh counts
+    __EAPI unsigned int GetVertexCount ();
+    __EAPI unsigned int GetIndexCount ();
 
     // set mesh material
-	__EAPI MeshObject& SetMaterial (Material& material);
+    __EAPI MeshObject& SetMaterial (Material& material);
 
-	// get mesh material
-	__EAPI Material& GetMaterial () const;
+    // get mesh material
+    __EAPI Material& GetMaterial () const;
 
-	// get vertices raw data
-	__EAPI float* GetVerticesData ();
+    // get vertices raw data
+    __EAPI float* GetVerticesData ();
 
-	// get normals raw data
-	__EAPI float* GetNormalsData ();
+    // get normals raw data
+    __EAPI float* GetNormalsData ();
 
-	// get faces raw data
-	__EAPI unsigned int* GetFacesData ();
+    // get faces raw data
+    __EAPI unsigned int* GetFacesData ();
 
     // add vertices and primitives
-	__EAPI unsigned int AddVertex (const Vector3f& vertex);
-	__EAPI void AddFace (unsigned int v1, unsigned int v2, unsigned int v3);
+    __EAPI void AddVertex (const Vector3f& vertex);
+    __EAPI void AddFace (unsigned int v1, unsigned int v2, unsigned int v3);
 
-	// invoked by game loop on each frame or on update (e.g. transform)
-	virtual void OnFrame ();
-	virtual void OnDraw (Renderer& renderer);
-	virtual void OnUpdate (Renderer& renderer);
+    // invoked by game loop on each frame or on update (e.g. transform)
+    virtual void OnFrame ();
+    virtual void OnDraw (Renderer& renderer);
+    virtual void OnUpdate (Renderer& renderer);
 
 private:
 
     Material* objectMaterial;
 
     std::vector<float> vertices;
-	std::vector<unsigned int> indices;
+    std::vector<unsigned int> indices;
 
-	std::vector<float> normals;
-	std::vector<float> uvs;
+    std::vector<float> normals;
+    std::vector<float> uvs;
 };
 
 #endif
