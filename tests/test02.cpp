@@ -18,13 +18,13 @@ int main (int argc, char* argv [])
 	game.gameScene = &scene;
 
 	GLFWRenderTarget target (&game, "Test 2", 960, 600, false, true, true);
-	game.gameRenderTarget = &target;
+	game.gameRenderTarget = dynamic_cast<RenderTarget*>(&target);
 
 	GLFWInputController controller (&game, target.GetWindow ());
-	game.gameInputController = &controller;
+	game.gameInputController = dynamic_cast<InputController*>(&controller);
 
     GLRenderer renderer (&game, 960, 600);
-	game.gameRenderer = &renderer;
+	game.gameRenderer = dynamic_cast<Renderer*>(&renderer);
 
 	controller.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
 	controller.BindInputEvent ("exit", [ & ]() { game.Stop (); });

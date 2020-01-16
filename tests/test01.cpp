@@ -18,21 +18,21 @@
 
 #include <iostream>
 
-int main (int argc, char* argv[])
+int main (int argc, char* argv [])
 {
 	GameLoop game;
 
 	GameScene scene (&game);
 	game.gameScene = &scene;
-
+    
 	GLFWRenderTarget target (&game, "Test 1", 800, 600, false, true, true);
-	game.gameRenderTarget = &target;
+	game.gameRenderTarget = dynamic_cast<RenderTarget*>(&target);
 
 	GLFWInputController controller (&game, target.GetWindow ());
-	game.gameInputController = &controller;
+	game.gameInputController = dynamic_cast<InputController*>(&controller);
 
     GLRenderer renderer (&game, 800, 600);
-	game.gameRenderer = &renderer;
+	game.gameRenderer = dynamic_cast<Renderer*>(&renderer);
 
 	GLPostprocess gamma (&renderer, &renderer.GetShaderProgram("post_gamma_shader"));
     gamma.SetPostprocessParameterFloat ("fGamma", 2.2f);

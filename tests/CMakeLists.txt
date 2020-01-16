@@ -1,5 +1,7 @@
 include_directories ("${PROJECT_SOURCE_DIR}/cilantro/include")
 
+add_compile_definitions(CILANTRO_MIN_GL_VERSION=${CILANTRO_GL_VERSION})
+
 add_executable(test01
 test01.cpp
 ControlledCamera.cpp ControlledCamera.h
