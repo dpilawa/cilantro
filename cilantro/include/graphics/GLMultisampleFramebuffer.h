@@ -16,9 +16,9 @@ public:
     virtual void BindFramebuffer () const;
     virtual void BlitFramebuffer ();
 
-	virtual void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight);
+    virtual void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight);
 
-	GLuint GetMultisampleFramebufferTexture () const;
+    GLuint GetMultisampleFramebufferTexture () const;
     GLuint GetMultisampleFramebuffer () const;
 
 protected:

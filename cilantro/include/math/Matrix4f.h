@@ -7,10 +7,10 @@
 class Matrix4f
 {
 public:
-	// constructor
-	__EAPI Matrix4f ();
-	
-	// initializer list constructor
+    // constructor
+    __EAPI Matrix4f ();
+    
+    // initializer list constructor
     __EAPI Matrix4f (std::initializer_list<float> i);
 
     // copy constructor
@@ -26,22 +26,22 @@ public:
     __EAPI Matrix4f& operator= (Matrix4f other);
 
     // destructor
-	__EAPI ~Matrix4f ();
+    __EAPI ~Matrix4f ();
 
-	// accessor and mutator
-	__EAPI float* operator[] (unsigned int index);
-	__EAPI const float* operator[] (unsigned int index) const;
+    // accessor and mutator
+    __EAPI float* operator[] (unsigned int index);
+    __EAPI const float* operator[] (unsigned int index) const;
 
-	// methods
-	__EAPI Matrix4f& InitIdentity ();
+    // methods
+    __EAPI Matrix4f& InitIdentity ();
 
-	// operators
-	__EAPI Matrix4f& operator*= (const Matrix4f& m);
-	__EAPI Vector4f operator*(const Vector4f& v) const;
-	__EAPI Matrix4f& operator*= (float f);
+    // operators
+    __EAPI Matrix4f& operator*= (const Matrix4f& m);
+    __EAPI Vector4f operator*(const Vector4f& v) const;
+    __EAPI Matrix4f& operator*= (float f);
 
 private:
-	float m[16];
+    float m[16];
 
 };
 

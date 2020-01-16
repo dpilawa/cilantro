@@ -14,7 +14,7 @@ public:
     __EAPI virtual T GetCurvePoint (float t) const = 0;
     __EAPI virtual T GetCurveTangent (float t) const = 0;
 
-	__EAPI float GetCurveLength ();
+    __EAPI float GetCurveLength ();
 
 protected:
     unsigned int degree;

@@ -17,19 +17,19 @@ public:
     __EAPI ~GameLoop ();
 
     // run a game loop
-	__EAPI void Run ();
-	__EAPI void Stop ();	
-	__EAPI void Step ();
+    __EAPI void Run ();
+    __EAPI void Stop ();	
+    __EAPI void Step ();
 
-	// game loop components
+    // game loop components
     GameScene* gameScene;
     Renderer* gameRenderer;
-	InputController* gameInputController;
+    InputController* gameInputController;
     RenderTarget* gameRenderTarget;
 
 private:
     // bool flags to control the game loop
-	bool shouldStop;
+    bool shouldStop;
 
 };
 

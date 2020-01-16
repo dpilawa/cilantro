@@ -12,35 +12,35 @@
 class GLFWRenderTarget : public RenderTarget
 {
 public:
-	GLFWRenderTarget () = delete;
-	__EAPI GLFWRenderTarget (GameLoop* gameLoop, std::string windowCaption,  unsigned int width, unsigned int height, bool isFullscreen, bool isResizable, bool isVSync);
-	__EAPI ~GLFWRenderTarget ();
+    GLFWRenderTarget () = delete;
+    __EAPI GLFWRenderTarget (GameLoop* gameLoop, std::string windowCaption,  unsigned int width, unsigned int height, bool isFullscreen, bool isResizable, bool isVSync);
+    __EAPI ~GLFWRenderTarget ();
 
-	__EAPI void OnFrame ();
+    __EAPI void OnFrame ();
 
-	__EAPI GLFWwindow* GetWindow ();
+    __EAPI GLFWwindow* GetWindow ();
 
 private:
 
-	void Initialize ();
-	void Deinitialize ();
-	void FramebufferResizeCallback (int width, int height);
+    void Initialize ();
+    void Deinitialize ();
+    void FramebufferResizeCallback (int width, int height);
 
-	// GL window context
-	GLFWwindow* window;
+    // GL window context
+    GLFWwindow* window;
 
-	// GL renderer
-	GLRenderer* glRenderer;
+    // GL renderer
+    GLRenderer* glRenderer;
 
-	// VBO and VAO
-	GLuint targetVAO;
-	GLuint targetVBO;
+    // VBO and VAO
+    GLuint targetVAO;
+    GLuint targetVBO;
 
-	// parameters
-	std::string windowCaption;
-	bool isFullscreen;
-	bool isResizable;
-	bool isVSync;
+    // parameters
+    std::string windowCaption;
+    bool isFullscreen;
+    bool isResizable;
+    bool isVSync;
 
 };
 

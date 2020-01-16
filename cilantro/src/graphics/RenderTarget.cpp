@@ -15,10 +15,10 @@ RenderTarget::~RenderTarget ()
 
 unsigned int RenderTarget::GetWidth () const
 {
-	return width;
+    return width;
 }
 
 unsigned int RenderTarget::GetHeight () const
 {
-	return height;
+    return height;
 }

@@ -8,32 +8,32 @@
 class LogMessage
 {
 public:
-	__EAPI LogMessage ();
-	__EAPI LogMessage (std::string label);
-	__EAPI LogMessage (std::string label, int code);
-	__EAPI ~LogMessage ();
+    __EAPI LogMessage ();
+    __EAPI LogMessage (std::string label);
+    __EAPI LogMessage (std::string label, int code);
+    __EAPI ~LogMessage ();
 
-	template <class P> 
-	LogMessage& operator<<(const P& message);
+    template <class P> 
+    LogMessage& operator<<(const P& message);
 
 private:
-	bool didPrint;
-	bool willExit;
-	int errorCode;
+    bool didPrint;
+    bool willExit;
+    int errorCode;
 };
 
 template<class P>
 inline LogMessage& LogMessage::operator<<(const P & message)
 {
-	if (didPrint)
-	{
-		std::cout << " ";
-	}
+    if (didPrint)
+    {
+        std::cout << " ";
+    }
 
-	std::cout << message;
-	didPrint = true;
+    std::cout << message;
+    didPrint = true;
 
-	return *this;
+    return *this;
 }
 
 #endif

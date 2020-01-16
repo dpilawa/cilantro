@@ -7,8 +7,8 @@
 
 enum class KnotVectorType
 {
-	Clamped,
-	Uniform
+    Clamped,
+    Uniform
 };
 
 template <typename T, int d>

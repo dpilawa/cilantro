@@ -11,24 +11,24 @@ R"(#version )"
 xstr(CILANTRO_MIN_GL_VERSION)
 R"V0G0N(
 
-	/* texture coords */
-	in vec2 fTextureCoordinates;
+    /* texture coords */
+    in vec2 fTextureCoordinates;
 
     /* gamma value */
     uniform float fGamma;
 
-	/* output color */
-	out vec4 color;
+    /* output color */
+    out vec4 color;
 
-	/* texture */
-	uniform sampler2D fScreenTexture;
+    /* texture */
+    uniform sampler2D fScreenTexture;
 
-	void main()
-	{
-		color = texture (fScreenTexture, fTextureCoordinates);
+    void main()
+    {
+        color = texture (fScreenTexture, fTextureCoordinates);
         color.rgb = pow (color.rgb, vec3 (1.0 / fGamma));
-	} 
-	
+    } 
+    
 )V0G0N";
 
 #endif

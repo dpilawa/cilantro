@@ -6,25 +6,25 @@
 class RenderTarget
 {
 public:
-	RenderTarget () = delete;
-	RenderTarget (GameLoop* gameLoop, unsigned int width, unsigned int height);
-	virtual ~RenderTarget ();
+    RenderTarget () = delete;
+    RenderTarget (GameLoop* gameLoop, unsigned int width, unsigned int height);
+    virtual ~RenderTarget ();
 
-	virtual void OnFrame () = 0;
+    virtual void OnFrame () = 0;
 
-	unsigned int GetWidth () const;
-	unsigned int GetHeight () const;
+    unsigned int GetWidth () const;
+    unsigned int GetHeight () const;
 
 protected:
 
-	GameLoop* gameLoop;
+    GameLoop* gameLoop;
 
     virtual void Initialize () = 0;
-	virtual void Deinitialize () = 0;
+    virtual void Deinitialize () = 0;
 
-	// resolution
-	unsigned int width;
-	unsigned int height;
+    // resolution
+    unsigned int width;
+    unsigned int height;
 
 };
 

@@ -43,82 +43,82 @@ Vector4f::~Vector4f () { };
 // vector dimenison
 unsigned int Vector4f::Dim () const
 {
-	return 4u;
+    return 4u;
 }
 
 // mutator
 float& Vector4f::operator[] (unsigned int index)
 {
-	return v[index];
+    return v[index];
 }
 
 // accessor
 const float& Vector4f::operator[] (unsigned int index) const
 {
-	return v[index];
+    return v[index];
 }
 
 
 Vector4f& Vector4f::operator*=(float f)
 {
-	v[0] *= f;
-	v[1] *= f;
-	v[2] *= f;
+    v[0] *= f;
+    v[1] *= f;
+    v[2] *= f;
     v[3] *= f;
 
-	return *this;
+    return *this;
 }
 
 Vector4f& Vector4f::operator+=(const Vector4f& other)
 {
-	v[0] += other.v[0];
-	v[1] += other.v[1];
-	v[2] += other.v[2];
+    v[0] += other.v[0];
+    v[1] += other.v[1];
+    v[2] += other.v[2];
     v[3] += other.v[3];
 
-	return *this;
+    return *this;
 }
 
 Vector4f& Vector4f::operator-=(const Vector4f& other)
 {
-	v[0] -= other.v[0];
-	v[1] -= other.v[1];
-	v[2] -= other.v[2];
-	v[3] -= other.v[3];
+    v[0] -= other.v[0];
+    v[1] -= other.v[1];
+    v[2] -= other.v[2];
+    v[3] -= other.v[3];
 
-	return *this;
+    return *this;
 }
 
 Vector4f operator* (Vector4f u, float f)
 {
-	u *= f;
-	return u;
+    u *= f;
+    return u;
 }
 
 Vector4f operator* (float f, Vector4f u)
 {
-	u *= f;
-	return u;
+    u *= f;
+    return u;
 }
 
 Vector4f operator+ (Vector4f u, const Vector4f& v)
 {
-	u += v;
-	return u;
+    u += v;
+    return u;
 }
 
 Vector4f operator- (Vector4f u, const Vector4f& v)
 {
-	u -= v;
-	return u;
+    u -= v;
+    return u;
 }
 
 Vector4f operator- (Vector4f v)
 {
-	v.v[0] = -v.v[0];
-	v.v[1] = -v.v[1];
-	v.v[2] = -v.v[2];
+    v.v[0] = -v.v[0];
+    v.v[1] = -v.v[1];
+    v.v[2] = -v.v[2];
     v.v[3] = -v.v[3];
 
-	return v;
+    return v;
 }

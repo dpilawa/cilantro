@@ -7,9 +7,9 @@
 
 PointLight::PointLight () : Light()
 {
-	attenuationConst = 1.0f;
-	attenuationLinear = 0.0f;
-	attenuationQuadratic = 0.0f;
+    attenuationConst = 1.0f;
+    attenuationLinear = 0.0f;
+    attenuationQuadratic = 0.0f;
 }
 
 PointLight::~PointLight ()
@@ -18,42 +18,42 @@ PointLight::~PointLight ()
 
 PointLight& PointLight::SetConstantAttenuationFactor (const float attenuation)
 {
-	attenuationConst = attenuation;
-	InvokeOnUpdateCallbacks ();
-	return *this;
+    attenuationConst = attenuation;
+    InvokeOnUpdateCallbacks ();
+    return *this;
 }
 
 PointLight& PointLight::SetLinearAttenuationFactor (const float attenuation)
 {
-	attenuationLinear = attenuation;
-	InvokeOnUpdateCallbacks ();
-	return *this;
+    attenuationLinear = attenuation;
+    InvokeOnUpdateCallbacks ();
+    return *this;
 }
 
 PointLight& PointLight::SetQuadraticAttenuationFactor (const float attenuation)
 {
-	attenuationQuadratic = attenuation;
-	InvokeOnUpdateCallbacks ();
-	return *this;
+    attenuationQuadratic = attenuation;
+    InvokeOnUpdateCallbacks ();
+    return *this;
 }
 
 float PointLight::GetConstantAttenuationFactor () const
 {
-	return attenuationConst;
+    return attenuationConst;
 }
 
 float PointLight::GetLinearAttenuationFactor () const
 {
-	return attenuationLinear;
+    return attenuationLinear;
 }
 
 float PointLight::GetQuadraticAttenuationFactor () const
 {
-	return attenuationQuadratic;
+    return attenuationQuadratic;
 }
 
 void PointLight::OnUpdate (Renderer& renderer)
 {
-	Light::OnUpdate (renderer);
-	renderer.Update (*this);
+    Light::OnUpdate (renderer);
+    renderer.Update (*this);
 }

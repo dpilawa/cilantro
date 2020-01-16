@@ -8,16 +8,16 @@
 class OrthographicCamera : public Camera
 {
 public:
-	__EAPI OrthographicCamera (float width, float near, float far);
-	__EAPI ~OrthographicCamera ();
+    __EAPI OrthographicCamera (float width, float near, float far);
+    __EAPI ~OrthographicCamera ();
 
-	__EAPI Matrix4f GetProjectionMatrix (unsigned int xRes, unsigned int yRes) const;
+    __EAPI Matrix4f GetProjectionMatrix (unsigned int xRes, unsigned int yRes) const;
 
 private:
 
-	float cameraWidth;
-	float nearPlane;
-	float farPlane;
+    float cameraWidth;
+    float nearPlane;
+    float farPlane;
 };
 
 #endif

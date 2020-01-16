@@ -92,7 +92,7 @@ T EvaluateCurveDerivative (unsigned int degree, const std::vector<T>& controlPoi
     auto cwd = EvaluateCurveDerivative (degree, cw, knots, u);
     auto point = EvaluateCurvePoint (degree, cw, knots, u);
 
-	derivative = (Mathf::HomogenousToCartesianTruncate (cwd) - Mathf::GetHomogenousWeight (cwd) * Mathf::HomogenousToCartesianPerspective (point)) * (1.0f / point[point.Dim () - 1]);
+    derivative = (Mathf::HomogenousToCartesianTruncate (cwd) - Mathf::GetHomogenousWeight (cwd) * Mathf::HomogenousToCartesianPerspective (point)) * (1.0f / point[point.Dim () - 1]);
 
     return derivative;
 }

@@ -11,13 +11,13 @@
 
 GameObject::GameObject ()
 {
-	parentObject = nullptr;
-	isLight = false;
+    parentObject = nullptr;
+    isLight = false;
 
     CalculateModelTransformMatrix ();
 
     // set callbacks on transform modification
-	// this is just a passthrough of callbacks to subscribers (Scene)
+    // this is just a passthrough of callbacks to subscribers (Scene)
     modelTransform.RegisterCallback ("OnUpdateTransform", [&](unsigned int objectHandle) { InvokeCallbacks ("OnUpdateTransform", this->GetHandle ()); });
 }
 
@@ -27,34 +27,34 @@ GameObject::~GameObject ()
 
 void GameObject::SetGameLoop (GameLoop* gameLoop)
 {
-	this->gameLoop = gameLoop;
+    this->gameLoop = gameLoop;
 }
 
 void GameObject::SetHandle (unsigned int handle)
 {
-	objectHandle = handle;
+    objectHandle = handle;
 }
 
 unsigned int GameObject::GetHandle () const
 {
-	return objectHandle;
+    return objectHandle;
 }
 
 void GameObject::SetParentObject (GameObject& parent)
 {
-	parentObject = &parent;
-	parent.childObjects.push_back (this);
-	InvokeCallbacks ("OnUpdateSceneGraph", this->GetHandle ());
+    parentObject = &parent;
+    parent.childObjects.push_back (this);
+    InvokeCallbacks ("OnUpdateSceneGraph", this->GetHandle ());
 }
 
 GameObject* GameObject::GetParentObject ()
 {
-	return parentObject;
+    return parentObject;
 }
 
 std::vector<GameObject*> GameObject::GetChildObjects ()
 {
-	return childObjects;
+    return childObjects;
 }
 
 void GameObject::OnStart ()
@@ -79,7 +79,7 @@ void GameObject::OnEnd ()
 
 Transform& GameObject::GetModelTransform ()
 {
-	return modelTransform;
+    return modelTransform;
 }
 
 Matrix4f GameObject::GetModelTransformMatrix ()
@@ -89,48 +89,48 @@ Matrix4f GameObject::GetModelTransformMatrix ()
 
 void GameObject::CalculateModelTransformMatrix ()
 {
-	if (parentObject != nullptr)
-	{
-		modelTransformMatrix = parentObject->GetModelTransformMatrix () * modelTransform.GetModelMatrix ();
-	}
-	else
-	{
+    if (parentObject != nullptr)
+    {
+        modelTransformMatrix = parentObject->GetModelTransformMatrix () * modelTransform.GetModelMatrix ();
+    }
+    else
+    {
         modelTransformMatrix = modelTransform.GetModelMatrix ();
     }
 
-	for (auto&& childObject : childObjects)
-	{
+    for (auto&& childObject : childObjects)
+    {
         childObject->CalculateModelTransformMatrix ();
     }
 }
 
 Vector4f GameObject::GetPosition ()
 {
-	return GetModelTransformMatrix () * Vector4f (0.0f, 0.0f, 0.0f, 1.0f);
+    return GetModelTransformMatrix () * Vector4f (0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 Vector3f GameObject::GetRight ()
 {
-	Matrix4f modelTransforMatrix = GetModelTransformMatrix ();
+    Matrix4f modelTransforMatrix = GetModelTransformMatrix ();
 
-	return Mathf::Normalize (Vector3f (modelTransforMatrix[0][0], modelTransforMatrix[1][0], modelTransforMatrix[2][0]));
+    return Mathf::Normalize (Vector3f (modelTransforMatrix[0][0], modelTransforMatrix[1][0], modelTransforMatrix[2][0]));
 }
 
 Vector3f GameObject::GetUp ()
 {
-	Matrix4f modelTransforMatrix = GetModelTransformMatrix ();
+    Matrix4f modelTransforMatrix = GetModelTransformMatrix ();
 
-	return Mathf::Normalize (Vector3f (modelTransforMatrix[0][1], modelTransforMatrix[1][1], modelTransforMatrix[2][1]));
+    return Mathf::Normalize (Vector3f (modelTransforMatrix[0][1], modelTransforMatrix[1][1], modelTransforMatrix[2][1]));
 }
 
 Vector3f GameObject::GetForward ()
 {
-	Matrix4f modelTransforMatrix = GetModelTransformMatrix ();
+    Matrix4f modelTransforMatrix = GetModelTransformMatrix ();
 
-	return Mathf::Normalize (Vector3f (modelTransforMatrix[0][2], modelTransforMatrix[1][2], modelTransforMatrix[2][2]));
+    return Mathf::Normalize (Vector3f (modelTransforMatrix[0][2], modelTransforMatrix[1][2], modelTransforMatrix[2][2]));
 }
 
 bool GameObject::IsLight ()
 {
-	return isLight;
+    return isLight;
 }

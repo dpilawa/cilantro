@@ -7,10 +7,10 @@
 class Orbiter : public GameObject
 {
 public:
-	Orbiter (float period, float distance, float angle);
-	~Orbiter ();
+    Orbiter (float period, float distance, float angle);
+    ~Orbiter ();
 
-	void OnFrame ();
+    void OnFrame ();
 
 private:
 
@@ -19,15 +19,15 @@ private:
     Vector3f orbitPlane;
 
     // orbiting period in days
-	float orbitingPeriod;
-	
-	// orbiting distance
-	float orbitingDistance;
+    float orbitingPeriod;
+    
+    // orbiting distance
+    float orbitingDistance;
 
-	// axis angle
+    // axis angle
     float orbitAxisAngle;
 
-	// current orbit rotation value in degrees
+    // current orbit rotation value in degrees
     float orbitRotation;
 };
 

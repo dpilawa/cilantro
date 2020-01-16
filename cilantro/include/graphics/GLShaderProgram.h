@@ -8,22 +8,22 @@
 class GLShaderProgram : public ShaderProgram
 {
 public:
-	GLShaderProgram ();
-	~GLShaderProgram ();
+    GLShaderProgram ();
+    ~GLShaderProgram ();
 
-	// return program id
-	GLuint GetProgramId ();
+    // return program id
+    GLuint GetProgramId ();
 
-	// attach shader to a program
-	void LinkShader (Shader& shader);
+    // attach shader to a program
+    void LinkShader (Shader& shader);
 
-	// use program
-	void Use ();
+    // use program
+    void Use ();
 
 private:
 
-	// ID of a shader program
-	GLuint shaderProgramId;
+    // ID of a shader program
+    GLuint shaderProgramId;
 };
 
 #endif

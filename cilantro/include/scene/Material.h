@@ -8,43 +8,43 @@
 class Material
 {
 public:
-	__EAPI Material ();
-	__EAPI ~Material ();
+    __EAPI Material ();
+    __EAPI ~Material ();
 
-	// setters
-	__EAPI Material& SetShaderProgram (std::string name);
-	__EAPI Material& SetAmbientColor (const Vector3f& color);
-	__EAPI Material& SetDiffuseColor (const Vector3f& color);
-	__EAPI Material& SetSpecularColor (const Vector3f& color);
-	__EAPI Material& SetSpecularShininess (const float shininess);
-	__EAPI Material& SetEmissiveColor (const Vector3f& emissive);
-	__EAPI Material& SetColor (const Vector3f& color);
+    // setters
+    __EAPI Material& SetShaderProgram (std::string name);
+    __EAPI Material& SetAmbientColor (const Vector3f& color);
+    __EAPI Material& SetDiffuseColor (const Vector3f& color);
+    __EAPI Material& SetSpecularColor (const Vector3f& color);
+    __EAPI Material& SetSpecularShininess (const float shininess);
+    __EAPI Material& SetEmissiveColor (const Vector3f& emissive);
+    __EAPI Material& SetColor (const Vector3f& color);
 
-	// getters
-	__EAPI std::string GetShaderProgramName () const;
-	__EAPI Vector3f GetAmbientColor () const;
-	__EAPI Vector3f GetDiffuseColor () const;
-	__EAPI Vector3f GetSpecularColor () const;
-	__EAPI float GetSpecularShininess () const;
-	__EAPI Vector3f GetEmissiveColor () const;
+    // getters
+    __EAPI std::string GetShaderProgramName () const;
+    __EAPI Vector3f GetAmbientColor () const;
+    __EAPI Vector3f GetDiffuseColor () const;
+    __EAPI Vector3f GetSpecularColor () const;
+    __EAPI float GetSpecularShininess () const;
+    __EAPI Vector3f GetEmissiveColor () const;
 
 private:
 
-	// name of a shader program defined in renderer
-	std::string shaderProgramName;
+    // name of a shader program defined in renderer
+    std::string shaderProgramName;
 
-	// ambient color
-	Vector3f ambientColor;
+    // ambient color
+    Vector3f ambientColor;
 
-	// diffuse color
-	Vector3f diffuseColor;
+    // diffuse color
+    Vector3f diffuseColor;
 
-	// specular color
-	Vector3f specularColor;
-	float specularShininess;
+    // specular color
+    Vector3f specularColor;
+    float specularShininess;
 
-	// emissive color
-	Vector3f emissiveColor;
+    // emissive color
+    Vector3f emissiveColor;
 
 };
 

@@ -8,10 +8,10 @@
 class DirectionalLight : public Light
 {
 public:
-	__EAPI DirectionalLight ();
-	__EAPI virtual ~DirectionalLight ();
+    __EAPI DirectionalLight ();
+    __EAPI virtual ~DirectionalLight ();
 
-	// invoked by game loop on update	
+    // invoked by game loop on update	
     void OnUpdate (Renderer& renderer);
 
 private:

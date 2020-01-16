@@ -45,7 +45,7 @@ T Bezier<T,d>::GetCurvePoint (float t) const
     point = std::pow (1.0f - t, static_cast<float>(degree)) * points[0] + std::pow (t, static_cast<float>(degree)) * points[degree];
     for (unsigned int i = 1; i <= degree - 1; i++)
     {
-		point += Mathf::Binomial (degree, i) * std::pow (1.0f - t, static_cast<float>(degree - i)) * std::pow (t, static_cast<float>(i)) * points[i];
+        point += Mathf::Binomial (degree, i) * std::pow (1.0f - t, static_cast<float>(degree - i)) * std::pow (t, static_cast<float>(i)) * points[i];
     }
 
     return point;

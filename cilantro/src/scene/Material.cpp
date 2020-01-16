@@ -5,10 +5,10 @@
 
 Material::Material ()
 {
-	shaderProgramName = "phong_shader";
-	SetColor (Vector3f (1.0f, 1.0f, 1.0f));
-	SetEmissiveColor (Vector3f (0.0f, 0.0f, 0.0f));
-	SetSpecularShininess (32.0f);
+    shaderProgramName = "phong_shader";
+    SetColor (Vector3f (1.0f, 1.0f, 1.0f));
+    SetEmissiveColor (Vector3f (0.0f, 0.0f, 0.0f));
+    SetSpecularShininess (32.0f);
 }
 
 Material::~Material ()
@@ -17,81 +17,81 @@ Material::~Material ()
 
 Material & Material::SetShaderProgram (std::string name)
 {
-	shaderProgramName = name;
+    shaderProgramName = name;
 
-	return *this;
+    return *this;
 }
 
 Material & Material::SetAmbientColor (const Vector3f & color)
 {
-	ambientColor = color;
+    ambientColor = color;
 
-	return *this;
+    return *this;
 }
 
 Material & Material::SetDiffuseColor (const Vector3f& color)
 {
-	diffuseColor = color;
+    diffuseColor = color;
 
-	return *this;
+    return *this;
 }
 
 Material & Material::SetSpecularColor (const Vector3f & color)
 {
-	specularColor = color;
+    specularColor = color;
 
-	return *this;
+    return *this;
 }
 
 Material & Material::SetSpecularShininess (const float shininess)
 {
-	specularShininess = shininess;
+    specularShininess = shininess;
 
-	return *this;
+    return *this;
 }
 
 Material & Material::SetEmissiveColor (const Vector3f & emissive)
 {
-	emissiveColor = emissive;
+    emissiveColor = emissive;
 
-	return *this;
+    return *this;
 }
 
 Material & Material::SetColor (const Vector3f & color)
 {
-	SetAmbientColor (color);
-	SetDiffuseColor (color);
-	SetSpecularColor (color);
+    SetAmbientColor (color);
+    SetDiffuseColor (color);
+    SetSpecularColor (color);
 
-	return *this;
+    return *this;
 }
 
 std::string Material::GetShaderProgramName () const
 {
-	return shaderProgramName;
+    return shaderProgramName;
 }
 
 Vector3f Material::GetAmbientColor () const
 {
-	return ambientColor;
+    return ambientColor;
 }
 
 Vector3f Material::GetDiffuseColor () const
 {
-	return diffuseColor;
+    return diffuseColor;
 }
 
 Vector3f Material::GetSpecularColor () const
 {
-	return specularColor;
+    return specularColor;
 }
 
 float Material::GetSpecularShininess () const
 {
-	return specularShininess;
+    return specularShininess;
 }
 
 Vector3f Material::GetEmissiveColor () const
 {
-	return emissiveColor;
+    return emissiveColor;
 }

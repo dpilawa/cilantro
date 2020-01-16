@@ -12,58 +12,58 @@ class Transform : public CallbackProvider<std::string, unsigned int>
 {
 public:
 
-	__EAPI Transform ();
-	__EAPI ~Transform ();
+    __EAPI Transform ();
+    __EAPI ~Transform ();
 
-	// returns models matrix (multiplication of scaling, rotation, translation)
-	__EAPI Matrix4f& GetModelMatrix ();
+    // returns models matrix (multiplication of scaling, rotation, translation)
+    __EAPI Matrix4f& GetModelMatrix ();
 
-	// returns transformation matrices
-	__EAPI Matrix4f& GetTranslationMatrix ();
-	__EAPI Matrix4f& GetScalingMatrix ();
-	__EAPI Matrix4f& GetRotationMatrix ();
+    // returns transformation matrices
+    __EAPI Matrix4f& GetTranslationMatrix ();
+    __EAPI Matrix4f& GetScalingMatrix ();
+    __EAPI Matrix4f& GetRotationMatrix ();
 
-	// translate
-	__EAPI Transform& Translate (float x, float y, float z);
-	__EAPI Transform& Translate (const Vector3f& t);
+    // translate
+    __EAPI Transform& Translate (float x, float y, float z);
+    __EAPI Transform& Translate (const Vector3f& t);
     __EAPI Vector3f GetTranslation () const;
     __EAPI Transform& TranslateBy (float x, float y, float z);
-	__EAPI Transform& TranslateBy (const Vector3f& t);
+    __EAPI Transform& TranslateBy (const Vector3f& t);
 
     // scale
-	__EAPI Transform& Scale (float x, float y, float z);
-	__EAPI Transform& Scale (const Vector3f& s);
+    __EAPI Transform& Scale (float x, float y, float z);
+    __EAPI Transform& Scale (const Vector3f& s);
     __EAPI Vector3f GetScale () const;
     __EAPI Transform& ScaleBy (float x, float y, float z);
-	__EAPI Transform& ScaleBy (const Vector3f& s);	
+    __EAPI Transform& ScaleBy (const Vector3f& s);	
 
-	// scale uniformly along all axes
-	__EAPI Transform& Scale (float s);
-	__EAPI Transform& ScaleBy (float s);
+    // scale uniformly along all axes
+    __EAPI Transform& Scale (float s);
+    __EAPI Transform& ScaleBy (float s);
 
-	// rotate (Euler angles in degrees)
-	__EAPI Transform& Rotate (float x, float y, float z);
-	__EAPI Transform& Rotate (const Vector3f& euler);
+    // rotate (Euler angles in degrees)
+    __EAPI Transform& Rotate (float x, float y, float z);
+    __EAPI Transform& Rotate (const Vector3f& euler);
     __EAPI Transform& Rotate (const Quaternion& q);
     __EAPI Transform& Rotate (const Vector3f& axis, float theta);
     __EAPI Vector3f GetRotation () const;
-	__EAPI Transform& RotateBy (float x, float y, float z);
-	__EAPI Transform& RotateBy (const Vector3f& r);
-	__EAPI Transform& RotateBy (const Quaternion& q);
+    __EAPI Transform& RotateBy (float x, float y, float z);
+    __EAPI Transform& RotateBy (const Vector3f& r);
+    __EAPI Transform& RotateBy (const Quaternion& q);
 
 private:
 
-	bool isValid;
+    bool isValid;
 
-	Vector3f translate;
-	Vector3f scale;
-	Quaternion rotate;
+    Vector3f translate;
+    Vector3f scale;
+    Quaternion rotate;
 
-	Matrix4f modelMatrix;
+    Matrix4f modelMatrix;
 
-	Matrix4f scalingMatrix;
-	Matrix4f translationMatrix;
-	Matrix4f rotationMatrix;
+    Matrix4f scalingMatrix;
+    Matrix4f translationMatrix;
+    Matrix4f rotationMatrix;
 
 };
 

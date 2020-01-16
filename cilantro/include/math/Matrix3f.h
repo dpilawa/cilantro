@@ -7,44 +7,44 @@
 class Matrix3f
 {
 public:
-	// constructor
-	__EAPI Matrix3f ();
+    // constructor
+    __EAPI Matrix3f ();
 
-	// initializer list constructor
+    // initializer list constructor
     __EAPI Matrix3f (std::initializer_list<float> i);
 
-	// copy constructor
+    // copy constructor
     __EAPI Matrix3f (const Matrix3f& other);
 
-	// copy constructor (submatrix)
+    // copy constructor (submatrix)
     __EAPI Matrix3f (const Matrix4f& other);
 
-	// copy constructor (column vectors)
+    // copy constructor (column vectors)
     __EAPI Matrix3f (const Vector3f& c1, const Vector3f& c2, const Vector3f& c3);
 
-	// move constructor
+    // move constructor
     __EAPI Matrix3f (Matrix3f&& other);
 
     // assignment operator
     __EAPI Matrix3f& operator= (Matrix3f other);
 
     // destructor
-	__EAPI ~Matrix3f ();
+    __EAPI ~Matrix3f ();
 
-	// accessor and mutator
-	__EAPI float* operator[](unsigned int index);
-	__EAPI const float* operator[](unsigned int index) const;
+    // accessor and mutator
+    __EAPI float* operator[](unsigned int index);
+    __EAPI const float* operator[](unsigned int index) const;
 
-	// methods
-	__EAPI Matrix3f& InitIdentity ();
+    // methods
+    __EAPI Matrix3f& InitIdentity ();
 
-	// operators
-	__EAPI Matrix3f& operator*= (const Matrix3f& m);
-	__EAPI Vector3f operator*(const Vector3f& v) const;
-	__EAPI Matrix3f& operator*= (float f);
+    // operators
+    __EAPI Matrix3f& operator*= (const Matrix3f& m);
+    __EAPI Vector3f operator*(const Vector3f& v) const;
+    __EAPI Matrix3f& operator*= (float f);
 
 private:
-	float m[9];
+    float m[9];
 
 };
 

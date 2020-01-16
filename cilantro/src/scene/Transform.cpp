@@ -9,12 +9,12 @@
 
 Transform::Transform ()
 {
-	isValid = true;
+    isValid = true;
 
-	// calculate initial matrices
-	Translate (0.0f, 0.0f, 0.0f);
-	Scale (1.0f, 1.0f, 1.0f);
-	Rotate (0.0f, 0.0f, 0.0f);
+    // calculate initial matrices
+    Translate (0.0f, 0.0f, 0.0f);
+    Scale (1.0f, 1.0f, 1.0f);
+    Rotate (0.0f, 0.0f, 0.0f);
 
 }
 
@@ -24,29 +24,29 @@ Transform::~Transform ()
 
 Matrix4f& Transform::GetModelMatrix ()
 {
-	// multiply transformation matrices (first scale, then rotate, then translate)
-	if (isValid == false) 
-	{
-		modelMatrix = translationMatrix * rotationMatrix * scalingMatrix;
-		isValid = true;
-	}
+    // multiply transformation matrices (first scale, then rotate, then translate)
+    if (isValid == false) 
+    {
+        modelMatrix = translationMatrix * rotationMatrix * scalingMatrix;
+        isValid = true;
+    }
 
-	return modelMatrix;
+    return modelMatrix;
 }
 
 Matrix4f& Transform::GetTranslationMatrix () 
 {
-	return translationMatrix;
+    return translationMatrix;
 }
 
 Matrix4f& Transform::GetScalingMatrix () 
 {
-	return scalingMatrix;
+    return scalingMatrix;
 }
 
 Matrix4f& Transform::GetRotationMatrix () 
 {
-	return rotationMatrix;
+    return rotationMatrix;
 }
 
 Transform& Transform::Translate (float x, float y, float z)
@@ -56,14 +56,14 @@ Transform& Transform::Translate (float x, float y, float z)
 
 Transform& Transform::Translate (const Vector3f & t)
 {
-	isValid = false;
+    isValid = false;
 
     translate = t;
     translationMatrix = Mathf::GenTranslationMatrix (translate);
 
-	InvokeCallbacks ("OnUpdateTransform", 0u);
+    InvokeCallbacks ("OnUpdateTransform", 0u);
 
-	return *this;
+    return *this;
 }
 
 Vector3f Transform::GetTranslation () const
@@ -94,14 +94,14 @@ Transform& Transform::Scale (float x, float y, float z)
 
 Transform& Transform::Scale (const Vector3f& s)
 {
-	isValid = false;
+    isValid = false;
 
     scale = s;
-	scalingMatrix = Mathf::GenScalingMatrix (scale);
+    scalingMatrix = Mathf::GenScalingMatrix (scale);
 
-	InvokeCallbacks ("OnUpdateTransform", 0u);
+    InvokeCallbacks ("OnUpdateTransform", 0u);
 
-	return *this;
+    return *this;
 }
 
 Vector3f Transform::GetScale () const
@@ -127,15 +127,15 @@ Transform& Transform::ScaleBy (const Vector3f& s)
     sNew = GetScale ();
 
     sNew[0] = sNew[0] * s[0];
-	sNew[0] = sNew[0] * s[0];
-	sNew[0] = sNew[0] * s[0];
+    sNew[0] = sNew[0] * s[0];
+    sNew[0] = sNew[0] * s[0];
 
     return Scale (sNew);
 }
 
 Transform& Transform::Scale (float s)
 {
-	return Scale (Vector3f (s, s, s));
+    return Scale (Vector3f (s, s, s));
 }
 
 Transform& Transform::ScaleBy (float s)
@@ -145,19 +145,19 @@ Transform& Transform::ScaleBy (float s)
 
 Transform& Transform::Rotate (float x, float y, float z)
 {
-	return Rotate (Vector3f (x, y, z));
+    return Rotate (Vector3f (x, y, z));
 }
 
 Transform& Transform::Rotate (const Vector3f& euler)
 {
-	isValid = false;
+    isValid = false;
 
     rotate = Mathf::EulerToQuaterion (Mathf::Deg2Rad (euler));
     rotationMatrix = Mathf::GenRotationMatrix (rotate);
 
     InvokeCallbacks ("OnUpdateTransform", 0u);
 
-	return *this;
+    return *this;
 }
 
 Transform& Transform::Rotate (const Quaternion& q)
@@ -165,9 +165,9 @@ Transform& Transform::Rotate (const Quaternion& q)
     isValid = false;
 
     rotate = q;
-	rotationMatrix = Mathf::GenRotationMatrix (rotate);
+    rotationMatrix = Mathf::GenRotationMatrix (rotate);
 
-	InvokeCallbacks ("OnUpdateTransform", 0u);
+    InvokeCallbacks ("OnUpdateTransform", 0u);
 
     return *this;
 }
@@ -177,9 +177,9 @@ Transform& Transform::Rotate (const Vector3f& axis, float theta)
     isValid = false;
 
     rotate = Mathf::GenRotationQuaternion (axis, Mathf::Deg2Rad (theta));
-	rotationMatrix = Mathf::GenRotationMatrix (rotate);
+    rotationMatrix = Mathf::GenRotationMatrix (rotate);
 
-	InvokeCallbacks ("OnUpdateTransform", 0u);
+    InvokeCallbacks ("OnUpdateTransform", 0u);
 
     return *this;
 }

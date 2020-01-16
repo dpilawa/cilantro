@@ -14,7 +14,7 @@ Camera::~Camera ()
 
 Matrix4f Camera::GetViewMatrix ()
 {
-	return Mathf::Invert (GetModelTransformMatrix ());
+    return Mathf::Invert (GetModelTransformMatrix ());
 }
 
 

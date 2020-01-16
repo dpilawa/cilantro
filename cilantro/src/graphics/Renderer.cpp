@@ -28,7 +28,7 @@ void Renderer::RenderFrame ()
     }
 
     // update game clocks (Tock)
-	Timer::Tock ();
+    Timer::Tock ();
 }
 
 void Renderer::SetResolution (unsigned int width, unsigned int height)

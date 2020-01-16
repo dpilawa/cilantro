@@ -7,7 +7,7 @@
 
 SpotLight::SpotLight () : PointLight ()
 {
-	innerCutoff = 45.0f;
+    innerCutoff = 45.0f;
     outerCutoff = innerCutoff;
 }
 
@@ -43,6 +43,6 @@ float SpotLight::GetOuterCutoff () const
 
 void SpotLight::OnUpdate (Renderer& renderer)
 {
-	Light::OnUpdate (renderer);
-	renderer.Update (*this);
+    Light::OnUpdate (renderer);
+    renderer.Update (*this);
 }

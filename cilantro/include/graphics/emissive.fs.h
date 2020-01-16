@@ -11,17 +11,17 @@ R"(#version )"
 xstr(CILANTRO_MIN_GL_VERSION)
 R"V0G0N(
 
-	/* material properties */
-	uniform vec3 fEmissiveColor;
+    /* material properties */
+    uniform vec3 fEmissiveColor;
 
-	/* output color */
-	out vec4 color;
+    /* output color */
+    out vec4 color;
 
-	void main()
-	{
-		color = vec4 (fEmissiveColor, 1.0);
-	} 
-	
+    void main()
+    {
+        color = vec4 (fEmissiveColor, 1.0);
+    } 
+    
 )V0G0N";
 
 #endif

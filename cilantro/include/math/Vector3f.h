@@ -11,15 +11,15 @@ class Vector4f;
 class Vector3f
 {
 public:
-	// constructors
-	__EAPI Vector3f ();
-	__EAPI Vector3f (float x, float y, float z);
+    // constructors
+    __EAPI Vector3f ();
+    __EAPI Vector3f (float x, float y, float z);
     __EAPI Vector3f (const Vector4f& v4);	
 
-	// initializer list constructor
+    // initializer list constructor
     __EAPI Vector3f (std::initializer_list<float> i);
 
-	// copy constructor
+    // copy constructor
     __EAPI Vector3f (const Vector3f& other);
 
     // move constructor
@@ -29,24 +29,24 @@ public:
     __EAPI Vector3f& operator= (Vector3f other);
 
     // destructor
-	__EAPI ~Vector3f ();
+    __EAPI ~Vector3f ();
 
-	// vector dimension
-	__EAPI unsigned int Dim () const;
+    // vector dimension
+    __EAPI unsigned int Dim () const;
 
-	// accessor and mutator
-	__EAPI float& operator[](unsigned int index);
-	__EAPI const float& operator[](unsigned int index) const;
+    // accessor and mutator
+    __EAPI float& operator[](unsigned int index);
+    __EAPI const float& operator[](unsigned int index) const;
 
-	// operators
-	__EAPI Vector3f& operator*= (float f);
-	__EAPI Vector3f& operator+= (const Vector3f& other);
-	__EAPI Vector3f& operator-= (const Vector3f& other);
-	
-	__EAPI friend Vector3f operator- (Vector3f v);
+    // operators
+    __EAPI Vector3f& operator*= (float f);
+    __EAPI Vector3f& operator+= (const Vector3f& other);
+    __EAPI Vector3f& operator-= (const Vector3f& other);
+    
+    __EAPI friend Vector3f operator- (Vector3f v);
 
 private:
-	float v[3];
+    float v[3];
 };
 
 __EAPI Vector3f operator* (Vector3f u, float f);

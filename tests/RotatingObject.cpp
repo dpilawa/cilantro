@@ -5,7 +5,7 @@
 
 RotatingObject::RotatingObject ()
 {
-	rotationSpeed = 90.0f;
+    rotationSpeed = 90.0f;
     angle = 0.0f;
 }
 

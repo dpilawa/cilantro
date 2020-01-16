@@ -8,100 +8,100 @@
 
 GLFWRenderTarget::GLFWRenderTarget (GameLoop* gameLoop, std::string windowCaption, unsigned int width, unsigned int height, bool isFullscreen, bool isResizable, bool isVSync) : RenderTarget (gameLoop, width, height)
 {
-	this->windowCaption = windowCaption;
-	this->isFullscreen = isFullscreen;
-	this->isResizable = isResizable;
-	this->isVSync = isVSync;
+    this->windowCaption = windowCaption;
+    this->isFullscreen = isFullscreen;
+    this->isResizable = isResizable;
+    this->isVSync = isVSync;
 
-	// initialize
-	glfwInit ();
-	this->Initialize ();
+    // initialize
+    glfwInit ();
+    this->Initialize ();
 }
 
 GLFWRenderTarget::~GLFWRenderTarget ()
 {
-	this->Deinitialize ();
-	glfwTerminate ();
+    this->Deinitialize ();
+    glfwTerminate ();
 }
 
 void GLFWRenderTarget::OnFrame ()
 {
-	glRenderer = dynamic_cast<GLRenderer*>(gameLoop->gameRenderer);
+    glRenderer = dynamic_cast<GLRenderer*>(gameLoop->gameRenderer);
 
-	// draw quad on screen
-	glBindFramebuffer (GL_FRAMEBUFFER, 0);
-	glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
-	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glDisable (GL_DEPTH_TEST);
-	glDisable (GL_FRAMEBUFFER_SRGB);
-	glRenderer->GetShaderProgram ("flatquad_shader").Use ();
-	glBindVertexArray (targetVAO);
-	glBindTexture (GL_TEXTURE_2D, glRenderer->GetRendererFramebufferTexture ());
-	glViewport (0, 0, this->width, this->height);
-	glDrawArrays (GL_TRIANGLES, 0, 6);
+    // draw quad on screen
+    glBindFramebuffer (GL_FRAMEBUFFER, 0);
+    glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
+    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glDisable (GL_DEPTH_TEST);
+    glDisable (GL_FRAMEBUFFER_SRGB);
+    glRenderer->GetShaderProgram ("flatquad_shader").Use ();
+    glBindVertexArray (targetVAO);
+    glBindTexture (GL_TEXTURE_2D, glRenderer->GetRendererFramebufferTexture ());
+    glViewport (0, 0, this->width, this->height);
+    glDrawArrays (GL_TRIANGLES, 0, 6);
 
-	// swap front and back buffers
-	glfwSwapBuffers (window);
+    // swap front and back buffers
+    glfwSwapBuffers (window);
 }
 
 GLFWwindow* GLFWRenderTarget::GetWindow ()
 {
-	return window;
+    return window;
 }
 
 void GLFWRenderTarget::Initialize ()
 {
-	GLFWmonitor* monitor; 
+    GLFWmonitor* monitor; 
 
-	// check fullscreen
-	if (isFullscreen)
-	{
-		monitor = glfwGetPrimaryMonitor ();
+    // check fullscreen
+    if (isFullscreen)
+    {
+        monitor = glfwGetPrimaryMonitor ();
 
-		width = glfwGetVideoMode (monitor)->width;
-		height = glfwGetVideoMode (monitor)->height;
-	}
-	else
-	{
-		monitor = nullptr;
-	}
+        width = glfwGetVideoMode (monitor)->width;
+        height = glfwGetVideoMode (monitor)->height;
+    }
+    else
+    {
+        monitor = nullptr;
+    }
 
-	// set up GL & window properties
-	glfwWindowHint (GLFW_RESIZABLE, isResizable);
-	glfwWindowHint (GLFW_VISIBLE, 1);
+    // set up GL & window properties
+    glfwWindowHint (GLFW_RESIZABLE, isResizable);
+    glfwWindowHint (GLFW_VISIBLE, 1);
 
-	// create window
-	window = glfwCreateWindow (width, height, windowCaption.c_str (), monitor, nullptr);
+    // create window
+    window = glfwCreateWindow (width, height, windowCaption.c_str (), monitor, nullptr);
 
-	if (window == NULL)
-	{
-		LogMessage (__func__, EXIT_FAILURE) << "GLFW unable to create window";
-	}
+    if (window == NULL)
+    {
+        LogMessage (__func__, EXIT_FAILURE) << "GLFW unable to create window";
+    }
 
-	// make openGL context active
-	glfwMakeContextCurrent (window);
+    // make openGL context active
+    glfwMakeContextCurrent (window);
 
-	// set resize callback
-	glfwSetWindowUserPointer (window, this->gameLoop);
+    // set resize callback
+    glfwSetWindowUserPointer (window, this->gameLoop);
 
-	auto framebufferResizeCallback = [](GLFWwindow* window, int width, int height)
+    auto framebufferResizeCallback = [](GLFWwindow* window, int width, int height)
     {
         static_cast<GLFWRenderTarget*>(static_cast<GameLoop*>(glfwGetWindowUserPointer (window))->gameRenderTarget)->FramebufferResizeCallback (width, height);
     };
 
-	glfwSetFramebufferSizeCallback (window, framebufferResizeCallback);
+    glfwSetFramebufferSizeCallback (window, framebufferResizeCallback);
 
-	// set vsync on
-	glfwSwapInterval (isVSync);
+    // set vsync on
+    glfwSwapInterval (isVSync);
 
-	// load GL
+    // load GL
     if (!gladLoadGL ())
     {
         LogMessage (__func__, EXIT_FAILURE) << "GL context initialization failed";
     }
 
-	// set-up VAO and VBO for onscreen rendering
- 	float quadVertices[] = {
+    // set-up VAO and VBO for onscreen rendering
+     float quadVertices[] = {
         -1.0f,  1.0f,  0.0f, 1.0f,
         -1.0f, -1.0f,  0.0f, 0.0f,
          1.0f, -1.0f,  1.0f, 0.0f,
@@ -111,30 +111,30 @@ void GLFWRenderTarget::Initialize ()
          1.0f,  1.0f,  1.0f, 1.0f
     };
 
-	glGenVertexArrays(1, &targetVAO);
+    glGenVertexArrays(1, &targetVAO);
     glGenBuffers(1, &targetVBO);
     glBindVertexArray(targetVAO);
     glBindBuffer(GL_ARRAY_BUFFER, targetVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof (quadVertices), &quadVertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);    
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof (float)));
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
 
-	LogMessage (__func__) << "GLFWRenderTarget started";
+    LogMessage (__func__) << "GLFWRenderTarget started";
 }
 
 void GLFWRenderTarget::Deinitialize ()
 {
-	glfwDestroyWindow (window);
+    glfwDestroyWindow (window);
 }
 
 void GLFWRenderTarget::FramebufferResizeCallback (int width, int height)
 {
-	this->width = width;
-	this->height = height;
+    this->width = width;
+    this->height = height;
 
-	// update GL renderer texture size and viewport
-	glRenderer->SetResolution (width, height);
+    // update GL renderer texture size and viewport
+    glRenderer->SetResolution (width, height);
 }
 

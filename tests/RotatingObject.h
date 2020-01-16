@@ -6,16 +6,16 @@
 class RotatingObject : public GameObject
 {
 public:
-	RotatingObject ();
-	~RotatingObject ();
+    RotatingObject ();
+    ~RotatingObject ();
 
-	void OnFrame ();
+    void OnFrame ();
 private:
-	
-	// rotation speed in degrees per second
-	float rotationSpeed;
+    
+    // rotation speed in degrees per second
+    float rotationSpeed;
 
-	// current angle
+    // current angle
     float angle;
 
 };

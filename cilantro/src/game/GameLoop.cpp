@@ -8,18 +8,18 @@
 
 GameLoop::GameLoop ()
 {
-	LogMessage (__func__) << "Engine starting";
+    LogMessage (__func__) << "Engine starting";
 
     gameScene = nullptr;
     gameRenderer = nullptr;
-	gameInputController = nullptr;
+    gameInputController = nullptr;
     gameRenderTarget = nullptr;
 
-	// set flags
-	shouldStop = false;
+    // set flags
+    shouldStop = false;
 
-	// pre-set game clocks
-	Timer::Tick ();
+    // pre-set game clocks
+    Timer::Tick ();
 }
 
 GameLoop::~GameLoop ()
@@ -29,49 +29,49 @@ GameLoop::~GameLoop ()
 
 void GameLoop::Run ()
 {	
-	// initialize all game objects
-	for (auto gameObject : gameScene->GetGameObjects ())
-	{
-		gameObject.second->OnStart ();
-	}
+    // initialize all game objects
+    for (auto gameObject : gameScene->GetGameObjects ())
+    {
+        gameObject.second->OnStart ();
+    }
 
-	// run game loop, terminate when shouldStop condition is met
-	while (shouldStop != true) {
-		Step ();
-	}
+    // run game loop, terminate when shouldStop condition is met
+    while (shouldStop != true) {
+        Step ();
+    }
 
-	// deinitialize all game objects
-	for (auto gameObject : gameScene->GetGameObjects ())
-	{
+    // deinitialize all game objects
+    for (auto gameObject : gameScene->GetGameObjects ())
+    {
         gameObject.second->OnEnd ();
     }
 }
 
 void GameLoop::Stop ()
 {
-	// stop game loop
-	shouldStop = true;
+    // stop game loop
+    shouldStop = true;
 }
 
 void GameLoop::Step ()
 {
-	// update game clocks (Tick)
+    // update game clocks (Tick)
     Timer::Tick ();
 
     // process all game objects
-	for (auto gameObject : gameScene->GetGameObjects ())
-	{
-		gameObject.second->OnFrame ();
-	}
+    for (auto gameObject : gameScene->GetGameObjects ())
+    {
+        gameObject.second->OnFrame ();
+    }
 
-	// render frame
-	gameRenderer->RenderFrame ();
+    // render frame
+    gameRenderer->RenderFrame ();
 
-	// process rendertarget
-	gameRenderTarget->OnFrame ();
+    // process rendertarget
+    gameRenderTarget->OnFrame ();
 
-	// process controller events
-	gameInputController->OnFrame ();
+    // process controller events
+    gameInputController->OnFrame ();
 
 }
 

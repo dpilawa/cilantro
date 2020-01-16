@@ -15,43 +15,43 @@
 
 int main (int argc, char* argv[])
 {
-	GameLoop game;
+    GameLoop game;
 
-	GameScene scene (&game);
-	game.gameScene = &scene;
+    GameScene scene (&game);
+    game.gameScene = &scene;
 
-	GLFWRenderTarget target (&game, "Test 3", 800, 600, false, true, true);
-	game.gameRenderTarget = dynamic_cast<RenderTarget*>(&target);
+    GLFWRenderTarget target (&game, "Test 3", 800, 600, false, true, true);
+    game.gameRenderTarget = dynamic_cast<RenderTarget*>(&target);
 
-	GLFWInputController controller (&game, target.GetWindow ());
-	game.gameInputController = dynamic_cast<InputController*>(&controller);
+    GLFWInputController controller (&game, target.GetWindow ());
+    game.gameInputController = dynamic_cast<InputController*>(&controller);
 
     GLRenderer renderer (&game, 800, 600);
-	game.gameRenderer = dynamic_cast<Renderer*>(&renderer);
+    game.gameRenderer = dynamic_cast<Renderer*>(&renderer);
 
-	controller.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
-	controller.BindInputEvent ("exit", [ & ]() { game.Stop (); });
+    controller.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
+    controller.BindInputEvent ("exit", [ & ]() { game.Stop (); });
 
-	controller.CreateInputEvent ("mousemode", InputKey::KeySpace, InputTrigger::Release, {});
-	controller.BindInputEvent ("mousemode", [ & ]() { controller.SetMouseGameMode (!controller.IsGameMode ()); });
+    controller.CreateInputEvent ("mousemode", InputKey::KeySpace, InputTrigger::Release, {});
+    controller.BindInputEvent ("mousemode", [ & ]() { controller.SetMouseGameMode (!controller.IsGameMode ()); });
 
     Material& m = scene.AddMaterial (new Material ());
-	m.SetShaderProgram ("blinnphong_shader");
-	m.SetColor (Vector3f (0.4f, 0.4f, 0.4f));
-	m.SetAmbientColor (Vector3f (1.0f, 1.0f, 1.0f));
-	m.SetSpecularColor (Vector3f (1.0f, 1.0f, 1.0f)).SetSpecularShininess (64.0f);
+    m.SetShaderProgram ("blinnphong_shader");
+    m.SetColor (Vector3f (0.4f, 0.4f, 0.4f));
+    m.SetAmbientColor (Vector3f (1.0f, 1.0f, 1.0f));
+    m.SetSpecularColor (Vector3f (1.0f, 1.0f, 1.0f)).SetSpecularShininess (64.0f);
 
     Material& red = scene.AddMaterial (new Material ());
-	red.SetShaderProgram ("emissive_shader");
-	red.SetEmissiveColor (Vector3f (1.0f, 0.0f, 0.0f));
+    red.SetShaderProgram ("emissive_shader");
+    red.SetEmissiveColor (Vector3f (1.0f, 0.0f, 0.0f));
 
-	Material& green = scene.AddMaterial (new Material ());
-	green.SetShaderProgram ("emissive_shader");
-	green.SetEmissiveColor (Vector3f (0.0f, 1.0f, 0.0f));
+    Material& green = scene.AddMaterial (new Material ());
+    green.SetShaderProgram ("emissive_shader");
+    green.SetEmissiveColor (Vector3f (0.0f, 1.0f, 0.0f));
 
-	Material& blue = scene.AddMaterial (new Material ());
-	blue.SetShaderProgram ("emissive_shader");
-	blue.SetEmissiveColor (Vector3f (0.0f, 0.0f, 1.0f));
+    Material& blue = scene.AddMaterial (new Material ());
+    blue.SetShaderProgram ("emissive_shader");
+    blue.SetEmissiveColor (Vector3f (0.0f, 0.0f, 1.0f));
 
     ControlledCamera& cam = dynamic_cast<ControlledCamera&>(scene.AddGameObject (new ControlledCamera (60.0f, 0.1f, 100.0f, 0.1f)));
     cam.Initialize ();
@@ -85,23 +85,23 @@ int main (int argc, char* argv[])
     tail.SetParentObject (plane);
 
     DirectionalLight& light = dynamic_cast<DirectionalLight&>(scene.AddGameObject (new DirectionalLight ()));
-	light.GetModelTransform ().Rotate (90.0f, 0.0f, 10.0f);
-	light.SetColor (Vector3f (1.0f, 1.0f, 1.0f));
-	light.SetSpecularPower (2.0f);
-	light.SetAmbiencePower (0.3f);
-	light.SetEnabled (true);
+    light.GetModelTransform ().Rotate (90.0f, 0.0f, 10.0f);
+    light.SetColor (Vector3f (1.0f, 1.0f, 1.0f));
+    light.SetSpecularPower (2.0f);
+    light.SetAmbiencePower (0.3f);
+    light.SetEnabled (true);
 
     AnimationObject& anim1 = dynamic_cast<AnimationObject&> (scene.AddGameObject (new AnimationObject ()));
     anim1.AddAnimationProperty<Quaternion> ("rotation", Mathf::EulerToQuaterion (Mathf::Deg2Rad (Vector3f (0.0f, 0.0f, 0.0f))), [&](Quaternion q) { plane.GetModelTransform ().Rotate (q); }, [](Quaternion q0, Quaternion q1, float t) { return Mathf::Slerp (q0, q1, t); });
     anim1.AddKeyframe<Quaternion> ("rotation", 2.0f, Mathf::EulerToQuaterion (Mathf::Deg2Rad (Vector3f (-35.0f, 0.0f, 0.0f))));
-	anim1.AddKeyframe<Quaternion> ("rotation", 5.0f, Mathf::EulerToQuaterion (Mathf::Deg2Rad (Vector3f (-35.0f, 20.0f, -45.0f))));
-	anim1.AddKeyframe<Quaternion> ("rotation", 11.0f, Mathf::EulerToQuaterion (Mathf::Deg2Rad (Vector3f (-35.0f, -20.0f, 45.0f))));
+    anim1.AddKeyframe<Quaternion> ("rotation", 5.0f, Mathf::EulerToQuaterion (Mathf::Deg2Rad (Vector3f (-35.0f, 20.0f, -45.0f))));
+    anim1.AddKeyframe<Quaternion> ("rotation", 11.0f, Mathf::EulerToQuaterion (Mathf::Deg2Rad (Vector3f (-35.0f, -20.0f, 45.0f))));
     anim1.AddKeyframe<Quaternion> ("rotation", 14.0f, Mathf::EulerToQuaterion (Mathf::Deg2Rad (Vector3f (-0.0f, 0.0f, 0.0f))));
     anim1.SetLooping (true);
     anim1.Play ();
 
     game.Run ();
 
-	return 0;
+    return 0;
 }
 

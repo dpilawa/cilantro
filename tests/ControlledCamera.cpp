@@ -17,7 +17,7 @@ void ControlledCamera::Initialize ()
     c->CreateInputAxis ("moveforward", InputKey::KeyW, {}, 1.0f);
     c->CreateInputAxis ("moveforward", InputKey::KeyS, {}, -1.0f);	
 
-	c->CreateInputAxis ("moveright", InputKey::KeyD, {}, 1.0f);
+    c->CreateInputAxis ("moveright", InputKey::KeyD, {}, 1.0f);
     c->CreateInputAxis ("moveright", InputKey::KeyA, {}, -1.0f);
 
     c->CreateInputAxis ("camerapitch", InputAxis::MouseY, 1.0f);

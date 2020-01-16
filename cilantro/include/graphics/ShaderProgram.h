@@ -7,14 +7,14 @@
 class ShaderProgram
 {
 public:
-	ShaderProgram ();
-	virtual ~ShaderProgram ();
+    ShaderProgram ();
+    virtual ~ShaderProgram ();
 
-	// attach shader to a program
-	virtual void LinkShader (Shader& shader) = 0;
+    // attach shader to a program
+    virtual void LinkShader (Shader& shader) = 0;
 
-	// use program
-	virtual void Use () = 0;
+    // use program
+    virtual void Use () = 0;
 
 };
 

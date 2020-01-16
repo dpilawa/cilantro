@@ -8,24 +8,24 @@
 class SpotLight : public PointLight
 {
 public:
-	__EAPI SpotLight ();
-	__EAPI virtual ~SpotLight ();
+    __EAPI SpotLight ();
+    __EAPI virtual ~SpotLight ();
 
-	// set attenuation factors
-	__EAPI SpotLight& SetInnerCutoff (const float cutoff);
-	__EAPI SpotLight& SetOuterCutoff (const float cutOff);
+    // set attenuation factors
+    __EAPI SpotLight& SetInnerCutoff (const float cutoff);
+    __EAPI SpotLight& SetOuterCutoff (const float cutOff);
 
-	// getters
-	__EAPI float GetInnerCutoff () const;
-	__EAPI float GetOuterCutoff () const;
+    // getters
+    __EAPI float GetInnerCutoff () const;
+    __EAPI float GetOuterCutoff () const;
 
-	// invoked by game loop on update
+    // invoked by game loop on update
     void OnUpdate (Renderer &renderer);
 
 private:
 
-	float innerCutoff;
-	float outerCutoff;
+    float innerCutoff;
+    float outerCutoff;
 };
 
 #endif

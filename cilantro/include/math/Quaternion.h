@@ -7,12 +7,12 @@
 class Quaternion
 {
 public:
-	// constructors
-	__EAPI Quaternion ();
-	__EAPI Quaternion (float a, float b, float c, float d);
-	__EAPI Quaternion (float scalar, Vector3f vector);
+    // constructors
+    __EAPI Quaternion ();
+    __EAPI Quaternion (float a, float b, float c, float d);
+    __EAPI Quaternion (float scalar, Vector3f vector);
 
-	// copy constructor
+    // copy constructor
     __EAPI Quaternion (const Quaternion& other);
 
     // move constructor
@@ -22,20 +22,20 @@ public:
     __EAPI Quaternion& operator= (Quaternion other);
 
     // destructor
-	__EAPI ~Quaternion ();
+    __EAPI ~Quaternion ();
 
-	// operators
-	__EAPI Quaternion& operator*= (float f);
-	__EAPI Quaternion& operator+= (const Quaternion& other);
-	__EAPI Quaternion& operator-= (const Quaternion& other);
-	
-	__EAPI friend Quaternion operator- (Quaternion v);
+    // operators
+    __EAPI Quaternion& operator*= (float f);
+    __EAPI Quaternion& operator+= (const Quaternion& other);
+    __EAPI Quaternion& operator-= (const Quaternion& other);
+    
+    __EAPI friend Quaternion operator- (Quaternion v);
 
-	friend class Mathf;
+    friend class Mathf;
 
 private:
-	float s;
-	Vector3f v;
+    float s;
+    Vector3f v;
 };
 
 __EAPI Quaternion operator* (Quaternion q, float f);

@@ -19,7 +19,7 @@ Curve<T,d>::~Curve ()
 template <typename T, int d>
 float Curve<T, d>::GetCurveLength ()
 {
-	return Mathf::Integral (0.0f, 1.0f, [&](float t) { return Mathf::Length (GetCurveTangent (t)); });
+    return Mathf::Integral (0.0f, 1.0f, [&](float t) { return Mathf::Length (GetCurveTangent (t)); });
 }
 
 

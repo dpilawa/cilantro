@@ -8,7 +8,7 @@
 
 Orbiter::Orbiter (float period, float distance, float angle)
 {
-	orbitingPeriod = period;
+    orbitingPeriod = period;
     orbitingDistance = distance;
     orbitAxisAngle = angle;
     orbitRotation = 0.0f;

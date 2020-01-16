@@ -8,11 +8,11 @@
 class Camera : public GameObject
 {
 public:
-	Camera ();
-	virtual ~Camera ();
+    Camera ();
+    virtual ~Camera ();
 
-	Matrix4f GetViewMatrix ();
-	virtual Matrix4f GetProjectionMatrix (unsigned int xRes, unsigned int yRes) const = 0;
+    Matrix4f GetViewMatrix ();
+    virtual Matrix4f GetProjectionMatrix (unsigned int xRes, unsigned int yRes) const = 0;
 
 };
 

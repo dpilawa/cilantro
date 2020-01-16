@@ -11,22 +11,22 @@ R"(#version )"
 xstr(CILANTRO_MIN_GL_VERSION)
 R"V0G0N(
 
-	#define MAX_LIGHTS 100
+    #define MAX_LIGHTS 100
 
-	/* fragment position in world space */
-	in vec3 fPosition;
+    /* fragment position in world space */
+    in vec3 fPosition;
 
-	/* fragment normal */
-	in vec3 fNormal;
+    /* fragment normal */
+    in vec3 fNormal;
 
-	/* output color */
-	out vec4 color;
+    /* output color */
+    out vec4 color;
 
-	void main()
-	{
-		color = vec4 (0.5 + 0.5 * fNormal, 1.0);
-	} 
-	
+    void main()
+    {
+        color = vec4 (0.5 + 0.5 * fNormal, 1.0);
+    } 
+    
 )V0G0N";
 
 #endif

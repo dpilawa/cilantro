@@ -7,9 +7,9 @@
 struct Framebuffers
 {
 public:
-	GLuint FBO;
-	GLuint RBO;
-	GLuint textureBuffer;
+    GLuint FBO;
+    GLuint RBO;
+    GLuint textureBuffer;
 };
 
 class GLFramebuffer 
@@ -22,9 +22,9 @@ public:
 
     virtual void BindFramebuffer () const;
 
-	virtual void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight);
+    virtual void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight);
 
-	GLuint GetFramebufferTexture () const;
+    GLuint GetFramebufferTexture () const;
     GLuint GetFramebuffer () const;
 
 protected:
