@@ -10,6 +10,11 @@ GameLoop::GameLoop ()
 {
 	LogMessage (__func__) << "Engine starting";
 
+    gameScene = nullptr;
+    gameRenderer = nullptr;
+	gameInputController = nullptr;
+    gameRenderTarget = nullptr;
+
 	// set flags
 	shouldStop = false;
 

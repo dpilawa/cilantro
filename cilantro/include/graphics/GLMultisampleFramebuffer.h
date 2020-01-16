@@ -3,7 +3,7 @@
 
 #include "cilantroengine.h"
 #include "glad/glad.h"
-#include "GLFramebuffer.h"
+#include "graphics/GLFramebuffer.h"
 
 class GLMultisampleFramebuffer : public GLFramebuffer 
 {
@@ -13,13 +13,13 @@ public:
     GLMultisampleFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight);
     virtual ~GLMultisampleFramebuffer ();
 
-    __EAPI virtual void BindFramebuffer () const;
-    __EAPI virtual void BlitFramebuffer ();
+    virtual void BindFramebuffer () const;
+    virtual void BlitFramebuffer ();
 
-	__EAPI void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight);
+	virtual void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight);
 
-	__EAPI GLuint GetMultisampleFramebufferTexture () const;
-    __EAPI GLuint GetMultisampleFramebuffer () const;
+	GLuint GetMultisampleFramebufferTexture () const;
+    GLuint GetMultisampleFramebuffer () const;
 
 protected:
 

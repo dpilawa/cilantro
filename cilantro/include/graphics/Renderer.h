@@ -49,14 +49,14 @@ protected:
 
 	GameLoop* gameLoop;
 
-	virtual void Initialize () = 0;
-	virtual void Deinitialize () = 0;
-
 	unsigned int width;
 	unsigned int height;
 
     unsigned int postprocessStage;
     std::vector<Postprocess*> postprocesses;
+
+    virtual void Initialize () = 0;
+	virtual void Deinitialize () = 0;
 };
 
 #endif
