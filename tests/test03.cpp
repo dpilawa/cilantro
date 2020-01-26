@@ -62,25 +62,25 @@ int main (int argc, char* argv[])
     GameObject& plane = scene.AddGameObject (new GameObject ());
 
     MeshObject& fuselage = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-    Primitives::GenerateCube (fuselage);
+    Primitives::GenerateCube (fuselage, false);
     fuselage.GetModelTransform ().Scale (1.0f, 1.0f, 10.0f);
     fuselage.SetMaterial (m);
     fuselage.SetParentObject (plane);
 
     MeshObject& wings = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-    Primitives::GenerateCube (wings);
+    Primitives::GenerateCube (wings, false);
     wings.GetModelTransform ().Scale (12.0f, 0.2f, 1.0f).Translate (0.0f, 0.0f, 2.0f);
     wings.SetMaterial (m);
     wings.SetParentObject (plane);
 
     MeshObject& rudder = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-    Primitives::GenerateCube (rudder);
+    Primitives::GenerateCube (rudder, false);
     rudder.GetModelTransform ().Scale (0.2f, 2.0f, 1.0f).Translate (0.0f, 1.5f, -5.0f).Rotate (-10.0f, 0.0f, 0.0f);
     rudder.SetMaterial (m);
     rudder.SetParentObject (plane);
 
     MeshObject& tail = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-    Primitives::GenerateCube (tail);
+    Primitives::GenerateCube (tail, false);
     tail.GetModelTransform ().Scale (4.0f, 0.2f, 1.0f).Translate (0.0f, 0.2f, -5.0f);
     tail.SetMaterial (m);
     tail.SetParentObject (plane);

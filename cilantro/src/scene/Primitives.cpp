@@ -12,32 +12,12 @@ void Primitives::GeneratePlane (MeshObject& m, bool sharedVertices)
         { 1.0f, 0.0f, -1.0f}
     };
 
-    if (sharedVertices == false)
-    {
-        for (unsigned int i = 0; i < vertices.size () - 1; i++)
-        {
-            m.AddVertex (vertices[i]);
-        }
+    std::vector<std::size_t> array {
+        1, 3, 2,
+        1, 0, 3
+    };
 
-        for (unsigned int i = 1; i < vertices.size (); i++)
-        {
-            m.AddVertex (vertices[i]);
-        }
-
-        m.AddFace (0, 1, 2);
-        m.AddFace (3, 4, 5); 
-
-    }
-    else
-    {
-        for (unsigned int i = 0; i < vertices.size (); i++)
-        {
-            m.AddVertex (vertices[i]);
-        }
-
-        m.AddFace (0, 1, 2);
-        m.AddFace (1, 2, 3);       
-    }
+    Primitives::GenerateMeshFromArrays (m, sharedVertices, vertices, array);
     
     m.CalculateVertexNormals ();
 
@@ -45,66 +25,44 @@ void Primitives::GeneratePlane (MeshObject& m, bool sharedVertices)
     
 }
 
-void Primitives::GenerateCube (MeshObject& m)
+void Primitives::GenerateCube (MeshObject& m, bool sharedVertices)
 {
     m.Clear ();
 
-    std::vector<float> vertices {
+    std::vector<Vector3f> vertices {
+        { 1.0f, 1.0f, -1.0f},
+        {-1.0f, 1.0f, -1.0f},
+        {-1.0f, 1.0f,  1.0f},
+        { 1.0f, 1.0f,  1.0f},
 
-        -1.0f, -1.0f,  1.0f, 
-         1.0f, -1.0f,  1.0f, 
-        -1.0f,  1.0f,  1.0f, 
-        -1.0f,  1.0f,  1.0f, 
-         1.0f, -1.0f,  1.0f, 
-         1.0f,  1.0f,  1.0f, 
-
-        -1.0f,  1.0f,  1.0f, 
-         1.0f,  1.0f,  1.0f, 
-        -1.0f,  1.0f, -1.0f, 
-        -1.0f,  1.0f, -1.0f, 
-         1.0f,  1.0f,  1.0f, 
-         1.0f,  1.0f, -1.0f, 
-
-        -1.0f,  1.0f, -1.0f, 
-         1.0f,  1.0f, -1.0f, 
-        -1.0f, -1.0f, -1.0f, 
-        -1.0f, -1.0f, -1.0f, 
-         1.0f,  1.0f, -1.0f, 
-         1.0f, -1.0f, -1.0f, 
-
-        -1.0f, -1.0f, -1.0f, 
-         1.0f, -1.0f, -1.0f, 
-        -1.0f, -1.0f,  1.0f, 
-        -1.0f, -1.0f,  1.0f, 
-         1.0f, -1.0f, -1.0f, 
-         1.0f, -1.0f,  1.0f, 
-
-         1.0f, -1.0f,  1.0f, 
-         1.0f, -1.0f, -1.0f, 
-         1.0f,  1.0f,  1.0f, 
-         1.0f,  1.0f,  1.0f, 
-         1.0f, -1.0f, -1.0f, 
-         1.0f,  1.0f, -1.0f, 
-
-        -1.0f, -1.0f, -1.0f, 
-        -1.0f, -1.0f,  1.0f, 
-        -1.0f,  1.0f, -1.0f, 
-        -1.0f,  1.0f, -1.0f, 
-        -1.0f, -1.0f,  1.0f, 
-        -1.0f,  1.0f,  1.0f
-
+        { 1.0f, -1.0f, -1.0f},
+        {-1.0f, -1.0f, -1.0f},
+        {-1.0f, -1.0f,  1.0f},
+        { 1.0f, -1.0f,  1.0f}
     };
 
-    for (unsigned int i = 0; i < vertices.size (); i += 3)
-    {
-        m.AddVertex (Vector3f (vertices[i], vertices[i + 1], vertices[i + 2]));
-    }
+    std::vector<std::size_t> array {
+        0, 1, 2,
+        0, 2, 3,
 
-    for (unsigned int i = 0; i < 36; i += 3)
-    {
-        m.AddFace (i, i + 1, i + 2);
+        6, 5, 4,
+        7, 6, 4,
+
+        1, 4, 5,
+        0, 4, 1,
+
+        7, 3, 2,
+        2, 6, 7,
+
+        0, 7, 4,
+        0, 3, 7,
+
+        6, 2, 1,
+        1, 5, 6
     };
-    
+
+    Primitives::GenerateMeshFromArrays (m, sharedVertices, vertices, array);
+
     m.CalculateVertexNormals ();
 
     m.InvokeCallbacks ("OnUpdateMeshObject", m.GetHandle ());
@@ -215,4 +173,35 @@ void Primitives::GenerateSphere (MeshObject& m, unsigned int subdivisions, bool 
 
     m.InvokeCallbacks ("OnUpdateMeshObject", m.GetHandle ());
 
+}
+
+
+void Primitives::GenerateMeshFromArrays (MeshObject& m, bool sharedVertices, const std::vector<Vector3f>& vertices, const std::vector<std::size_t> array)
+{
+    if (sharedVertices == false)
+    {
+        for (std::size_t i = 0; i < array.size (); i += 3)
+        {
+            m.AddVertex (vertices[array[i]]);
+            m.AddVertex (vertices[array[i + 1]]);
+            m.AddVertex (vertices[array[i + 2]]);
+        }
+
+        for (std::size_t i = 0; i < array.size (); i += 3)
+        {
+            m.AddFace (i, i + 1, i + 2);
+        }
+    }
+    else
+    {        
+        for (std::size_t i = 0; i < vertices.size (); i++)
+        {
+            m.AddVertex (vertices[i]);
+        }
+
+        for (std::size_t i = 0; i < array.size (); i += 3)
+        {
+            m.AddFace (array[i], array[i + 1], array[i + 2]);
+        }
+    }
 }
