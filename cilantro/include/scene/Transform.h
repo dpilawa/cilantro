@@ -47,6 +47,7 @@ public:
     __EAPI Transform& Rotate (const Quaternion& q);
     __EAPI Transform& Rotate (const Vector3f& axis, float theta);
     __EAPI Vector3f GetRotation () const;
+    __EAPI Quaternion GetRotationQuaternion () const;
     __EAPI Transform& RotateBy (float x, float y, float z);
     __EAPI Transform& RotateBy (const Vector3f& r);
     __EAPI Transform& RotateBy (const Quaternion& q);

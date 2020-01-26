@@ -6,6 +6,8 @@
 #include "scene/PointLight.h"
 #include "scene/DirectionalLight.h"
 #include "scene/SpotLight.h"
+#include "scene/LinearPath.h"
+#include "scene/SplinePath.h"
 #include "graphics/GLRenderer.h"
 #include "graphics/GLFWRenderTarget.h"
 #include "graphics/GLPostprocess.h"
@@ -71,7 +73,7 @@ int main (int argc, char* argv [])
     MeshObject& lamp = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
     lamp.InitUnitSphere (3).GetModelTransform ().Scale (0.1f, 0.1f, 0.1f).Translate (1.0f, 0.75f, 1.0f);
     lamp.SetMaterial (lampM);
-    lamp.SetParentObject (lampPivot);
+    //lamp.SetParentObject (lampPivot);
 
     MeshObject& plane = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
     plane.InitUnitCube ().GetModelTransform ().Scale (5.0f, 0.1f, 5.0f).Translate (0.0f, -1.0f, 0.0f);
@@ -99,6 +101,32 @@ int main (int argc, char* argv [])
     light3.SetInnerCutoff (5.0f);
     light3.SetOuterCutoff (12.0f);
     light3.SetEnabled (true);
+
+    SplinePath& lp = dynamic_cast<SplinePath&> (scene.AddGameObject (new SplinePath ()));
+    lp.AddWaypoint ({2.0f, 0.0f, 2.0f}, Mathf::EulerToQuaterion ({0.0f, 0.0f, 0.0f}));
+    lp.AddWaypoint ({-2.0f, 0.0f, 2.0f}, Mathf::EulerToQuaterion ({0.0f, 0.0f, 0.0f}));
+    lp.AddWaypoint ({2.0f, 0.0f, -2.0f}, Mathf::EulerToQuaterion ({0.0f, 0.0f, 0.0f}));
+    lp.AddWaypoint ({2.0f, 0.0f, 2.0f}, Mathf::EulerToQuaterion ({0.0f, 0.0f, 0.0f}));
+    lp.AddWaypoint (2, {-2.0f, 2.0f, -2.0f}, Mathf::EulerToQuaterion ({0.0f, 0.0f, 0.0f}));
+
+    lp.SetStartTangent ({-2.0f, 0.0f, 2.0f});
+    lp.SetEndTangent ({-2.0f, 0.0f, 2.0f});
+
+    lp.GetModelTransform ().Rotate ({0.0f, 0.0f, -15.0f});
+
+    AnimationObject& lightAnimation = dynamic_cast<AnimationObject&> (scene.AddGameObject (new AnimationObject ()));
+
+    lightAnimation.AddAnimationProperty<float> (
+        "t", 0.0f,
+        [&] (float t) {
+            lamp.GetModelTransform ().Translate (lp.GetPositionAtDistance (lp.GetPathLength () * t));
+            lamp.GetModelTransform ().Rotate (lp.GetRotationAtDistance (lp.GetPathLength () * t));
+        },
+        [] (float t0, float t1, float u) { return Mathf::Lerp (t0, t1, u); });
+
+    lightAnimation.AddKeyframe<float> ("t", 5.0f, 1.0f);
+    lightAnimation.SetLooping (true);
+    lightAnimation.Play ();
 
     game.Run ();
 

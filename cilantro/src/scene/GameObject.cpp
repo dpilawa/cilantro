@@ -82,7 +82,7 @@ Transform& GameObject::GetModelTransform ()
     return modelTransform;
 }
 
-Matrix4f GameObject::GetModelTransformMatrix ()
+Matrix4f GameObject::GetModelTransformMatrix () const
 {
     return modelTransformMatrix;
 }
@@ -104,26 +104,66 @@ void GameObject::CalculateModelTransformMatrix ()
     }
 }
 
-Vector4f GameObject::GetPosition ()
+Vector4f GameObject::GetPosition () const
 {
     return GetModelTransformMatrix () * Vector4f (0.0f, 0.0f, 0.0f, 1.0f);
 }
 
-Vector3f GameObject::GetRight ()
+Vector3f GameObject::GetScaling () const
+{
+    Matrix4f m = GetModelTransformMatrix ();
+
+    float sx = Mathf::Length (Vector3f (m[0][0], m[1][0], m[2][0]));
+    float sy = Mathf::Length (Vector3f (m[0][1], m[1][1], m[2][1]));
+    float sz = Mathf::Length (Vector3f (m[0][2], m[1][2], m[2][2]));
+
+    return Vector3f (sx, sy, sz);
+}
+
+Quaternion GameObject::GetRotation () const
+{
+    Matrix4f m = GetModelTransformMatrix ();
+
+    /* convert to pure rotation matrix */
+    m[3][0] = 0.0f;
+    m[3][1] = 0.0f;
+    m[3][2] = 0.0f;
+
+    float sx = Mathf::Length (Vector3f (m[0][0], m[1][0], m[2][0]));
+    float sy = Mathf::Length (Vector3f (m[0][1], m[1][1], m[2][1]));
+    float sz = Mathf::Length (Vector3f (m[0][2], m[1][2], m[2][2]));
+
+    m[0][0] /= sx;
+    m[1][0] /= sx;
+    m[2][0] /= sx;
+
+    m[0][1] /= sy;
+    m[1][1] /= sy;
+    m[2][1] /= sy;
+
+    m[0][1] /= sz;
+    m[1][1] /= sz;
+    m[2][1] /= sz;
+
+    /* extract quaternion from matrix */
+    return Mathf::GenQuaternion (m);
+}
+
+Vector3f GameObject::GetRight () const
 {
     Matrix4f modelTransforMatrix = GetModelTransformMatrix ();
 
     return Mathf::Normalize (Vector3f (modelTransforMatrix[0][0], modelTransforMatrix[1][0], modelTransforMatrix[2][0]));
 }
 
-Vector3f GameObject::GetUp ()
+Vector3f GameObject::GetUp () const
 {
     Matrix4f modelTransforMatrix = GetModelTransformMatrix ();
 
     return Mathf::Normalize (Vector3f (modelTransforMatrix[0][1], modelTransforMatrix[1][1], modelTransforMatrix[2][1]));
 }
 
-Vector3f GameObject::GetForward ()
+Vector3f GameObject::GetForward () const
 {
     Matrix4f modelTransforMatrix = GetModelTransformMatrix ();
 

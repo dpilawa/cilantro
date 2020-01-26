@@ -554,6 +554,17 @@ Matrix4f Mathf::GenRotationMatrix (const Quaternion &q)
     return m;
 }
 
+Quaternion Mathf::GenQuaternion (const Matrix4f& m)
+{
+    Quaternion q;
+
+    q.s = std::sqrt (1.0f + m[0][0] + m[1][1] + m[2][2]);
+    q.v = Vector3f (m[2][1] - m[1][2], m[0][2] - m[2][0], m[1][0] - m[0][1]);
+    q.v = (1.0f / q.s) * q.v;
+
+    return q;
+}
+
 Matrix4f Mathf::GenTranslationMatrix (float x, float y, float z)
 {
     Matrix4f m;

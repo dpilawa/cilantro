@@ -48,16 +48,18 @@ public:
     __EAPI Transform& GetModelTransform ();
 
     // get transformation matrices
-    __EAPI Matrix4f GetModelTransformMatrix ();
+    __EAPI Matrix4f GetModelTransformMatrix () const;
     __EAPI void CalculateModelTransformMatrix ();
 
-    // get object origin's position in world space
-    __EAPI Vector4f GetPosition ();
+    // get object origin's orientation in world space
+    __EAPI Vector4f GetPosition () const;
+    __EAPI Vector3f GetScaling () const;
+    __EAPI Quaternion GetRotation () const;
 
     // get object's orthogonal basis vectors
-    __EAPI Vector3f GetRight ();
-    __EAPI Vector3f GetUp ();
-    __EAPI Vector3f GetForward ();	
+    __EAPI Vector3f GetRight () const;
+    __EAPI Vector3f GetUp () const;
+    __EAPI Vector3f GetForward () const;	
 
     // check if object is a light
     __EAPI bool IsLight ();

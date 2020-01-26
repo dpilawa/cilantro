@@ -34,17 +34,17 @@ Matrix4f& Transform::GetModelMatrix ()
     return modelMatrix;
 }
 
-Matrix4f& Transform::GetTranslationMatrix () 
+Matrix4f& Transform::GetTranslationMatrix ()
 {
     return translationMatrix;
 }
 
-Matrix4f& Transform::GetScalingMatrix () 
+Matrix4f& Transform::GetScalingMatrix ()
 {
     return scalingMatrix;
 }
 
-Matrix4f& Transform::GetRotationMatrix () 
+Matrix4f& Transform::GetRotationMatrix ()
 {
     return rotationMatrix;
 }
@@ -187,6 +187,11 @@ Transform& Transform::Rotate (const Vector3f& axis, float theta)
 Vector3f Transform::GetRotation () const
 {
     return (Mathf::Rad2Deg (Mathf::QuaternionToEuler (rotate)));
+}
+
+Quaternion Transform::GetRotationQuaternion () const
+{
+    return rotate;
 }
 
 Transform& Transform::RotateBy (float x, float y, float z)

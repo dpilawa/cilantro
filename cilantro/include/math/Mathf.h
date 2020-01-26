@@ -92,8 +92,9 @@ public:
     __EAPI static Matrix4f GenRotationXYZMatrix (float x, float y, float z);
     __EAPI static Matrix4f GenRotationXYZMatrix (const Vector3f& r);
 
-    // generate rotation matrix from quaternion
-    __EAPI static Matrix4f GenRotationMatrix (const Quaternion &q);
+    // convert between matrix amd quaternion
+    __EAPI static Matrix4f GenRotationMatrix (const Quaternion& q);
+    __EAPI static Quaternion GenQuaternion (const Matrix4f& m);
 
     // generate translation matrix along 3 axes
     __EAPI static Matrix4f GenTranslationMatrix (float x, float y, float z);
