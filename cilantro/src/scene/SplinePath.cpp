@@ -56,7 +56,14 @@ void SplinePath::UpdatePathAtWaypoint (const std::size_t wIndex)
     // create new curve if needed
     if (curves.size () + 1 < waypoints.size ())
     {
-        curves.insert (curves.begin () + wIndex - 1, std::move (CubicHermite<Vector3f> ()));
+		if (curves.size() <= wIndex - 1)
+		{
+			curves.emplace_back ();
+		}
+		else
+		{
+			curves.emplace (curves.begin () + wIndex - 1);
+		}
     }
 
     for (std::size_t i = std::max<std::size_t>(0, wIndex - 1); i < waypoints.size (); ++i)

@@ -32,7 +32,7 @@ public:
     virtual Vector3f GetPositionAtDistance (float distance) const = 0;
     virtual Quaternion GetRotationAtDistance (float distance) const;
 
-    float GetPathLength () const;
+    __EAPI float GetPathLength () const;
 
 protected:
     std::vector<Waypoint> waypoints;

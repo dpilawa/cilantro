@@ -70,12 +70,10 @@ int main (int argc, char* argv [])
     Primitives::GenerateCube (cube);
     cube.SetMaterial (red);
 
-    RotatingObject& lampPivot = dynamic_cast<RotatingObject&>(scene.AddGameObject (new RotatingObject ()));
     MeshObject& lamp = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
     Primitives::GenerateSphere (lamp, 3, true);
     lamp.GetModelTransform ().Scale (0.1f, 0.1f, 0.1f).Translate (1.0f, 0.75f, 1.0f);
     lamp.SetMaterial (lampM);
-    //lamp.SetParentObject (lampPivot);
 
     MeshObject& floor = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
     Primitives::GenerateCube (floor);
