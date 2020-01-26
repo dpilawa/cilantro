@@ -1,5 +1,6 @@
 #include "cilantroengine.h"
 #include "game/GameLoop.h"
+#include "scene/Primitives.h"
 #include "scene/GameScene.h"
 #include "scene/PerspectiveCamera.h"
 #include "scene/MeshObject.h"
@@ -46,7 +47,8 @@ int main (int argc, char* argv [])
     scene.SetActiveCamera (&cam);
 
     MeshObject& sun = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-    sun.InitUnitSphere (8, true).GetModelTransform ().Scale (10.0f);
+    Primitives::GenerateSphere (sun, 8, true);
+    sun.GetModelTransform ().Scale (10.0f);
     sun.SetMaterial (sunM);
 
     Orbiter& earthOrbit = dynamic_cast<Orbiter&>(scene.AddGameObject (new Orbiter (365.256f, 50.0f, 0.0f)));
@@ -54,7 +56,7 @@ int main (int argc, char* argv [])
     earthRotor.SetParentObject (earthOrbit);
 
     MeshObject& earth = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-    earth.InitUnitSphere (5, true);
+    Primitives::GenerateSphere (earth, 5, true);
     earth.SetMaterial (earthM);
     earth.SetParentObject (earthRotor);
 
@@ -62,7 +64,8 @@ int main (int argc, char* argv [])
     moonOrbit.SetParentObject (earthOrbit);
 
     MeshObject& moon = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-    moon.InitUnitSphere (5, true).GetModelTransform ().Scale (0.273f);
+    Primitives::GenerateSphere (moon, 5, true);
+    moon.GetModelTransform ().Scale (0.273f);
     moon.SetMaterial (moonM);
     moon.SetParentObject (moonOrbit);
 

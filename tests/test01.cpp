@@ -1,5 +1,6 @@
 #include "cilantroengine.h"
 #include "game/GameLoop.h"
+#include "scene/Primitives.h"
 #include "scene/AnimationObject.h"
 #include "scene/GameScene.h"
 #include "scene/MeshObject.h"
@@ -66,18 +67,20 @@ int main (int argc, char* argv [])
     scene.SetActiveCamera (&cam);
 
     MeshObject& cube = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-    cube.InitUnitCube ();
+    Primitives::GenerateCube (cube);
     cube.SetMaterial (red);
 
     RotatingObject& lampPivot = dynamic_cast<RotatingObject&>(scene.AddGameObject (new RotatingObject ()));
     MeshObject& lamp = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-    lamp.InitUnitSphere (3).GetModelTransform ().Scale (0.1f, 0.1f, 0.1f).Translate (1.0f, 0.75f, 1.0f);
+    Primitives::GenerateSphere (lamp, 3, true);
+    lamp.GetModelTransform ().Scale (0.1f, 0.1f, 0.1f).Translate (1.0f, 0.75f, 1.0f);
     lamp.SetMaterial (lampM);
     //lamp.SetParentObject (lampPivot);
 
-    MeshObject& plane = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-    plane.InitUnitCube ().GetModelTransform ().Scale (5.0f, 0.1f, 5.0f).Translate (0.0f, -1.0f, 0.0f);
-    plane.SetMaterial (green);
+    MeshObject& floor = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
+    Primitives::GenerateCube (floor);
+    floor.GetModelTransform ().Scale (5.0f, 0.1f, 5.0f).Translate (0.0f, -1.0f, 0.0f);
+    floor.SetMaterial (green);
 
     PointLight& light1 = dynamic_cast<PointLight&>(scene.AddGameObject (new PointLight ()));
     light1.SetParentObject (lamp);

@@ -17,13 +17,12 @@ public:
     // Recipient must set callback to one of its functions
     void RegisterCallback (Key key, std::function<void (Params... params)> callback);
 
+    // Notify callback recipients
+    void InvokeCallbacks (Key key, Params... params);
+
 private:
     // map of callback recipients
     std::unordered_map<Key, std::vector <std::function<void (Params... params)>>> callbacks;
-
-protected:
-    // Notify callback recipients
-    void InvokeCallbacks (Key key, Params... params);
 };
 
 template<typename Key, typename... Params>
