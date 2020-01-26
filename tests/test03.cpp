@@ -75,7 +75,7 @@ int main (int argc, char* argv[])
 
     MeshObject& rudder = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
     Primitives::GenerateCube (rudder);
-    rudder.GetModelTransform ().Scale (0.2f, 2.0f, 1.0f).Translate (0.0f, 1.0f, -5.0f).Rotate (-10.0f, 0.0f, 0.0f);
+    rudder.GetModelTransform ().Scale (0.2f, 2.0f, 1.0f).Translate (0.0f, 1.5f, -5.0f).Rotate (-10.0f, 0.0f, 0.0f);
     rudder.SetMaterial (m);
     rudder.SetParentObject (plane);
 

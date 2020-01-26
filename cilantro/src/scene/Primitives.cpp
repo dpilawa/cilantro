@@ -1,53 +1,97 @@
 #include "scene/Primitives.h"
 #include "math/Mathf.h"
 
+void Primitives::GeneratePlane (MeshObject& m, bool sharedVertices)
+{
+    m.Clear ();
+
+    std::vector<Vector3f> vertices {
+        { 1.0f, 0.0f,  1.0f}, 
+        {-1.0f, 0.0f,  1.0f}, 
+        {-1.0f, 0.0f, -1.0f}, 
+        { 1.0f, 0.0f, -1.0f}
+    };
+
+    if (sharedVertices == false)
+    {
+        for (unsigned int i = 0; i < vertices.size () - 1; i++)
+        {
+            m.AddVertex (vertices[i]);
+        }
+
+        for (unsigned int i = 1; i < vertices.size (); i++)
+        {
+            m.AddVertex (vertices[i]);
+        }
+
+        m.AddFace (0, 1, 2);
+        m.AddFace (3, 4, 5); 
+
+    }
+    else
+    {
+        for (unsigned int i = 0; i < vertices.size (); i++)
+        {
+            m.AddVertex (vertices[i]);
+        }
+
+        m.AddFace (0, 1, 2);
+        m.AddFace (1, 2, 3);       
+    }
+    
+    m.CalculateVertexNormals ();
+
+    m.InvokeCallbacks ("OnUpdateMeshObject", m.GetHandle ());
+    
+}
+
 void Primitives::GenerateCube (MeshObject& m)
 {
     m.Clear ();
 
     std::vector<float> vertices {
 
-        -0.5f, -0.5f,  0.5f, 
-         0.5f, -0.5f,  0.5f, 
-        -0.5f,  0.5f,  0.5f, 
-        -0.5f,  0.5f,  0.5f, 
-         0.5f, -0.5f,  0.5f, 
-         0.5f,  0.5f,  0.5f, 
+        -1.0f, -1.0f,  1.0f, 
+         1.0f, -1.0f,  1.0f, 
+        -1.0f,  1.0f,  1.0f, 
+        -1.0f,  1.0f,  1.0f, 
+         1.0f, -1.0f,  1.0f, 
+         1.0f,  1.0f,  1.0f, 
 
-        -0.5f,  0.5f,  0.5f, 
-         0.5f,  0.5f,  0.5f, 
-        -0.5f,  0.5f, -0.5f, 
-        -0.5f,  0.5f, -0.5f, 
-         0.5f,  0.5f,  0.5f, 
-         0.5f,  0.5f, -0.5f, 
+        -1.0f,  1.0f,  1.0f, 
+         1.0f,  1.0f,  1.0f, 
+        -1.0f,  1.0f, -1.0f, 
+        -1.0f,  1.0f, -1.0f, 
+         1.0f,  1.0f,  1.0f, 
+         1.0f,  1.0f, -1.0f, 
 
-        -0.5f,  0.5f, -0.5f, 
-         0.5f,  0.5f, -0.5f, 
-        -0.5f, -0.5f, -0.5f, 
-        -0.5f, -0.5f, -0.5f, 
-         0.5f,  0.5f, -0.5f, 
-         0.5f, -0.5f, -0.5f, 
+        -1.0f,  1.0f, -1.0f, 
+         1.0f,  1.0f, -1.0f, 
+        -1.0f, -1.0f, -1.0f, 
+        -1.0f, -1.0f, -1.0f, 
+         1.0f,  1.0f, -1.0f, 
+         1.0f, -1.0f, -1.0f, 
 
-        -0.5f, -0.5f, -0.5f, 
-         0.5f, -0.5f, -0.5f, 
-        -0.5f, -0.5f,  0.5f, 
-        -0.5f, -0.5f,  0.5f, 
-         0.5f, -0.5f, -0.5f, 
-         0.5f, -0.5f,  0.5f, 
+        -1.0f, -1.0f, -1.0f, 
+         1.0f, -1.0f, -1.0f, 
+        -1.0f, -1.0f,  1.0f, 
+        -1.0f, -1.0f,  1.0f, 
+         1.0f, -1.0f, -1.0f, 
+         1.0f, -1.0f,  1.0f, 
 
-         0.5f, -0.5f,  0.5f, 
-         0.5f, -0.5f, -0.5f, 
-         0.5f,  0.5f,  0.5f, 
-         0.5f,  0.5f,  0.5f, 
-         0.5f, -0.5f, -0.5f, 
-         0.5f,  0.5f, -0.5f, 
+         1.0f, -1.0f,  1.0f, 
+         1.0f, -1.0f, -1.0f, 
+         1.0f,  1.0f,  1.0f, 
+         1.0f,  1.0f,  1.0f, 
+         1.0f, -1.0f, -1.0f, 
+         1.0f,  1.0f, -1.0f, 
 
-        -0.5f, -0.5f, -0.5f, 
-        -0.5f, -0.5f,  0.5f, 
-        -0.5f,  0.5f, -0.5f, 
-        -0.5f,  0.5f, -0.5f, 
-        -0.5f, -0.5f,  0.5f, 
-        -0.5f,  0.5f,  0.5f
+        -1.0f, -1.0f, -1.0f, 
+        -1.0f, -1.0f,  1.0f, 
+        -1.0f,  1.0f, -1.0f, 
+        -1.0f,  1.0f, -1.0f, 
+        -1.0f, -1.0f,  1.0f, 
+        -1.0f,  1.0f,  1.0f
 
     };
 

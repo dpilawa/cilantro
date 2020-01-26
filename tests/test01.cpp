@@ -69,6 +69,7 @@ int main (int argc, char* argv [])
     MeshObject& cube = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
     Primitives::GenerateCube (cube);
     cube.SetMaterial (red);
+    cube.GetModelTransform ().Scale (0.5f);
 
     MeshObject& lamp = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
     Primitives::GenerateSphere (lamp, 3, true);
@@ -76,8 +77,9 @@ int main (int argc, char* argv [])
     lamp.SetMaterial (lampM);
 
     MeshObject& floor = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-    Primitives::GenerateCube (floor);
-    floor.GetModelTransform ().Scale (5.0f, 0.1f, 5.0f).Translate (0.0f, -1.0f, 0.0f);
+    //Primitives::GenerateCube (floor);
+    Primitives::GeneratePlane (floor, false);
+    floor.GetModelTransform ().Scale (2.5f, 0.1f, 2.5f).Translate (0.0f, -1.0f, 0.0f);
     floor.SetMaterial (green);
 
     PointLight& light1 = dynamic_cast<PointLight&>(scene.AddGameObject (new PointLight ()));

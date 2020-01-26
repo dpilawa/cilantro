@@ -7,6 +7,7 @@
 class Primitives
 {
 public:
+    __EAPI static void GeneratePlane (MeshObject& m, bool sharedVertices);
     __EAPI static void GenerateCube (MeshObject& m);
     __EAPI static void GenerateSphere (MeshObject& m, unsigned int subdivisions, bool sharedVertices);
 };
