@@ -76,98 +76,62 @@ void Primitives::GenerateSphere (MeshObject& m, unsigned int subdivisions, bool 
     unsigned int lonSteps, latSteps;
     unsigned int nIndex, sIndex;
 
+    std::vector<Vector3f> vertices;
+    std::vector<std::size_t> array;
+
     m.Clear ();
 
     step = Mathf::Pi () / ((subdivisions + 1) * 2);
     lonSteps = (subdivisions + 1) * 4;
     latSteps = (subdivisions + 1) * 2;
 
-    if (sharedVertices == false)
+    // generate sphere vertices
+    for (unsigned int i = 1; i <= latSteps - 1; i++)
     {
-        // generate vertices
-        for (unsigned int i = 1; i < latSteps - 1; i++)
-        {
-            theta = step * i;
-            
-            for (unsigned int j = 0; j <= lonSteps - 1; j++)
-            {
-                phi = step * j;
+        theta = step * i;
 
-                m.AddVertex (Mathf::Spherical2Cartesian (theta, phi, 1.0f));
-                m.AddVertex (Mathf::Spherical2Cartesian (theta, phi + step, 1.0f));
-                m.AddVertex (Mathf::Spherical2Cartesian (theta + step, phi, 1.0f));
-
-                m.AddVertex (Mathf::Spherical2Cartesian (theta, phi + step, 1.0f));
-                m.AddVertex (Mathf::Spherical2Cartesian (theta + step, phi + step, 1.0f));
-                m.AddVertex (Mathf::Spherical2Cartesian (theta + step, phi, 1.0f));
-            }
-        }
-
-        theta = 0.0f;
         for (unsigned int j = 0; j <= lonSteps - 1; j++)
         {
             phi = step * j;
-
-            m.AddVertex (Mathf::Spherical2Cartesian (theta + step, phi, 1.0f));
-            m.AddVertex (Mathf::Spherical2Cartesian (theta, phi, 1.0f));
-            m.AddVertex (Mathf::Spherical2Cartesian (theta + step, phi + step, 1.0f));
+            vertices.push_back (Mathf::Spherical2Cartesian (theta, phi, 1.0f));
         }
-
-        theta = Mathf::Pi ();
-        for (unsigned int j = 0; j <= lonSteps - 1; j++)
-        {
-            phi = step * j;
-
-            m.AddVertex (Mathf::Spherical2Cartesian (theta, phi, 1.0f));
-            m.AddVertex (Mathf::Spherical2Cartesian (theta - step, phi, 1.0f));
-            m.AddVertex (Mathf::Spherical2Cartesian (theta - step, phi + step, 1.0f));
-        }
-
-        // generate faces
-        for (unsigned int i = 0; i < latSteps * lonSteps * 3 * 2; i += 3)
-        {
-            m.AddFace (i, i + 1, i + 2);
-        }
-
     }
-    else
+
+    // pole vertices
+    vertices.push_back (Vector3f (0.0f, 1.0f, 0.0f));
+    vertices.push_back (Vector3f (0.0f, -1.0f, 0.0f));
+
+    // generate face array
+    for (unsigned int i = 0; i <= latSteps - 1; i++)
     {
-        // generate sphere vertices
-        for (unsigned int i = 1; i <= latSteps - 1; i++)
-        {
-            theta = step * i;
-    
-            for (unsigned int j = 0; j <= lonSteps - 1; j++)
-            {
-                phi = step * j;
-                m.AddVertex (Mathf::Spherical2Cartesian (theta, phi, 1.0f));
-            }
-        }
-
-        // add poles
-        m.AddVertex (Vector3f (0.0f, 1.0f, 0.0f));
-        m.AddVertex (Vector3f (0.0f, -1.0f, 0.0f));
-
-        // generate face data
-        for (unsigned int i = 0; i < latSteps - 2; i++)
-        {
-            for (unsigned int j = 0; j <= lonSteps - 1; j++)
-            {
-                m.AddFace (i * lonSteps + j, i * lonSteps + (j + 1) % lonSteps, (i + 1) * lonSteps + j);
-                m.AddFace (i * lonSteps + (j + 1) % lonSteps, (i + 1) * lonSteps + (j + 1) % lonSteps, (i + 1) * lonSteps + j);
-            }
-        }
-
-        nIndex = (latSteps - 1) * lonSteps;
-        sIndex = nIndex + 1;
-
         for (unsigned int j = 0; j <= lonSteps - 1; j++)
         {
-            m.AddFace (nIndex, (j + 1) % lonSteps, j);
-            m.AddFace (sIndex, nIndex - 1 - (j + 1) % lonSteps, nIndex - 1 - j);
-        }
+            array.push_back (i * lonSteps + j);
+            array.push_back (i * lonSteps + (j + 1) % lonSteps);
+            array.push_back ((i + 1) * lonSteps + j);
 
+            array.push_back (i * lonSteps + (j + 1) % lonSteps);
+            array.push_back ((i + 1) * lonSteps + (j + 1) % lonSteps);
+            array.push_back ((i + 1) * lonSteps + j);
+        }
     }
+
+    // pole faces
+    nIndex = (latSteps - 1) * lonSteps;
+    sIndex = nIndex + 1;
+
+    for (unsigned int j = 0; j <= lonSteps - 1; j++)
+    {
+        array.push_back (nIndex);
+        array.push_back ((j + 1) % lonSteps);
+        array.push_back (j);
+
+        array.push_back (sIndex);
+        array.push_back (nIndex - 1 - (j + 1) % lonSteps);
+        array.push_back (nIndex - 1 - j);
+    }
+
+    Primitives::GenerateMeshFromArrays (m, sharedVertices, vertices, array);
 
     m.CalculateVertexNormals ();
 
@@ -175,6 +139,107 @@ void Primitives::GenerateSphere (MeshObject& m, unsigned int subdivisions, bool 
 
 }
 
+void Primitives::GenerateCone (MeshObject& m, unsigned int subdivisions, bool sharedVertices)
+{
+    float step;
+    float phi;
+    unsigned int lonSteps;
+
+    std::vector<Vector3f> vertices;
+    std::vector<std::size_t> array;
+
+    m.Clear ();
+
+    step = Mathf::Pi () / ((subdivisions + 1) * 2);
+    lonSteps = (subdivisions + 1) * 4;
+
+    // generate base vertices
+    for (unsigned int j = 0; j <= lonSteps - 1; j++)
+    {
+        phi = step * j;
+        vertices.push_back (Mathf::Spherical2Cartesian (Mathf::Pi () / 2.0f, phi, 1.0f) + Vector3f (0.0f, -1.0f, 0.0f));
+    }
+
+    // apex and base center
+    vertices.push_back (Vector3f (0.0f, 1.0f, 0.0f));
+    vertices.push_back (Vector3f (0.0f, -1.0f, 0.0f));
+
+    // generate face array
+    for (unsigned int i = 0; i <= lonSteps - 1; i++)
+    {
+        array.push_back ((i + 1) % lonSteps);
+        array.push_back (i);
+        array.push_back (lonSteps);
+
+        array.push_back (i);
+        array.push_back ((i + 1) % lonSteps);
+        array.push_back (lonSteps + 1);
+    }
+
+    Primitives::GenerateMeshFromArrays (m, sharedVertices, vertices, array);
+
+    m.CalculateVertexNormals ();
+
+    m.InvokeCallbacks ("OnUpdateMeshObject", m.GetHandle ());
+
+}
+
+void Primitives::GenerateCylinder (MeshObject& m, unsigned int subdivisions, bool sharedVertices)
+{
+    float step;
+    float phi;
+    unsigned int lonSteps;
+    unsigned int nIndex, sIndex;
+
+    std::vector<Vector3f> vertices;
+    std::vector<std::size_t> array;
+
+    m.Clear ();
+
+    step = Mathf::Pi () / ((subdivisions + 1) * 2);
+    lonSteps = (subdivisions + 1) * 4;
+
+    // generate base vertices
+    for (unsigned int j = 0; j <= lonSteps - 1; j++)
+    {
+        phi = step * j;
+        vertices.push_back (Mathf::Spherical2Cartesian (Mathf::Pi () / 2.0f, phi, 1.0f) + Vector3f (0.0f, 1.0f, 0.0f));
+        vertices.push_back (Mathf::Spherical2Cartesian (Mathf::Pi () / 2.0f, phi, 1.0f) + Vector3f (0.0f, -1.0f, 0.0f));
+    }
+
+    // base centers
+    vertices.push_back (Vector3f (0.0f, 1.0f, 0.0f));
+    vertices.push_back (Vector3f (0.0f, -1.0f, 0.0f));
+    nIndex = lonSteps * 2;
+    sIndex = nIndex + 1;
+
+    // generate face array
+    for (unsigned int i = 0; i <= 2 * (lonSteps - 1); i += 2)
+    {
+        array.push_back (i);
+        array.push_back ((i + 2) % (lonSteps * 2));
+        array.push_back ((i + 1) % (lonSteps * 2));
+
+        array.push_back (i);
+        array.push_back (nIndex);
+        array.push_back ((i + 2) % (lonSteps * 2));
+
+        array.push_back ((i + 1) % (lonSteps * 2));
+        array.push_back ((i + 2) % (lonSteps * 2));
+        array.push_back ((i + 3) % (lonSteps * 2));
+
+        array.push_back ((i + 1) % (lonSteps * 2));
+        array.push_back ((i + 3) % (lonSteps * 2));
+        array.push_back (sIndex);    
+    }
+
+    Primitives::GenerateMeshFromArrays (m, sharedVertices, vertices, array);
+
+    m.CalculateVertexNormals ();
+
+    m.InvokeCallbacks ("OnUpdateMeshObject", m.GetHandle ());
+
+}
 
 void Primitives::GenerateMeshFromArrays (MeshObject& m, bool sharedVertices, const std::vector<Vector3f>& vertices, const std::vector<std::size_t> array)
 {

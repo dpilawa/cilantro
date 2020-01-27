@@ -58,18 +58,38 @@ int main (int argc, char* argv [])
     red.SetColor (Vector3f (0.75f, 0.1f, 0.1f));
     red.SetSpecularColor (Vector3f (1.0f, 0.0f, 0.0f)).SetSpecularShininess (8.0f);
 
+    Material& gold = scene.AddMaterial (new Material ());
+    gold.SetShaderProgram ("blinnphong_shader");
+    gold.SetColor (Vector3f (0.39f, 0.33f, 0.0f));
+    gold.SetSpecularColor (Vector3f (0.39f, 0.33f, 0.0f)).SetSpecularShininess (64.0f);
+
+    Material& blue = scene.AddMaterial (new Material ());
+    blue.SetShaderProgram ("blinnphong_shader");
+    blue.SetColor (Vector3f (0.02f, 0.29f, 0.53f));
+    blue.SetSpecularColor (Vector3f (1.0f, 1.0f, 1.0f)).SetSpecularShininess (64.0f);
+
     Material& lampM = scene.AddMaterial (new Material ());
     lampM.SetEmissiveColor (Vector3f (0.9f, 0.9f, 0.9f)).SetDiffuseColor (Vector3f (0.2f, 0.2f, 0.2f));
 
     ControlledCamera& cam = dynamic_cast<ControlledCamera&>(scene.AddGameObject (new ControlledCamera (60.0f, 0.1f, 100.0f, 0.1f)));
     cam.Initialize ();
-    cam.GetModelTransform ().Translate (5.0f, 1.5f, 5.0f).Rotate (-20.0f, 45.0f, 0.0f);
+    cam.GetModelTransform ().Translate (5.0f, 2.5f, 5.0f).Rotate (-20.0f, 45.0f, 0.0f);
     scene.SetActiveCamera (&cam);
 
     MeshObject& cube = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
     Primitives::GenerateCube (cube, false);
     cube.SetMaterial (red);
-    cube.GetModelTransform ().Scale (0.5f);
+    cube.GetModelTransform ().Scale (0.5f).Translate (0.0f, 1.1f, 0.0f);
+
+    MeshObject& cone = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
+    Primitives::GenerateCone (cone, 16, false);
+    cone.SetMaterial (gold);
+    cone.GetModelTransform ().Translate (-1.5f, 0.5f, 1.0f).Scale (0.5f);
+
+    MeshObject& cylinder = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
+    Primitives::GenerateCylinder (cylinder, 16, false);
+    cylinder.SetMaterial (blue);
+    cylinder.GetModelTransform ().Rotate (90.0f, 12.5f, 0.0f).Translate (1.7f, 0.5f, 0.7f).Scale (0.5f);
 
     MeshObject& lamp = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
     Primitives::GenerateSphere (lamp, 3, true);
@@ -77,21 +97,21 @@ int main (int argc, char* argv [])
     lamp.SetMaterial (lampM);
 
     MeshObject& floor = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-    //Primitives::GenerateCube (floor, false);
-    Primitives::GeneratePlane (floor, true);
-    floor.GetModelTransform ().Scale (2.5f, 0.05f, 2.5f).Translate (0.0f, -1.0f, 0.0f);
+    Primitives::GenerateCube (floor, false);
+    //Primitives::GeneratePlane (floor, true);
+    floor.GetModelTransform ().Scale (2.5f, 0.05f, 2.5f).Translate (0.0f, -0.05f, 0.0f);
     floor.SetMaterial (green);
 
     PointLight& light1 = dynamic_cast<PointLight&>(scene.AddGameObject (new PointLight ()));
     light1.SetParentObject (lamp);
-    light1.SetColor (Vector3f (0.4f, 0.4f, 0.4f));
+    light1.SetColor (Vector3f (0.6f, 0.6f, 0.6f));
     light1.SetSpecularPower (2.0f);
     light1.SetAmbiencePower (0.0f);
     light1.SetLinearAttenuationFactor (0.2f).SetQuadraticAttenuationFactor (0.2f);
     light1.SetEnabled (true);
 
     DirectionalLight& light2 = dynamic_cast<DirectionalLight&>(scene.AddGameObject (new DirectionalLight ()));
-    light2.GetModelTransform ().Rotate (135.0f, -45.0f, 0.0f);
+    light2.GetModelTransform ().Rotate (135.0f, 45.0f, 0.0f);
     light2.SetColor (Vector3f (0.2f, 0.2f, 0.2f));
     light2.SetSpecularPower (1.1f);
     light2.SetAmbiencePower (0.0f);
@@ -115,7 +135,7 @@ int main (int argc, char* argv [])
     lp.SetStartTangent ({-2.0f, 0.0f, 2.0f});
     lp.SetEndTangent ({-2.0f, 0.0f, 2.0f});
 
-    lp.GetModelTransform ().Rotate ({0.0f, 0.0f, -15.0f});
+    lp.GetModelTransform ().Rotate ({0.0f, 0.0f, -15.0f}).Translate ({0.0f, 1.0f, 0.0f});
 
     AnimationObject& lightAnimation = dynamic_cast<AnimationObject&> (scene.AddGameObject (new AnimationObject ()));
 
