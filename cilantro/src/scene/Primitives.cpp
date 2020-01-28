@@ -102,7 +102,7 @@ void Primitives::GenerateSphere (MeshObject& m, unsigned int subdivisions, bool 
     vertices.push_back (Vector3f (0.0f, -1.0f, 0.0f));
 
     // generate face array
-    for (unsigned int i = 0; i <= latSteps - 1; i++)
+    for (unsigned int i = 0; i < latSteps - 2; i++)
     {
         for (unsigned int j = 0; j <= lonSteps - 1; j++)
         {
