@@ -20,6 +20,9 @@ public:
     // static constants
     __EAPI static float Pi () { return cPI; }
 
+    // float comparison
+    __EAPI static bool VeryClose (const float a, const float b, int ulp);
+
     // vector operations
     __EAPI static float Length (const Vector3f& v);
     __EAPI static float Length (const Vector4f& v);
@@ -104,8 +107,9 @@ public:
     __EAPI static Matrix4f GenScalingMatrix (float x, float y, float z);
     __EAPI static Matrix4f GenScalingMatrix (const Vector3f& s);
 
-    // generate camera (view) matrix
+    // generate camera (view) matrix or orientation quaternion
     __EAPI static Matrix4f GenCameraViewMatrix (const Vector3f& position, const Vector3f& lookAt, const Vector3f& up);
+    __EAPI static Quaternion GenCameraOrientationQuaternion (const Vector3f& position, const Vector3f& lookAt, const Vector3f& up);
 
     // generate projection matrix (perspective)
     // fov provided in radians

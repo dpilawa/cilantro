@@ -1,8 +1,8 @@
 #include "math/Quaternion.h"
 
 // constructors
-Quaternion::Quaternion () { };
-Quaternion::Quaternion (float a, float b, float c, float d) : s (a), v {b, c, d} { };
+Quaternion::Quaternion () : s (1.0f), v{0.0f, 0.0f, 0.0f} {};
+Quaternion::Quaternion (float a, float b, float c, float d) : s (a), v{b, c, d} {};
 Quaternion::Quaternion (float scalar, Vector3f vector) : s (scalar), v (vector) { };
 
 // copy constructor

@@ -16,6 +16,11 @@ template void Mathf::SolveSystemOfLinearEquations<Vector4f> (std::vector<std::ve
 
 GaussLegendreIntegrator<INTEGRATOR_DEGREE> Mathf::integrator = GaussLegendreIntegrator<INTEGRATOR_DEGREE> ();
 
+bool Mathf::VeryClose (const float a, const float b, int ulp = 2)
+{
+    return std::fabs (a - b) <= std::numeric_limits<float>::epsilon () * std::fabs (a + b) * ulp || std::fabs (a - b) < std::numeric_limits<float>::min ();
+}
+
 float Mathf::Length (const Vector3f & v)
 {
     return std::sqrt (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
@@ -558,9 +563,9 @@ Quaternion Mathf::GenQuaternion (const Matrix4f& m)
 {
     Quaternion q;
 
-    q.s = std::sqrt (1.0f + m[0][0] + m[1][1] + m[2][2]);
+    q.s = std::sqrt (1.0f + m[0][0] + m[1][1] + m[2][2]) * 0.5f;
     q.v = Vector3f (m[2][1] - m[1][2], m[0][2] - m[2][0], m[1][0] - m[0][1]);
-    q.v = (1.0f / q.s) * q.v;
+    q.v = (1.0f / (4.0 * q.s)) * q.v;
 
     return q;
 }
@@ -604,7 +609,7 @@ Matrix4f Mathf::GenCameraViewMatrix (const Vector3f& position, const Vector3f& l
     Vector3f u, v, n;
 
     // Create orthonormal basis
-    n = Normalize (position - lookAt);
+    n = Normalize (lookAt - position);
     u = Normalize (Cross (up, n));
     v = Cross (n, u);
     
@@ -622,6 +627,10 @@ Matrix4f Mathf::GenCameraViewMatrix (const Vector3f& position, const Vector3f& l
     return m * t;
 }
 
+Quaternion Mathf::GenCameraOrientationQuaternion (const Vector3f& position, const Vector3f& lookAt, const Vector3f& up)
+{
+    return Mathf::GenQuaternion (Mathf::GenCameraViewMatrix (position, lookAt, up));
+}
 
 Matrix4f Mathf::GenPerspectiveProjectionMatrix (float aspect, float fov, float nearZ, float farZ)
 {
