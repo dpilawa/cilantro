@@ -1,13 +1,16 @@
 #include "cilantroengine.h"
 #include "game/GameLoop.h"
+#include "scene/AnimationObject.h"
 #include "scene/Primitives.h"
 #include "scene/GameScene.h"
 #include "scene/PerspectiveCamera.h"
 #include "scene/MeshObject.h"
 #include "scene/PointLight.h"
+#include "scene/SplinePath.h"
 #include "graphics/GLRenderer.h"
 #include "graphics/GLFWRenderTarget.h"
 #include "input/GLFWInputController.h"
+#include "math/Mathf.h"
 
 #include "Orbiter.h"
 
@@ -75,6 +78,34 @@ int main (int argc, char* argv [])
     sunLight.SetSpecularPower (0.7f);
     sunLight.SetAmbiencePower (0.1f);
     sunLight.SetEnabled (true);
+
+    SplinePath& path = dynamic_cast<SplinePath&>(scene.AddGameObject (new SplinePath ()));
+    path.AddWaypoint({0.0f, 80.0f, 260.0f}, Mathf::EulerToQuaterion(Mathf::Deg2Rad ({-15.0f, 0.0f, 0.0f})));
+    path.AddWaypoint({0.0f, 0.0f, 160.0f}, Mathf::EulerToQuaterion(Mathf::Deg2Rad ({0.0f, 0.0f, 0.0f})));
+    path.AddWaypoint({-65.0f, 0.0f, 80.0f}, Mathf::EulerToQuaterion(Mathf::Deg2Rad ({0.0f, -45.0f, 0.0f})));
+    path.AddWaypoint({-160.0f, 0.0f, 0.0f}, Mathf::EulerToQuaterion(Mathf::Deg2Rad ({0.0f, -90.0f, 0.0f})));
+    path.SetStartTangent({0.0f, 0.0f, -100.0f});
+    path.SetEndTangent({150.0f, 0.0f, 0.0f});
+
+    AnimationObject& animation = dynamic_cast<AnimationObject&>(scene.AddGameObject (new AnimationObject ()));
+    animation.AddAnimationProperty<float> ("u", 0.0f, 
+        [&](float u) 
+        {
+            Vector3f position = path.GetPositionAtDistance (u * path.GetPathLength ());
+
+            cam.GetModelTransform ().Translate (position);
+            //c.GetModelTransform ().Rotate (path.GetRotationAtDistance (u * path.GetPathLength ()));
+            cam.GetModelTransform ().Rotate ( Mathf::GenCameraOrientationQuaternion (position, 0.5f * (earth.GetPosition () - sun.GetPosition ()), {0.0f, 1.0f, 0.0f}));
+
+        },
+        [](float t0, float t1, float u)
+        {
+            return Mathf::Lerp (t0, t1, u);
+        }
+    );
+    animation.AddKeyframe("u", 36.0f, 1.0f);
+    animation.SetLooping (false);
+    animation.Play ();
 
     game.Run ();
 

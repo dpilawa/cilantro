@@ -563,9 +563,43 @@ Quaternion Mathf::GenQuaternion (const Matrix4f& m)
 {
     Quaternion q;
 
-    q.s = std::sqrt (1.0f + m[0][0] + m[1][1] + m[2][2]) * 0.5f;
-    q.v = Vector3f (m[2][1] - m[1][2], m[0][2] - m[2][0], m[1][0] - m[0][1]);
-    q.v = (1.0f / (4.0 * q.s)) * q.v;
+    // matrix must represent pure rotation
+
+    float trace = m[0][0] + m[1][1] + m[2][2];
+
+    if (trace > 0)
+    {
+        float s = 0.5f / std::sqrt (1.0f + trace);
+        q.s = 0.25f / s;
+        q.v = Vector3f (m[2][1] - m[1][2], m[0][2] - m[2][0], m[1][0] - m[0][1]) * s;
+    }
+    else
+    {
+        if (m[0][0] > m[1][1] && m[0][0] > m[2][2] ) 
+        {
+            float s = 2.0f * std::sqrt (1.0f + m[0][0] - m[1][1] - m[2][2]);
+            q.s = (m[2][1] - m[1][2]) / s;
+            q.v[0] = 0.25f * s;
+            q.v[1] = (m[0][1] + m[1][0]) / s;
+            q.v[2] = (m[0][2] + m[2][0]) / s;
+        } 
+        else if (m[1][1] > m[2][2]) 
+        {
+            float s = 2.0f * std::sqrt (1.0f + m[1][1] - m[0][0] - m[2][2]);
+            q.s = (m[0][2] - m[2][0]) / s;
+            q.v[0] = (m[0][1] + m[1][0]) / s;
+            q.v[1] = 0.25f * s;
+            q.v[2] = (m[1][2] + m[2][1]) / s;
+        } 
+        else 
+        {
+            float s = 2.0f * std::sqrt (1.0f + m[2][2] - m[0][0] - m[1][1]);
+            q.s = (m[1][0] - m[0][1]) / s;
+            q.v[0] = (m[0][2] + m[2][0]) / s;
+            q.v[1] = (m[1][2] + m[2][1]) / s;
+            q.v[2] = 0.25f * s;
+        }
+    }
 
     return q;
 }
@@ -609,7 +643,7 @@ Matrix4f Mathf::GenCameraViewMatrix (const Vector3f& position, const Vector3f& l
     Vector3f u, v, n;
 
     // Create orthonormal basis
-    n = Normalize (lookAt - position);
+    n = Normalize (position - lookAt);
     u = Normalize (Cross (up, n));
     v = Cross (n, u);
     
@@ -629,7 +663,19 @@ Matrix4f Mathf::GenCameraViewMatrix (const Vector3f& position, const Vector3f& l
 
 Quaternion Mathf::GenCameraOrientationQuaternion (const Vector3f& position, const Vector3f& lookAt, const Vector3f& up)
 {
-    return Mathf::GenQuaternion (Mathf::GenCameraViewMatrix (position, lookAt, up));
+    Vector3f u, v, n;
+
+    // Create orthonormal basis
+    n = Normalize (position - lookAt);
+    u = Normalize (Cross (up, n));
+    v = Cross (n, u);
+    
+    // Create a basis conversion matrix
+    // It is an orthonormal matrix so inverse is equal to transposition
+    Matrix4f m (Vector4f (u, 0.0f), Vector4f (v, 0.0f), Vector4f (n, 0.0f), Vector4f (0.0f, 0.0f, 0.0f, 1.0f));
+
+    // m represents pure rotation so it may be converted to quaternion
+    return Mathf::GenQuaternion (m);
 }
 
 Matrix4f Mathf::GenPerspectiveProjectionMatrix (float aspect, float fov, float nearZ, float farZ)
