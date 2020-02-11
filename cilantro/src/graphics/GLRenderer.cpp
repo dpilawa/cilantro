@@ -29,7 +29,7 @@
 #include "graphics/post_gamma.fs.h"
 
 GLRenderer::GLRenderer (GameLoop* gameLoop, unsigned int width, unsigned int height) : Renderer (gameLoop, width, height), 
-#if (CILANTRO_MIN_GL_VERSION <= 140)
+#if (CILANTRO_GL_VERSION <= 140)
 GLFramebuffer (width, height)
 #else
 GLMultisampleFramebuffer (width, height)
@@ -67,7 +67,7 @@ void GLRenderer::RenderFrame ()
         gameObject.second->OnDraw (*this);
     }
 
-#if (CILANTRO_MIN_GL_VERSION > 140)
+#if (CILANTRO_GL_VERSION > 140)
     // blit framebuffer
     BlitFramebuffer ();
 #endif
@@ -547,7 +547,7 @@ void GLRenderer::InitializeShaderLibrary ()
     // Phong model
     AddShaderToProgram ("phong_shader", "default_vertex_shader");
     AddShaderToProgram ("phong_shader", "phong_fragment_shader");
-#if (CILANTRO_MIN_GL_VERSION < 330)
+#if (CILANTRO_GL_VERSION < 330)
     glBindAttribLocation(GetShaderProgram("phong_shader").GetProgramId(), 0, "vPosition");
     glBindAttribLocation(GetShaderProgram("phong_shader").GetProgramId(), 1, "vNormal");
 #endif
@@ -555,7 +555,7 @@ void GLRenderer::InitializeShaderLibrary ()
     // Blinn-Phong model
     AddShaderToProgram ("blinnphong_shader", "default_vertex_shader");
     AddShaderToProgram ("blinnphong_shader", "blinnphong_fragment_shader");
-#if (CILANTRO_MIN_GL_VERSION < 330)	
+#if (CILANTRO_GL_VERSION < 330)	
     glBindAttribLocation(GetShaderProgram("blinnphong_shader").GetProgramId(), 0, "vPosition");
     glBindAttribLocation(GetShaderProgram("blinnphong_shader").GetProgramId(), 1, "vNormal");
 #endif
@@ -563,7 +563,7 @@ void GLRenderer::InitializeShaderLibrary ()
     // Normals visualization model
     AddShaderToProgram ("normals_shader", "default_vertex_shader");
     AddShaderToProgram ("normals_shader", "normals_fragment_shader");
-#if (CILANTRO_MIN_GL_VERSION < 330)
+#if (CILANTRO_GL_VERSION < 330)
     glBindAttribLocation(GetShaderProgram("normals_shader").GetProgramId(), 0, "vPosition");
     glBindAttribLocation(GetShaderProgram("normals_shader").GetProgramId(), 1, "vNormal");
 #endif
@@ -571,7 +571,7 @@ void GLRenderer::InitializeShaderLibrary ()
     // Only emissive color rendering (no lights calculation)
     AddShaderToProgram ("emissive_shader", "default_vertex_shader");
     AddShaderToProgram ("emissive_shader", "emissive_fragment_shader");
-#if (CILANTRO_MIN_GL_VERSION < 330)	
+#if (CILANTRO_GL_VERSION < 330)	
     glBindAttribLocation(GetShaderProgram("normals_shader").GetProgramId(), 0, "vPosition");
     glBindAttribLocation(GetShaderProgram("normals_shader").GetProgramId(), 1, "vNormal");
 #endif
@@ -579,7 +579,7 @@ void GLRenderer::InitializeShaderLibrary ()
     // Screen quad rendering
     AddShaderToProgram ("flatquad_shader", "flatquad_vertex_shader");
     AddShaderToProgram ("flatquad_shader", "flatquad_fragment_shader");
-#if (CILANTRO_MIN_GL_VERSION < 330)	
+#if (CILANTRO_GL_VERSION < 330)	
     glBindAttribLocation(GetShaderProgram("flatquad_shader").GetProgramId(), 0, "vPosition");
     glBindAttribLocation(GetShaderProgram("flatquad_shader").GetProgramId(), 1, "vTextureCoordinates");
 #endif
@@ -587,7 +587,7 @@ void GLRenderer::InitializeShaderLibrary ()
     // Post-processing gamma
     AddShaderToProgram ("post_gamma_shader", "flatquad_vertex_shader");
     AddShaderToProgram ("post_gamma_shader", "post_gamma_fragment_shader");
-#if (CILANTRO_MIN_GL_VERSION < 330)	
+#if (CILANTRO_GL_VERSION < 330)	
     glBindAttribLocation(GetShaderProgram("post_gamma_shader").GetProgramId(), 0, "vPosition");
     glBindAttribLocation(GetShaderProgram("post_gamma_shader").GetProgramId(), 1, "vTextureCoordinates");
 #endif

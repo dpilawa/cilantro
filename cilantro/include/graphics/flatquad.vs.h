@@ -8,8 +8,8 @@
 
 std::string gFlatQuadVertexShader = 
 R"(#version )"
-xstr(CILANTRO_MIN_GL_VERSION)
-#if (CILANTRO_MIN_GL_VERSION >= 330)
+xstr(CILANTRO_GL_VERSION)
+#if (CILANTRO_GL_VERSION >= 330)
 R"V0G0N(
     layout (location = 0) in vec2 vPosition;
     layout (location = 1) in vec2 vTextureCoordinates;

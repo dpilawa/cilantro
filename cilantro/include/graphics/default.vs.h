@@ -8,7 +8,7 @@
 
 std::string gDefaultVertexShader = 
 R"(#version )"
-xstr(CILANTRO_MIN_GL_VERSION)
+xstr(CILANTRO_GL_VERSION)
 R"V0G0N(
 
     /* transformation matrices */
@@ -21,7 +21,7 @@ R"V0G0N(
         mat4 mProjection;
     };
 )V0G0N"
-#if (CILANTRO_MIN_GL_VERSION >= 330)
+#if (CILANTRO_GL_VERSION >= 330)
 R"V0G0N(
     layout (location = 0) in vec3 vPosition;
     layout (location = 1) in vec3 vNormal;

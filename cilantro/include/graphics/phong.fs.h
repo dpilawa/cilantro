@@ -8,7 +8,7 @@
 
 std::string gPhongFragmentShader = 
 R"(#version )"
-xstr(CILANTRO_MIN_GL_VERSION)
+xstr(CILANTRO_GL_VERSION)
 R"V0G0N(
 
     #define MAX_POINT_LIGHTS 64

@@ -1,7 +1,9 @@
 include_directories ("${PROJECT_SOURCE_DIR}/ext/glfw/include")
 include_directories ("${PROJECT_SOURCE_DIR}/cilantro/include")
 
-add_compile_definitions(CILANTRO_MIN_GL_VERSION=${CILANTRO_GL_VERSION})
+add_compile_definitions(CILANTRO_GL_VERSION=${CILANTRO_GL_VERSION})
+add_compile_definitions(CILANTRO_GL_VERSION_MAJOR=${CILANTRO_GL_VERSION_MAJOR})
+add_compile_definitions(CILANTRO_GL_VERSION_MINOR=${CILANTRO_GL_VERSION_MINOR})
 
 if(CILANTRO_BUILD_DLL)
     add_compile_definitions(CILANTRO_BUILDING_DLL)
