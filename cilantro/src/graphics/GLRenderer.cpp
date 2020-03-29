@@ -27,6 +27,7 @@
 #include "graphics/normals.fs.h"
 #include "graphics/emissive.fs.h"
 #include "graphics/flatquad.fs.h"
+#include "graphics/post_hdr.fs.h"
 #include "graphics/post_gamma.fs.h"
 
 GLRenderer::GLRenderer (GameLoop* gameLoop, unsigned int width, unsigned int height) : Renderer (gameLoop, width, height), 
@@ -533,6 +534,7 @@ void GLRenderer::InitializeShaderLibrary ()
     AddShader ("normals_fragment_shader", gNormalsFragmentShader, ShaderType::FRAGMENT_SHADER);
     AddShader ("emissive_fragment_shader", gEmissiveFragmentShader, ShaderType::FRAGMENT_SHADER);
     AddShader ("flatquad_fragment_shader", gFlatQuadFragmentShader, ShaderType::FRAGMENT_SHADER);
+    AddShader ("post_hdr_fragment_shader", gPostHDRFragmentShader, ShaderType::FRAGMENT_SHADER);
     AddShader ("post_gamma_fragment_shader", gPostGammaFragmentShader, ShaderType::FRAGMENT_SHADER);
 
     // Phong model
@@ -581,6 +583,14 @@ void GLRenderer::InitializeShaderLibrary ()
 #if (CILANTRO_GL_VERSION < 330)	
     glBindAttribLocation(GetShaderProgram("flatquad_shader").GetProgramId(), 0, "vPosition");
     glBindAttribLocation(GetShaderProgram("flatquad_shader").GetProgramId(), 1, "vTextureCoordinates");
+#endif
+
+    // Post-processing HDR
+    AddShaderToProgram ("post_hdr_shader", "flatquad_vertex_shader");
+    AddShaderToProgram ("post_hdr_shader", "post_hdr_fragment_shader");
+#if (CILANTRO_GL_VERSION < 330)	
+    glBindAttribLocation(GetShaderProgram("post_hdr_shader").GetProgramId(), 0, "vPosition");
+    glBindAttribLocation(GetShaderProgram("post_hdr_shader").GetProgramId(), 1, "vTextureCoordinates");
 #endif
 
     // Post-processing gamma

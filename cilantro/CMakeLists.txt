@@ -36,6 +36,7 @@ include/graphics/phong.fs.h
 include/graphics/blinnphong.fs.h
 include/graphics/emissive.fs.h
 include/graphics/flatquad.fs.h
+include/graphics/post_hdr.fs.h
 include/graphics/post_gamma.fs.h
 
 include/game/GameLoop.h
