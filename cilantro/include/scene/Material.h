@@ -3,6 +3,7 @@
 
 #include "cilantroengine.h"
 #include "math/Vector3f.h"
+#include <vector>
 #include <string>
 #include <unordered_map>
 
