@@ -3,6 +3,7 @@
 #include "scene/AnimationObject.h"
 #include "scene/Primitives.h"
 #include "scene/GameScene.h"
+#include "scene/PhongMaterial.h"
 #include "scene/PerspectiveCamera.h"
 #include "scene/MeshObject.h"
 #include "scene/PointLight.h"
@@ -33,15 +34,15 @@ int main (int argc, char* argv [])
     controller.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
     controller.BindInputEvent ("exit", [ & ]() { game.Stop (); });
 
-    Material& sunM = scene.AddMaterial (new Material ());
+    PhongMaterial& sunM = dynamic_cast<PhongMaterial&>(scene.AddMaterial (new PhongMaterial ()));
     sunM.SetColor (Vector3f (0.7f, 0.7f, 0.7f));
     sunM.SetEmissiveColor (Vector3f (0.99f, 0.72f, 0.07f));
 
-    Material& earthM = scene.AddMaterial (new Material ());
+    PhongMaterial& earthM = dynamic_cast<PhongMaterial&>(scene.AddMaterial (new PhongMaterial ()));
     earthM.SetColor (Vector3f (0.42f, 0.58f, 0.84f));
     earthM.SetSpecularColor (Vector3f (0.9f, 0.9f, 0.9f));
 
-    Material& moonM = scene.AddMaterial (new Material ());
+    PhongMaterial& moonM = dynamic_cast<PhongMaterial&>(scene.AddMaterial (new PhongMaterial ()));
     moonM.SetDiffuseColor (Vector3f (0.3f, 0.3f, 0.3f));
     moonM.SetSpecularColor (Vector3f (0.0f, 0.0f, 0.0f));
 

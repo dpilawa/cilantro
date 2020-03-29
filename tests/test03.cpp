@@ -3,6 +3,7 @@
 #include "scene/Primitives.h"
 #include "scene/AnimationObject.h"
 #include "scene/GameScene.h"
+#include "scene/PhongMaterial.h"
 #include "scene/MeshObject.h"
 #include "scene/DirectionalLight.h"
 #include "graphics/GLRenderer.h"
@@ -36,23 +37,11 @@ int main (int argc, char* argv[])
     controller.CreateInputEvent ("mousemode", InputKey::KeySpace, InputTrigger::Release, {});
     controller.BindInputEvent ("mousemode", [ & ]() { controller.SetMouseGameMode (!controller.IsGameMode ()); });
 
-    Material& m = scene.AddMaterial (new Material ());
+    PhongMaterial& m = dynamic_cast<PhongMaterial&>(scene.AddMaterial (new PhongMaterial ()));
     m.SetShaderProgram ("blinnphong_shader");
     m.SetColor (Vector3f (0.4f, 0.4f, 0.4f));
     m.SetAmbientColor (Vector3f (1.0f, 1.0f, 1.0f));
     m.SetSpecularColor (Vector3f (1.0f, 1.0f, 1.0f)).SetSpecularShininess (64.0f);
-
-    Material& red = scene.AddMaterial (new Material ());
-    red.SetShaderProgram ("emissive_shader");
-    red.SetEmissiveColor (Vector3f (1.0f, 0.0f, 0.0f));
-
-    Material& green = scene.AddMaterial (new Material ());
-    green.SetShaderProgram ("emissive_shader");
-    green.SetEmissiveColor (Vector3f (0.0f, 1.0f, 0.0f));
-
-    Material& blue = scene.AddMaterial (new Material ());
-    blue.SetShaderProgram ("emissive_shader");
-    blue.SetEmissiveColor (Vector3f (0.0f, 0.0f, 1.0f));
 
     ControlledCamera& cam = dynamic_cast<ControlledCamera&>(scene.AddGameObject (new ControlledCamera (60.0f, 0.1f, 100.0f, 0.1f)));
     cam.Initialize ();

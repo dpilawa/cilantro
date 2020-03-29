@@ -20,7 +20,10 @@ R"V0G0N(
 
     /* fragment normal */
     in vec3 fNormal;
-    vec3 fNormal_N;
+    vec3 surfaceNormal;
+
+    /* viewing direction */
+    vec3 viewDirection;
 
     /* material properties */
     uniform vec3 fAmbientColor;
@@ -96,9 +99,8 @@ R"V0G0N(
 
     float CalculateSpecular (vec3 lightDirection, float n_dot_l, float lightSpecularPower)
     {
-        vec3 viewDirection = normalize (eyePosition - fPosition);
         vec3 halfwayDirection = normalize(lightDirection + viewDirection);
-        return pow(clamp(dot(fNormal_N, halfwayDirection), 0.0, 1.0), fSpecularShininess) * lightSpecularPower * smoothstep(0.0, 0.5, n_dot_l);		
+        return pow(clamp(dot(surfaceNormal, halfwayDirection), 0.0, 1.0), fSpecularShininess) * lightSpecularPower * smoothstep(0.0, 0.5, n_dot_l);		
     }
 
     vec3 CalculateOutputColor (float ambientCoefficient, float diffuseCoefficient, float attenuationFactor, float specularCoefficient, vec3 lightColor)
@@ -115,7 +117,7 @@ R"V0G0N(
         float ambientCoefficient = light.ambiencePower;
 
         /* diffuse component */
-        float n_dot_l = dot (fNormal_N, lightDirection);
+        float n_dot_l = dot (surfaceNormal, lightDirection);
         float diffuseCoefficient = CalculateDiffuse (n_dot_l);
         
         /* specular component */
@@ -138,7 +140,7 @@ R"V0G0N(
         float ambientCoefficient = light.ambiencePower;
 
         /* diffuse component */
-        float n_dot_l = dot (fNormal_N, lightDirection);		
+        float n_dot_l = dot (surfaceNormal, lightDirection);		
         float diffuseCoefficient = CalculateDiffuse (n_dot_l);
 
         /* specular component */
@@ -165,7 +167,7 @@ R"V0G0N(
         float intensity = clamp ((theta - light.outerCutoffCosine) / epsilon, 0.0, 1.0); 		
 
         /* diffuse component */
-        float n_dot_l = dot (fNormal_N, lightDirection);
+        float n_dot_l = dot (surfaceNormal, lightDirection);
         float diffuseCoefficient = CalculateDiffuse (n_dot_l);
         
         /* specular component */
@@ -184,7 +186,10 @@ R"V0G0N(
         color = vec4 (fEmissiveColor, 1.0);
         
         /* normalize normal again to fix interpolated normals */
-        fNormal_N = normalize (fNormal);
+        surfaceNormal = normalize (fNormal);
+
+        /* calculate viewing direction */
+        viewDirection = normalize (eyePosition - fPosition);
 
         for (int i=0; i < pointLightCount; i++)
         {

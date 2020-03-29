@@ -3,6 +3,8 @@
 #include "scene/Primitives.h"
 #include "scene/AnimationObject.h"
 #include "scene/GameScene.h"
+#include "scene/PhongMaterial.h"
+#include "scene/PBRMaterial.h"
 #include "scene/MeshObject.h"
 #include "scene/PointLight.h"
 #include "scene/DirectionalLight.h"
@@ -38,7 +40,7 @@ int main (int argc, char* argv [])
     game.gameRenderer = dynamic_cast<Renderer*>(&renderer);
 
     GLPostprocess gamma (&renderer, &renderer.GetShaderProgram("post_gamma_shader"));
-    gamma.SetPostprocessParameterFloat ("fGamma", 2.2f);
+    gamma.SetPostprocessParameterFloat ("fGamma", 1.8f);
     renderer.AddPostprocess (&gamma);
 
     controller.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
@@ -47,28 +49,29 @@ int main (int argc, char* argv [])
     controller.CreateInputEvent ("mousemode", InputKey::KeySpace, InputTrigger::Release, {});
     controller.BindInputEvent ("mousemode", [ & ]() { controller.SetMouseGameMode (!controller.IsGameMode ()); });
 
-    Material& green = scene.AddMaterial (new Material ());
-    green.SetShaderProgram ("blinnphong_shader");
-    green.SetColor (Vector3f (0.1f, 0.4f, 0.1f));
-    green.SetAmbientColor (Vector3f (0.5f, 0.5f, 0.5f));
-    green.SetSpecularColor (Vector3f (1.0f, 1.0f, 1.0f)).SetSpecularShininess (32.0f);
+    PBRMaterial& green = dynamic_cast<PBRMaterial&>(scene.AddMaterial (new PBRMaterial ()));
+    green.SetShaderProgram ("pbr_shader");
+    green.SetAlbedo (Vector3f (0.1f, 0.4f, 0.1f)).SetRoughness(0.1f).SetMetallic(0.0f);
+    //green.SetAmbientColor (Vector3f (0.5f, 0.5f, 0.5f));
+    //green.SetSpecularColor (Vector3f (1.0f, 1.0f, 1.0f)).SetSpecularShininess (32.0f);
 
-    Material& red = scene.AddMaterial (new Material ());
+    PhongMaterial& red = dynamic_cast<PhongMaterial&>(scene.AddMaterial (new PhongMaterial ()));
     red.SetShaderProgram ("phong_shader");
     red.SetColor (Vector3f (0.75f, 0.1f, 0.1f));
     red.SetSpecularColor (Vector3f (1.0f, 0.0f, 0.0f)).SetSpecularShininess (8.0f);
 
-    Material& gold = scene.AddMaterial (new Material ());
-    gold.SetShaderProgram ("blinnphong_shader");
-    gold.SetColor (Vector3f (0.39f, 0.33f, 0.0f));
-    gold.SetSpecularColor (Vector3f (0.39f, 0.33f, 0.0f)).SetSpecularShininess (64.0f);
+    PBRMaterial& gold = dynamic_cast<PBRMaterial&>(scene.AddMaterial (new PBRMaterial ()));
+    gold.SetShaderProgram ("pbr_shader");
+    gold.SetAlbedo (Vector3f (1.000f, 0.766f, 0.336f));
+    gold.SetMetallic (0.8f);
+    gold.SetRoughness (0.2f);
+    gold.SetAO (0.5f);
 
-    Material& blue = scene.AddMaterial (new Material ());
-    blue.SetShaderProgram ("blinnphong_shader");
-    blue.SetColor (Vector3f (0.02f, 0.29f, 0.53f));
-    blue.SetSpecularColor (Vector3f (1.0f, 1.0f, 1.0f)).SetSpecularShininess (64.0f);
+    PBRMaterial& blue = dynamic_cast<PBRMaterial&>(scene.AddMaterial (new PBRMaterial ()));
+    blue.SetShaderProgram ("pbr_shader");
+    blue.SetAlbedo (Vector3f (0.02f, 0.29f, 0.53f)).SetMetallic (0.0f).SetRoughness(0.8f);
 
-    Material& lampM = scene.AddMaterial (new Material ());
+    PhongMaterial& lampM = dynamic_cast<PhongMaterial&>(scene.AddMaterial (new PhongMaterial ()));
     lampM.SetEmissiveColor (Vector3f (0.9f, 0.9f, 0.9f)).SetDiffuseColor (Vector3f (0.2f, 0.2f, 0.2f));
 
     ControlledCamera& cam = dynamic_cast<ControlledCamera&>(scene.AddGameObject (new ControlledCamera (60.0f, 0.1f, 100.0f, 0.1f)));
@@ -82,7 +85,7 @@ int main (int argc, char* argv [])
     cube.GetModelTransform ().Scale (0.5f).Translate (0.0f, 1.1f, 0.0f);
 
     MeshObject& cone = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-    Primitives::GenerateCone (cone, 16, false);
+    Primitives::GenerateCone (cone, 16, true);
     cone.SetMaterial (gold);
     cone.GetModelTransform ().Translate (-1.5f, 0.5f, 1.0f).Scale (0.5f);
 
@@ -104,15 +107,15 @@ int main (int argc, char* argv [])
 
     PointLight& light1 = dynamic_cast<PointLight&>(scene.AddGameObject (new PointLight ()));
     light1.SetParentObject (lamp);
-    light1.SetColor (Vector3f (0.6f, 0.6f, 0.6f));
+    light1.SetColor (Vector3f (1.0f, 1.0f, 1.0f));
     light1.SetSpecularPower (2.0f);
-    light1.SetAmbiencePower (0.0f);
-    light1.SetLinearAttenuationFactor (0.2f).SetQuadraticAttenuationFactor (0.2f);
+    light1.SetAmbiencePower (0.03f);
+    light1.SetLinearAttenuationFactor (0.0f).SetQuadraticAttenuationFactor (1.0f);
     light1.SetEnabled (true);
 
     DirectionalLight& light2 = dynamic_cast<DirectionalLight&>(scene.AddGameObject (new DirectionalLight ()));
     light2.GetModelTransform ().Rotate (135.0f, 45.0f, 0.0f);
-    light2.SetColor (Vector3f (0.2f, 0.2f, 0.2f));
+    light2.SetColor (Vector3f (0.8f, 0.8f, 0.8f));
     light2.SetSpecularPower (1.1f);
     light2.SetAmbiencePower (0.0f);
     light2.SetEnabled (true);

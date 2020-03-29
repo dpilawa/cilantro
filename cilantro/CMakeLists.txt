@@ -31,6 +31,7 @@ include/cilantroengine.h
 include/graphics/default.vs.h
 include/graphics/flatquad.vs.h
 include/graphics/normals.fs.h
+include/graphics/pbr.fs.h
 include/graphics/phong.fs.h
 include/graphics/blinnphong.fs.h
 include/graphics/emissive.fs.h
@@ -75,6 +76,8 @@ include/scene/MeshObject.h
 include/scene/OrthographicCamera.h
 include/scene/PerspectiveCamera.h
 include/scene/Path.h
+include/scene/PBRMaterial.h
+include/scene/PhongMaterial.h
 include/scene/PointLight.h
 include/scene/Primitives.h
 include/scene/SplinePath.h
@@ -119,6 +122,8 @@ src/scene/Material.cpp
 src/scene/MeshObject.cpp
 src/scene/OrthographicCamera.cpp
 src/scene/Path.cpp
+src/scene/PBRMaterial.cpp
+src/scene/PhongMaterial.cpp
 src/scene/PerspectiveCamera.cpp
 src/scene/PointLight.cpp
 src/scene/Primitives.cpp

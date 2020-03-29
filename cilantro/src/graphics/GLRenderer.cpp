@@ -21,6 +21,7 @@
 
 #include "graphics/default.vs.h"
 #include "graphics/flatquad.vs.h"
+#include "graphics/pbr.fs.h"
 #include "graphics/phong.fs.h"
 #include "graphics/blinnphong.fs.h"
 #include "graphics/normals.fs.h"
@@ -150,51 +151,40 @@ GLShaderProgram& GLRenderer::GetShaderProgram (std::string shaderProgramName)
 
 void GLRenderer::Draw (MeshObject & meshObject)
 {
-    //TODO: get uniform location queries to be moved to initialization and called one time
-    GLuint ambientColorId;
-    GLuint diffuseColorId;
-    GLuint specularColorId;
-    GLuint emissiveColorId;
-    GLuint specularShininessId;
     GLuint eyePositionId;
     GLuint modelMatrixId;
     GLuint normalMatrixId;
     GLuint shaderProgramId;
+    GLuint uniformId;
 
     // pick shader
     GLShaderProgram& shaderProgram = GetShaderProgram (meshObject.GetMaterial ().GetShaderProgramName ());
     shaderProgramId = shaderProgram.GetProgramId ();
     shaderProgram.Use ();
 
-    // get material properties for drawn objects and set uniform value
-    ambientColorId = glGetUniformLocation (shaderProgramId, "fAmbientColor");
-    if (ambientColorId != GL_INVALID_INDEX)
+    // get material properties for drawn objects and set uniform values
+    for (auto&& property : meshObject.GetMaterial ().GetPropertiesMap ())
     {
-        glUniform3fv (ambientColorId, 1, &meshObject.GetMaterial ().GetAmbientColor ()[0]);
-    }
-
-    diffuseColorId = glGetUniformLocation (shaderProgramId, "fDiffuseColor");
-    if (diffuseColorId != GL_INVALID_INDEX)
-    {
-        glUniform3fv (diffuseColorId, 1, &meshObject.GetMaterial ().GetDiffuseColor ()[0]);
-    }
-
-    emissiveColorId = glGetUniformLocation (shaderProgramId, "fEmissiveColor");
-    if (emissiveColorId != GL_INVALID_INDEX)
-    {
-        glUniform3fv (emissiveColorId, 1, &meshObject.GetMaterial ().GetEmissiveColor ()[0]);
-    }
-
-    specularColorId = glGetUniformLocation (shaderProgramId, "fSpecularColor");
-    if (specularColorId != GL_INVALID_INDEX)
-    {
-        glUniform3fv (specularColorId, 1, &meshObject.GetMaterial ().GetSpecularColor ()[0]);
-    }
-
-    specularShininessId = glGetUniformLocation (shaderProgramId, "fSpecularShininess");
-    if (specularShininessId != GL_INVALID_INDEX)
-    {
-        glUniform1f (specularShininessId, meshObject.GetMaterial ().GetSpecularShininess ());
+        uniformId = glGetUniformLocation (shaderProgramId, property.first.c_str ());
+        if (uniformId != GL_INVALID_INDEX)
+        {
+            if (property.second.size () == 1)
+            {
+                glUniform1f (uniformId, property.second[0]);
+            }
+            else if ((property.second.size () == 3))
+            {
+                glUniform3fv (uniformId, 1, property.second.data ());
+            }
+            else
+            {
+                LogMessage (__func__, EXIT_FAILURE) << "Invalid vector size for material property" << property.first;
+            }
+        }        
+        else 
+        {
+            LogMessage (__func__, EXIT_FAILURE) << "Invalid material uniform" << property.first;
+        }
     }
 
     // get camera position in world space and set uniform value
@@ -537,12 +527,21 @@ void GLRenderer::InitializeShaderLibrary ()
     // initialize shader library
     AddShader ("default_vertex_shader", gDefaultVertexShader, ShaderType::VERTEX_SHADER);
     AddShader ("flatquad_vertex_shader", gFlatQuadVertexShader, ShaderType::VERTEX_SHADER);
+    AddShader ("pbr_fragment_shader", gPBRFragmentShader, ShaderType::FRAGMENT_SHADER);    
     AddShader ("phong_fragment_shader", gPhongFragmentShader, ShaderType::FRAGMENT_SHADER);
     AddShader ("blinnphong_fragment_shader", gBlinnPhongFragmentShader, ShaderType::FRAGMENT_SHADER);
     AddShader ("normals_fragment_shader", gNormalsFragmentShader, ShaderType::FRAGMENT_SHADER);
     AddShader ("emissive_fragment_shader", gEmissiveFragmentShader, ShaderType::FRAGMENT_SHADER);
     AddShader ("flatquad_fragment_shader", gFlatQuadFragmentShader, ShaderType::FRAGMENT_SHADER);
     AddShader ("post_gamma_fragment_shader", gPostGammaFragmentShader, ShaderType::FRAGMENT_SHADER);
+
+    // Phong model
+    AddShaderToProgram ("pbr_shader", "default_vertex_shader");
+    AddShaderToProgram ("pbr_shader", "pbr_fragment_shader");
+#if (CILANTRO_GL_VERSION < 330)
+    glBindAttribLocation(GetShaderProgram("pbr_shader").GetProgramId(), 0, "vPosition");
+    glBindAttribLocation(GetShaderProgram("pbr_shader").GetProgramId(), 1, "vNormal");
+#endif
 
     // Phong model
     AddShaderToProgram ("phong_shader", "default_vertex_shader");
