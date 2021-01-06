@@ -1,13 +1,10 @@
 language: cpp
-dist: trusty
+dist: bionic
 osx_image: xcode12.2
 
 os:
   - linux
   - osx
-
-before_install:
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install cmake; fi
 
 compiler:
   - gcc
