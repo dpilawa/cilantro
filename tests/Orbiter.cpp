@@ -10,8 +10,8 @@ Orbiter::Orbiter (GameObject& parent, float axisPeriod, float axisAngle, float o
 {
     this->orbitingPeriod = orbitingPeriod;
     this->axisPeriod = axisPeriod;
+    this->axisAngle = axisAngle;    
     this->orbitingDistance = orbitingDistance;
-    this->orbitingAxisAngle = orbitingAxisAngle;
     this->orbitInclination = orbitInclination;
     
     this->currentOrbitRotation = 0.0f;

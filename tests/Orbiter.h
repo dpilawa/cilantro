@@ -21,9 +21,9 @@ private:
 
     // orbit parameters
     float axisPeriod;    
+    float axisAngle;
     float orbitingPeriod;
     float orbitingDistance;
-    float orbitingAxisAngle;
     float orbitInclination;
 
     // current orbit and axis rotation value in degrees
