@@ -23,6 +23,7 @@ void GLPostprocess::OnFrame ()
     glDisable (GL_DEPTH_TEST);
     shaderProgram->Use ();
     glBindVertexArray (VAO);
+    glActiveTexture (GL_TEXTURE0);
     glBindTexture (GL_TEXTURE_2D, glRenderer->GetFramebufferTexture ());
     glViewport (0, 0, renderer->GetWidth (), renderer->GetHeight ());
     glDrawArrays (GL_TRIANGLES, 0, 6);

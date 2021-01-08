@@ -30,6 +30,12 @@
 #include "graphics/post_hdr.fs.h"
 #include "graphics/post_gamma.fs.h"
 
+std::unordered_map<unsigned int, GLint> GLRenderer::textureChannelMap {
+    {1, GL_RED},
+    {3, GL_RGB},
+    {4, GL_RGBA}
+};
+
 GLRenderer::GLRenderer (GameLoop* gameLoop, unsigned int width, unsigned int height) : Renderer (gameLoop, width, height), 
 #if (CILANTRO_GL_VERSION <= 140)
 GLFramebuffer (width, height)
@@ -144,13 +150,13 @@ GLShaderProgram& GLRenderer::GetShaderProgram (std::string shaderProgramName)
 
     if (searchProgram == shaderPrograms.end ())
     {
-        LogMessage (__func__, EXIT_FAILURE) << "Unable to find shader model " << shaderProgramName;
+        LogMessage (__func__, EXIT_FAILURE) << "Unable to find shader model" << shaderProgramName;
     }
 
     return searchProgram->second;
 }
 
-void GLRenderer::Draw (MeshObject & meshObject)
+void GLRenderer::Draw (MeshObject& meshObject)
 {
     GLuint eyePositionId;
     GLuint modelMatrixId;
@@ -163,7 +169,23 @@ void GLRenderer::Draw (MeshObject & meshObject)
     shaderProgramId = shaderProgram.GetProgramId ();
     shaderProgram.Use ();
 
-    // get material properties for drawn objects and set uniform values
+    // bind textures for active material
+    if (materialTextureUnits.find(meshObject.GetMaterial ().GetHandle ()) != materialTextureUnits.end ())
+    {
+        MaterialTextureUnits u = materialTextureUnits[meshObject.GetMaterial ().GetHandle ()];
+
+        for (GLuint i = 0; i < u.unitsCount; i++)
+        {
+            glActiveTexture (GL_TEXTURE0 + i);
+            glBindTexture (GL_TEXTURE_2D, u.textureUnits[i]);
+        }
+    }
+    else
+    {
+        LogMessage (__func__, EXIT_FAILURE) << "Missing texture for object" << meshObject.GetHandle ();
+    }
+
+    // set material uniforms for active material
     for (auto&& property : meshObject.GetMaterial ().GetPropertiesMap ())
     {
         uniformId = glGetUniformLocation (shaderProgramId, property.first.c_str ());
@@ -213,6 +235,7 @@ void GLRenderer::Draw (MeshObject & meshObject)
     glBindVertexArray (objectBuffers[meshObject.GetHandle ()].VAO);
     glDrawElements (GL_TRIANGLES, meshObject.GetIndexCount (), GL_UNSIGNED_INT, 0);
     glBindVertexArray (0);
+
 }
 
 void GLRenderer::Update (MeshObject& meshObject)
@@ -225,7 +248,6 @@ void GLRenderer::Update (MeshObject& meshObject)
     if (find == objectBuffers.end ())
     {
         // it is a new object, perform full buffers initialization and load data
-
         objectBuffers.insert ({ objectHandle, ObjectBuffers () });
 
         LogMessage (__func__) << "New MeshObject" << objectHandle;
@@ -239,14 +261,21 @@ void GLRenderer::Update (MeshObject& meshObject)
         glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_VERTICES]);
         glBufferData (GL_ARRAY_BUFFER, meshObject.GetVertexCount () * sizeof (float) * 3, meshObject.GetVerticesData (), GL_STATIC_DRAW);
         // location = 0 (vertex position)
-        glVertexAttribPointer (VBOType::VBO_VERTICES, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (void*)0);
+        glVertexAttribPointer (VBOType::VBO_VERTICES, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (GLvoid*)0);
 
         // generate normals buffer and copy normals to GPU
         glGenBuffers (1, &objectBuffers[objectHandle].VBO[VBOType::VBO_NORMALS]);
         glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_NORMALS]);
         glBufferData (GL_ARRAY_BUFFER, meshObject.GetVertexCount () * sizeof (float) * 3, meshObject.GetNormalsData (), GL_STATIC_DRAW);
         // location = 1 (vertex normal)
-        glVertexAttribPointer (VBOType::VBO_NORMALS, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (void*)0);
+        glVertexAttribPointer (VBOType::VBO_NORMALS, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (GLvoid*)0);
+
+        // generate uv buffer and copy uvs to GPU
+        glGenBuffers (1, &objectBuffers[objectHandle].VBO[VBOType::VBO_UVS]);
+        glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_UVS]);
+        glBufferData (GL_ARRAY_BUFFER, meshObject.GetVertexCount () * sizeof (float) * 2, meshObject.GetUVData (), GL_STATIC_DRAW);
+        // location = 2 (vertex uv)
+        glVertexAttribPointer (VBOType::VBO_UVS, 2, GL_FLOAT, GL_FALSE, 2 * sizeof (float), (GLvoid*)0);
 
         // generate index buffer and copy face indices to GPU
         glGenBuffers (1, &objectBuffers[objectHandle].EBO);
@@ -256,6 +285,7 @@ void GLRenderer::Update (MeshObject& meshObject)
         // enable VBO arrays
         glEnableVertexAttribArray (VBOType::VBO_VERTICES);
         glEnableVertexAttribArray (VBOType::VBO_NORMALS);
+        glEnableVertexAttribArray (VBOType::VBO_UVS);
 
         // unbind VAO
         glBindVertexArray (0);
@@ -274,6 +304,10 @@ void GLRenderer::Update (MeshObject& meshObject)
         // load normals buffer
         glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_NORMALS]);
         glBufferData (GL_ARRAY_BUFFER, meshObject.GetVertexCount () * sizeof (float) * 3, meshObject.GetNormalsData (), GL_STATIC_DRAW);
+
+        // load uv buffer
+        glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_UVS]);
+        glBufferData (GL_ARRAY_BUFFER, meshObject.GetVertexCount () * sizeof (float) * 2, meshObject.GetUVData (), GL_STATIC_DRAW);
 
         // load index buffer
         glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, objectBuffers[objectHandle].EBO);
@@ -311,10 +345,6 @@ void GLRenderer::Update (PointLight& pointLight)
     uniformPointLightBuffer.pointLights[lightId].lightPosition[0] = lightPosition[0];
     uniformPointLightBuffer.pointLights[lightId].lightPosition[1] = lightPosition[1];
     uniformPointLightBuffer.pointLights[lightId].lightPosition[2] = lightPosition[2];
-
-    // copy ambience and specular powers
-    uniformPointLightBuffer.pointLights[lightId].ambiencePower = pointLight.GetAmbiencePower ();
-    uniformPointLightBuffer.pointLights[lightId].specularPower = pointLight.GetSpecularPower ();
 
     // copy attenuation factors
     uniformPointLightBuffer.pointLights[lightId].attenuationConst = pointLight.GetConstantAttenuationFactor ();
@@ -367,10 +397,6 @@ void GLRenderer::Update (DirectionalLight& directionalLight)
     uniformDirectionalLightBuffer.directionalLights[lightId].lightDirection[1] = lightDirection[1];
     uniformDirectionalLightBuffer.directionalLights[lightId].lightDirection[2] = lightDirection[2];
 
-    // copy ambience and specular powers
-    uniformDirectionalLightBuffer.directionalLights[lightId].ambiencePower = directionalLight.GetAmbiencePower ();
-    uniformDirectionalLightBuffer.directionalLights[lightId].specularPower = directionalLight.GetSpecularPower ();
-
     // copy color
     uniformDirectionalLightBuffer.directionalLights[lightId].lightColor[0] = directionalLight.GetColor ()[0];
     uniformDirectionalLightBuffer.directionalLights[lightId].lightColor[1] = directionalLight.GetColor ()[1];
@@ -421,10 +447,6 @@ void GLRenderer::Update (SpotLight& spotLight)
     uniformSpotLightBuffer.spotLights[lightId].lightDirection[0] = lightDirection[0];
     uniformSpotLightBuffer.spotLights[lightId].lightDirection[1] = lightDirection[1];
     uniformSpotLightBuffer.spotLights[lightId].lightDirection[2] = lightDirection[2];
-
-    // copy ambience and specular powers
-    uniformSpotLightBuffer.spotLights[lightId].ambiencePower = spotLight.GetAmbiencePower ();
-    uniformSpotLightBuffer.spotLights[lightId].specularPower = spotLight.GetSpecularPower ();
     
     // copy attenuation factors
     uniformSpotLightBuffer.spotLights[lightId].attenuationConst = spotLight.GetConstantAttenuationFactor ();
@@ -453,6 +475,79 @@ void GLRenderer::Update (SpotLight& spotLight)
     glBindBuffer (GL_UNIFORM_BUFFER, 0);
 }
 
+void GLRenderer::Update (Material& material, unsigned int textureUnit)
+{
+    unsigned int materialHandle = material.GetHandle ();
+    GLShaderProgram shader = GetShaderProgram ( material.GetShaderProgramName ());
+    GLuint shaderId = shader.GetProgramId ();
+    GLuint texture;
+    GLuint format;
+
+    std::map<unsigned int, std::pair<std::string, Texture*>>& textures = material.GetTexturesMap ();
+
+    // check if material already in collection
+    auto find = materialTextureUnits.find (materialHandle);
+
+    if (find == materialTextureUnits.end ())
+    {
+        LogMessage (__func__) << "New Material texture units map" << materialHandle;
+
+        materialTextureUnits.insert ({ materialHandle, MaterialTextureUnits() });
+        
+        for (auto&& t : textures)
+        {
+            Texture* tPtr = t.second.second;
+            std::string tName = t.second.first;
+            GLuint unit = t.first;
+            format = textureChannelMap[tPtr->GetChannels ()];
+
+            GLuint textureUniform = glGetUniformLocation(shaderId, tName.c_str ());
+            if (textureUniform != GL_INVALID_INDEX) 
+            {
+                glUniform1i(textureUniform, t.first);
+            }
+            else
+            {
+                LogMessage (__func__) << "Program id" << shaderId << "has no uniform" << tName;
+            }
+
+            glGenTextures(1, &texture);
+            LogMessage (__func__) << "Generate and bind texture" << texture << "name" << tName << "unit" << t.first << "[" << tPtr->GetWidth () << tPtr->GetHeight () << tPtr->GetChannels () << "]";
+            glBindTexture(GL_TEXTURE_2D, texture);
+            glTexImage2D(GL_TEXTURE_2D, 0, format, tPtr->GetWidth (), tPtr->GetHeight (), 0, format, GL_UNSIGNED_BYTE, tPtr->Data ());
+            glGenerateMipmap(GL_TEXTURE_2D);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glBindTexture (GL_TEXTURE_2D, 0);
+
+            materialTextureUnits[materialHandle].textureUnits[unit] = texture;
+        }
+        materialTextureUnits[materialHandle].unitsCount = textures.size ();
+
+    }
+    else
+    {
+        LogMessage (__func__) << "Update Material texture units map" << materialHandle;
+        
+        auto& t = textures[textureUnit];
+        Texture* tPtr = t.second;
+        std::string tName = t.first;
+        GLuint unit = textureUnit;
+        format = textureChannelMap[tPtr->GetChannels ()];
+
+        glBindTexture(GL_TEXTURE_2D, materialTextureUnits[materialHandle].textureUnits[unit]);
+        LogMessage (__func__) << "Bind texture" <<  materialTextureUnits[materialHandle].textureUnits[unit - 1] << "name" << tName << "unit" << t.first << "[" << tPtr->GetWidth () << tPtr->GetHeight () << tPtr->GetChannels () << "]";
+        glTexImage2D(GL_TEXTURE_2D, 0, format, tPtr->GetWidth (), tPtr->GetHeight (), 0, format, GL_UNSIGNED_BYTE, tPtr->Data ());
+        glGenerateMipmap(GL_TEXTURE_2D);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBindTexture (GL_TEXTURE_2D, 0);
+        
+
+    }
+
+}
+
 void GLRenderer::Initialize ()
 {
     // set variable defaults
@@ -479,6 +574,9 @@ void GLRenderer::Initialize ()
     // initialize object buffers
     InitializeObjectBuffers ();
 
+    // initualize material texture units
+    InitializeMaterialTextures ();
+
     // initialize uniform buffers of view and projection matrices
     InitializeMatrixUniformBuffers ();
 
@@ -486,16 +584,19 @@ void GLRenderer::Initialize ()
     InitializeLightUniformBuffers ();
 
     // set callback for new MeshObjects
-    gameLoop->gameScene->RegisterCallback ("OnUpdateMeshObject", [&](unsigned int objectHandle) { gameLoop->gameScene->GetGameObjects ()[objectHandle]->OnUpdate (*this); });
+    gameLoop->gameScene->RegisterCallback ("OnUpdateMeshObject", [&](unsigned int objectHandle, unsigned int) { gameLoop->gameScene->GetGameObjects ()[objectHandle]->OnUpdate (*this); });
 
-    // set callback for new or modified PointLights
-    gameLoop->gameScene->RegisterCallback ("OnUpdateLight", [&](unsigned int objectHandle) { gameLoop->gameScene->GetGameObjects ()[objectHandle]->OnUpdate (*this); });
+    // set callback for new or modified lights
+    gameLoop->gameScene->RegisterCallback ("OnUpdateLight", [&](unsigned int objectHandle, unsigned int) { gameLoop->gameScene->GetGameObjects ()[objectHandle]->OnUpdate (*this); });
+
+    // set callback for new or modified materials
+    gameLoop->gameScene->RegisterCallback ("OnUpdateMaterial", [&](unsigned int materialHandle, unsigned int textureUnit) { gameLoop->gameScene->GetMaterials ()[materialHandle]->OnUpdate (*this, textureUnit); });
 
     // set callback for modified scene graph (currently this only requires to reload light buffers)
-    gameLoop->gameScene->RegisterCallback ("OnUpdateSceneGraph", [&](unsigned int objectHandle) { UpdateLightBufferRecursive (objectHandle); });
+    gameLoop->gameScene->RegisterCallback ("OnUpdateSceneGraph", [&](unsigned int objectHandle, unsigned int) { UpdateLightBufferRecursive (objectHandle); });
 
     // set callback for modified transforms (currently this only requires to reload light buffers)
-    gameLoop->gameScene->RegisterCallback ("OnUpdateTransform", [&](unsigned int objectHandle) { UpdateLightBufferRecursive (objectHandle); });
+    gameLoop->gameScene->RegisterCallback ("OnUpdateTransform", [&](unsigned int objectHandle, unsigned int) { UpdateLightBufferRecursive (objectHandle); });
 
     // check for any outstanding errors
     CheckGLError (__func__);
@@ -537,12 +638,21 @@ void GLRenderer::InitializeShaderLibrary ()
     AddShader ("post_hdr_fragment_shader", gPostHDRFragmentShader, ShaderType::FRAGMENT_SHADER);
     AddShader ("post_gamma_fragment_shader", gPostGammaFragmentShader, ShaderType::FRAGMENT_SHADER);
 
-    // Phong model
+    // PBR model
     AddShaderToProgram ("pbr_shader", "default_vertex_shader");
     AddShaderToProgram ("pbr_shader", "pbr_fragment_shader");
 #if (CILANTRO_GL_VERSION < 330)
     glBindAttribLocation(GetShaderProgram("pbr_shader").GetProgramId(), 0, "vPosition");
     glBindAttribLocation(GetShaderProgram("pbr_shader").GetProgramId(), 1, "vNormal");
+#endif
+#if (CILANTRO_GL_VERSION < 420)
+    GLuint p = GetShaderProgram("pbr_shader").GetProgramId ();
+    GetShaderProgram("pbr_shader").Use ();
+    glUniform1i (glGetUniformLocation(p, "tAlbedo"), 0);
+    glUniform1i (glGetUniformLocation(p, "tNormal"), 1);
+    glUniform1i (glGetUniformLocation(p, "tMetallic"), 2);
+    glUniform1i (glGetUniformLocation(p, "tRoughness"), 3);
+    glUniform1i (glGetUniformLocation(p, "tAO"), 4);
 #endif
 
     // Phong model
@@ -552,6 +662,14 @@ void GLRenderer::InitializeShaderLibrary ()
     glBindAttribLocation(GetShaderProgram("phong_shader").GetProgramId(), 0, "vPosition");
     glBindAttribLocation(GetShaderProgram("phong_shader").GetProgramId(), 1, "vNormal");
 #endif
+#if (CILANTRO_GL_VERSION < 420)
+    p = GetShaderProgram("phong_shader").GetProgramId ();
+    GetShaderProgram("phong_shader").Use ();
+    glUniform1i (glGetUniformLocation(p, "tDiffuse"), 0);
+    glUniform1i (glGetUniformLocation(p, "tNormal"), 1);
+    glUniform1i (glGetUniformLocation(p, "tSpecular"), 2);
+    glUniform1i (glGetUniformLocation(p, "tEmissive"), 3);
+#endif
 
     // Blinn-Phong model
     AddShaderToProgram ("blinnphong_shader", "default_vertex_shader");
@@ -559,6 +677,14 @@ void GLRenderer::InitializeShaderLibrary ()
 #if (CILANTRO_GL_VERSION < 330)	
     glBindAttribLocation(GetShaderProgram("blinnphong_shader").GetProgramId(), 0, "vPosition");
     glBindAttribLocation(GetShaderProgram("blinnphong_shader").GetProgramId(), 1, "vNormal");
+#endif
+#if (CILANTRO_GL_VERSION < 420)
+    p = GetShaderProgram("blinnphong_shader").GetProgramId ();
+    GetShaderProgram("blinnphong_shader").Use ();
+    glUniform1i (glGetUniformLocation(p, "tDiffuse"), 0);
+    glUniform1i (glGetUniformLocation(p, "tNormal"), 1);
+    glUniform1i (glGetUniformLocation(p, "tSpecular"), 2);
+    glUniform1i (glGetUniformLocation(p, "tEmissive"), 3);
 #endif
 
     // Normals visualization model
@@ -575,6 +701,11 @@ void GLRenderer::InitializeShaderLibrary ()
 #if (CILANTRO_GL_VERSION < 330)	
     glBindAttribLocation(GetShaderProgram("normals_shader").GetProgramId(), 0, "vPosition");
     glBindAttribLocation(GetShaderProgram("normals_shader").GetProgramId(), 1, "vNormal");
+#endif
+#if (CILANTRO_GL_VERSION < 420)
+    p = GetShaderProgram("emissive_shader").GetProgramId ();
+    GetShaderProgram("emissive_shader").Use ();
+    glUniform1i (glGetUniformLocation(p, "tEmissive"), 3);
 #endif
 
     // Screen quad rendering
@@ -606,13 +737,21 @@ void GLRenderer::InitializeShaderLibrary ()
 void GLRenderer::InitializeObjectBuffers ()
 {
     // load object buffers for all existing objects
-    for (auto gameObject : gameLoop->gameScene->GetGameObjects ())
+    for (auto&& gameObject : gameLoop->gameScene->GetGameObjects ())
     {
         // load buffers for MeshObject only
         if (dynamic_cast<MeshObject*>(gameObject.second) != nullptr)
         {
             gameObject.second->OnUpdate (*this);
         }
+    }
+}
+
+void GLRenderer::InitializeMaterialTextures ()
+{
+    for (auto&& material : gameLoop->gameScene->GetMaterials ())
+    {
+        material.second->OnUpdate (*this);
     }
 }
 

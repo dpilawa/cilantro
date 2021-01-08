@@ -11,7 +11,7 @@
 class GameScene;
 class Renderer;
 
-class GameObject : public CallbackProvider<std::string, unsigned int>
+class GameObject : public CallbackProvider<std::string, unsigned int, unsigned int>
 {
 public:
     __EAPI GameObject ();

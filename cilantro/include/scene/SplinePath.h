@@ -14,6 +14,7 @@ public:
     __EAPI virtual ~SplinePath ();
 
     __EAPI Vector3f GetPositionAtDistance (float distance) const;
+    __EAPI Vector3f GetTangentAtDistance (float distance) const;
 
     __EAPI SplinePath& SetStartTangent (const Vector3f& tangent);
     __EAPI SplinePath& SetEndTangent (const Vector3f& tangent);

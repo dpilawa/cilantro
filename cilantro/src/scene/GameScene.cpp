@@ -13,6 +13,7 @@ GameScene::GameScene(GameLoop* gameLoop)
     this->gameLoop = gameLoop;
 
     this->gameObjectsCount = 0;
+    this->materialsCount = 0;
     this->activeCamera = nullptr;
 }
 
@@ -34,11 +35,11 @@ GameObject& GameScene::AddGameObject (GameObject* gameObject)
 
     // set callbacks on object modification
     // this is just a passthrough of callbacks to subscribers (e.g. Renderer)
-    gameObject->RegisterCallback ("OnUpdateMeshObject", [ & ](unsigned int objectHandle) { InvokeCallbacks ("OnUpdateMeshObject", objectHandle); });
-    gameObject->RegisterCallback ("OnUpdateLight", [ & ](unsigned int objectHandle) { InvokeCallbacks ("OnUpdateLight", objectHandle); });
-    gameObject->RegisterCallback ("OnUpdateSceneGraph", [ & ](unsigned int objectHandle) { InvokeCallbacks ("OnUpdateSceneGraph", objectHandle); });
-    gameObject->RegisterCallback ("OnUpdateTransform", [&](unsigned int objectHandle) { 
-        InvokeCallbacks ("OnUpdateTransform", objectHandle);
+    gameObject->RegisterCallback ("OnUpdateMeshObject", [ & ](unsigned int objectHandle, unsigned int) { InvokeCallbacks ("OnUpdateMeshObject", objectHandle, 0); });
+    gameObject->RegisterCallback ("OnUpdateLight", [ & ](unsigned int objectHandle, unsigned int) { InvokeCallbacks ("OnUpdateLight", objectHandle, 0); });
+    gameObject->RegisterCallback ("OnUpdateSceneGraph", [ & ](unsigned int objectHandle, unsigned int) { InvokeCallbacks ("OnUpdateSceneGraph", objectHandle, 0); });
+    gameObject->RegisterCallback ("OnUpdateTransform", [&](unsigned int objectHandle, unsigned int) { 
+        InvokeCallbacks ("OnUpdateTransform", objectHandle, 0);
         this->GetObjectByHandle (objectHandle).CalculateModelTransformMatrix ();
     });
 
@@ -60,16 +61,28 @@ GameObject& GameScene::GetObjectByHandle (unsigned int handle)
 
 Material& GameScene::AddMaterial (Material* material)
 {
-    // insert into collection
-    materials.push_back (material);
+    // set material's handle
+    unsigned int handle = materialsCount++;
+    material->SetHandle (handle);
 
-    // return material
+    // insert into collection
+    materials[handle] = material;
+
+    // register callbacks
+    material->RegisterCallback ("OnUpdateMaterial", [ & ](unsigned int materialHandle, unsigned int textureUnit) { InvokeCallbacks ("OnUpdateMaterial", materialHandle, textureUnit); });
+
+    // return object
     return *material;
 }
 
 std::unordered_map<unsigned int, GameObject*>& GameScene::GetGameObjects ()
 {
     return gameObjects;
+}
+
+std::unordered_map<unsigned int, Material*>& GameScene::GetMaterials ()
+{
+    return materials;
 }
 
 unsigned int GameScene::getGameObjectsCount () const

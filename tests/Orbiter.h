@@ -7,28 +7,31 @@
 class Orbiter : public GameObject
 {
 public:
-    Orbiter (float period, float distance, float angle);
+    Orbiter (GameObject& parent, float axisPeriod, float axisAngle, float orbitingPeriod, float orbitingDistance, float orbitInclination);
     ~Orbiter ();
 
     void OnFrame ();
 
 private:
 
+    GameObject& parent;
+
     // axis and plane of the orbit
-    Vector3f orbitAxis;
-    Vector3f orbitPlane;
+    Quaternion tilt;
 
-    // orbiting period in days
+    // orbit parameters
+    float axisPeriod;    
     float orbitingPeriod;
-    
-    // orbiting distance
     float orbitingDistance;
+    float orbitingAxisAngle;
+    float orbitInclination;
 
-    // axis angle
-    float orbitAxisAngle;
+    // current orbit and axis rotation value in degrees
+    float currentOrbitRotation;
+    float currentAxisRotation;
 
-    // current orbit rotation value in degrees
-    float orbitRotation;
+    // speed
+    float daysPerSecond;
 };
 
 #endif

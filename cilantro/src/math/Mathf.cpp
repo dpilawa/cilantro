@@ -1,4 +1,5 @@
 #include "cilantroengine.h"
+#include "math/Vector2f.h"
 #include "math/Vector3f.h"
 #include "math/Vector4f.h"
 #include "math/Matrix3f.h"
@@ -480,6 +481,10 @@ Vector3f Mathf::Spherical2Cartesian (float theta, float phi, float r)
     return Vector3f (r * std::sin (theta) * std::cos (phi), r * std::cos (theta), r * std::sin (theta) * std::sin (phi));
 }
 
+Vector2f Mathf::Spherical2Cartesian (float theta, float r)
+{
+    return Vector2f (r * std::cos (theta), r * std::sin (theta));
+}
 
 Matrix4f Mathf::GenRotationXMatrix(float angle)
 {

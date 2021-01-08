@@ -43,6 +43,8 @@ public:
     __EAPI Vector4f& operator+= (const Vector4f& other);
     __EAPI Vector4f& operator-= (const Vector4f& other);
     
+    __EAPI bool operator== (const Vector4f& other) const;
+
     __EAPI friend Vector4f operator- (Vector4f v);
 
 private:

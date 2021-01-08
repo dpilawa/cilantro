@@ -39,9 +39,8 @@ int main (int argc, char* argv[])
 
     PhongMaterial& m = dynamic_cast<PhongMaterial&>(scene.AddMaterial (new PhongMaterial ()));
     m.SetShaderProgram ("blinnphong_shader");
-    m.SetColor (Vector3f (0.4f, 0.4f, 0.4f));
-    m.SetAmbientColor (Vector3f (1.0f, 1.0f, 1.0f));
-    m.SetSpecularColor (Vector3f (1.0f, 1.0f, 1.0f)).SetSpecularShininess (64.0f);
+    m.SetDiffuse (Vector3f (0.4f, 0.4f, 0.4f));
+    m.SetSpecular (Vector3f (1.0f, 1.0f, 1.0f)).SetSpecularShininess (64.0f);
 
     ControlledCamera& cam = dynamic_cast<ControlledCamera&>(scene.AddGameObject (new ControlledCamera (60.0f, 0.1f, 100.0f, 0.1f)));
     cam.Initialize ();
@@ -51,25 +50,25 @@ int main (int argc, char* argv[])
     GameObject& plane = scene.AddGameObject (new GameObject ());
 
     MeshObject& fuselage = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-    Primitives::GenerateCube (fuselage, false);
+    Primitives::GenerateCube (fuselage);
     fuselage.GetModelTransform ().Scale (1.0f, 1.0f, 10.0f);
     fuselage.SetMaterial (m);
     fuselage.SetParentObject (plane);
 
     MeshObject& wings = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-    Primitives::GenerateCube (wings, false);
+    Primitives::GenerateCube (wings);
     wings.GetModelTransform ().Scale (12.0f, 0.2f, 1.0f).Translate (0.0f, 0.0f, 2.0f);
     wings.SetMaterial (m);
     wings.SetParentObject (plane);
 
     MeshObject& rudder = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-    Primitives::GenerateCube (rudder, false);
+    Primitives::GenerateCube (rudder);
     rudder.GetModelTransform ().Scale (0.2f, 2.0f, 1.0f).Translate (0.0f, 1.5f, -5.0f).Rotate (-10.0f, 0.0f, 0.0f);
     rudder.SetMaterial (m);
     rudder.SetParentObject (plane);
 
     MeshObject& tail = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-    Primitives::GenerateCube (tail, false);
+    Primitives::GenerateCube (tail);
     tail.GetModelTransform ().Scale (4.0f, 0.2f, 1.0f).Translate (0.0f, 0.2f, -5.0f);
     tail.SetMaterial (m);
     tail.SetParentObject (plane);
@@ -77,8 +76,6 @@ int main (int argc, char* argv[])
     DirectionalLight& light = dynamic_cast<DirectionalLight&>(scene.AddGameObject (new DirectionalLight ()));
     light.GetModelTransform ().Rotate (90.0f, 0.0f, 10.0f);
     light.SetColor (Vector3f (1.0f, 1.0f, 1.0f));
-    light.SetSpecularPower (2.0f);
-    light.SetAmbiencePower (0.3f);
     light.SetEnabled (true);
 
     AnimationObject& anim1 = dynamic_cast<AnimationObject&> (scene.AddGameObject (new AnimationObject ()));

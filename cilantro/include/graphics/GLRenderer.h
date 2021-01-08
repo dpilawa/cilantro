@@ -17,6 +17,7 @@
 #define MAX_POINT_LIGHTS 64
 #define MAX_DIRECTIONAL_LIGHTS 64
 #define MAX_SPOT_LIGHTS 64
+#define MAX_TEXTURE_UNITS (GL_TEXTURE15 - GL_TEXTURE0)
 
 enum VBOType { VBO_VERTICES = 0, VBO_NORMALS, VBO_UVS };
 enum UBOType { UBO_MATRICES = 0, UBO_POINTLIGHTS, UBO_DIRECTIONALLIGHTS, UBO_SPOTLIGHTS };
@@ -31,6 +32,16 @@ public:
     GLuint EBO;
     // Vertex Array Object
     GLuint VAO;
+};
+
+struct MaterialTextureUnits
+{
+public:
+    // how many units in use 
+    unsigned int unitsCount;
+    // using 16 texture units, as per minimum defined in OpenGL 3.x
+    GLuint textureUniforms[MAX_TEXTURE_UNITS];
+    GLuint textureUnits[MAX_TEXTURE_UNITS];
 };
 
 struct SceneBuffers
@@ -55,8 +66,6 @@ public:
     GLfloat lightPosition[3];
     GLfloat pad1;
     GLfloat lightColor[3];
-    GLfloat ambiencePower;
-    GLfloat specularPower;
     GLfloat attenuationConst;
     GLfloat attenuationLinear;
     GLfloat attenuationQuadratic;
@@ -68,8 +77,6 @@ public:
     GLfloat lightDirection[3];
     GLfloat pad1;
     GLfloat lightColor[3];
-    GLfloat ambiencePower;
-    GLfloat specularPower;
 };
 
 struct SpotLightStruct
@@ -80,8 +87,6 @@ public:
     GLfloat lightDirection[3];
     GLfloat pad2;
     GLfloat lightColor[3];
-    GLfloat ambiencePower;
-    GLfloat specularPower;
     GLfloat attenuationConst;
     GLfloat attenuationLinear;
     GLfloat attenuationQuadratic;
@@ -153,6 +158,7 @@ public:
     __EAPI void Update (PointLight& pointLight);
     __EAPI void Update (DirectionalLight& directionalLight);	
     __EAPI void Update (SpotLight& spotLight);
+    __EAPI void Update (Material& material, unsigned int textureUnit = 0);
 
 private:
 
@@ -163,7 +169,15 @@ private:
     // GL buffers and arrays for scene objects
     // These buffers contain data for objects to be rendered
     // * MeshObject vertices, uvs, normals, etc
+    // key is object handle
     std::unordered_map <unsigned int, ObjectBuffers> objectBuffers;
+
+    // materials texture units
+    // key is material handle
+    std::unordered_map <unsigned int, MaterialTextureUnits> materialTextureUnits;
+
+    // map of channel numbers to GL codes
+    static std::unordered_map<unsigned int, GLint> textureChannelMap;
 
     // GL buffers for uniforms shared by entire scene:
     // * view and projection matrix
@@ -195,6 +209,8 @@ private:
     void InitializeShaderLibrary ();
     // initialize object buffers
     void InitializeObjectBuffers ();
+    // initialize object texture units
+    void InitializeMaterialTextures ();
     // initialize uniform buffers of view and projection matrices
     void InitializeMatrixUniformBuffers ();
     // initialize uniform buffers of lights

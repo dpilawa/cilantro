@@ -1,13 +1,15 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.12)
+cmake_policy(SET CMP0079 NEW)
+
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 project (cilantro)
 
-set(CILANTRO_GL_VERSION_MAJOR 4)
-set(CILANTRO_GL_VERSION_MINOR 1)
-set(CILANTRO_GL_VERSION 410) # 140=3.1, 150=3.2, 330=3.3, ..., 460=4.6
+set(CILANTRO_GL_VERSION_MAJOR 3)
+set(CILANTRO_GL_VERSION_MINOR 3)
+set(CILANTRO_GL_VERSION 330) # 140=3.1, 150=3.2, 330=3.3, ..., 460=4.6
 option(CILANTRO_BUILD_DLL "Build as shared library" ON)
 option(CILANTRO_WITH_GLFW "Build with GLFW extensions" ON)
 

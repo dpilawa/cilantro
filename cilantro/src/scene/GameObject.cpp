@@ -18,7 +18,7 @@ GameObject::GameObject ()
 
     // set callbacks on transform modification
     // this is just a passthrough of callbacks to subscribers (Scene)
-    modelTransform.RegisterCallback ("OnUpdateTransform", [&](unsigned int objectHandle) { InvokeCallbacks ("OnUpdateTransform", this->GetHandle ()); });
+    modelTransform.RegisterCallback ("OnUpdateTransform", [&](unsigned int objectHandle) { InvokeCallbacks ("OnUpdateTransform", this->GetHandle (), 0); });
 }
 
 GameObject::~GameObject ()
@@ -44,7 +44,7 @@ void GameObject::SetParentObject (GameObject& parent)
 {
     parentObject = &parent;
     parent.childObjects.push_back (this);
-    InvokeCallbacks ("OnUpdateSceneGraph", this->GetHandle ());
+    InvokeCallbacks ("OnUpdateSceneGraph", this->GetHandle (), 0);
 }
 
 GameObject* GameObject::GetParentObject ()

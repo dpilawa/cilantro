@@ -24,6 +24,13 @@ Vector3f LinearPath::GetPositionAtDistance (float distance) const
     return GetModelTransformMatrix () * Vector4f (waypoints[wIndex].t.GetTranslation (), 1.0f);
 }
 
+Vector3f LinearPath::GetTangentAtDistance (float distance) const
+{
+    std::size_t wIndex = FindPathSegment (distance);
+
+    return GetModelTransformMatrix () * Vector4f (waypoints[wIndex + 1].outTangent, 0.0f);
+}
+
 void LinearPath::UpdatePathAtWaypoint (std::size_t wIndex) 
 {
     std::vector<Waypoint>::iterator it = waypoints.begin () + wIndex;

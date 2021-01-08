@@ -1,7 +1,9 @@
 #include "scene/Primitives.h"
+#include "math/Vector2f.h"
+#include "math/Vector3f.h"
 #include "math/Mathf.h"
 
-void Primitives::GeneratePlane (MeshObject& m, bool sharedVertices)
+void Primitives::GeneratePlane (MeshObject& m)
 {
     m.Clear ();
 
@@ -12,20 +14,25 @@ void Primitives::GeneratePlane (MeshObject& m, bool sharedVertices)
         { 1.0f, 0.0f, -1.0f}
     };
 
-    std::vector<std::size_t> array {
+    std::vector<std::size_t> varray {
         1, 3, 2,
         1, 0, 3
     };
 
-    Primitives::GenerateMeshFromArrays (m, sharedVertices, vertices, array);
+    std::vector<Vector2f> uv {
+        {0.0f, 1.0f}, {1.0f, 0.0f}, {0.0f, 0.0f},
+        {0.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 0.0f}
+    };
+
+    Primitives::GenerateMeshFromArrays (m, vertices, uv, varray);
     
     m.CalculateVertexNormals ();
 
-    m.InvokeCallbacks ("OnUpdateMeshObject", m.GetHandle ());
+    m.InvokeCallbacks ("OnUpdateMeshObject", m.GetHandle (), 0);
     
 }
 
-void Primitives::GenerateCube (MeshObject& m, bool sharedVertices)
+void Primitives::GenerateCube (MeshObject& m)
 {
     m.Clear ();
 
@@ -41,7 +48,7 @@ void Primitives::GenerateCube (MeshObject& m, bool sharedVertices)
         { 1.0f, -1.0f,  1.0f}
     };
 
-    std::vector<std::size_t> array {
+    std::vector<std::size_t> varray {
         0, 1, 2,
         0, 2, 3,
 
@@ -61,15 +68,35 @@ void Primitives::GenerateCube (MeshObject& m, bool sharedVertices)
         1, 5, 6
     };
 
-    Primitives::GenerateMeshFromArrays (m, sharedVertices, vertices, array);
+    std::vector<Vector2f> uv {
+        {0.500f, 1.000f}, {0.250f, 1.000f}, {0.250f, 0.666f},
+        {0.500f, 1.000f}, {0.250f, 0.666f}, {0.500f, 0.666f},
+
+        {0.250f, 0.333f}, {0.250f, 0.000f}, {0.500f, 0.000f},
+        {0.500f, 0.333f}, {0.250f, 0.333f}, {0.500f, 0.000f},
+
+        {1.000f, 0.666f}, {0.750f, 0.333f},  {1.000f, 0.333f},
+        {0.750f, 0.666f}, {0.750f, 0.333f}, {1.000f, 0.666f},
+
+        {0.500f, 0.333f}, {0.500f, 0.666f}, {0.250f, 0.666f},
+        {0.250f, 0.666f}, {0.250f, 0.333f}, {0.500f, 0.333f},
+
+        {0.750f, 0.666f}, {0.500f, 0.333f}, {0.750f, 0.333f},
+        {0.750f, 0.666f}, {0.500f, 0.666f}, {0.500f, 0.333f},
+
+        {0.250f, 0.333f}, {0.250f, 0.666f}, {0.000f, 0.666f},
+        {0.000f, 0.666f}, {0.000f, 0.333f}, {0.250f, 0.333f}
+    };
+
+    Primitives::GenerateMeshFromArrays (m, vertices, uv, varray);
 
     m.CalculateVertexNormals ();
 
-    m.InvokeCallbacks ("OnUpdateMeshObject", m.GetHandle ());
+    m.InvokeCallbacks ("OnUpdateMeshObject", m.GetHandle (), 0);
     
 }
 
-void Primitives::GenerateSphere (MeshObject& m, unsigned int subdivisions, bool sharedVertices)
+void Primitives::GenerateSphere (MeshObject& m, unsigned int subdivisions)
 {
     float step;
     float theta, phi;
@@ -77,7 +104,8 @@ void Primitives::GenerateSphere (MeshObject& m, unsigned int subdivisions, bool 
     unsigned int nIndex, sIndex;
 
     std::vector<Vector3f> vertices;
-    std::vector<std::size_t> array;
+    std::vector<Vector2f> uv;
+    std::vector<std::size_t> varray;
 
     m.Clear ();
 
@@ -93,7 +121,9 @@ void Primitives::GenerateSphere (MeshObject& m, unsigned int subdivisions, bool 
         for (unsigned int j = 0; j <= lonSteps - 1; j++)
         {
             phi = step * j;
-            vertices.push_back (Mathf::Spherical2Cartesian (theta, phi, 1.0f));
+
+            Vector3f vertex = Mathf::Spherical2Cartesian (theta, phi, 1.0f);
+            vertices.push_back (vertex);
         }
     }
 
@@ -106,13 +136,21 @@ void Primitives::GenerateSphere (MeshObject& m, unsigned int subdivisions, bool 
     {
         for (unsigned int j = 0; j <= lonSteps - 1; j++)
         {
-            array.push_back (i * lonSteps + j);
-            array.push_back (i * lonSteps + (j + 1) % lonSteps);
-            array.push_back ((i + 1) * lonSteps + j);
+            varray.push_back (i * lonSteps + j);
+            varray.push_back (i * lonSteps + (j + 1) % lonSteps);
+            varray.push_back ((i + 1) * lonSteps + j);
 
-            array.push_back (i * lonSteps + (j + 1) % lonSteps);
-            array.push_back ((i + 1) * lonSteps + (j + 1) % lonSteps);
-            array.push_back ((i + 1) * lonSteps + j);
+            uv.push_back (Vector2f (1.0f - (float)j / float(lonSteps), 1.0f - (float)i / float(latSteps)));
+            uv.push_back (Vector2f (1.0f - (float)(j + 1) / float(lonSteps), 1.0f - (float)i / float(latSteps)));
+            uv.push_back (Vector2f (1.0f - (float)j / float(lonSteps), 1.0f - (float)(i + 1) / float(latSteps)));
+
+            varray.push_back (i * lonSteps + (j + 1) % lonSteps);
+            varray.push_back ((i + 1) * lonSteps + (j + 1) % lonSteps);
+            varray.push_back ((i + 1) * lonSteps + j);
+
+            uv.push_back (Vector2f (1.0f - (float)(j + 1) / float(lonSteps), 1.0f - (float)i / float(latSteps)));
+            uv.push_back (Vector2f (1.0f - (float)(j + 1) / float(lonSteps), 1.0f - (float)(i + 1) / float(latSteps)));
+            uv.push_back (Vector2f (1.0f - (float)j / float(lonSteps), 1.0f - (float)(i + 1) / float(latSteps)));
         }
     }
 
@@ -122,31 +160,40 @@ void Primitives::GenerateSphere (MeshObject& m, unsigned int subdivisions, bool 
 
     for (unsigned int j = 0; j <= lonSteps - 1; j++)
     {
-        array.push_back (nIndex);
-        array.push_back ((j + 1) % lonSteps);
-        array.push_back (j);
+        varray.push_back (nIndex);
+        varray.push_back ((j + 1) % lonSteps);
+        varray.push_back (j);
 
-        array.push_back (sIndex);
-        array.push_back (nIndex - 1 - (j + 1) % lonSteps);
-        array.push_back (nIndex - 1 - j);
+        uv.push_back (Vector2f (1.0f - (float)j / float(lonSteps), 1.0f - (float)0.0f / float(latSteps)));
+        uv.push_back (Vector2f (1.0f - (float)(j + 1) / float(lonSteps), 1.0f - (float)1.0f / float(latSteps)));
+        uv.push_back (Vector2f (1.0f - (float)j / float(lonSteps), 1.0f - (float)1.0f / float(latSteps)));
+
+        varray.push_back (sIndex);
+        varray.push_back (nIndex - 1 - (j + 1) % lonSteps);
+        varray.push_back (nIndex - 1 - j);
+
+        uv.push_back (Vector2f (1.0f - (float)j / float(lonSteps), (float)0.0f / float(latSteps)));
+        uv.push_back (Vector2f (1.0f - (float)(j + 1) / float(lonSteps), (float)1.0f / float(latSteps)));
+        uv.push_back (Vector2f (1.0f - (float)j / float(lonSteps), (float)1.0f / float(latSteps)));
     }
 
-    Primitives::GenerateMeshFromArrays (m, sharedVertices, vertices, array);
+    Primitives::GenerateMeshFromArrays (m, vertices, uv, varray);
 
     m.CalculateVertexNormals ();
 
-    m.InvokeCallbacks ("OnUpdateMeshObject", m.GetHandle ());
+    m.InvokeCallbacks ("OnUpdateMeshObject", m.GetHandle (), 0);
 
 }
 
-void Primitives::GenerateCone (MeshObject& m, unsigned int subdivisions, bool sharedVertices)
+void Primitives::GenerateCone (MeshObject& m, unsigned int subdivisions)
 {
     float step;
     float phi;
     unsigned int lonSteps;
 
     std::vector<Vector3f> vertices;
-    std::vector<std::size_t> array;
+    std::vector<Vector2f> uv;
+    std::vector<std::size_t> varray;
 
     m.Clear ();
 
@@ -167,24 +214,32 @@ void Primitives::GenerateCone (MeshObject& m, unsigned int subdivisions, bool sh
     // generate face array
     for (unsigned int i = 0; i <= lonSteps - 1; i++)
     {
-        array.push_back ((i + 1) % lonSteps);
-        array.push_back (i);
-        array.push_back (lonSteps);
+        varray.push_back ((i + 1) % lonSteps);
+        varray.push_back (i);
+        varray.push_back (lonSteps);
 
-        array.push_back (i);
-        array.push_back ((i + 1) % lonSteps);
-        array.push_back (lonSteps + 1);
+        uv.push_back (Mathf::Spherical2Cartesian ((float)(i + 1) * (2.0f * Mathf::Pi () / float(lonSteps)), 0.5f) + Vector2f (0.5f, 0.5f));
+        uv.push_back (Mathf::Spherical2Cartesian ((float)i * (2.0f * Mathf::Pi () / float(lonSteps)), 0.5f) + Vector2f (0.5f, 0.5f));
+        uv.push_back (Vector2f (0.5f, 0.5f));
+
+        varray.push_back (i);
+        varray.push_back ((i + 1) % lonSteps);
+        varray.push_back (lonSteps + 1);
+
+        uv.push_back (Mathf::Spherical2Cartesian ((float)i * (2.0f * Mathf::Pi () / float(lonSteps)), 0.5f) + Vector2f (0.5f, 0.5f));
+        uv.push_back (Mathf::Spherical2Cartesian ((float)(i + 1) * (2.0f * Mathf::Pi () / float(lonSteps)), 0.5f) + Vector2f (0.5f, 0.5f));
+        uv.push_back (Vector2f (0.5f, 0.5f));
     }
 
-    Primitives::GenerateMeshFromArrays (m, sharedVertices, vertices, array);
+    Primitives::GenerateMeshFromArrays (m, vertices, uv, varray);
 
     m.CalculateVertexNormals ();
 
-    m.InvokeCallbacks ("OnUpdateMeshObject", m.GetHandle ());
+    m.InvokeCallbacks ("OnUpdateMeshObject", m.GetHandle (), 0);
 
 }
 
-void Primitives::GenerateCylinder (MeshObject& m, unsigned int subdivisions, bool sharedVertices)
+void Primitives::GenerateCylinder (MeshObject& m, unsigned int subdivisions)
 {
     float step;
     float phi;
@@ -192,7 +247,8 @@ void Primitives::GenerateCylinder (MeshObject& m, unsigned int subdivisions, boo
     unsigned int nIndex, sIndex;
 
     std::vector<Vector3f> vertices;
-    std::vector<std::size_t> array;
+    std::vector<Vector2f> uv;
+    std::vector<std::size_t> varray;
 
     m.Clear ();
 
@@ -216,57 +272,60 @@ void Primitives::GenerateCylinder (MeshObject& m, unsigned int subdivisions, boo
     // generate face array
     for (unsigned int i = 0; i <= 2 * (lonSteps - 1); i += 2)
     {
-        array.push_back (i);
-        array.push_back ((i + 2) % (lonSteps * 2));
-        array.push_back ((i + 1) % (lonSteps * 2));
+        varray.push_back (i);
+        varray.push_back ((i + 2) % (lonSteps * 2));
+        varray.push_back ((i + 1) % (lonSteps * 2));
 
-        array.push_back (i);
-        array.push_back (nIndex);
-        array.push_back ((i + 2) % (lonSteps * 2));
+        uv.push_back (Vector2f ((float)(i / 2) / float(lonSteps), 1.0f));
+        uv.push_back (Vector2f ((float)((i / 2) + 1) / float(lonSteps), 1.0f));        
+        uv.push_back (Vector2f ((float)(i / 2) / float(lonSteps), 0.0f));
 
-        array.push_back ((i + 1) % (lonSteps * 2));
-        array.push_back ((i + 2) % (lonSteps * 2));
-        array.push_back ((i + 3) % (lonSteps * 2));
+        varray.push_back ((i + 1) % (lonSteps * 2));
+        varray.push_back ((i + 2) % (lonSteps * 2));
+        varray.push_back ((i + 3) % (lonSteps * 2));
 
-        array.push_back ((i + 1) % (lonSteps * 2));
-        array.push_back ((i + 3) % (lonSteps * 2));
-        array.push_back (sIndex);    
+        uv.push_back (Vector2f ((float)(i / 2) / float(lonSteps), 0.0f));
+        uv.push_back (Vector2f ((float)((i / 2) + 1) / float(lonSteps), 1.0f));
+        uv.push_back (Vector2f ((float)((i / 2) + 1) / float(lonSteps), 0.0f));
+
+        varray.push_back ((i + 2) % (lonSteps * 2));
+        varray.push_back (i);
+        varray.push_back (nIndex);
+
+        uv.push_back (Mathf::Spherical2Cartesian ((float)((i / 2) + 1) * (2.0f * Mathf::Pi () / float(lonSteps)), 0.5f) + Vector2f (0.5f, 0.5f));
+        uv.push_back (Mathf::Spherical2Cartesian ((float)(i / 2) * (2.0f * Mathf::Pi () / float(lonSteps)), 0.5f) + Vector2f (0.5f, 0.5f));
+        uv.push_back (Vector2f (0.5f, 0.5f));
+
+        varray.push_back ((i + 1) % (lonSteps * 2));
+        varray.push_back ((i + 3) % (lonSteps * 2));
+        varray.push_back (sIndex);    
+
+        uv.push_back (Mathf::Spherical2Cartesian ((float)(i / 2) * (2.0f * Mathf::Pi () / float(lonSteps)), 0.5f) + Vector2f (0.5f, 0.5f));
+        uv.push_back (Mathf::Spherical2Cartesian ((float)((i / 2) + 1) * (2.0f * Mathf::Pi () / float(lonSteps)), 0.5f) + Vector2f (0.5f, 0.5f));
+        uv.push_back (Vector2f (0.5f, 0.5f));        
     }
 
-    Primitives::GenerateMeshFromArrays (m, sharedVertices, vertices, array);
+    Primitives::GenerateMeshFromArrays (m, vertices, uv, varray);
 
     m.CalculateVertexNormals ();
 
-    m.InvokeCallbacks ("OnUpdateMeshObject", m.GetHandle ());
+    m.InvokeCallbacks ("OnUpdateMeshObject", m.GetHandle (), 0);
 
 }
 
-void Primitives::GenerateMeshFromArrays (MeshObject& m, bool sharedVertices, const std::vector<Vector3f>& vertices, const std::vector<std::size_t> array)
+void Primitives::GenerateMeshFromArrays (MeshObject& m, const std::vector<Vector3f>& vertices, const std::vector<Vector2f>& uv, const std::vector<std::size_t> varray)
 {
-    if (sharedVertices == false)
+
+    for (std::size_t i = 0; i < varray.size (); i += 3)
     {
-        for (std::size_t i = 0; i < array.size (); i += 3)
-        {
-            m.AddVertex (vertices[array[i]]);
-            m.AddVertex (vertices[array[i + 1]]);
-            m.AddVertex (vertices[array[i + 2]]);
-        }
-
-        for (std::size_t i = 0; i < array.size (); i += 3)
-        {
-            m.AddFace (i, i + 1, i + 2);
-        }
+        m.AddVertex (vertices[varray[i]], uv[i]);
+        m.AddVertex (vertices[varray[i + 1]], uv[i + 1]);
+        m.AddVertex (vertices[varray[i + 2]], uv[i + 2]);
     }
-    else
-    {        
-        for (std::size_t i = 0; i < vertices.size (); i++)
-        {
-            m.AddVertex (vertices[i]);
-        }
 
-        for (std::size_t i = 0; i < array.size (); i += 3)
-        {
-            m.AddFace (array[i], array[i + 1], array[i + 2]);
-        }
+    for (std::size_t i = 0; i < varray.size (); i += 3)
+    {
+        m.AddFace (i, i + 1, i + 2);
     }
+
 }

@@ -20,13 +20,9 @@ public:
     // set color of the light
     __EAPI Light& SetColor (const Vector3f color);
 
-    // set lighting powers
-    __EAPI Light& SetAmbiencePower (const float ambience);
-    __EAPI Light& SetSpecularPower (const float specular);
-
+    // get color of the light
     __EAPI Vector3f GetColor () const;
-    __EAPI float GetAmbiencePower () const;
-    __EAPI float GetSpecularPower () const;
+
 
     // invoked by game loop on update	
     void OnUpdate (Renderer& renderer);

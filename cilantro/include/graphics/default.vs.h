@@ -25,17 +25,20 @@ R"V0G0N(
 R"V0G0N(
     layout (location = 0) in vec3 vPosition;
     layout (location = 1) in vec3 vNormal;
+    layout (location = 2) in vec2 vUV;
 )V0G0N"
 #else
 R"V0G0N(
     in vec3 vPosition;
     in vec3 vNormal;
+    in vec2 vUV;
 )V0G0N"
 #endif	
 R"V0G0N(
     out vec3 fPosition;
     out vec3 fNormal;
     out vec3 fNormal_View;
+    out vec2 fUV;
 
     void main ()
     {
@@ -43,6 +46,7 @@ R"V0G0N(
         
         fPosition = vec3 (mModel * vec4 (vPosition.xyz, 1.0));
         fNormal = normalize (mNormal * vNormal);
+        fUV = vUV;
     }
     
 )V0G0N";

@@ -35,20 +35,6 @@ Light& Light::SetColor (Vector3f color)
     return *this;
 }
 
-Light& Light::SetAmbiencePower (const float ambience)
-{
-    ambiencePower = ambience;
-    InvokeOnUpdateCallbacks ();
-    return *this;
-}
-
-Light & Light::SetSpecularPower (const float specular)
-{
-    specularPower = specular;
-    InvokeOnUpdateCallbacks ();
-    return *this;
-}
-
 Vector3f Light::GetColor () const
 {
     if (isEnabled)
@@ -61,30 +47,6 @@ Vector3f Light::GetColor () const
     }
 }
 
-float Light::GetAmbiencePower () const
-{
-    if (isEnabled)
-    {
-        return ambiencePower;
-    }
-    else 
-    {
-        return 0.0f;
-    }
-}
-
-float Light::GetSpecularPower () const
-{
-    if (isEnabled)
-    {
-        return specularPower;
-    }
-    else
-    {
-        return 0.0f;
-    }
-}
-
 void Light::OnUpdate (Renderer& renderer)
 {
     GameObject::OnUpdate (renderer);
@@ -92,5 +54,5 @@ void Light::OnUpdate (Renderer& renderer)
 
 void Light::InvokeOnUpdateCallbacks ()
 {
-    InvokeCallbacks ("OnUpdateLight", this->GetHandle ());
+    InvokeCallbacks ("OnUpdateLight", this->GetHandle (), 0);
 }

@@ -9,6 +9,7 @@
 #include "scene/PointLight.h"
 #include "scene/DirectionalLight.h"
 #include "scene/SpotLight.h"
+#include "scene/Material.h"
 #include "graphics/Shader.h"
 #include "graphics/RenderTarget.h"
 #include "graphics/Postprocess.h"
@@ -42,8 +43,9 @@ public:
     virtual void Draw (MeshObject& meshObject) = 0;
     virtual void Update (MeshObject& meshObject) = 0;
     virtual void Update (PointLight& pointLight) = 0;
-    virtual void Update (DirectionalLight& pointLight) = 0;
-    virtual void Update (SpotLight& pointLight) = 0;
+    virtual void Update (DirectionalLight& directionalLight) = 0;
+    virtual void Update (SpotLight& spotLight) = 0;
+    virtual void Update (Material& material, unsigned int textureUnit) = 0;
 
 protected:
 

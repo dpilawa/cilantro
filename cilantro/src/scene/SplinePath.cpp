@@ -26,6 +26,19 @@ Vector3f SplinePath::GetPositionAtDistance (float distance) const
     return GetModelTransformMatrix () * Vector4f (waypoints[wIndex].t.GetTranslation (), 1.0f);
 }
 
+Vector3f SplinePath::GetTangentAtDistance (float distance) const
+{
+    std::size_t wIndex = FindPathSegment (distance);
+    float u = CalculateInterpolationParameter (wIndex, distance);
+
+    if (wIndex != 0)
+    {
+        return GetModelTransformMatrix () * Vector4f (curves[wIndex - 1].GetCurveTangent (u), 1.0f);
+    }
+
+    return GetModelTransformMatrix () * Vector4f (waypoints[wIndex].outTangent, 1.0f);
+}
+
 SplinePath& SplinePath::SetStartTangent (const Vector3f& tangent)
 {
     if (waypoints.size () > 1)

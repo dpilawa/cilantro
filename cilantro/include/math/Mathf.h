@@ -2,6 +2,7 @@
 #define _MATHF_H_
 
 #include "cilantroengine.h"
+#include "math/Vector2f.h"
 #include "math/Vector3f.h"
 #include "math/Vector4f.h"
 #include "math/Matrix3f.h"
@@ -83,6 +84,7 @@ public:
 
     // convert spherical to cartesian coordinates (theta and pi in radians)
     __EAPI static Vector3f Spherical2Cartesian (float theta, float phi, float r);
+    __EAPI static Vector2f Spherical2Cartesian (float theta, float r);
 
     // generate rotation matrix
     // angle provided in radians

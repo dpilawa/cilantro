@@ -34,77 +34,84 @@ int main (int argc, char* argv [])
     controller.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
     controller.BindInputEvent ("exit", [ & ]() { game.Stop (); });
 
+    Texture earthT;
+    earthT.Load ("textures/2k_earth_daymap.jpg");
+    Texture earthTSpec;
+    earthTSpec.Load ("textures/2k_earth_specular_map.png");
+
+    Texture moonT;
+    moonT.Load ("textures/2k_moon.jpg");
+
+    Texture sunT;
+    sunT.Load ("textures/2k_sun.jpg");
+
     PhongMaterial& sunM = dynamic_cast<PhongMaterial&>(scene.AddMaterial (new PhongMaterial ()));
-    sunM.SetColor (Vector3f (0.7f, 0.7f, 0.7f));
-    sunM.SetEmissiveColor (Vector3f (0.99f, 0.72f, 0.07f));
+    //sunM.SetEmissive (Vector3f (0.99f, 0.72f, 0.07f));
+    sunM.SetEmissive (&sunT);
 
     PhongMaterial& earthM = dynamic_cast<PhongMaterial&>(scene.AddMaterial (new PhongMaterial ()));
-    earthM.SetColor (Vector3f (0.42f, 0.58f, 0.84f));
-    earthM.SetSpecularColor (Vector3f (0.9f, 0.9f, 0.9f));
+    //earthM.SetDiffuse (Vector3f (0.42f, 0.58f, 0.84f));
+    //earthM.SetSpecular (Vector3f (1.0f, 1.0f, 1.0f));
+    earthM.SetDiffuse (&earthT);
+    earthM.SetSpecular (&earthTSpec);
+    earthM.SetSpecularShininess (32.0f);
 
     PhongMaterial& moonM = dynamic_cast<PhongMaterial&>(scene.AddMaterial (new PhongMaterial ()));
-    moonM.SetDiffuseColor (Vector3f (0.3f, 0.3f, 0.3f));
-    moonM.SetSpecularColor (Vector3f (0.0f, 0.0f, 0.0f));
+    //moonM.SetDiffuse (Vector3f (0.3f, 0.3f, 0.3f));
+    //moonM.SetSpecular (Vector3f (0.0f, 0.0f, 0.0f));
+    moonM.SetDiffuse (&moonT);
+    moonM.SetSpecularShininess (1.0f);
+    moonM.SetSpecular (Vector3f(0.2f, 0.2f, 0.2f));
 
     PerspectiveCamera& cam = dynamic_cast<PerspectiveCamera&>(scene.AddGameObject (new PerspectiveCamera (25.0f, 1.0f, 500.0f)));
     cam.GetModelTransform ().Translate (0.0f, 0.0f, 160.0f);
     scene.SetActiveCamera (&cam);
 
     MeshObject& sun = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-    Primitives::GenerateSphere (sun, 8, true);
+    Primitives::GenerateSphere (sun, 8);
     sun.GetModelTransform ().Scale (10.0f);
     sun.SetMaterial (sunM);
 
-    Orbiter& earthOrbit = dynamic_cast<Orbiter&>(scene.AddGameObject (new Orbiter (365.256f, 50.0f, 0.0f)));
-    Orbiter& earthRotor = dynamic_cast<Orbiter&>(scene.AddGameObject (new Orbiter (1.0f, 0.0f, -23.0f)));
-    earthRotor.SetParentObject (earthOrbit);
-
+    Orbiter& earthOrbit = dynamic_cast<Orbiter&>(scene.AddGameObject (new Orbiter (sun, 1.0f, 23.5f, 365.256f, 50.0f, 0.0f)));
     MeshObject& earth = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-    Primitives::GenerateSphere (earth, 5, true);
+    Primitives::GenerateSphere (earth, 8);
     earth.SetMaterial (earthM);
-    earth.SetParentObject (earthRotor);
+    earth.SetParentObject (earthOrbit);
+    earth.GetModelTransform ().Scale (3.0f);
+    earth.SetSmoothNormals (true);
 
-    Orbiter& moonOrbit = dynamic_cast<Orbiter&>(scene.AddGameObject (new Orbiter (27.321f, 5.0f, 15.14f)));
-    moonOrbit.SetParentObject (earthOrbit);
-
+    Orbiter& moonOrbit = dynamic_cast<Orbiter&>(scene.AddGameObject (new Orbiter (earth, 27.321f, -6.68f, 27.321f, 20.0f, -5.14f)));
     MeshObject& moon = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-    Primitives::GenerateSphere (moon, 5, true);
-    moon.GetModelTransform ().Scale (0.273f);
+    Primitives::GenerateSphere (moon, 8);
+    moon.GetModelTransform ().Scale (0.273f * 5.0f);
     moon.SetMaterial (moonM);
     moon.SetParentObject (moonOrbit);
+    moon.SetSmoothNormals (true);
 
     PointLight& sunLight = dynamic_cast<PointLight&>(scene.AddGameObject (new PointLight ()));
     sunLight.SetParentObject (sun);
-    sunLight.SetColor (Vector3f (1.0f, 1.0f, 1.0f));
-    sunLight.SetSpecularPower (0.7f);
-    sunLight.SetAmbiencePower (0.1f);
+    sunLight.SetColor (Vector3f (1.1f, 1.0f, 1.0f));
     sunLight.SetEnabled (true);
 
     SplinePath& path = dynamic_cast<SplinePath&>(scene.AddGameObject (new SplinePath ()));
     path.AddWaypoint({0.0f, 80.0f, 260.0f}, Mathf::EulerToQuaterion(Mathf::Deg2Rad ({-15.0f, 0.0f, 0.0f})));
     path.AddWaypoint({0.0f, 0.0f, 160.0f}, Mathf::EulerToQuaterion(Mathf::Deg2Rad ({0.0f, 0.0f, 0.0f})));
-    path.AddWaypoint({-65.0f, 0.0f, 80.0f}, Mathf::EulerToQuaterion(Mathf::Deg2Rad ({0.0f, -45.0f, 0.0f})));
-    path.AddWaypoint({-160.0f, 0.0f, 0.0f}, Mathf::EulerToQuaterion(Mathf::Deg2Rad ({0.0f, -90.0f, 0.0f})));
-    path.SetStartTangent({0.0f, 0.0f, -100.0f});
-    path.SetEndTangent({150.0f, 0.0f, 0.0f});
+    path.SetStartTangent({0.0f, -2.0f, -1.0f});
+    path.SetEndTangent({0.0f, 0.0f, -1.0f});
 
     AnimationObject& animation = dynamic_cast<AnimationObject&>(scene.AddGameObject (new AnimationObject ()));
     animation.AddAnimationProperty<float> ("u", 0.0f, 
         [&](float u) 
         {
-            Vector3f position = path.GetPositionAtDistance (u * path.GetPathLength ());
-
-            cam.GetModelTransform ().Translate (position);
-            //c.GetModelTransform ().Rotate (path.GetRotationAtDistance (u * path.GetPathLength ()));
-            cam.GetModelTransform ().Rotate ( Mathf::GenCameraOrientationQuaternion (position, 0.5f * (earth.GetPosition () - sun.GetPosition ()), {0.0f, 1.0f, 0.0f}));
-
+            cam.GetModelTransform ().Translate (path.GetPositionAtDistance (u * path.GetPathLength ()));
+            cam.GetModelTransform ().Rotate (path.GetRotationAtDistance (u * path.GetPathLength ()));
         },
         [](float t0, float t1, float u)
         {
-            return Mathf::Lerp (t0, t1, u);
+            return Mathf::Smoothstep (t0, t1, u);
         }
     );
-    animation.AddKeyframe("u", 36.0f, 1.0f);
+    animation.AddKeyframe("u", 10.0f, 1.0f);
     animation.SetLooping (false);
     animation.Play ();
 

@@ -11,6 +11,7 @@ public:
     __EAPI virtual ~LinearPath ();
 
     __EAPI Vector3f GetPositionAtDistance (float distance) const;
+    __EAPI Vector3f GetTangentAtDistance (float distance) const;
 
 private:
     void UpdatePathAtWaypoint (std::size_t wIndex);

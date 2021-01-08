@@ -6,11 +6,14 @@
 #include "math/Mathf.h"
 #include "graphics/Renderer.h"
 #include "util/CallbackProvider.h"
+#include "util/LogMessage.h"
 
 #include <vector>
+#include <unordered_map>
 
 MeshObject::MeshObject ()
 {
+    this->smoothNormals = false;
 }
 
 MeshObject::~MeshObject ()
@@ -23,49 +26,121 @@ MeshObject& MeshObject::Clear ()
     normals.clear ();
     indices.clear ();
 
-    InvokeCallbacks ("OnUpdateMeshObject", this->GetHandle ());
+    InvokeCallbacks ("OnUpdateMeshObject", this->GetHandle (), 0);
 
     return *this;
 }
 
-void MeshObject::CalculateVertexNormals ()
+MeshObject& MeshObject::CalculateVertexNormals ()
 {
     Vector3f normal;
-    Vector3f v1, v2, v3;
+    Vector3f va;
+    Vector3f v0, v1, v2;
+    std::unordered_map<Vector3f, std::vector<unsigned int>, Vector3Hash> facesForVertex;
 
+    // zero normals
     normals.clear ();
-
-    // loop through all vertices
-    for (unsigned int v = 0; v < vertices.size (); v += 3)
+    for (unsigned int v = 0; v < GetVertexCount () * 3; v++)
     {
-        normal = Vector3f (0.0f, 0.0f, 0.0f);
+        normals.push_back (0.0f);
+    }
 
-        // loop through all faces and if face contains vertex, add face normal to vertex normal
-        for (unsigned int f = 0; f < indices.size (); f += 3)
+    LogMessage() << "Calculate vertex normals for object" << this->GetHandle ();
+
+    if (!smoothNormals)
+    {
+        // loop through all faces
+        for (unsigned int f = 0; f < GetFaceCount (); f++)
         {
-            if ((indices[f] * 3 == v) || (indices[f + 1] * 3 == v) || (indices[f + 2] * 3 == v))
-            {
-                v1 = Vector3f (vertices[indices[f] * 3], vertices[indices[f] * 3 + 1], vertices[indices[f] * 3 + 2]);
-                v2 = Vector3f (vertices[indices[f + 1] * 3], vertices[indices[f + 1] * 3 + 1], vertices[indices[f + 1] * 3 + 2]);
-                v3 = Vector3f (vertices[indices[f + 2] * 3], vertices[indices[f + 2] * 3 + 1], vertices[indices[f + 2] * 3 + 2]);
+            // get face vertices
+            v0 = GetVertex (GetFaceVertexIndex (f, 0));
+            v1 = GetVertex (GetFaceVertexIndex (f, 1));
+            v2 = GetVertex (GetFaceVertexIndex (f, 2));
 
-                normal += Mathf::Cross (v2 - v1, v3 - v1);
-            }
+            // calculate normal
+            normal = Mathf::Cross (v1 - v0, v2 - v0);
+
+            // add normal to all vertices of face
+            SetNormal (GetFaceVertexIndex (f, 0), GetNormal (GetFaceVertexIndex (f, 0)) + normal);
+            SetNormal (GetFaceVertexIndex (f, 1), GetNormal (GetFaceVertexIndex (f, 1)) + normal);
+            SetNormal (GetFaceVertexIndex (f, 2), GetNormal (GetFaceVertexIndex (f, 2)) + normal);
         }
 
-        // normalize
-        normal = Mathf::Normalize (normal);
-
-        // store normal
-        normals.push_back (normal[0]);
-        normals.push_back (normal[1]);
-        normals.push_back (normal[2]);
     }
+    else
+    {
+        // loop through all faces
+        for (unsigned int f = 0; f < GetFaceCount (); f++)
+        {
+            // get face vertices
+            v0 = GetVertex (GetFaceVertexIndex (f, 0));
+            v1 = GetVertex (GetFaceVertexIndex (f, 1));
+            v2 = GetVertex (GetFaceVertexIndex (f, 2));
+
+            facesForVertex[v0].push_back (GetFaceVertexIndex (f, 0));
+            facesForVertex[v1].push_back (GetFaceVertexIndex (f, 1));
+            facesForVertex[v2].push_back (GetFaceVertexIndex (f, 2));
+        }
+
+        // loop through all faces
+        for (unsigned int f = 0; f < GetFaceCount (); f++)
+        {
+            // get face vertices
+            v0 = GetVertex (GetFaceVertexIndex (f, 0));
+            v1 = GetVertex (GetFaceVertexIndex (f, 1));
+            v2 = GetVertex (GetFaceVertexIndex (f, 2));
+
+            // calculate normal
+            normal = Mathf::Cross (v1 - v0, v2 - v0);
+
+            // add normal to all vertices of adjacent faces
+            for (auto&& n : facesForVertex[v0])
+            {
+                SetNormal (n, GetNormal (n) + normal);
+            }
+
+            for (auto&& n : facesForVertex[v1])
+            {
+                SetNormal (n, GetNormal (n) + normal);
+            }
+
+            for (auto&& n : facesForVertex[v2])
+            {
+                SetNormal (n, GetNormal (n) + normal);
+            }
+
+        }
+
+    }
+
+    // normalize normals
+    for (unsigned int v = 0; v < GetVertexCount (); v++)
+    {
+        normal = GetNormal (v);
+        SetNormal (v, Mathf::Normalize (normal));
+    }
+
+    return *this;
+
+}
+
+MeshObject& MeshObject::SetSmoothNormals (bool smoothNormals)
+{
+    this->smoothNormals = smoothNormals;
+    this->CalculateVertexNormals ();
+    InvokeCallbacks ("OnUpdateMeshObject", this->GetHandle (), 0);
+
+    return *this;
 }
 
 unsigned int MeshObject::GetVertexCount ()
 {
     return (unsigned int) (vertices.size () / 3);
+}
+
+unsigned int MeshObject::GetFaceCount ()
+{
+    return (unsigned int) (indices.size () / 3);
 }
 
 unsigned int MeshObject::GetIndexCount ()
@@ -95,16 +170,24 @@ float* MeshObject::GetNormalsData ()
     return normals.data ();
 }
 
+float* MeshObject::GetUVData ()
+{
+    return uvs.data ();
+}
+
 unsigned int* MeshObject::GetFacesData ()
 {
     return indices.data ();
 }
 
-void MeshObject::AddVertex (const Vector3f& vertex)
+void MeshObject::AddVertex (const Vector3f& vertex, const Vector2f& uv)
 {
     vertices.push_back (vertex[0]);
     vertices.push_back (vertex[1]);
     vertices.push_back (vertex[2]);
+
+    uvs.push_back (uv[0]);
+    uvs.push_back (uv[1]);
 }
 
 void MeshObject::AddFace (unsigned int v1, unsigned int v2, unsigned int v3)
@@ -132,6 +215,26 @@ void MeshObject::OnUpdate (Renderer& renderer)
     renderer.Update (*this);
 }
 
+Vector3f MeshObject::GetVertex (unsigned int vertex) const
+{
+    return Vector3f (vertices[vertex * 3], vertices[vertex * 3 + 1], vertices[vertex * 3 + 2]);
+}
 
+unsigned int MeshObject::GetFaceVertexIndex (unsigned int face, unsigned int faceVertex) const
+{
+    return indices[face * 3 + faceVertex];
+}
 
+Vector3f MeshObject::GetNormal (unsigned int vertex) const
+{
+    return Vector3f (normals[vertex * 3], normals[vertex * 3 + 1], normals[vertex * 3 + 2]);
+}
 
+MeshObject& MeshObject::SetNormal (unsigned int vertex, const Vector3f& normal)
+{
+    normals[vertex * 3] = normal[0];
+    normals[vertex * 3 + 1] = normal[1];
+    normals[vertex * 3 + 2] = normal[2];
+
+    return *this;
+}

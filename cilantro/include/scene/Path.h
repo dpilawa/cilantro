@@ -30,6 +30,7 @@ public:
     __EAPI Path& SetWaypoint (std::size_t wIndex, const Vector3f& position, const Quaternion& rotation);
 
     virtual Vector3f GetPositionAtDistance (float distance) const = 0;
+    virtual Vector3f GetTangentAtDistance (float distance) const = 0;
     virtual Quaternion GetRotationAtDistance (float distance) const;
 
     __EAPI float GetPathLength () const;

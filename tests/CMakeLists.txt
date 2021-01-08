@@ -1,3 +1,6 @@
+cmake_minimum_required(VERSION 3.12)
+cmake_policy(SET CMP0079 NEW)
+
 include_directories ("${PROJECT_SOURCE_DIR}/cilantro/include")
 
 add_compile_definitions(CILANTRO_GL_VERSION=${CILANTRO_GL_VERSION})
@@ -5,7 +8,6 @@ add_compile_definitions(CILANTRO_GL_VERSION=${CILANTRO_GL_VERSION})
 add_executable(test01
 test01.cpp
 ControlledCamera.cpp ControlledCamera.h
-RotatingObject.cpp RotatingObject.h
 )
 
 add_executable(test02

@@ -6,16 +6,20 @@
 #include "util/Timer.h"
 #include <cmath>
 
-Orbiter::Orbiter (float period, float distance, float angle)
+Orbiter::Orbiter (GameObject& parent, float axisPeriod, float axisAngle, float orbitingPeriod, float orbitingDistance, float orbitInclination) : parent (parent)
 {
-    orbitingPeriod = period;
-    orbitingDistance = distance;
-    orbitAxisAngle = angle;
-    orbitRotation = 0.0f;
+    this->orbitingPeriod = orbitingPeriod;
+    this->axisPeriod = axisPeriod;
+    this->orbitingDistance = orbitingDistance;
+    this->orbitingAxisAngle = orbitingAxisAngle;
+    this->orbitInclination = orbitInclination;
+    
+    this->currentOrbitRotation = 0.0f;
+    this->currentAxisRotation = 0.0f;
 
-    Quaternion q = Mathf::GenRotationQuaternion (Vector3f (0.0f, 0.0f, 1.0f), Mathf::Deg2Rad (orbitAxisAngle));
-    orbitAxis = Mathf::Rotate (Vector3f (0.0f, 1.0f, 0.0f), q);
-    orbitPlane = Mathf::Rotate (Vector3f (orbitingDistance, 0.0f, 0.0f), q);
+    this->daysPerSecond = 0.5f;
+
+    tilt = Mathf::GenRotationQuaternion (Vector3f (0.0f, 0.0f, 1.0f), Mathf::Deg2Rad (axisAngle));
 }
 
 Orbiter::~Orbiter ()
@@ -24,10 +28,19 @@ Orbiter::~Orbiter ()
 
 void Orbiter::OnFrame ()
 {
-    orbitRotation = std::fmod (orbitRotation + (1.0f / orbitingPeriod * 360.0f) * Timer::GetFrameDeltaTime () * 10.0f, 360.0f);
-    Quaternion q = Mathf::GenRotationQuaternion (orbitAxis, Mathf::Deg2Rad (orbitRotation));
+    currentOrbitRotation = std::fmod (currentOrbitRotation + (1.0f / orbitingPeriod * 360.0f) * Timer::GetFrameDeltaTime () * daysPerSecond, 360.0f);
+    currentAxisRotation = std::fmod (currentAxisRotation + (1.0f / axisPeriod * 360.0f) * Timer::GetFrameDeltaTime () * daysPerSecond, 360.0f);
 
-    GetModelTransform ().Translate (Mathf::Rotate (orbitPlane, q));
+    Quaternion axis = Mathf::GenRotationQuaternion (Vector3f(0.0f, 1.0f, 0.0f), Mathf::Deg2Rad (currentAxisRotation));
+    Quaternion q = Mathf::Product (tilt, axis);
+
+    Quaternion orbit = Mathf::GenRotationQuaternion (Vector3f(0.0f, 1.0f, 0.0f), Mathf::Deg2Rad (currentOrbitRotation));
+    Quaternion inclination = Mathf::GenRotationQuaternion (Vector3f(0.0f, 0.0f, 1.0f), Mathf::Deg2Rad (orbitInclination));
+    Vector3f positionInOrbit = Mathf::Rotate (Mathf::Rotate (Vector3f (1.0f, 0.0f, 0.0f) * orbitingDistance, orbit), inclination);
+
+    Vector3f parentPosition = parent.GetPosition ();
+
+    GetModelTransform ().Rotate (q).Translate (positionInOrbit + parentPosition);
 }
 
 

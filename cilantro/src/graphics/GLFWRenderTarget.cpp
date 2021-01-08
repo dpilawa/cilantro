@@ -36,6 +36,7 @@ void GLFWRenderTarget::OnFrame ()
     glDisable (GL_FRAMEBUFFER_SRGB);
     glRenderer->GetShaderProgram ("flatquad_shader").Use ();
     glBindVertexArray (targetVAO);
+    glActiveTexture (GL_TEXTURE0);
     glBindTexture (GL_TEXTURE_2D, glRenderer->GetRendererFramebufferTexture ());
     glViewport (0, 0, this->width, this->height);
     glDrawArrays (GL_TRIANGLES, 0, 6);
@@ -67,8 +68,8 @@ void GLFWRenderTarget::Initialize ()
     }
 
     // set up GL & window properties
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, CILANTRO_GL_VERSION_MAJOR);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, CILANTRO_GL_VERSION_MINOR);
     glfwWindowHint(GLFW_RESIZABLE, isResizable);
     glfwWindowHint(GLFW_VISIBLE, 1);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);

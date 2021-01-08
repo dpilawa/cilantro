@@ -89,6 +89,11 @@ Vector4f& Vector4f::operator-=(const Vector4f& other)
     return *this;
 }
 
+bool Vector4f::operator== (const Vector4f& other) const
+{
+    return (v[0] == other[0]) && (v[1] == other[1]) && (v[2] == other[2]) && (v[3] == other[3]);
+}
+
 Vector4f operator* (Vector4f u, float f)
 {
     u *= f;

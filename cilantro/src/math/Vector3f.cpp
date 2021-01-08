@@ -85,6 +85,11 @@ Vector3f& Vector3f::operator-=(const Vector3f& other)
     return *this;
 }
 
+bool Vector3f::operator== (const Vector3f& other) const
+{
+    return (v[0] == other[0]) && (v[1] == other[1]) && (v[2] == other[2]);
+}
+
 Vector3f operator* (Vector3f u, float f)
 {
     u *= f;

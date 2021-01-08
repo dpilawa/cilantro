@@ -1,68 +1,122 @@
 #include "cilantroengine.h"
+#include "graphics/Renderer.h"
 #include "scene/PBRMaterial.h"
 #include "math/Vector3f.h"
 
 PBRMaterial::PBRMaterial ()
 {
     SetShaderProgram ("pbr_shader");
-    SetAlbedo (Vector3f (1.0f, 1.0f, 1.0f));
-    SetMetallic (0.0f);
-    SetRoughness (1.0f);
-    SetAO (1.0f);
+
+    albedo.GenerateSolid (1, 1, Vector3f (1.0f, 1.0f, 1.0f));
+    normal.GenerateSolid (1, 1, Vector3f (0.0f, 0.0f, 0.0f));
+    metallic.GenerateSolid (1, 1, 0.0f);
+    roughness.GenerateSolid (1, 1, 1.0f);
+    ao.GenerateSolid (1, 1, 1.0f);
+
+    SetAlbedo (&albedo);
+    SetNormal (&normal);
+    SetMetallic (&metallic);
+    SetRoughness (&roughness);
+    SetAO (&ao);
 }
 
 PBRMaterial::~PBRMaterial ()
 {
 }
 
+void PBRMaterial::OnUpdate (Renderer& renderer, unsigned int textureUnit)
+{
+    renderer.Update (*this, textureUnit);
+}
+
+PBRMaterial& PBRMaterial::SetAlbedo (Texture* albedo)
+{
+    Material::SetTexture (static_cast<int>(PBRTexture::Albedo), "tAlbedo", albedo);
+
+    return *this;
+}
+
+PBRMaterial& PBRMaterial::SetNormal (Texture* normal)
+{
+    Material::SetTexture (static_cast<int>(PBRTexture::Normal), "tNormal", normal);
+
+    return *this;
+}
+
+PBRMaterial& PBRMaterial::SetMetallic (Texture* metallic)
+{
+    Material::SetTexture (static_cast<int>(PBRTexture::Metallic), "tMetallic", metallic);
+
+    return *this;
+}
+
+PBRMaterial& PBRMaterial::SetRoughness (Texture* roughness)
+{
+    Material::SetTexture (static_cast<int>(PBRTexture::Roughness), "tRoughness", roughness);
+
+    return *this;
+}
+
+PBRMaterial& PBRMaterial::SetAO (Texture* ao)
+{
+    Material::SetTexture (static_cast<int>(PBRTexture::AO), "tAO", ao);
+
+    return *this;
+}
+
 PBRMaterial& PBRMaterial::SetAlbedo (const Vector3f& albedo)
 {
-    this->albedo = albedo;
-    properties["fAlbedo"] = {albedo[0], albedo[1], albedo[2]};
+    this->albedo.GenerateSolid (1, 1, albedo);
+    PBRMaterial::SetAlbedo (&this->albedo);
 
     return *this;
 }
 
 PBRMaterial& PBRMaterial::SetMetallic (const float metallic)
 {
-    this->metallic = metallic;
-    properties["fMetallic"] = {metallic};
+    this->metallic.GenerateSolid (1, 1, metallic);
+    PBRMaterial::SetMetallic (&this->metallic);
 
     return *this;
 }
 
 PBRMaterial& PBRMaterial::SetRoughness (const float roughness)
 {
-    this->roughhess = roughness;
-    properties["fRoughness"] = {roughhess};
+    this->roughness.GenerateSolid (1, 1, roughness);
+    PBRMaterial::SetRoughness (&this->roughness);
 
     return *this;
 }
 
 PBRMaterial& PBRMaterial::SetAO (const float ao)
 {
-    this->ao = ao;
-    properties["fAO"] = {ao};
+    this->ao.GenerateSolid (1, 1, ao);
+    PBRMaterial::SetAO (&this->ao);
 
     return *this;
 }
 
-Vector3f PBRMaterial::GetAlbedo () const
+Texture* PBRMaterial::GetAlbedo ()
 {
-    return albedo;
+    return textures[static_cast<int>(PBRTexture::Albedo)].second;
 }
 
-float PBRMaterial::GetMetallic () const
+Texture* PBRMaterial::GetNormal ()
 {
-    return metallic;
+    return textures[static_cast<int>(PBRTexture::Normal)].second;
 }
 
-float PBRMaterial::GetRoughness () const
+Texture* PBRMaterial::GetMetallic ()
 {
-    return roughhess;
+    return textures[static_cast<int>(PBRTexture::Metallic)].second;
 }
 
-float PBRMaterial::GetAO () const
+Texture* PBRMaterial::GetRoughness ()
 {
-    return ao;
+    return textures[static_cast<int>(PBRTexture::Roughness)].second;
+}
+
+Texture* PBRMaterial::GetAO ()
+{
+    return textures[static_cast<int>(PBRTexture::AO)].second;
 }

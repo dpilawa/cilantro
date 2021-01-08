@@ -3,7 +3,18 @@
 
 #include "cilantroengine.h"
 #include "scene/Material.h"
+#include "scene/Texture.h"
 #include "math/Vector3f.h"
+
+class Renderer;
+
+enum class PhongTexture : int
+{
+    Diffuse = 0,
+    Normal,
+    Specular,
+    Emissive
+};
 
 class PhongMaterial : public Material
 {
@@ -11,35 +22,34 @@ public:
     __EAPI PhongMaterial ();
     __EAPI virtual ~PhongMaterial ();
 
+    __EAPI virtual void OnUpdate (Renderer &renderer, unsigned int textureUnit = 0);
+
     // setters
-    __EAPI PhongMaterial& SetAmbientColor (const Vector3f& color);
-    __EAPI PhongMaterial& SetDiffuseColor (const Vector3f& color);
-    __EAPI PhongMaterial& SetSpecularColor (const Vector3f& color);
-    __EAPI PhongMaterial& SetSpecularShininess (const float shininess);
-    __EAPI PhongMaterial& SetEmissiveColor (const Vector3f& color);
-    __EAPI PhongMaterial& SetColor (const Vector3f& color);
+    __EAPI PhongMaterial& SetDiffuse (Texture* diffuse);
+    __EAPI PhongMaterial& SetNormal (Texture* normal);
+    __EAPI PhongMaterial& SetSpecular (Texture* specular);
+    __EAPI PhongMaterial& SetEmissive (Texture* emissive);
+
+    __EAPI PhongMaterial& SetDiffuse (const Vector3f& diffuse);
+    __EAPI PhongMaterial& SetSpecular (const Vector3f& specular);
+    __EAPI PhongMaterial& SetSpecularShininess (const float specularShininess);
+    __EAPI PhongMaterial& SetEmissive (const Vector3f& emissive);
+
 
     // getters
-    __EAPI Vector3f GetAmbientColor () const;
-    __EAPI Vector3f GetDiffuseColor () const;
-    __EAPI Vector3f GetSpecularColor () const;
-    __EAPI float GetSpecularShininess () const;
-    __EAPI Vector3f GetEmissiveColor () const;
+    __EAPI Texture* GetDiffuse ();
+    __EAPI Texture* GetNormal ();
+    __EAPI Texture* GetSpecular ();
+    __EAPI float GetSpecularShininess ();
+    __EAPI Texture* GetEmissive ();
 
-private:
+protected:
 
-    // ambient color
-    Vector3f ambientColor;
-
-    // diffuse color
-    Vector3f diffuseColor;
-
-    // specular color
-    Vector3f specularColor;
-    float specularShininess;
-
-    // emissive color
-    Vector3f emissiveColor;
+    // static textures
+    Texture diffuse;
+    Texture normal;
+    Texture specular;
+    Texture emissive;
 
 };
 

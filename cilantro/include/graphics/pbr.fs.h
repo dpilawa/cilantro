@@ -24,14 +24,42 @@ R"V0G0N(
     in vec3 fNormal;
     vec3 surfaceNormal;
 
+    /* texture uv coordinates */
+    in vec2 fUV;
+
     /* viewing direction */
     vec3 viewDirection;
 
+)V0G0N"
+#if (CILANTRO_GL_VERSION >= 420)
+R"V0G0N(
+
     /* material properties */
-    uniform vec3 fAlbedo;
-    uniform float fMetallic;
-    uniform float fRoughness;
-    uniform float fAO;
+    layout (binding = 0) uniform sampler2D tAlbedo;
+    layout (binding = 1) uniform sampler2D tNormal;
+    layout (binding = 2) uniform sampler2D tMetallic;
+    layout (binding = 3) uniform sampler2D tRoughness;
+    layout (binding = 4) uniform sampler2D tAO;
+
+)V0G0N"
+#else
+R"V0G0N(
+
+    uniform sampler2D tAlbedo;
+    uniform sampler2D tNormal;
+    uniform sampler2D tMetallic;
+    uniform sampler2D tRoughness;
+    uniform sampler2D tAO;
+
+)V0G0N"
+#endif	
+R"V0G0N(
+
+    vec3 fAlbedo;
+    vec3 fNormalMap;
+    float fMetallic;
+    float fRoughness;
+    float fAO;
 
     /* eye position in world space */
     uniform vec3 eyePosition;
@@ -42,8 +70,6 @@ R"V0G0N(
     {
         vec3 lightPosition;	/* world space */
         vec3 lightColor;
-        float ambiencePower;
-        float specularPower;
         float attenuationConst;
         float attenuationLinear;
         float attenuationQuadratic;
@@ -53,8 +79,6 @@ R"V0G0N(
     {
         vec3 lightDirection;
         vec3 lightColor;
-        float ambiencePower;
-        float specularPower;
     };
 
     struct SpotLightStruct
@@ -62,8 +86,6 @@ R"V0G0N(
         vec3 lightPosition;	/* world space */		
         vec3 lightDirection;
         vec3 lightColor;
-        float ambiencePower;
-        float specularPower;
         float attenuationConst;
         float attenuationLinear;
         float attenuationQuadratic;		
@@ -99,7 +121,7 @@ R"V0G0N(
 
     float DistributionGGX(vec3 N, vec3 H, float roughness)
     {
-        float a = roughness*roughness;
+        float a = roughness * roughness;
         float a2 = a * a;
         float NdotH = max (dot (N, H), 0.0);
         float NdotH2 = NdotH * NdotH;
@@ -188,6 +210,13 @@ R"V0G0N(
         /* calculate viewing direction */
         viewDirection = normalize (eyePosition - fPosition);
 
+        /* sample textures */
+        fAlbedo = texture (tAlbedo, fUV).rgb;
+        fNormalMap = texture (tNormal, fUV).rgb;
+        fMetallic = texture (tMetallic, fUV).r;
+        fRoughness = texture (tRoughness, fUV).r;
+        fAO = texture (tAO, fUV).r;
+
         for (int i = 0; i < pointLightCount; i++)
         {
             vec3 lightDirection = normalize (pointLights[i].lightPosition - fPosition);
@@ -204,7 +233,7 @@ R"V0G0N(
             kD = kD * (1.0 - fMetallic);	
 
             float NdotL = max (dot (surfaceNormal, lightDirection), 0.0);        
-            Lo += (kD * fAlbedo / PI + specular) * radiance * NdotL + pointLights[i].ambiencePower * fAlbedo * fAO;
+            Lo += (kD * fAlbedo / PI + specular) * radiance * NdotL + vec3(0.01) * fAlbedo * fAO;
         }
 
         for (int i = 0; i < directionalLightCount; i++)
@@ -223,7 +252,7 @@ R"V0G0N(
             kD = kD * (1.0 - fMetallic);	
 
             float NdotL = max (dot (surfaceNormal, lightDirection), 0.0);        
-            Lo += (kD * fAlbedo / PI + specular) * radiance * NdotL + directionalLights[i].ambiencePower * fAlbedo * fAO;
+            Lo += (kD * fAlbedo / PI + specular) * radiance * NdotL + vec3(0.01) * fAlbedo * fAO;
         }
 
         for (int i = 0; i < spotLightCount; i++)
@@ -242,7 +271,7 @@ R"V0G0N(
             kD = kD * (1.0 - fMetallic);	
 
             float NdotL = max (dot (surfaceNormal, lightDirection), 0.0);        
-            Lo += (kD * fAlbedo / PI + specular) * radiance * NdotL + spotLights[i].ambiencePower * fAlbedo * fAO;
+            Lo += (kD * fAlbedo / PI + specular) * radiance * NdotL + vec3(0.01) * fAlbedo * fAO;
         }
 
         color = vec4 (Lo, 1.0);

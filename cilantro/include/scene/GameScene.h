@@ -10,7 +10,7 @@
 
 // This class represents a game world (a.k.a scene or level)
 // It contains all visible and invisible objects in a game
-class GameScene : public CallbackProvider<std::string, unsigned int>
+class GameScene : public CallbackProvider<std::string, unsigned int, unsigned int>
 {
 public:
     GameScene() = delete;
@@ -28,8 +28,9 @@ public:
     // returns reference to that material
     __EAPI Material& AddMaterial (Material* material);
 
-    // return reference to GameObject vector
+    // return reference to map
     __EAPI std::unordered_map <unsigned int, GameObject*>& GetGameObjects ();
+    __EAPI std::unordered_map <unsigned int, Material*>& GetMaterials ();
 
     // return number of scene's GameObjects
     __EAPI unsigned int getGameObjectsCount () const;
@@ -42,14 +43,15 @@ private:
     
     GameLoop* gameLoop;
 
-    // vector of all GameObjects in the scene
+    // map of all GameObjects in the scene
     std::unordered_map <unsigned int, GameObject*> gameObjects;
 
-    // vector of all Materials in the scene
-    std::vector <Material*> materials;
+    // map of all Materials in the scene
+    std::unordered_map <unsigned int, Material*> materials;
 
-    // count of all GameObjects in the scene
+    // counts of objects in the scene
     unsigned int gameObjectsCount;
+    unsigned int materialsCount;
 
     // reference to active camera
     Camera* activeCamera;
