@@ -98,7 +98,7 @@ void GLFWRenderTarget::Initialize ()
     glfwSetFramebufferSizeCallback (window, framebufferResizeCallback);
 
     // set framebuffer size (relevant for high DPI displays)
-    glfwGetFramebufferSize (window, (int*)&width, (int*)&height);
+    // glfwGetFramebufferSize (window, (int*)&width, (int*)&height);
 
     // set vsync on
     glfwSwapInterval (isVSync);
