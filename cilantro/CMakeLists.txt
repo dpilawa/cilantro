@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.12)
-cmake_policy(SET CMP0079 NEW)
 
 include_directories ("${PROJECT_SOURCE_DIR}/ext/glfw/include")
 include_directories ("${PROJECT_SOURCE_DIR}/ext/stb")
