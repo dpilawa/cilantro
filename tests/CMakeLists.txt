@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.12)
-cmake_policy(SET CMP0079 NEW)
 
 include_directories ("${PROJECT_SOURCE_DIR}/cilantro/include")
 
@@ -20,3 +19,6 @@ test03.cpp
 ControlledCamera.cpp ControlledCamera.h
 )
 
+target_link_libraries (test01 cilantro)
+target_link_libraries (test02 cilantro)
+target_link_libraries (test03 cilantro)
