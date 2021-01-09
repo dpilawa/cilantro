@@ -82,6 +82,9 @@ void GLRenderer::RenderFrame ()
 
     // base class functions
     Renderer::RenderFrame ();
+
+    // check for errors
+    CheckGLError (__func__);
 }
 
 void GLRenderer::SetResolution (unsigned int width, unsigned int height)
@@ -501,16 +504,6 @@ void GLRenderer::Update (Material& material, unsigned int textureUnit)
             GLuint unit = t.first;
             format = textureChannelMap[tPtr->GetChannels ()];
 
-            GLuint textureUniform = glGetUniformLocation(shaderId, tName.c_str ());
-            if (textureUniform != GL_INVALID_INDEX) 
-            {
-                glUniform1i(textureUniform, t.first);
-            }
-            else
-            {
-                LogMessage (__func__) << "Program id" << shaderId << "has no uniform" << tName;
-            }
-
             glGenTextures(1, &texture);
             LogMessage (__func__) << "Generate and bind texture" << texture << "name" << tName << "unit" << t.first << "[" << tPtr->GetWidth () << tPtr->GetHeight () << tPtr->GetChannels () << "]";
             glBindTexture(GL_TEXTURE_2D, texture);
@@ -519,9 +512,10 @@ void GLRenderer::Update (Material& material, unsigned int textureUnit)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glBindTexture (GL_TEXTURE_2D, 0);
-
+            
             materialTextureUnits[materialHandle].textureUnits[unit] = texture;
         }
+
         materialTextureUnits[materialHandle].unitsCount = textures.size ();
 
     }
@@ -536,7 +530,7 @@ void GLRenderer::Update (Material& material, unsigned int textureUnit)
         format = textureChannelMap[tPtr->GetChannels ()];
 
         glBindTexture(GL_TEXTURE_2D, materialTextureUnits[materialHandle].textureUnits[unit]);
-        LogMessage (__func__) << "Bind texture" <<  materialTextureUnits[materialHandle].textureUnits[unit - 1] << "name" << tName << "unit" << t.first << "[" << tPtr->GetWidth () << tPtr->GetHeight () << tPtr->GetChannels () << "]";
+        LogMessage (__func__) << "Bind texture" <<  materialTextureUnits[materialHandle].textureUnits[unit] << "name" << tName << "unit" << unit << "[" << tPtr->GetWidth () << tPtr->GetHeight () << tPtr->GetChannels () << "]";
         glTexImage2D(GL_TEXTURE_2D, 0, format, tPtr->GetWidth (), tPtr->GetHeight (), 0, format, GL_UNSIGNED_BYTE, tPtr->Data ());
         glGenerateMipmap(GL_TEXTURE_2D);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_LINEAR_MIPMAP_LINEAR);
@@ -715,6 +709,11 @@ void GLRenderer::InitializeShaderLibrary ()
     glBindAttribLocation(GetShaderProgram("flatquad_shader").GetProgramId(), 0, "vPosition");
     glBindAttribLocation(GetShaderProgram("flatquad_shader").GetProgramId(), 1, "vTextureCoordinates");
 #endif
+#if (CILANTRO_GL_VERSION < 420)
+    p = GetShaderProgram("flatquad_shader").GetProgramId ();
+    GetShaderProgram("flatquad_shader").Use ();
+    glUniform1i (glGetUniformLocation(p, "fScreenTexture"), 0);
+#endif
 
     // Post-processing HDR
     AddShaderToProgram ("post_hdr_shader", "flatquad_vertex_shader");
@@ -723,6 +722,11 @@ void GLRenderer::InitializeShaderLibrary ()
     glBindAttribLocation(GetShaderProgram("post_hdr_shader").GetProgramId(), 0, "vPosition");
     glBindAttribLocation(GetShaderProgram("post_hdr_shader").GetProgramId(), 1, "vTextureCoordinates");
 #endif
+#if (CILANTRO_GL_VERSION < 420)
+    p = GetShaderProgram("post_hdr_shader").GetProgramId ();
+    GetShaderProgram("post_hdr_shader").Use ();
+    glUniform1i (glGetUniformLocation(p, "fScreenTexture"), 0);
+#endif
 
     // Post-processing gamma
     AddShaderToProgram ("post_gamma_shader", "flatquad_vertex_shader");
@@ -730,6 +734,11 @@ void GLRenderer::InitializeShaderLibrary ()
 #if (CILANTRO_GL_VERSION < 330)	
     glBindAttribLocation(GetShaderProgram("post_gamma_shader").GetProgramId(), 0, "vPosition");
     glBindAttribLocation(GetShaderProgram("post_gamma_shader").GetProgramId(), 1, "vTextureCoordinates");
+#endif
+#if (CILANTRO_GL_VERSION < 420)
+    p = GetShaderProgram("post_gamma_shader").GetProgramId ();
+    GetShaderProgram("post_gamma_shader").Use ();
+    glUniform1i (glGetUniformLocation(p, "fScreenTexture"), 0);
 #endif
 
 }

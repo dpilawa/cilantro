@@ -40,6 +40,8 @@ void GLFWRenderTarget::OnFrame ()
     glBindTexture (GL_TEXTURE_2D, glRenderer->GetRendererFramebufferTexture ());
     glViewport (0, 0, this->width, this->height);
     glDrawArrays (GL_TRIANGLES, 0, 6);
+    glBindVertexArray (0);
+    glBindTexture (GL_TEXTURE_2D, 0);
 
     // swap front and back buffers
     glfwSwapBuffers (window);

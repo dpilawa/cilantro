@@ -51,12 +51,13 @@ void GLFramebuffer::Initialize ()
 
     // create texture and attach to framebuffer as color attachment
     glGenTextures (1, &framebuffers.textureBuffer);
+    glActiveTexture (GL_TEXTURE0);
     glBindTexture (GL_TEXTURE_2D, framebuffers.textureBuffer);
     glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, bufferWidth, bufferHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glBindTexture (GL_TEXTURE_2D, 0);
-
+    
     glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, framebuffers.textureBuffer, 0);
 
     // create renderbuffer for a (combined) depth and stencil buffer

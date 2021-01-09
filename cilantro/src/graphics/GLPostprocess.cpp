@@ -24,7 +24,7 @@ void GLPostprocess::OnFrame ()
     shaderProgram->Use ();
     glBindVertexArray (VAO);
     glActiveTexture (GL_TEXTURE0);
-    glBindTexture (GL_TEXTURE_2D, glRenderer->GetFramebufferTexture ());
+    glBindTexture (GL_TEXTURE_2D, glRenderer->GetRendererFramebufferTexture ()); 
     glViewport (0, 0, renderer->GetWidth (), renderer->GetHeight ());
     glDrawArrays (GL_TRIANGLES, 0, 6);
 }
@@ -35,6 +35,12 @@ void GLPostprocess::SetPostprocessParameterFloat (std::string parameterName, flo
 
     glShaderProgam->Use ();
     GLuint paramUniformLocation = glGetUniformLocation (glShaderProgam->GetProgramId (), parameterName.c_str ());
+
+    if (paramUniformLocation == GL_INVALID_INDEX)
+    {
+        LogMessage (__func__, EXIT_FAILURE) << "Uniform not found in postprocessor shader:" << parameterName;
+    }
+
     glUniform1f (paramUniformLocation, parameterValue);
 }
 
