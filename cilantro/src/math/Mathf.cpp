@@ -226,6 +226,13 @@ float Mathf::Smoothstep (float v0, float v1, float vt)
     return x * x * (3.0f - 2.0f * x);
 }
 
+float Mathf::Smootherstep (float v0, float v1, float vt)
+{
+    float x = Mathf::Step (v0, v1, vt);
+
+    return Mathf::Clamp (x * x * x * (x * (x * 6.0f - 15.0f) + 10.0f), 0.0f, 1.0f);
+}
+
 float Mathf::Lerp (float v0, float v1, float t)
 {
     t = Mathf::Clamp (t, 0.0f, 1.0f);

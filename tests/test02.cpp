@@ -95,7 +95,7 @@ int main (int argc, char* argv [])
 
     SplinePath& path = dynamic_cast<SplinePath&>(scene.AddGameObject (new SplinePath ()));
     path.AddWaypoint({0.0f, 80.0f, 260.0f}, Mathf::EulerToQuaterion(Mathf::Deg2Rad ({-15.0f, 0.0f, 0.0f})));
-    path.AddWaypoint({0.0f, 0.0f, 160.0f}, Mathf::EulerToQuaterion(Mathf::Deg2Rad ({0.0f, 0.0f, 0.0f})));
+    path.AddWaypoint({0.0f, 0.0f, 140.0f}, Mathf::EulerToQuaterion(Mathf::Deg2Rad ({0.0f, 0.0f, 0.0f})));
     path.SetStartTangent({0.0f, -2.0f, -1.0f});
     path.SetEndTangent({0.0f, 0.0f, -1.0f});
 
@@ -108,7 +108,7 @@ int main (int argc, char* argv [])
         },
         [](float t0, float t1, float u)
         {
-            return Mathf::Smoothstep (t0, t1, u);
+            return Mathf::Smootherstep (t0, t1, u);
         }
     );
     animation.AddKeyframe("u", 10.0f, 1.0f);

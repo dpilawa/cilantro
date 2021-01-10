@@ -56,7 +56,7 @@ void AnimationObject::OnFrame ()
     {
         if (isLooping)
         {
-            playedTime = playedTime - maxAnimationTime;
+            playedTime = std::max (0.0f, playedTime - maxAnimationTime);
         }
         else
         {

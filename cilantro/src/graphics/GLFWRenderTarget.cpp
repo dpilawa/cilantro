@@ -45,6 +45,12 @@ void GLFWRenderTarget::OnFrame ()
 
     // swap front and back buffers
     glfwSwapBuffers (window);
+
+    // check window closing
+    if (glfwWindowShouldClose (window))
+    {
+        gameLoop->Stop ();
+    }
 }
 
 GLFWwindow* GLFWRenderTarget::GetWindow ()

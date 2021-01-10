@@ -56,6 +56,7 @@ public:
     __EAPI static float Clamp (float v0, float v1, float vt);
     __EAPI static float Step (float v0, float v1, float vt);
     __EAPI static float Smoothstep (float v0, float v1, float vt);
+    __EAPI static float Smootherstep (float v0, float v1, float vt);
 
     __EAPI static float Lerp (float v0, float v1, float t);
     __EAPI static Vector3f Lerp (const Vector3f& v0, const Vector3f& v1, float t);
