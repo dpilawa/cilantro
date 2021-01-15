@@ -3,7 +3,7 @@
 #include "graphics/RenderTarget.h"
 #include "scene/GameScene.h"
 #include "scene/MeshObject.h"
-#include "util/Timer.h"
+#include "system/Timer.h"
 
 Renderer::Renderer (GameLoop* gameLoop, unsigned int width, unsigned int height)
 {

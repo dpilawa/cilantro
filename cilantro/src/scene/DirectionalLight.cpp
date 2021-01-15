@@ -3,7 +3,7 @@
 #include "scene/Light.h"
 #include "math/Vector3f.h"
 #include "graphics/Renderer.h"
-#include "util/CallbackProvider.h"
+#include "system/CallbackProvider.h"
 
 DirectionalLight::DirectionalLight () : Light()
 {

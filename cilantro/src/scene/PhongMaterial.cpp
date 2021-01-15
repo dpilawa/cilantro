@@ -3,7 +3,7 @@
 #include "scene/PhongMaterial.h"
 #include "math/Vector3f.h"
 
-PhongMaterial::PhongMaterial ()
+PhongMaterial::PhongMaterial () : diffuse ("diffuse"), normal ("normal"), specular ("specular"), emissive ("emissive")
 {
     SetShaderProgram ("blinnphong_shader");
 

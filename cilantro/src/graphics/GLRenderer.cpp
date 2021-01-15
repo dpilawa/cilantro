@@ -12,8 +12,8 @@
 #include "scene/DirectionalLight.h"
 #include "scene/SpotLight.h"
 #include "scene/Camera.h"
-#include "util/CallbackProvider.h"
-#include "util/LogMessage.h"
+#include "system/CallbackProvider.h"
+#include "system/LogMessage.h"
 #include "math/Mathf.h"
 
 #include <unordered_map>

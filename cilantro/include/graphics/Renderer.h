@@ -2,7 +2,7 @@
 #define _RENDERER_H_
 
 #include "cilantroengine.h"
-#include "util/CallbackProvider.h"
+#include "system/CallbackProvider.h"
 #include "game/GameLoop.h"
 #include "scene/GameScene.h"
 #include "scene/MeshObject.h"

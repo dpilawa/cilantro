@@ -1,19 +1,23 @@
-#include "scene/Texture.h"
-#include "util/LogMessage.h"
+#include "resource/Texture.h"
+#include "system/LogMessage.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-Texture::Texture ()
+Texture::Texture (const std::string& name) : Resource (name)
 {
     data = nullptr;
 }
 
+Texture::Texture (const std::string& name, const std::string& path) : Resource (name, path)
+{
+    Load (path.c_str ());
+}
+
 Texture::~Texture ()
 {
-    // stbi_image_free (data);
     free (data);
-    LogMessage (__func__) << "Unloaded texture" << this;
+    LogMessage (__func__) << "Destroyed texture" << this->name;
 }
 
 Texture& Texture::GenerateSolid (const int width, const int height, float channel)
@@ -60,24 +64,7 @@ Texture& Texture::GenerateSolid (const int width, const int height, const Vector
     return *this;
 }
 
-Texture& Texture::Load (const char* filename)
-{
-    stbi_set_flip_vertically_on_load (true);
-    data = stbi_load (filename, &this->width, &this->height, &this->numChannels, 0);
-
-    if (data == nullptr)
-    {
-        LogMessage (__func__, EXIT_FAILURE) << "Unable to load texture" << filename << "[" << stbi_failure_reason () << "]";
-    }
-    else 
-    {
-        LogMessage (__func__) << "Loaded texture" << this << filename << "[" << this->width << this->height << this->numChannels << "]";
-    }
-
-    return *this;
-}
-
-unsigned char* Texture::Data ()
+std::uint8_t* Texture::Data ()
 {
     return this->data;
 }
@@ -96,3 +83,19 @@ int Texture::GetChannels () const
 {
     return this->numChannels;
 }
+
+void Texture::Load (const char* path)
+{
+    stbi_set_flip_vertically_on_load (true);
+    data = stbi_load (path, &this->width, &this->height, &this->numChannels, 0);
+
+    if (data == nullptr)
+    {
+        LogMessage (__func__, EXIT_FAILURE) << "Unable to load texture" << path << "[" << stbi_failure_reason () << "]";
+    }
+    else 
+    {
+        LogMessage (__func__) << "Loaded texture" << path << "[" << this->width << this->height << this->numChannels << "]";
+    }
+}
+

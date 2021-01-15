@@ -1,6 +1,6 @@
 #include "cilantroengine.h"
 #include "graphics/GLFramebuffer.h"
-#include "util/LogMessage.h"
+#include "system/LogMessage.h"
 
 GLFramebuffer::GLFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight)
 {

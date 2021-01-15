@@ -5,8 +5,8 @@
 #include "math/Vector3f.h"
 #include "math/Mathf.h"
 #include "graphics/Renderer.h"
-#include "util/CallbackProvider.h"
-#include "util/LogMessage.h"
+#include "system/CallbackProvider.h"
+#include "system/LogMessage.h"
 
 #include <vector>
 #include <unordered_map>

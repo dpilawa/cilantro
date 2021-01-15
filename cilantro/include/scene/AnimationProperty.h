@@ -2,7 +2,7 @@
 #define _ANIMATIONPROPERTY_H_
 
 #include "cilantroengine.h"
-#include "util/LogMessage.h"
+#include "system/LogMessage.h"
 #include "math/Vector3f.h"
 #include "math/Quaternion.h"
 #include <functional>

@@ -1,6 +1,6 @@
 #include "cilantroengine.h"
 #include "graphics/GLMultisampleFramebuffer.h"
-#include "util/LogMessage.h"
+#include "system/LogMessage.h"
 
 GLMultisampleFramebuffer::GLMultisampleFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight) : GLFramebuffer (bufferWidth, bufferHeight)
 {

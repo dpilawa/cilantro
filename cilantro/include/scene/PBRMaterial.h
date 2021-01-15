@@ -3,7 +3,7 @@
 
 #include "cilantroengine.h"
 #include "scene/Material.h"
-#include "scene/Texture.h"
+#include "resource/Texture.h"
 #include "math/Vector3f.h"
 
 class Renderer;

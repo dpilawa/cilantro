@@ -1,5 +1,5 @@
 #include "graphics/GLPostprocess.h"
-#include "util/LogMessage.h"
+#include "system/LogMessage.h"
 
 GLPostprocess::GLPostprocess (GLRenderer* renderer, GLShaderProgram* shaderProgram) : Postprocess (renderer, shaderProgram), GLFramebuffer (renderer->GetWidth (), renderer->GetHeight ())
 {

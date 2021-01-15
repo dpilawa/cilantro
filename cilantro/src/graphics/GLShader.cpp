@@ -1,7 +1,7 @@
 #include "cilantroengine.h"
 #include "graphics/Renderer.h"
 #include "graphics/GLShader.h"
-#include "util/LogMessage.h"
+#include "system/LogMessage.h"
 
 #include <string>
 

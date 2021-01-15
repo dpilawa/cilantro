@@ -1,6 +1,6 @@
 #include "input/InputController.h"
-#include "util/CallbackProvider.h"
-#include "util/LogMessage.h"
+#include "system/CallbackProvider.h"
+#include "system/LogMessage.h"
 
 #include <string>
 

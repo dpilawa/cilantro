@@ -3,26 +3,32 @@
 
 #include "cilantroengine.h"
 #include "math/Vector3f.h"
+#include "resource/Resource.h"
+#include <string>
 
-class Texture
+class Texture : public Resource
 {
 public:
-    __EAPI Texture ();
+    __EAPI Texture (const std::string& name);
+    __EAPI Texture (const std::string& name, const std::string& path);
     __EAPI virtual ~Texture ();
 
     __EAPI Texture& GenerateSolid (const int width, const int height, float channel);
     __EAPI Texture& GenerateSolid (const int width, const int height, const Vector3f& channels);
-    __EAPI Texture& Load (const char *filename);
 
-    __EAPI unsigned char* Data ();
+    __EAPI std::uint8_t* Data ();
 
     __EAPI int GetWidth () const;
     __EAPI int GetHeight () const;
     __EAPI int GetChannels () const;
 
+protected:
+
+    void Load (const char *path);
+
 private:
 
-    unsigned char* data;
+    std::uint8_t* data;
     int width;
     int height;
     int numChannels;

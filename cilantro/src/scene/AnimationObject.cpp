@@ -1,7 +1,7 @@
 #include "scene/AnimationObject.h"
 #include "scene/AnimationProperty.h"
-#include "util/LogMessage.h"
-#include "util/Timer.h"
+#include "system/LogMessage.h"
+#include "system/Timer.h"
 
 // template instantiations
 template __EAPI void AnimationObject::AddAnimationProperty<float> (std::string propertyName, float startValue, std::function<void (float)> updateFunction, std::function<float (float, float, float)> interpolateFunction);

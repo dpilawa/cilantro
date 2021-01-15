@@ -1,8 +1,8 @@
 #include "cilantroengine.h"
 #include "graphics/RenderTarget.h"
 #include "graphics/GLFWRenderTarget.h"
-#include "util/LogMessage.h"
-#include "util/Timer.h"
+#include "system/LogMessage.h"
+#include "system/Timer.h"
 #include "math/Vector3f.h"
 #include "scene/GameScene.h"
 

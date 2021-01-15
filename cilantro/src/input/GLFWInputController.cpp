@@ -1,6 +1,6 @@
 #include "cilantroengine.h"
 #include "GLFW/glfw3.h"
-#include "util/LogMessage.h"
+#include "system/LogMessage.h"
 #include "input/Input.h"
 #include "input/GLFWInputController.h"
 

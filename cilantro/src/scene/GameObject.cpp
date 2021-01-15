@@ -6,7 +6,7 @@
 #include "scene/GameScene.h"
 #include "scene/GameObject.h"
 #include "scene/Transform.h"
-#include "util/CallbackProvider.h"
+#include "system/CallbackProvider.h"
 #include <string>
 
 GameObject::GameObject ()

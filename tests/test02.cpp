@@ -34,32 +34,28 @@ int main (int argc, char* argv [])
     controller.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
     controller.BindInputEvent ("exit", [ & ]() { game.Stop (); });
 
-    Texture earthT;
-    earthT.Load ("textures/2k_earth_daymap.jpg");
-    Texture earthTSpec;
-    earthTSpec.Load ("textures/2k_earth_specular_map.png");
+    Texture earthdiffuset ("earthdiffuse", "textures/2k_earth_daymap.jpg");
+    Texture earthspect ("earthspec", "textures/2k_earth_specular_map.png");
 
-    Texture moonT;
-    moonT.Load ("textures/2k_moon.jpg");
+    Texture moont ("moon", "textures/2k_moon.jpg");
 
-    Texture sunT;
-    sunT.Load ("textures/2k_sun.jpg");
+    Texture sunt ("sun", "textures/2k_sun.jpg");
 
     PhongMaterial& sunM = dynamic_cast<PhongMaterial&>(scene.AddMaterial (new PhongMaterial ()));
     //sunM.SetEmissive (Vector3f (0.99f, 0.72f, 0.07f));
-    sunM.SetEmissive (&sunT);
+    sunM.SetEmissive (&sunt);
 
     PhongMaterial& earthM = dynamic_cast<PhongMaterial&>(scene.AddMaterial (new PhongMaterial ()));
     //earthM.SetDiffuse (Vector3f (0.42f, 0.58f, 0.84f));
     //earthM.SetSpecular (Vector3f (1.0f, 1.0f, 1.0f));
-    earthM.SetDiffuse (&earthT);
-    earthM.SetSpecular (&earthTSpec);
+    earthM.SetDiffuse (&earthdiffuset);
+    earthM.SetSpecular (&earthspect);
     earthM.SetSpecularShininess (32.0f);
 
     PhongMaterial& moonM = dynamic_cast<PhongMaterial&>(scene.AddMaterial (new PhongMaterial ()));
     //moonM.SetDiffuse (Vector3f (0.3f, 0.3f, 0.3f));
     //moonM.SetSpecular (Vector3f (0.0f, 0.0f, 0.0f));
-    moonM.SetDiffuse (&moonT);
+    moonM.SetDiffuse (&moont);
     moonM.SetSpecularShininess (1.0f);
     moonM.SetSpecular (Vector3f(0.2f, 0.2f, 0.2f));
 

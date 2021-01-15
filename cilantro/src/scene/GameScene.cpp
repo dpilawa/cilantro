@@ -3,8 +3,8 @@
 #include "scene/GameObject.h"
 #include "scene/Camera.h"
 #include "scene/Material.h"
-#include "util/CallbackProvider.h"
-#include "util/LogMessage.h"
+#include "system/CallbackProvider.h"
+#include "system/LogMessage.h"
 
 #include <vector>
 

@@ -1,5 +1,5 @@
 #include "cilantroengine.h"
-#include "util/LogMessage.h"
+#include "system/LogMessage.h"
 
 #include <string>
 #include <iostream>

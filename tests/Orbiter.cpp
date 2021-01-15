@@ -3,7 +3,7 @@
 #include "Orbiter.h"
 #include "math/Mathf.h"
 #include "math/Quaternion.h"
-#include "util/Timer.h"
+#include "system/Timer.h"
 #include <cmath>
 
 Orbiter::Orbiter (GameObject& parent, float axisPeriod, float axisAngle, float orbitingPeriod, float orbitingDistance, float orbitInclination) : parent (parent)

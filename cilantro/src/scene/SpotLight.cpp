@@ -3,7 +3,7 @@
 #include "math/Vector3f.h"
 #include "math/Mathf.h"
 #include "graphics/Renderer.h"
-#include "util/CallbackProvider.h"
+#include "system/CallbackProvider.h"
 
 SpotLight::SpotLight () : PointLight ()
 {

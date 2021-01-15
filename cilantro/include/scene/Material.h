@@ -2,9 +2,9 @@
 #define _MATERIAL_H_
 
 #include "cilantroengine.h"
-#include "scene/Texture.h"
+#include "resource/Texture.h"
 #include "math/Vector3f.h"
-#include "util/CallbackProvider.h"
+#include "system/CallbackProvider.h"
 #include <vector>
 #include <string>
 #include <map>

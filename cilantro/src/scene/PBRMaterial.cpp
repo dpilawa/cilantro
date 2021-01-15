@@ -3,7 +3,7 @@
 #include "scene/PBRMaterial.h"
 #include "math/Vector3f.h"
 
-PBRMaterial::PBRMaterial ()
+PBRMaterial::PBRMaterial () : albedo ("albedo"), normal ("normal"), metallic ("metallic"), roughness ("roughness"), ao ("ao")
 {
     SetShaderProgram ("pbr_shader");
 

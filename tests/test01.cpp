@@ -11,13 +11,13 @@
 #include "scene/SpotLight.h"
 #include "scene/LinearPath.h"
 #include "scene/SplinePath.h"
-#include "scene/Texture.h"
+#include "resource/Texture.h"
 #include "graphics/GLRenderer.h"
 #include "graphics/GLFWRenderTarget.h"
 #include "graphics/GLPostprocess.h"
 #include "input/GLFWInputController.h"
 #include "math/Mathf.h"
-#include "util/LogMessage.h"
+#include "system/LogMessage.h"
 
 #include "ControlledCamera.h"
 
@@ -52,15 +52,10 @@ int main (int argc, char* argv [])
     controller.CreateInputEvent ("mousemode", InputKey::KeySpace, InputTrigger::Release, {});
     controller.BindInputEvent ("mousemode", [ & ]() { controller.SetMouseGameMode (!controller.IsGameMode ()); });
 
-    Texture albedo;
-    Texture metalness;
-    Texture roughness;
-    Texture ao;
-
-    albedo.Load ("textures/scuffed-metal1_albedo.png");
-    metalness.Load ("textures/scuffed-metal1_metallic.png");
-    roughness.Load ("textures/scuffed-metal1_roughness.png");
-    ao.Load ("textures/scuffed-metal1_ao.png");
+    Texture albedo ("albedo", "textures/scuffed-metal1_albedo.png");
+    Texture metalness ("metalness", "textures/scuffed-metal1_metallic.png");
+    Texture roughness ("roughness", "textures/scuffed-metal1_roughness.png");
+    Texture ao ("ao", "textures/scuffed-metal1_ao.png");
 
     PBRMaterial& green = dynamic_cast<PBRMaterial&>(scene.AddMaterial (new PBRMaterial ()));
     green.SetAlbedo (Vector3f (0.1f, 0.4f, 0.1f)).SetRoughness (0.1f).SetMetallic (0.6f);

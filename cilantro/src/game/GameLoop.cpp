@@ -3,8 +3,8 @@
 #include "scene/GameScene.h"
 #include "graphics/Renderer.h"
 #include "input/InputController.h"
-#include "util/LogMessage.h"
-#include "util/Timer.h"
+#include "system/LogMessage.h"
+#include "system/Timer.h"
 
 GameLoop::GameLoop ()
 {
