@@ -11,11 +11,11 @@ public:
     __EAPI Resource (const std::string& name, const std::string& path);
     __EAPI virtual ~Resource ();
 
-    __EAPI unsigned int GetId () const;
+    __EAPI unsigned int GetHandle () const;
     __EAPI std::string GetName () const;
 
 protected:
-    unsigned int id;
+    unsigned int handle;
     std::string name;
     std::string path;
 };

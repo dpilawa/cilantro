@@ -68,6 +68,7 @@ include/math/Vector2f.h
 include/math/Vector3f.h
 include/math/Vector4f.h
 include/resource/Resource.h
+include/resource/ResourceManager.h
 include/resource/Texture.h
 include/scene/AnimationObject.h
 include/scene/AnimationProperty.h
@@ -118,6 +119,7 @@ src/math/Vector2f.cpp
 src/math/Vector3f.cpp
 src/math/Vector4f.cpp
 src/resource/Resource.cpp
+src/resource/ResourceManager.cpp
 src/resource/Texture.cpp
 src/scene/AnimationObject.cpp
 src/scene/AnimationProperty.cpp

@@ -52,6 +52,9 @@ int main (int argc, char* argv [])
     controller.CreateInputEvent ("mousemode", InputKey::KeySpace, InputTrigger::Release, {});
     controller.BindInputEvent ("mousemode", [ & ]() { controller.SetMouseGameMode (!controller.IsGameMode ()); });
 
+    game.resourceManager.Load<Texture> ("albedo", "textures/scuffed-metal1_albedo.png");
+    //game.resourceManager.Load<Texture> ("albedo", "textures/scuffed-metal1_albedo.png");
+
     Texture albedo ("albedo", "textures/scuffed-metal1_albedo.png");
     Texture metalness ("metalness", "textures/scuffed-metal1_metallic.png");
     Texture roughness ("roughness", "textures/scuffed-metal1_roughness.png");

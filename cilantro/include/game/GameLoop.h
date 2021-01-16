@@ -2,12 +2,12 @@
 #define _GAMELOOP_H_
 
 #include "cilantroengine.h"
+#include "resource/ResourceManager.h"
 
 class GameScene;
 class Renderer;
 class RenderTarget;
 class InputController;
-class GameLoop;
 
 class GameLoop
 {
@@ -22,6 +22,7 @@ public:
     __EAPI void Step ();
 
     // game loop components
+    ResourceManager resourceManager;
     GameScene* gameScene;
     Renderer* gameRenderer;
     InputController* gameInputController;

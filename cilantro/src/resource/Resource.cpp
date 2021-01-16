@@ -17,9 +17,9 @@ Resource::~Resource ()
 
 }
 
-unsigned int Resource::GetId () const
+unsigned int Resource::GetHandle () const
 {
-    return id;
+    return handle;
 }
 
 std::string Resource::GetName () const
