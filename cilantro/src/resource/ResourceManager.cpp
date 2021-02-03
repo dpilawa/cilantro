@@ -68,7 +68,16 @@ std::shared_ptr<T> ResourceManager::GetByName(const std::string& name)
     }
     else
     {
-        return resource->second;
+        auto resourcePtr = std::dynamic_pointer_cast<T>(resource->second);
+        if (resourcePtr)
+        {
+            return resource->second;
+        }
+        else
+        {
+            LogMessage(__func__, EXIT_FAILURE) << "Resource" << name << "invalid type" << typeid (T).name ();
+        }
+        
     }
 }
 
