@@ -2,8 +2,8 @@
 #define _RESOURCEMANAGER_H_
 
 #include "cilantroengine.h"
-#include "resource\Resource.h"
-#include "system\LogMessage.h"
+#include "resource/Resource.h"
+#include "system/LogMessage.h"
 #include <unordered_map>
 #include <string>
 

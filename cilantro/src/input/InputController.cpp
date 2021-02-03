@@ -4,9 +4,8 @@
 
 #include <string>
 
-InputController::InputController (GameLoop* gameLoop)
+InputController::InputController ()
 {
-    this->gameLoop = gameLoop;
 }
 
 InputController::~InputController ()

@@ -2,7 +2,7 @@
 #define _GAMESCENE_H_
 
 #include "cilantroengine.h"
-#include "game/GameLoop.h"
+#include "game/GameComposite.h"
 #include "scene/GameObject.h"
 #include "scene/Material.h"
 #include "scene/Camera.h"
@@ -10,11 +10,11 @@
 
 // This class represents a game world (a.k.a scene or level)
 // It contains all visible and invisible objects in a game
-class GameScene : public CallbackProvider<std::string, unsigned int, unsigned int>
+class GameScene : public GameComposite, public CallbackProvider<std::string, unsigned int, unsigned int>
 {
 public:
-    GameScene() = delete;
-    __EAPI GameScene(GameLoop* gameLoop);
+
+    __EAPI GameScene();
     __EAPI ~GameScene();
 
     // add GameObject to a scene
@@ -41,8 +41,6 @@ public:
 
 private:
     
-    GameLoop* gameLoop;
-
     // map of all GameObjects in the scene
     std::unordered_map <unsigned int, GameObject*> gameObjects;
 

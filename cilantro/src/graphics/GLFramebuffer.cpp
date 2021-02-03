@@ -2,45 +2,12 @@
 #include "graphics/GLFramebuffer.h"
 #include "system/LogMessage.h"
 
-GLFramebuffer::GLFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight)
+GLFramebuffer::GLFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight) : Framebuffer (bufferWidth, bufferHeight)
 {
-    this->bufferWidth = bufferWidth;
-    this->bufferHeight = bufferHeight;
-
-    this->Initialize ();
 }
 
 GLFramebuffer::~GLFramebuffer ()
 {
-    this->Deinitialize ();
-}
-
-void GLFramebuffer::BindFramebuffer () const
-{
-    glBindFramebuffer (GL_FRAMEBUFFER, framebuffers.FBO);
-}
-
-void GLFramebuffer::SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight)
-{
-    // resize framebuffer texture and viewport
-    glDeleteRenderbuffers (1, &framebuffers.RBO);
-    glDeleteTextures (1, &framebuffers.textureBuffer);
-    glDeleteFramebuffers (1, &framebuffers.FBO);
-
-    this->bufferWidth = bufferWidth;
-    this->bufferHeight = bufferHeight;
-
-    Initialize ();
-}
-
-GLuint GLFramebuffer::GetFramebufferTexture () const
-{
-    return framebuffers.textureBuffer;
-}
-
-GLuint GLFramebuffer::GetFramebuffer () const
-{
-    return framebuffers.FBO;
 }
 
 void GLFramebuffer::Initialize ()
@@ -84,4 +51,31 @@ void GLFramebuffer::Deinitialize ()
     glDeleteRenderbuffers (1, &framebuffers.RBO);
     glDeleteTextures (1, &framebuffers.textureBuffer);
     glDeleteFramebuffers (1, &framebuffers.FBO);
+}
+
+void GLFramebuffer::BindFramebuffer () const
+{
+    glBindFramebuffer (GL_FRAMEBUFFER, framebuffers.FBO);
+}
+
+void GLFramebuffer::SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight)
+{
+    // resize framebuffer texture and viewport
+    glDeleteRenderbuffers (1, &framebuffers.RBO);
+    glDeleteTextures (1, &framebuffers.textureBuffer);
+    glDeleteFramebuffers (1, &framebuffers.FBO);
+
+    Framebuffer::SetFramebufferResolution (bufferWidth, bufferHeight);
+
+    Initialize ();
+}
+
+GLuint GLFramebuffer::GetFramebufferTexture () const
+{
+    return framebuffers.textureBuffer;
+}
+
+GLuint GLFramebuffer::GetFramebuffer () const
+{
+    return framebuffers.FBO;
 }

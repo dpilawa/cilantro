@@ -4,12 +4,10 @@
 
 GLMultisampleFramebuffer::GLMultisampleFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight) : GLFramebuffer (bufferWidth, bufferHeight)
 {
-    this->Initialize ();
 }
 
 GLMultisampleFramebuffer::~GLMultisampleFramebuffer ()
 {
-    this->Deinitialize ();
 }
 
 void GLMultisampleFramebuffer::BindFramebuffer () const
@@ -51,6 +49,8 @@ GLuint GLMultisampleFramebuffer::GetMultisampleFramebuffer () const
 
 void GLMultisampleFramebuffer::Initialize ()
 {
+    GLFramebuffer::Initialize ();
+
     // create and bind framebuffer
     glGenFramebuffers (1, &multisampleFramebuffers.FBO);
     glBindFramebuffer (GL_FRAMEBUFFER, multisampleFramebuffers.FBO);
@@ -88,4 +88,6 @@ void GLMultisampleFramebuffer::Deinitialize ()
     glDeleteRenderbuffers (1, &multisampleFramebuffers.RBO);
     glDeleteTextures (1, &multisampleFramebuffers.textureBuffer);
     glDeleteFramebuffers (1, &multisampleFramebuffers.FBO);
+
+    GLFramebuffer::Deinitialize ();
 }

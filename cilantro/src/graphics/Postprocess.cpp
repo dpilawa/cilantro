@@ -1,12 +1,15 @@
 #include "graphics/Postprocess.h"
+#include "graphics/Renderer.h"
 
-Postprocess::Postprocess (Renderer* renderer, ShaderProgram* shaderProgram)
+Postprocess::Postprocess (Renderer& renderer, ShaderProgram& shaderProgram) : renderer (renderer), shaderProgram (shaderProgram)
 {
-    this->renderer = renderer;
-    this->shaderProgram = shaderProgram;
 }
 
 Postprocess::~Postprocess ()
 {
 }
 
+Framebuffer* Postprocess::GetFramebufferPtr () const
+{
+    return framebuffer;
+}

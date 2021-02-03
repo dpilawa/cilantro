@@ -2,6 +2,7 @@
 #define _POSTPROCESS_H_
 
 #include "cilantroengine.h"
+#include "graphics/Framebuffer.h"
 #include "graphics/ShaderProgram.h"
 #include <string>
 
@@ -10,17 +11,22 @@ class Renderer;
 class Postprocess
 {
 public:
-    Postprocess () = delete;
-    __EAPI Postprocess (Renderer* renderer, ShaderProgram* shaderProgram);
+    __EAPI Postprocess (Renderer& renderer, ShaderProgram& shaderProgram);
     __EAPI virtual ~Postprocess ();
+
+    virtual void Initialize () = 0;
+    virtual void Deinitialize () = 0;
 
     virtual void OnFrame () = 0;
 
+    Framebuffer* GetFramebufferPtr () const;
     virtual void SetPostprocessParameterFloat (std::string parameterName, float parameterValue) = 0;
 
 protected:
-    Renderer* renderer;
-    ShaderProgram* shaderProgram;
+    Framebuffer* framebuffer;
+
+    Renderer& renderer;
+    ShaderProgram& shaderProgram;
 
 };
 

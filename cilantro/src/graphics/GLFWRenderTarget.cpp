@@ -1,66 +1,27 @@
 #include "cilantroengine.h"
-#include "graphics/RenderTarget.h"
 #include "graphics/GLFWRenderTarget.h"
 #include "system/LogMessage.h"
 #include "system/Timer.h"
 #include "math/Vector3f.h"
-#include "scene/GameScene.h"
 
-GLFWRenderTarget::GLFWRenderTarget (GameLoop* gameLoop, std::string windowCaption, unsigned int width, unsigned int height, bool isFullscreen, bool isResizable, bool isVSync) : RenderTarget (gameLoop, width, height)
+GLFWRenderTarget::GLFWRenderTarget (std::string windowCaption, unsigned int width, unsigned int height, bool isFullscreen, bool isResizable, bool isVSync) : RenderTarget (width, height)
 {
     this->windowCaption = windowCaption;
     this->isFullscreen = isFullscreen;
     this->isResizable = isResizable;
     this->isVSync = isVSync;
-
-    // initialize
-    glfwInit ();
-    this->Initialize ();
 }
 
 GLFWRenderTarget::~GLFWRenderTarget ()
 {
-    this->Deinitialize ();
-    glfwTerminate ();
-}
-
-void GLFWRenderTarget::OnFrame ()
-{
-    glRenderer = dynamic_cast<GLRenderer*>(gameLoop->gameRenderer);
-
-    // draw quad on screen
-    glBindFramebuffer (GL_FRAMEBUFFER, 0);
-    glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
-    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glDisable (GL_DEPTH_TEST);
-    glDisable (GL_FRAMEBUFFER_SRGB);
-    glRenderer->GetShaderProgram ("flatquad_shader").Use ();
-    glBindVertexArray (targetVAO);
-    glActiveTexture (GL_TEXTURE0);
-    glBindTexture (GL_TEXTURE_2D, glRenderer->GetRendererFramebufferTexture ());
-    glViewport (0, 0, this->width, this->height);
-    glDrawArrays (GL_TRIANGLES, 0, 6);
-    glBindVertexArray (0);
-    glBindTexture (GL_TEXTURE_2D, 0);
-
-    // swap front and back buffers
-    glfwSwapBuffers (window);
-
-    // check window closing
-    if (glfwWindowShouldClose (window))
-    {
-        gameLoop->Stop ();
-    }
-}
-
-GLFWwindow* GLFWRenderTarget::GetWindow ()
-{
-    return window;
 }
 
 void GLFWRenderTarget::Initialize ()
 {
     GLFWmonitor* monitor; 
+
+    // initialize GLFW
+    glfwInit ();
 
     // check fullscreen
     if (isFullscreen)
@@ -96,11 +57,11 @@ void GLFWRenderTarget::Initialize ()
     glfwMakeContextCurrent (window);
 
     // set resize callback
-    glfwSetWindowUserPointer (window, this->gameLoop);
+    glfwSetWindowUserPointer (window, this->game);
 
     auto framebufferResizeCallback = [](GLFWwindow* window, int width, int height)
     {
-        static_cast<GLFWRenderTarget*>(static_cast<GameLoop*>(glfwGetWindowUserPointer (window))->gameRenderTarget)->FramebufferResizeCallback (width, height);
+        static_cast<GLFWRenderTarget&>(static_cast<Game*>(glfwGetWindowUserPointer (window))->GetRenderTarget ()).FramebufferResizeCallback (width, height);
     };
 
     glfwSetFramebufferSizeCallback (window, framebufferResizeCallback);
@@ -144,6 +105,41 @@ void GLFWRenderTarget::Initialize ()
 void GLFWRenderTarget::Deinitialize ()
 {
     glfwDestroyWindow (window);
+    glfwTerminate ();
+}
+
+void GLFWRenderTarget::OnFrame ()
+{
+    GLRenderer& renderer = dynamic_cast<GLRenderer&>(game->GetRenderer ());
+
+    // draw quad on screen
+    glBindFramebuffer (GL_FRAMEBUFFER, 0);
+    glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
+    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glDisable (GL_DEPTH_TEST);
+    glDisable (GL_FRAMEBUFFER_SRGB);
+    renderer.GetShaderProgram ("flatquad_shader").Use ();
+    glBindVertexArray (targetVAO);
+    glActiveTexture (GL_TEXTURE0);
+    glBindTexture (GL_TEXTURE_2D, renderer.GetRendererFramebufferTexture ());
+    glViewport (0, 0, this->width, this->height);
+    glDrawArrays (GL_TRIANGLES, 0, 6);
+    glBindVertexArray (0);
+    glBindTexture (GL_TEXTURE_2D, 0);
+
+    // swap front and back buffers
+    glfwSwapBuffers (window);
+
+    // check window closing
+    if (glfwWindowShouldClose (window))
+    {
+        game->Stop ();
+    }
+}
+
+GLFWwindow* GLFWRenderTarget::GetWindow ()
+{
+    return window;
 }
 
 void GLFWRenderTarget::FramebufferResizeCallback (int width, int height)
@@ -152,6 +148,6 @@ void GLFWRenderTarget::FramebufferResizeCallback (int width, int height)
     this->height = height;
 
     // update GL renderer texture size and viewport
-    glRenderer->SetResolution (width, height);
+    game->GetRenderer().SetResolution (width, height);
 }
 

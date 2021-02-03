@@ -8,10 +8,8 @@
 
 #include <vector>
 
-GameScene::GameScene(GameLoop* gameLoop)
+GameScene::GameScene()
 {
-    this->gameLoop = gameLoop;
-
     this->gameObjectsCount = 0;
     this->materialsCount = 0;
     this->activeCamera = nullptr;
@@ -28,7 +26,7 @@ GameObject& GameScene::AddGameObject (GameObject* gameObject)
     gameObject->SetHandle (handle);
 
     // set game loop reference
-    gameObject->SetGameLoop (this->gameLoop);
+    gameObject->AttachToGame (this->game);
 
     // insert into collection
     gameObjects[handle] = gameObject;

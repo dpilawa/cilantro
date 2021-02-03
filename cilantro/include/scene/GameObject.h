@@ -2,23 +2,19 @@
 #define _GAMEOBJECT_H_
 
 #include "cilantroengine.h"
-#include "game/GameLoop.h"
+#include "game/GameComposite.h"
 #include "scene/Transform.h"
 #include "system/CallbackProvider.h"
 #include <string>
 #include <vector>
 
-class GameScene;
 class Renderer;
 
-class GameObject : public CallbackProvider<std::string, unsigned int, unsigned int>
+class GameObject : public GameComposite, public CallbackProvider<std::string, unsigned int, unsigned int>
 {
 public:
     __EAPI GameObject ();
     __EAPI virtual ~GameObject ();
-
-    // attach to game loop
-    __EAPI void SetGameLoop (GameLoop* gameLoop);
 
     // handle  operations
     __EAPI void SetHandle (unsigned int handle);
@@ -65,8 +61,6 @@ public:
     __EAPI bool IsLight ();
 
 protected:
-
-    GameLoop* gameLoop;
 
     // is object a light
     bool isLight;

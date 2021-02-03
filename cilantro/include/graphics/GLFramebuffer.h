@@ -2,6 +2,7 @@
 #define _GLFRAMEBUFFER_H_
 
 #include "cilantroengine.h"
+#include "graphics/Framebuffer.h"
 #include "glad/glad.h"
 
 struct Framebuffers
@@ -12,13 +13,14 @@ public:
     GLuint textureBuffer;
 };
 
-class GLFramebuffer 
+class GLFramebuffer : public Framebuffer
 {
 public:
-
-    GLFramebuffer () = delete;
     GLFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight);
     virtual ~GLFramebuffer ();
+
+    virtual void Initialize ();
+    virtual void Deinitialize ();
 
     virtual void BindFramebuffer () const;
 
@@ -31,13 +33,6 @@ protected:
 
     Framebuffers framebuffers;
 
-    unsigned int bufferWidth;
-    unsigned int bufferHeight;
-
-private:
-
-    void Initialize ();
-    void Deinitialize ();
 };
 
 #endif

@@ -2,8 +2,9 @@
 #define _GLFWINPUTCONTROLLER_H_
 
 #include "cilantroengine.h"
-#include "game/GameLoop.h"
+#include "game/Game.h"
 #include "input/InputController.h"
+#include "graphics/GLFWRenderTarget.h"
 #include "GLFW/glfw3.h"
 #include <type_traits>
 #include <cstddef>
@@ -39,8 +40,7 @@ struct InputKeyHash
 class GLFWInputController : public InputController
 {
 public:
-    GLFWInputController () = delete;
-    __EAPI GLFWInputController (GameLoop* gameLoop, GLFWwindow* window);
+    __EAPI GLFWInputController ();
     __EAPI ~GLFWInputController ();
 
     __EAPI void OnFrame ();

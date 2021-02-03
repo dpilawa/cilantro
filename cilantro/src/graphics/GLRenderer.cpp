@@ -36,25 +36,95 @@ std::unordered_map<unsigned int, GLint> GLRenderer::textureChannelMap {
     {4, GL_RGBA}
 };
 
-GLRenderer::GLRenderer (GameLoop* gameLoop, unsigned int width, unsigned int height) : Renderer (gameLoop, width, height), 
-#if (CILANTRO_GL_VERSION <= 140)
-GLFramebuffer (width, height)
-#else
-GLMultisampleFramebuffer (width, height)
-#endif
+GLRenderer::GLRenderer (unsigned int width, unsigned int height) : Renderer (width, height)
 {
-    this->Initialize ();
+#if (CILANTRO_GL_VERSION <= 140)
+    framebuffer = new GLFramebuffer (width, heigh);
+#else
+    framebuffer = new GLMultisampleFramebuffer (width, height);
+#endif
 }
 
 GLRenderer::~GLRenderer ()
 {
-    this->Deinitialize ();
+    delete framebuffer;
+}
+
+void GLRenderer::Initialize ()
+{
+    // set variable defaults
+    postprocessStage = 0;
+
+    // display GL version information
+    LogMessage (__func__) << "Version:" << (char*) glGetString (GL_VERSION);
+    LogMessage (__func__) << "Shader language version:" << (char*) glGetString (GL_SHADING_LANGUAGE_VERSION);
+    LogMessage (__func__) << "Renderer:" << (char*) glGetString (GL_RENDERER);
+
+    // enable depth test
+    glEnable (GL_DEPTH_TEST);
+
+    // enable face culling
+    glFrontFace (GL_CCW);
+    glEnable (GL_CULL_FACE);
+
+    // enable multisampling
+    glEnable (GL_MULTISAMPLE);
+
+    // initialize framebuffer
+    framebuffer->Initialize ();
+
+    // initialize shader library
+    InitializeShaderLibrary ();
+
+    // initialize object buffers
+    InitializeObjectBuffers ();
+
+    // initualize material texture units
+    InitializeMaterialTextures ();
+
+    // initialize uniform buffers of view and projection matrices
+    InitializeMatrixUniformBuffers ();
+
+    // initialize uniform buffers of lights
+    InitializeLightUniformBuffers ();
+
+    // set callback for new MeshObjects
+    game->GetGameScene ().RegisterCallback ("OnUpdateMeshObject", [&](unsigned int objectHandle, unsigned int) { game->GetGameScene ().GetGameObjects ()[objectHandle]->OnUpdate (*this); });
+
+    // set callback for new or modified lights
+    game->GetGameScene ().RegisterCallback ("OnUpdateLight", [&](unsigned int objectHandle, unsigned int) { game->GetGameScene ().GetGameObjects ()[objectHandle]->OnUpdate (*this); });
+
+    // set callback for new or modified materials
+    game->GetGameScene ().RegisterCallback ("OnUpdateMaterial", [&](unsigned int materialHandle, unsigned int textureUnit) { game->GetGameScene ().GetMaterials ()[materialHandle]->OnUpdate (*this, textureUnit); });
+
+    // set callback for modified scene graph (currently this only requires to reload light buffers)
+    game->GetGameScene ().RegisterCallback ("OnUpdateSceneGraph", [&](unsigned int objectHandle, unsigned int) { UpdateLightBufferRecursive (objectHandle); });
+
+    // set callback for modified transforms (currently this only requires to reload light buffers)
+    game->GetGameScene ().RegisterCallback ("OnUpdateTransform", [&](unsigned int objectHandle, unsigned int) { UpdateLightBufferRecursive (objectHandle); });
+
+    // check for any outstanding errors
+    CheckGLError (__func__);
+
+    LogMessage (__func__) << "GLRenderer started";
+}
+
+void GLRenderer::Deinitialize ()
+{
+    objectBuffers.clear ();
+    pointLights.clear ();
+    directionalLights.clear ();
+    spotLights.clear ();
+    shaders.clear ();
+    shaderPrograms.clear ();
+
+    framebuffer->Deinitialize ();
 }
 
 void GLRenderer::RenderFrame ()
 {
     // bind framebuffer
-    BindFramebuffer ();
+    framebuffer->BindFramebuffer ();
 
     // clear frame and depth buffers
     glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
@@ -70,14 +140,14 @@ void GLRenderer::RenderFrame ()
     glViewport (0, 0, this->width, this->height);
 
     // draw all objects in scene
-    for (auto&& gameObject : gameLoop->gameScene->GetGameObjects ())
+    for (auto&& gameObject : game->GetGameScene ().GetGameObjects ())
     {
         gameObject.second->OnDraw (*this);
     }
 
 #if (CILANTRO_GL_VERSION > 140)
     // blit framebuffer
-    BlitFramebuffer ();
+    framebuffer->BlitFramebuffer ();
 #endif
 
     // base class functions
@@ -91,11 +161,11 @@ void GLRenderer::SetResolution (unsigned int width, unsigned int height)
 {
     Renderer::SetResolution (width, height);
 
-    this->SetFramebufferResolution (width, height);
+    framebuffer->SetFramebufferResolution (width, height);
 
     for (auto&& postprocess : postprocesses)
     {
-        dynamic_cast<GLPostprocess*> (postprocess)->SetFramebufferResolution (width, height);
+        dynamic_cast<GLFramebuffer*> (postprocess->GetFramebufferPtr ())->SetFramebufferResolution (width, height);
     }
 }
 
@@ -103,11 +173,11 @@ GLuint GLRenderer::GetRendererFramebuffer () const
 {
     if (postprocessStage == 0) 
     {
-        return this->GetFramebuffer ();
+        return framebuffer->GetFramebuffer ();
     }
     else 
     {
-        return dynamic_cast<GLPostprocess*> (postprocesses[postprocessStage - 1])->GetFramebuffer ();
+        return dynamic_cast<GLFramebuffer*> (postprocesses[postprocessStage - 1]->GetFramebufferPtr ())->GetFramebuffer ();
     }
 }
 
@@ -115,11 +185,11 @@ GLuint GLRenderer::GetRendererFramebufferTexture () const
 {
     if (postprocessStage == 0) 
     {
-        return this->GetFramebufferTexture ();
+        return framebuffer->GetFramebufferTexture ();
     }
     else 
     {
-        return dynamic_cast<GLPostprocess*> (postprocesses[postprocessStage - 1])->GetFramebufferTexture ();
+        return dynamic_cast<GLFramebuffer*> (postprocesses[postprocessStage - 1]->GetFramebufferPtr ())->GetFramebufferTexture ();
     }
 }
 
@@ -147,7 +217,7 @@ void GLRenderer::AddShaderToProgram (std::string shaderProgramName, std::string 
     }
 }
 
-GLShaderProgram& GLRenderer::GetShaderProgram (std::string shaderProgramName)
+ShaderProgram& GLRenderer::GetShaderProgram (std::string shaderProgramName)
 {
     auto searchProgram = shaderPrograms.find (shaderProgramName);
 
@@ -168,7 +238,7 @@ void GLRenderer::Draw (MeshObject& meshObject)
     GLuint uniformId;
 
     // pick shader
-    GLShaderProgram& shaderProgram = GetShaderProgram (meshObject.GetMaterial ().GetShaderProgramName ());
+    GLShaderProgram& shaderProgram = dynamic_cast<GLShaderProgram&>(GetShaderProgram (meshObject.GetMaterial ().GetShaderProgramName ()));
     shaderProgramId = shaderProgram.GetProgramId ();
     shaderProgram.Use ();
 
@@ -217,7 +287,7 @@ void GLRenderer::Draw (MeshObject& meshObject)
     eyePositionId = glGetUniformLocation (shaderProgramId, "eyePosition");
     if (eyePositionId != GL_INVALID_INDEX)
     {
-        glUniform3fv (eyePositionId, 1, &gameLoop->gameScene->GetActiveCamera ()->GetPosition ()[0]);
+        glUniform3fv (eyePositionId, 1, &game->GetGameScene ().GetActiveCamera ()->GetPosition ()[0]);
     }
 
     // get world matrix for drawn objects and set uniform value
@@ -481,7 +551,7 @@ void GLRenderer::Update (SpotLight& spotLight)
 void GLRenderer::Update (Material& material, unsigned int textureUnit)
 {
     unsigned int materialHandle = material.GetHandle ();
-    GLShaderProgram shader = GetShaderProgram ( material.GetShaderProgramName ());
+    GLShaderProgram& shader = dynamic_cast<GLShaderProgram&>(GetShaderProgram ( material.GetShaderProgramName ()));
     GLuint shaderId = shader.GetProgramId ();
     GLuint texture;
     GLuint format;
@@ -542,72 +612,6 @@ void GLRenderer::Update (Material& material, unsigned int textureUnit)
 
 }
 
-void GLRenderer::Initialize ()
-{
-    // set variable defaults
-    postprocessStage = 0;
-
-    // display GL version information
-    LogMessage (__func__) << "Version:" << (char*) glGetString (GL_VERSION);
-    LogMessage (__func__) << "Shader language version:" << (char*) glGetString (GL_SHADING_LANGUAGE_VERSION);
-    LogMessage (__func__) << "Renderer:" << (char*) glGetString (GL_RENDERER);
-
-    // enable depth test
-    glEnable (GL_DEPTH_TEST);
-
-    // enable face culling
-    glFrontFace (GL_CCW);
-    glEnable (GL_CULL_FACE);
-
-    // enable multisampling
-    glEnable (GL_MULTISAMPLE);
-
-    // initialize shader library
-    InitializeShaderLibrary ();
-
-    // initialize object buffers
-    InitializeObjectBuffers ();
-
-    // initualize material texture units
-    InitializeMaterialTextures ();
-
-    // initialize uniform buffers of view and projection matrices
-    InitializeMatrixUniformBuffers ();
-
-    // initialize uniform buffers of lights
-    InitializeLightUniformBuffers ();
-
-    // set callback for new MeshObjects
-    gameLoop->gameScene->RegisterCallback ("OnUpdateMeshObject", [&](unsigned int objectHandle, unsigned int) { gameLoop->gameScene->GetGameObjects ()[objectHandle]->OnUpdate (*this); });
-
-    // set callback for new or modified lights
-    gameLoop->gameScene->RegisterCallback ("OnUpdateLight", [&](unsigned int objectHandle, unsigned int) { gameLoop->gameScene->GetGameObjects ()[objectHandle]->OnUpdate (*this); });
-
-    // set callback for new or modified materials
-    gameLoop->gameScene->RegisterCallback ("OnUpdateMaterial", [&](unsigned int materialHandle, unsigned int textureUnit) { gameLoop->gameScene->GetMaterials ()[materialHandle]->OnUpdate (*this, textureUnit); });
-
-    // set callback for modified scene graph (currently this only requires to reload light buffers)
-    gameLoop->gameScene->RegisterCallback ("OnUpdateSceneGraph", [&](unsigned int objectHandle, unsigned int) { UpdateLightBufferRecursive (objectHandle); });
-
-    // set callback for modified transforms (currently this only requires to reload light buffers)
-    gameLoop->gameScene->RegisterCallback ("OnUpdateTransform", [&](unsigned int objectHandle, unsigned int) { UpdateLightBufferRecursive (objectHandle); });
-
-    // check for any outstanding errors
-    CheckGLError (__func__);
-
-    LogMessage (__func__) << "GLRenderer started";
-}
-
-void GLRenderer::Deinitialize ()
-{
-    objectBuffers.clear ();
-    pointLights.clear ();
-    directionalLights.clear ();
-    spotLights.clear ();
-    shaders.clear ();
-    shaderPrograms.clear ();
-}
-
 void GLRenderer::CheckGLError (std::string functionName)
 {
     GLuint errorCode;
@@ -640,7 +644,7 @@ void GLRenderer::InitializeShaderLibrary ()
     glBindAttribLocation(GetShaderProgram("pbr_shader").GetProgramId(), 1, "vNormal");
 #endif
 #if (CILANTRO_GL_VERSION < 420)
-    GLuint p = GetShaderProgram("pbr_shader").GetProgramId ();
+    GLuint p = dynamic_cast<GLShaderProgram&>(GetShaderProgram("pbr_shader")).GetProgramId ();
     GetShaderProgram("pbr_shader").Use ();
     glUniform1i (glGetUniformLocation(p, "tAlbedo"), 0);
     glUniform1i (glGetUniformLocation(p, "tNormal"), 1);
@@ -657,7 +661,7 @@ void GLRenderer::InitializeShaderLibrary ()
     glBindAttribLocation(GetShaderProgram("phong_shader").GetProgramId(), 1, "vNormal");
 #endif
 #if (CILANTRO_GL_VERSION < 420)
-    p = GetShaderProgram("phong_shader").GetProgramId ();
+    p = dynamic_cast<GLShaderProgram&>(GetShaderProgram("phong_shader")).GetProgramId ();
     GetShaderProgram("phong_shader").Use ();
     glUniform1i (glGetUniformLocation(p, "tDiffuse"), 0);
     glUniform1i (glGetUniformLocation(p, "tNormal"), 1);
@@ -673,7 +677,7 @@ void GLRenderer::InitializeShaderLibrary ()
     glBindAttribLocation(GetShaderProgram("blinnphong_shader").GetProgramId(), 1, "vNormal");
 #endif
 #if (CILANTRO_GL_VERSION < 420)
-    p = GetShaderProgram("blinnphong_shader").GetProgramId ();
+    p = dynamic_cast<GLShaderProgram&>(GetShaderProgram("blinnphong_shader")).GetProgramId ();
     GetShaderProgram("blinnphong_shader").Use ();
     glUniform1i (glGetUniformLocation(p, "tDiffuse"), 0);
     glUniform1i (glGetUniformLocation(p, "tNormal"), 1);
@@ -697,7 +701,7 @@ void GLRenderer::InitializeShaderLibrary ()
     glBindAttribLocation(GetShaderProgram("normals_shader").GetProgramId(), 1, "vNormal");
 #endif
 #if (CILANTRO_GL_VERSION < 420)
-    p = GetShaderProgram("emissive_shader").GetProgramId ();
+    p = dynamic_cast<GLShaderProgram&>(GetShaderProgram("emissive_shader")).GetProgramId ();
     GetShaderProgram("emissive_shader").Use ();
     glUniform1i (glGetUniformLocation(p, "tEmissive"), 3);
 #endif
@@ -710,7 +714,7 @@ void GLRenderer::InitializeShaderLibrary ()
     glBindAttribLocation(GetShaderProgram("flatquad_shader").GetProgramId(), 1, "vTextureCoordinates");
 #endif
 #if (CILANTRO_GL_VERSION < 420)
-    p = GetShaderProgram("flatquad_shader").GetProgramId ();
+    p = dynamic_cast<GLShaderProgram&>(GetShaderProgram("flatquad_shader")).GetProgramId ();
     GetShaderProgram("flatquad_shader").Use ();
     glUniform1i (glGetUniformLocation(p, "fScreenTexture"), 0);
 #endif
@@ -723,7 +727,7 @@ void GLRenderer::InitializeShaderLibrary ()
     glBindAttribLocation(GetShaderProgram("post_hdr_shader").GetProgramId(), 1, "vTextureCoordinates");
 #endif
 #if (CILANTRO_GL_VERSION < 420)
-    p = GetShaderProgram("post_hdr_shader").GetProgramId ();
+    p = dynamic_cast<GLShaderProgram&>(GetShaderProgram("post_hdr_shader")).GetProgramId ();
     GetShaderProgram("post_hdr_shader").Use ();
     glUniform1i (glGetUniformLocation(p, "fScreenTexture"), 0);
 #endif
@@ -736,7 +740,7 @@ void GLRenderer::InitializeShaderLibrary ()
     glBindAttribLocation(GetShaderProgram("post_gamma_shader").GetProgramId(), 1, "vTextureCoordinates");
 #endif
 #if (CILANTRO_GL_VERSION < 420)
-    p = GetShaderProgram("post_gamma_shader").GetProgramId ();
+    p = dynamic_cast<GLShaderProgram&>(GetShaderProgram("post_gamma_shader")).GetProgramId ();
     GetShaderProgram("post_gamma_shader").Use ();
     glUniform1i (glGetUniformLocation(p, "fScreenTexture"), 0);
 #endif
@@ -746,7 +750,7 @@ void GLRenderer::InitializeShaderLibrary ()
 void GLRenderer::InitializeObjectBuffers ()
 {
     // load object buffers for all existing objects
-    for (auto&& gameObject : gameLoop->gameScene->GetGameObjects ())
+    for (auto&& gameObject : game->GetGameScene ().GetGameObjects ())
     {
         // load buffers for MeshObject only
         if (dynamic_cast<MeshObject*>(gameObject.second) != nullptr)
@@ -758,7 +762,7 @@ void GLRenderer::InitializeObjectBuffers ()
 
 void GLRenderer::InitializeMaterialTextures ()
 {
-    for (auto&& material : gameLoop->gameScene->GetMaterials ())
+    for (auto&& material : game->GetGameScene ().GetMaterials ())
     {
         material.second->OnUpdate (*this);
     }
@@ -855,7 +859,7 @@ void GLRenderer::InitializeLightUniformBuffers ()
     }
 
     // scan objects vector for lights and populate light buffers
-    for (auto&& gameObject : gameLoop->gameScene->GetGameObjects ())
+    for (auto&& gameObject : game->GetGameScene ().GetGameObjects ())
     {
         if (gameObject.second->IsLight ())
         {
@@ -867,7 +871,7 @@ void GLRenderer::InitializeLightUniformBuffers ()
 
 void GLRenderer::UpdateLightBufferRecursive (unsigned int objectHandle)
 {
-    GameObject* gameObject = gameLoop->gameScene->GetGameObjects ()[objectHandle];
+    GameObject* gameObject = game->GetGameScene ().GetGameObjects ()[objectHandle];
 
     if (gameObject->IsLight ())
     {
@@ -885,7 +889,7 @@ void GLRenderer::LoadMatrixUniformBuffers ()
     Camera* activeCamera;
 
     // get active camera of rendered scene
-    activeCamera = gameLoop->gameScene->GetActiveCamera ();
+    activeCamera = game->GetGameScene ().GetActiveCamera ();
 
     if (activeCamera == nullptr)
     {

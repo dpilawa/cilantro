@@ -3,7 +3,7 @@
 
 #include "cilantroengine.h"
 #include "system/CallbackProvider.h"
-#include "game/GameLoop.h"
+#include "game/GameComposite.h"
 #include "scene/GameScene.h"
 #include "scene/MeshObject.h"
 #include "scene/PointLight.h"
@@ -15,12 +15,14 @@
 #include "graphics/Postprocess.h"
 #include <string>
 
-class Renderer
+class Renderer : public GameComposite
 {
 public:
-    Renderer () = delete;
-    __EAPI Renderer (GameLoop* gameLoop, unsigned int width, unsigned int height);
+    __EAPI Renderer (unsigned int width, unsigned int height);
     __EAPI virtual ~Renderer ();
+
+    virtual void Initialize () = 0;
+    virtual void Deinitialize () = 0;
 
     // render
     __EAPI virtual void RenderFrame ();
@@ -38,6 +40,7 @@ public:
     // shader library manipulation
     virtual void AddShader (std::string shaderName, std::string shaderSourceCode, ShaderType shaderType) = 0;
     virtual void AddShaderToProgram (std::string shaderProgramName, std::string shaderName) = 0;
+    virtual ShaderProgram& GetShaderProgram (std::string shaderProgramName) = 0;    
 
     // object drawing and updating
     virtual void Draw (MeshObject& meshObject) = 0;
@@ -49,16 +52,12 @@ public:
 
 protected:
 
-    GameLoop* gameLoop;
-
     unsigned int width;
     unsigned int height;
 
     unsigned int postprocessStage;
     std::vector<Postprocess*> postprocesses;
 
-    virtual void Initialize () = 0;
-    virtual void Deinitialize () = 0;
 };
 
 #endif

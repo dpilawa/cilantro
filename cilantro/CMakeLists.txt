@@ -41,7 +41,9 @@ include/graphics/emissive.fs.h
 include/graphics/flatquad.fs.h
 include/graphics/post_hdr.fs.h
 include/graphics/post_gamma.fs.h
-include/game/GameLoop.h
+include/game/Game.h
+include/game/GameComposite.h
+include/graphics/Framebuffer.h
 include/graphics/GLFramebuffer.h
 include/graphics/GLPostprocess.h
 include/graphics/GLRenderer.h
@@ -93,7 +95,9 @@ include/scene/Transform.h
 include/system/CallbackProvider.h
 include/system/LogMessage.h
 include/system/Timer.h
-src/game/GameLoop.cpp
+src/game/Game.cpp
+src/game/GameComposite.cpp
+src/graphics/Framebuffer.cpp
 src/graphics/GLFramebuffer.cpp
 src/graphics/GLPostprocess.cpp
 src/graphics/GLRenderer.cpp

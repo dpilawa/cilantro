@@ -2,7 +2,7 @@
 #define _INPUTCONTROLLER_H_
 
 #include "cilantroengine.h"
-#include "game/GameLoop.h"
+#include "game/GameComposite.h"
 #include "system/CallbackProvider.h"
 #include "input/Input.h"
 #include <string>
@@ -12,11 +12,10 @@
 #include <vector>
 
 
-class InputController : public CallbackProvider <std::string, float>
+class InputController : public GameComposite, public CallbackProvider <std::string, float>
 {
 public:
-    InputController () = delete;
-    InputController (GameLoop* gameLoop);
+    InputController ();
     virtual ~InputController ();
 
     virtual void Initialize () = 0;
@@ -44,7 +43,7 @@ private:
 
 protected:
 
-    GameLoop* gameLoop;
+    Game* gameLoop;
 
     bool isGameMode;
 

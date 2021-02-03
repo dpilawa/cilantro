@@ -5,16 +5,19 @@
 #include "scene/MeshObject.h"
 #include "system/Timer.h"
 
-Renderer::Renderer (GameLoop* gameLoop, unsigned int width, unsigned int height)
+Renderer::Renderer (unsigned int width, unsigned int height)
 {
-    this->gameLoop = gameLoop;
-
     this->width = width;
     this->height = height;
 }
 
 Renderer::~Renderer ()
 {
+    for (auto&& postprocess : postprocesses)
+    {
+        postprocess->Deinitialize ();
+        delete postprocess;
+    }
 }
 
 void Renderer::RenderFrame ()
@@ -50,4 +53,5 @@ unsigned int Renderer::GetHeight () const
 void Renderer::AddPostprocess (Postprocess* postprocess)
 {
     postprocesses.push_back (postprocess);
+    postprocess->Initialize ();
 }

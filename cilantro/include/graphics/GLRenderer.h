@@ -11,7 +11,6 @@
 #include "graphics/GLShaderProgram.h"
 #include "graphics/Renderer.h"
 #include "graphics/RenderTarget.h"
-#include "scene/GameScene.h"
 #include <cstring>
 
 #define MAX_POINT_LIGHTS 64
@@ -127,17 +126,15 @@ public:
     SpotLightStruct spotLights[MAX_SPOT_LIGHTS];
 };
 
-class GLRenderer : public Renderer, 
-#if (CILANTRO_GL_VERSION <= 140)
-public GLFramebuffer
-#else
-public GLMultisampleFramebuffer
-#endif
+class GLRenderer : public Renderer
 {
 public:
-    GLRenderer () = delete;
-    __EAPI GLRenderer (GameLoop* gameLoop, unsigned int width, unsigned int height);
+    __EAPI GLRenderer (unsigned int width, unsigned int height);
     __EAPI ~GLRenderer ();
+
+    // (de)initializers
+    __EAPI void Initialize ();
+    __EAPI void Deinitialize ();
 
     // render
     __EAPI void RenderFrame ();
@@ -150,7 +147,7 @@ public:
     // shader library manipulation
     __EAPI virtual void AddShader (std::string shaderName, std::string shaderSourceCode, ShaderType shaderType);
     __EAPI virtual void AddShaderToProgram (std::string shaderProgramName, std::string shaderName);
-    __EAPI GLShaderProgram& GetShaderProgram (std::string shaderProgramName);
+    __EAPI ShaderProgram& GetShaderProgram (std::string shaderProgramName);
 
     // object drawing and updating
     __EAPI void Draw (MeshObject& meshObject);
@@ -165,6 +162,12 @@ private:
     // GL shader library
     std::unordered_map <std::string, GLShader> shaders;
     std::unordered_map <std::string, GLShaderProgram> shaderPrograms;
+
+#if (CILANTRO_GL_VERSION <= 140)
+    GLFramebuffer* framebuffer;
+#else
+    GLMultisampleFramebuffer* framebuffer;
+#endif
 
     // GL buffers and arrays for scene objects
     // These buffers contain data for objects to be rendered
@@ -197,10 +200,6 @@ private:
     std::unordered_map<unsigned int, unsigned int> pointLights;
     std::unordered_map<unsigned int, unsigned int> directionalLights;
     std::unordered_map<unsigned int, unsigned int> spotLights;
-
-    // (de)initializers
-    void Initialize ();
-    void Deinitialize ();
 
     // check for GL errors
     void CheckGLError (std::string functionName);

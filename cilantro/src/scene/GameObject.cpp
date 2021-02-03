@@ -25,11 +25,6 @@ GameObject::~GameObject ()
 {
 }
 
-void GameObject::SetGameLoop (GameLoop* gameLoop)
-{
-    this->gameLoop = gameLoop;
-}
-
 void GameObject::SetHandle (unsigned int handle)
 {
     objectHandle = handle;
