@@ -4,6 +4,7 @@
 #include "cilantroengine.h"
 #include "resource/Resource.h"
 #include "system/LogMessage.h"
+#include <memory>
 #include <unordered_map>
 #include <string>
 
