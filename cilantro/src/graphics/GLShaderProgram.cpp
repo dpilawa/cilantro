@@ -38,7 +38,7 @@ void GLShaderProgram::LinkShader (Shader& shader)
         glGetProgramInfoLog (shaderProgramId, 512, nullptr, errorLog);
         glDeleteProgram (shaderProgramId);
         LogMessage () << errorLog;
-        LogMessage (__func__, EXIT_FAILURE) << "Unable to link shader" << glShader->GetShaderId () << " to program" << shaderProgramId;
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to link shader" << glShader->GetShaderId () << " to program" << shaderProgramId;
     }
 }
 

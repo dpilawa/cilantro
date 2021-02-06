@@ -34,7 +34,7 @@ P AnimationProperty<P>::GetFrame (float time)
 {
     if (keyframes.empty ())
     {
-        LogMessage (__func__, EXIT_FAILURE) << "Keyframe collection is empty";
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Keyframe collection is empty";
         return P ();
     }
 

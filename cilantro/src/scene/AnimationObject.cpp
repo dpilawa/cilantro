@@ -91,7 +91,7 @@ void AnimationObject::AddAnimationProperty (std::string propertyName, P startVal
     }
     else
     {
-        LogMessage (__func__, EXIT_FAILURE) << "Animation property" << propertyName << "already exists for this AnimationObject";
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Animation property" << propertyName << "already exists for this AnimationObject";
     }
 }
 
@@ -111,12 +111,12 @@ void AnimationObject::AddKeyframe (std::string propertyName, float time, P value
         }
         else
         {
-            LogMessage (__func__, EXIT_FAILURE) << "Unable to insert keyframe in property" << propertyName << "(t =" << time << ")";
+            LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to insert keyframe in property" << propertyName << "(t =" << time << ")";
         }
     }
     else
     {
-        LogMessage (__func__, EXIT_FAILURE) << "Animation property" << propertyName << "does not exist";
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Animation property" << propertyName << "does not exist";
     }
 }
 

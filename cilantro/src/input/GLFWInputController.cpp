@@ -86,7 +86,7 @@ Input<bool>* GLFWInputController::CreateInputEvent (std::string name, InputKey k
     if (inputevent) 
     {
         glfwKeyEventMap[std::make_tuple (GetGLFWKey (key), GetGLFWTrigger (trigger), GetGLFWModifiers (modifiers))] = inputevent;
-        LogMessage (__func__) << "Mapped key event" << GetGLFWKey (key) << GetGLFWTrigger (trigger) << GetGLFWModifiers (modifiers);
+        LogMessage (MSG_LOCATION) << "Mapped key event" << GetGLFWKey (key) << GetGLFWTrigger (trigger) << GetGLFWModifiers (modifiers);
     }
 
     return inputevent;
@@ -100,7 +100,7 @@ Input<float>* GLFWInputController::CreateInputAxis (std::string name, InputKey k
     if (inputaxis) 
     {
         glfwKeyAxisMap[std::make_pair (GetGLFWKey (key), GetGLFWModifiers (modifiers))] = inputaxis;
-        LogMessage (__func__) << "Mapped key axis" << GetGLFWKey (key) << GetGLFWModifiers (modifiers);
+        LogMessage (MSG_LOCATION) << "Mapped key axis" << GetGLFWKey (key) << GetGLFWModifiers (modifiers);
     }
 
     return inputaxis;
@@ -131,7 +131,7 @@ Input<float>* GLFWInputController::CreateInputAxis (std::string name, InputAxis 
                 break;
 
             default :
-                LogMessage (__func__, EXIT_FAILURE) << "Unsupported axis";
+                LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unsupported axis";
 
         }
     }
@@ -190,7 +190,7 @@ void GLFWInputController::Initialize ()
     glfwSetCursorPosCallback (window, mouseCursorCallback);
     glfwSetScrollCallback (window, mouseScrollCallback);
 
-    LogMessage (__func__) << "GLFWInputController started";
+    LogMessage (MSG_LOCATION) << "GLFWInputController started";
 }
 
 void GLFWInputController::Deinitialize () 
@@ -203,7 +203,7 @@ int GLFWInputController::GetGLFWKey (InputKey key)
     auto find = glfwKeyMap.find (key);
     if (find == glfwKeyMap.end())
     {
-        LogMessage (__func__, EXIT_FAILURE) << "Unsupported event key";
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unsupported event key";
         return 0;
     }
     else 

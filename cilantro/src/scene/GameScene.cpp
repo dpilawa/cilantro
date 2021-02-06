@@ -51,7 +51,7 @@ GameObject& GameScene::GetObjectByHandle (unsigned int handle)
 
     if (find == gameObjects.end ())
     {
-        LogMessage (__func__, EXIT_FAILURE) << "Unable to find object by handle" << handle;
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to find object by handle" << handle;
     }
 
     return *(find->second);

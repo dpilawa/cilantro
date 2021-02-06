@@ -6,7 +6,7 @@ GLPostprocess::GLPostprocess (Renderer& renderer, ShaderProgram& shaderProgram) 
     framebuffer = new GLFramebuffer (renderer.GetWidth (), renderer.GetHeight ());
     framebuffer->Initialize ();
 
-    LogMessage (__func__) << "GLPostprocess started";
+    LogMessage (MSG_LOCATION) << "GLPostprocess started";
 }
 
 GLPostprocess::~GLPostprocess ()
@@ -39,7 +39,7 @@ void GLPostprocess::SetPostprocessParameterFloat (std::string parameterName, flo
 
     if (paramUniformLocation == GL_INVALID_INDEX)
     {
-        LogMessage (__func__, EXIT_FAILURE) << "Uniform not found in postprocessor shader:" << parameterName;
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Uniform not found in postprocessor shader:" << parameterName;
     }
 
     glUniform1f (paramUniformLocation, parameterValue);

@@ -74,11 +74,11 @@ void GLMultisampleFramebuffer::Initialize ()
     // check status
     if (glCheckFramebufferStatus (GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     {
-        LogMessage (__func__, EXIT_FAILURE) << "Multisample framebuffer is not complete";
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Multisample framebuffer is not complete";
     }
     else
     {
-        LogMessage (__func__) << "Initialized multisample framebuffer";
+        LogMessage (MSG_LOCATION) << "Initialized multisample framebuffer";
     }
     
 }

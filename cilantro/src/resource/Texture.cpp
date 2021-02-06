@@ -17,7 +17,7 @@ Texture::Texture (const std::string& name, const std::string& path) : Resource (
 Texture::~Texture ()
 {
     free (data);
-    LogMessage (__func__) << "Destroyed texture" << this->name;
+    LogMessage (MSG_LOCATION) << "Destroyed texture" << this->name;
 }
 
 Texture& Texture::GenerateSolid (const int width, const int height, float channel)
@@ -91,11 +91,11 @@ void Texture::Load (const char* path)
 
     if (data == nullptr)
     {
-        LogMessage (__func__, EXIT_FAILURE) << "Unable to load texture" << path << "[" << stbi_failure_reason () << "]";
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to load texture" << path << "[" << stbi_failure_reason () << "]";
     }
     else 
     {
-        LogMessage (__func__) << "Loaded texture" << path << "[" << this->width << this->height << this->numChannels << "]";
+        LogMessage (MSG_LOCATION) << "Loaded texture" << path << "[" << this->width << this->height << this->numChannels << "]";
     }
 }
 

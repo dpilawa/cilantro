@@ -56,9 +56,9 @@ void GLRenderer::Initialize ()
     postprocessStage = 0;
 
     // display GL version information
-    LogMessage (__func__) << "Version:" << (char*) glGetString (GL_VERSION);
-    LogMessage (__func__) << "Shader language version:" << (char*) glGetString (GL_SHADING_LANGUAGE_VERSION);
-    LogMessage (__func__) << "Renderer:" << (char*) glGetString (GL_RENDERER);
+    LogMessage (MSG_LOCATION) << "Version:" << (char*) glGetString (GL_VERSION);
+    LogMessage (MSG_LOCATION) << "Shader language version:" << (char*) glGetString (GL_SHADING_LANGUAGE_VERSION);
+    LogMessage (MSG_LOCATION) << "Renderer:" << (char*) glGetString (GL_RENDERER);
 
     // enable depth test
     glEnable (GL_DEPTH_TEST);
@@ -104,9 +104,9 @@ void GLRenderer::Initialize ()
     game->GetGameScene ().RegisterCallback ("OnUpdateTransform", [&](unsigned int objectHandle, unsigned int) { UpdateLightBufferRecursive (objectHandle); });
 
     // check for any outstanding errors
-    CheckGLError (__func__);
+    CheckGLError (MSG_LOCATION);
 
-    LogMessage (__func__) << "GLRenderer started";
+    LogMessage (MSG_LOCATION) << "GLRenderer started";
 }
 
 void GLRenderer::Deinitialize ()
@@ -154,7 +154,7 @@ void GLRenderer::RenderFrame ()
     Renderer::RenderFrame ();
 
     // check for errors
-    CheckGLError (__func__);
+    CheckGLError (MSG_LOCATION);
 }
 
 void GLRenderer::SetResolution (unsigned int width, unsigned int height)
@@ -205,14 +205,14 @@ void GLRenderer::AddShaderToProgram (std::string shaderProgramName, std::string 
 
     if (searchShader == shaders.end ())
     {
-        LogMessage (__func__, EXIT_FAILURE) << "Shader " << shaderName << " not found when adding to program " << shaderProgramName;
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Shader " << shaderName << " not found when adding to program " << shaderProgramName;
     }
     else
     {
         shaderPrograms[shaderProgramName].LinkShader (searchShader->second);
         if (searchProgram == shaderPrograms.end ())
         {
-            LogMessage (__func__) << "Registered shader" << shaderProgramName << "with id" << shaderPrograms[shaderProgramName].GetProgramId ();
+            LogMessage (MSG_LOCATION) << "Registered shader" << shaderProgramName << "with id" << shaderPrograms[shaderProgramName].GetProgramId ();
         }
     }
 }
@@ -223,7 +223,7 @@ ShaderProgram& GLRenderer::GetShaderProgram (std::string shaderProgramName)
 
     if (searchProgram == shaderPrograms.end ())
     {
-        LogMessage (__func__, EXIT_FAILURE) << "Unable to find shader model" << shaderProgramName;
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to find shader model" << shaderProgramName;
     }
 
     return searchProgram->second;
@@ -255,7 +255,7 @@ void GLRenderer::Draw (MeshObject& meshObject)
     }
     else
     {
-        LogMessage (__func__, EXIT_FAILURE) << "Missing texture for object" << meshObject.GetHandle ();
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Missing texture for object" << meshObject.GetHandle ();
     }
 
     // set material uniforms for active material
@@ -274,12 +274,12 @@ void GLRenderer::Draw (MeshObject& meshObject)
             }
             else
             {
-                LogMessage (__func__, EXIT_FAILURE) << "Invalid vector size for material property" << property.first;
+                LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Invalid vector size for material property" << property.first;
             }
         }        
         else 
         {
-            LogMessage (__func__, EXIT_FAILURE) << "Invalid material uniform" << property.first;
+            LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Invalid material uniform" << property.first;
         }
     }
 
@@ -323,7 +323,7 @@ void GLRenderer::Update (MeshObject& meshObject)
         // it is a new object, perform full buffers initialization and load data
         objectBuffers.insert ({ objectHandle, ObjectBuffers () });
 
-        LogMessage (__func__) << "New MeshObject" << objectHandle;
+        LogMessage (MSG_LOCATION) << "New MeshObject" << objectHandle;
 
         // generate and bind Vertex Array Object (VAO)
         glGenVertexArrays (1, &objectBuffers[objectHandle].VAO);
@@ -403,7 +403,7 @@ void GLRenderer::Update (PointLight& pointLight)
 
     if (find == pointLights.end ())
     {
-        LogMessage (__func__) << "New PointLight" << objectHandle;
+        LogMessage (MSG_LOCATION) << "New PointLight" << objectHandle;
         lightId = uniformPointLightBuffer.pointLightCount++;
         pointLights.insert ({ objectHandle, lightId });
     }
@@ -454,7 +454,7 @@ void GLRenderer::Update (DirectionalLight& directionalLight)
 
     if (find == directionalLights.end ())
     {
-        LogMessage (__func__) << "New DirectionalLight" << objectHandle;
+        LogMessage (MSG_LOCATION) << "New DirectionalLight" << objectHandle;
         lightId = uniformDirectionalLightBuffer.directionalLightCount++;
         directionalLights.insert ({ objectHandle, lightId });
     }
@@ -499,7 +499,7 @@ void GLRenderer::Update (SpotLight& spotLight)
 
     if (find == spotLights.end ())
     {
-        LogMessage (__func__) << "New SpotLight" << objectHandle;
+        LogMessage (MSG_LOCATION) << "New SpotLight" << objectHandle;
         lightId = uniformSpotLightBuffer.spotLightCount++;
         spotLights.insert ({ objectHandle, lightId });
     }
@@ -563,7 +563,7 @@ void GLRenderer::Update (Material& material, unsigned int textureUnit)
 
     if (find == materialTextureUnits.end ())
     {
-        LogMessage (__func__) << "New Material texture units map" << materialHandle;
+        LogMessage (MSG_LOCATION) << "New Material texture units map" << materialHandle;
 
         materialTextureUnits.insert ({ materialHandle, MaterialTextureUnits() });
         
@@ -575,7 +575,7 @@ void GLRenderer::Update (Material& material, unsigned int textureUnit)
             format = textureChannelMap[tPtr->GetChannels ()];
 
             glGenTextures(1, &texture);
-            LogMessage (__func__) << "Generate and bind texture" << texture << "name" << tName << "unit" << t.first << "[" << tPtr->GetWidth () << tPtr->GetHeight () << tPtr->GetChannels () << "]";
+            LogMessage (MSG_LOCATION) << "Generate and bind texture" << texture << "name" << tName << "unit" << t.first << "[" << tPtr->GetWidth () << tPtr->GetHeight () << tPtr->GetChannels () << "]";
             glBindTexture(GL_TEXTURE_2D, texture);
             glTexImage2D(GL_TEXTURE_2D, 0, format, tPtr->GetWidth (), tPtr->GetHeight (), 0, format, GL_UNSIGNED_BYTE, tPtr->Data ());
             glGenerateMipmap(GL_TEXTURE_2D);
@@ -591,7 +591,7 @@ void GLRenderer::Update (Material& material, unsigned int textureUnit)
     }
     else
     {
-        LogMessage (__func__) << "Update Material texture units map" << materialHandle;
+        LogMessage (MSG_LOCATION) << "Update Material texture units map" << materialHandle;
         
         auto& t = textures[textureUnit];
         Texture* tPtr = t.second;
@@ -600,7 +600,7 @@ void GLRenderer::Update (Material& material, unsigned int textureUnit)
         format = textureChannelMap[tPtr->GetChannels ()];
 
         glBindTexture(GL_TEXTURE_2D, materialTextureUnits[materialHandle].textureUnits[unit]);
-        LogMessage (__func__) << "Bind texture" <<  materialTextureUnits[materialHandle].textureUnits[unit] << "name" << tName << "unit" << unit << "[" << tPtr->GetWidth () << tPtr->GetHeight () << tPtr->GetChannels () << "]";
+        LogMessage (MSG_LOCATION) << "Bind texture" <<  materialTextureUnits[materialHandle].textureUnits[unit] << "name" << tName << "unit" << unit << "[" << tPtr->GetWidth () << tPtr->GetHeight () << tPtr->GetChannels () << "]";
         glTexImage2D(GL_TEXTURE_2D, 0, format, tPtr->GetWidth (), tPtr->GetHeight (), 0, format, GL_UNSIGNED_BYTE, tPtr->Data ());
         glGenerateMipmap(GL_TEXTURE_2D);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_LINEAR_MIPMAP_LINEAR);
@@ -786,7 +786,7 @@ void GLRenderer::InitializeMatrixUniformBuffers ()
         uniformMatricesBlockIndex = glGetUniformBlockIndex (shaderProgramId, "UniformMatricesBlock");
         if (uniformMatricesBlockIndex == GL_INVALID_INDEX)
         {
-            LogMessage (__func__) << "Program id" << shaderProgram.second.GetProgramId() << "has no UniformMatricesBlock";
+            LogMessage (MSG_LOCATION) << "Program id" << shaderProgram.second.GetProgramId() << "has no UniformMatricesBlock";
         }
         else {
             glUniformBlockBinding (shaderProgramId, uniformMatricesBlockIndex, BindingPoint::BP_MATRICES);
@@ -832,7 +832,7 @@ void GLRenderer::InitializeLightUniformBuffers ()
         uniformPointLightsBlockIndex = glGetUniformBlockIndex (shaderProgramId, "UniformPointLightsBlock");
         if (uniformPointLightsBlockIndex == GL_INVALID_INDEX)
         {
-            LogMessage (__func__) << "Program id" << shaderProgram.second.GetProgramId() << "has no UniformPointLightsBlock";
+            LogMessage (MSG_LOCATION) << "Program id" << shaderProgram.second.GetProgramId() << "has no UniformPointLightsBlock";
         }
         else {
             glUniformBlockBinding(shaderProgramId, uniformPointLightsBlockIndex, BindingPoint::BP_POINTLIGHTS);
@@ -841,7 +841,7 @@ void GLRenderer::InitializeLightUniformBuffers ()
         uniformDirectionalLightsBlockIndex = glGetUniformBlockIndex (shaderProgramId, "UniformDirectionalLightsBlock");
         if (uniformDirectionalLightsBlockIndex == GL_INVALID_INDEX)
         {
-            LogMessage (__func__) << "Program id" << shaderProgram.second.GetProgramId() << "has no UniformDirectionalLightsBlock";
+            LogMessage (MSG_LOCATION) << "Program id" << shaderProgram.second.GetProgramId() << "has no UniformDirectionalLightsBlock";
         }
         else {
             glUniformBlockBinding(shaderProgramId, uniformDirectionalLightsBlockIndex, BindingPoint::BP_DIRECTIONALLIGHTS);
@@ -850,7 +850,7 @@ void GLRenderer::InitializeLightUniformBuffers ()
         uniformSpotLightsBlockIndex = glGetUniformBlockIndex (shaderProgramId, "UniformSpotLightsBlock");
         if (uniformSpotLightsBlockIndex == GL_INVALID_INDEX)
         {
-            LogMessage (__func__) << "Program id" << shaderProgram.second.GetProgramId() << "has no UniformSpotLightsBlock";
+            LogMessage (MSG_LOCATION) << "Program id" << shaderProgram.second.GetProgramId() << "has no UniformSpotLightsBlock";
         }
         else {
             glUniformBlockBinding(shaderProgramId, uniformSpotLightsBlockIndex, BindingPoint::BP_SPOTLIGHTS);
@@ -893,7 +893,7 @@ void GLRenderer::LoadMatrixUniformBuffers ()
 
     if (activeCamera == nullptr)
     {
-        LogMessage (__func__, EXIT_FAILURE) << "No active camera found";
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "No active camera found";
     }
 
     // load view matrix

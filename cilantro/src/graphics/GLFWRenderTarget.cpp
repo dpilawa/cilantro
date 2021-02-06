@@ -50,7 +50,7 @@ void GLFWRenderTarget::Initialize ()
 
     if (window == NULL)
     {
-        LogMessage (__func__, EXIT_FAILURE) << "GLFW unable to create window";
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "GLFW unable to create window";
     }
 
     // make openGL context active
@@ -75,7 +75,7 @@ void GLFWRenderTarget::Initialize ()
     // load GL
     if (!gladLoadGL ())
     {
-        LogMessage (__func__, EXIT_FAILURE) << "GL context initialization failed";
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "GL context initialization failed";
     }
 
     // set-up VAO and VBO for onscreen rendering
@@ -99,7 +99,7 @@ void GLFWRenderTarget::Initialize ()
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
-    LogMessage (__func__) << "GLFWRenderTarget started";
+    LogMessage (MSG_LOCATION) << "GLFWRenderTarget started";
 }
 
 void GLFWRenderTarget::Deinitialize ()

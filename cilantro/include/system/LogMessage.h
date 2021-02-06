@@ -5,6 +5,8 @@
 #include <string>
 #include <iostream>
 
+#define MSG_LOCATION typeid (*this).name () + std::string (": ") + std::string (__func__)
+
 class LogMessage
 {
 public:

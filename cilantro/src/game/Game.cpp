@@ -10,7 +10,7 @@
 Game::Game (ResourceManager& GetResourceManager, GameScene& gameScene, Renderer& renderer, RenderTarget& renderTarget, InputController& inputController) 
 : resourceManager (resourceManager), gameScene (gameScene), renderer (renderer), renderTarget (renderTarget), inputController (inputController)
 {
-    LogMessage (__func__) << "Engine starting";
+    LogMessage (MSG_LOCATION) << "Engine starting";
 
     // set composite references
     gameScene.AttachToGame (this);
@@ -37,7 +37,7 @@ Game::~Game ()
     renderer.Deinitialize ();
     renderTarget.Deinitialize ();
  
-    LogMessage (__func__) << "Engine stopped";
+    LogMessage (MSG_LOCATION) << "Engine stopped";
 }
 
 void Game::Run ()

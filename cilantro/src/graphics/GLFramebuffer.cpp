@@ -38,11 +38,11 @@ void GLFramebuffer::Initialize ()
     // check status
     if (glCheckFramebufferStatus (GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     {
-        LogMessage (__func__, EXIT_FAILURE) << "Framebuffer is not complete";
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Framebuffer is not complete";
     }
     else
     {
-        LogMessage (__func__) << "Initialized framebuffer";
+        LogMessage (MSG_LOCATION) << "Initialized framebuffer";
     }
 }
 

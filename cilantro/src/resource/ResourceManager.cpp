@@ -4,17 +4,17 @@
 ResourceManager::ResourceManager ()
 {
     this->nextHandle = 0;
-    LogMessage(__func__) << "ResourceManager started";
+    LogMessage(MSG_LOCATION) << "ResourceManager started";
 }
 
 ResourceManager::~ResourceManager ()
 {
     for (auto&& r : resourcesName)
     {
-        LogMessage(__func__) << r.first << r.second.use_count ();
+        LogMessage(MSG_LOCATION) << r.first << r.second.use_count ();
     }
 
-    LogMessage(__func__) << "ResourceManager stopped";
+    LogMessage(MSG_LOCATION) << "ResourceManager stopped";
 }
 
 template <typename T>
@@ -26,7 +26,7 @@ unsigned int ResourceManager::Load (const std::string& name, const std::string& 
     auto resource = resourcesName.find (name);
     if (resource != resourcesName.end ()) 
     {
-        LogMessage(__func__, EXIT_FAILURE) << "Resource" << name << "already exists";
+        LogMessage(MSG_LOCATION, EXIT_FAILURE) << "Resource" << name << "already exists";
     }
     else
     {
@@ -64,7 +64,7 @@ std::shared_ptr<T> ResourceManager::GetByName(const std::string& name)
 
     if (resource == resourcesName.end ()) 
     {
-        LogMessage(__func__, EXIT_FAILURE) << "Resource" << name << "not found";
+        LogMessage(MSG_LOCATION, EXIT_FAILURE) << "Resource" << name << "not found";
     }
     else
     {
@@ -75,7 +75,7 @@ std::shared_ptr<T> ResourceManager::GetByName(const std::string& name)
         }
         else
         {
-            LogMessage(__func__, EXIT_FAILURE) << "Resource" << name << "invalid type" << typeid (T).name ();
+            LogMessage(MSG_LOCATION, EXIT_FAILURE) << "Resource" << name << "invalid type" << typeid (T).name ();
         }
         
     }
