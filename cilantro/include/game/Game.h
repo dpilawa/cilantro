@@ -4,7 +4,8 @@
 #include "cilantroengine.h"
 
 class GameScene;
-class ResourceManager;
+class Resource;
+template <typename Base> class ResourceManager;
 class Renderer;
 class RenderTarget;
 class InputController;
@@ -13,7 +14,7 @@ class Game
 {
 public:
 
-    __EAPI Game (ResourceManager& GetResourceManager, GameScene& gameScene, Renderer& renderer, RenderTarget& renderTarget, InputController& inputController);
+    __EAPI Game (ResourceManager<Resource>& GetResourceManager, GameScene& gameScene, Renderer& renderer, RenderTarget& renderTarget, InputController& inputController);
     __EAPI ~Game ();
 
     // run a game loop
@@ -21,7 +22,7 @@ public:
     __EAPI void Stop ();	
     __EAPI void Step ();
 
-    __EAPI ResourceManager& GetResourceManager ();
+    __EAPI ResourceManager<Resource>& GetResourceManager ();
     __EAPI GameScene& GetGameScene ();
     __EAPI Renderer& GetRenderer ();
     __EAPI RenderTarget& GetRenderTarget ();
@@ -30,7 +31,7 @@ public:
 private:
 
     // game composites
-    ResourceManager& resourceManager;
+    ResourceManager<Resource>& resourceManager;
     GameScene& gameScene;
     Renderer& renderer;
     RenderTarget& renderTarget;

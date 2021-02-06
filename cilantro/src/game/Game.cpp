@@ -7,7 +7,7 @@
 #include "system/LogMessage.h"
 #include "system/Timer.h"
 
-Game::Game (ResourceManager& GetResourceManager, GameScene& gameScene, Renderer& renderer, RenderTarget& renderTarget, InputController& inputController) 
+Game::Game (ResourceManager<Resource>& resourceManager, GameScene& gameScene, Renderer& renderer, RenderTarget& renderTarget, InputController& inputController) 
 : resourceManager (resourceManager), gameScene (gameScene), renderer (renderer), renderTarget (renderTarget), inputController (inputController)
 {
     LogMessage (MSG_LOCATION) << "Engine starting";
@@ -92,7 +92,7 @@ void Game::Step ()
 
 }
 
-ResourceManager& Game::GetResourceManager ()
+ResourceManager<Resource>& Game::GetResourceManager ()
 {
     return this->resourceManager;
 }

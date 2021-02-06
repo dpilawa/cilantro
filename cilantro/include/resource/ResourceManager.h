@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <string>
 
+template <typename Base = Resource>
 class ResourceManager
 {
 public:
@@ -33,9 +34,9 @@ public:
     __EAPI T* GetByName(const std::string& name);
 
 private:
-    unsigned int nextHandle;
-    std::unordered_map<std::string, std::shared_ptr<Resource>> resourcesName;
-    std::unordered_map<unsigned int, std::shared_ptr<Resource>> resourcesHandle;
+    unsigned int handle;
+    std::vector<std::shared_ptr<Base>> resources;
+    std::unordered_map<std::string, unsigned int> resourceNames;
 };
 
 #endif

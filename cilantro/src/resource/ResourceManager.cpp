@@ -1,30 +1,28 @@
 #include "resource/ResourceManager.h"
 #include "resource/Texture.h"
 
-ResourceManager::ResourceManager ()
+template <typename Base>
+ResourceManager<Base>::ResourceManager ()
 {
-    this->nextHandle = 0;
+    this->handle = 0;
     LogMessage(MSG_LOCATION) << "ResourceManager started";
 }
 
-ResourceManager::~ResourceManager ()
+template <typename Base>
+ResourceManager<Base>::~ResourceManager ()
 {
-    for (auto&& r : resourcesName)
-    {
-        LogMessage(MSG_LOCATION) << r.first << r.second.use_count ();
-    }
-
     LogMessage(MSG_LOCATION) << "ResourceManager stopped";
 }
 
+template <typename Base>
 template <typename T>
-unsigned int ResourceManager::Load (const std::string& name, const std::string& path)
+unsigned int ResourceManager<Base>::Load (const std::string& name, const std::string& path)
 {
-    static_assert (std::is_base_of<Resource, T>::value, "Invalid base object for resource");
+    static_assert (std::is_base_of<Base, T>::value, "Invalid base object for resource");
     std::shared_ptr<T> newResource;
 
-    auto resource = resourcesName.find (name);
-    if (resource != resourcesName.end ()) 
+    auto resource = resourceNames.find (name);
+    if (resource != resourceNames.end ()) 
     {
         LogMessage(MSG_LOCATION, EXIT_FAILURE) << "Resource" << name << "already exists";
     }
@@ -38,49 +36,79 @@ unsigned int ResourceManager::Load (const std::string& name, const std::string& 
         {
             newResource = std::make_shared<T> (name);
         }
-        resourcesName[name] = newResource;
-        resourcesHandle[nextHandle] = newResource;
+
+        resources.push_back (newResource);
+        resourceNames[name] = handle;
     }
 
-    return nextHandle++;
+    return handle++;
 }
 
+template <typename Base>
 template <typename T>
-unsigned int ResourceManager::Create (const std::string& name)
+unsigned int ResourceManager<Base>::Create (const std::string& name)
 {
     return Load<T> (name);
 }
 
+template <typename Base>
 template <typename T>
-std::shared_ptr<T> ResourceManager::GetByHandle(unsigned int handle)
+std::shared_ptr<T> ResourceManager<Base>::GetByHandle(unsigned int handle)
 {
-
+    if (handle >= this->handle)
+    {
+        LogMessage(MSG_LOCATION, EXIT_FAILURE) << "Resource handle" << handle << "out of bounds";
+    }
+    else
+    {
+        auto resource = resources[handle];
+        auto resourcePtr = std::dynamic_pointer_cast<T> (resource);
+        
+        if (resourcePtr)
+        {
+            return resource;
+        }
+        else
+        {
+            LogMessage(MSG_LOCATION, EXIT_FAILURE) << "Resource" << resource->GetName () << "invalid type" << typeid (T).name ();
+        }
+    }
 }
 
+template <typename Base>
 template <typename T>
-std::shared_ptr<T> ResourceManager::GetByName(const std::string& name)
+T* ResourceManager<Base>::GetByHandle(unsigned int handle)
 {
-    auto resource = resourcesName.find (name);
+    std::shared_ptr<T> resource = GetByHandle (handle);
+    return resource.get ();
+}
 
-    if (resource == resourcesName.end ()) 
+template <typename Base>
+template <typename T>
+std::shared_ptr<T> ResourceManager<Base>::GetByName(const std::string& name)
+{
+    auto resourceName = resourceNames.find (name);
+
+    if (resourceName == resourceNames.end ()) 
     {
         LogMessage(MSG_LOCATION, EXIT_FAILURE) << "Resource" << name << "not found";
     }
     else
     {
-        auto resourcePtr = std::dynamic_pointer_cast<T>(resource->second);
-        if (resourcePtr)
-        {
-            return resource->second;
-        }
-        else
-        {
-            LogMessage(MSG_LOCATION, EXIT_FAILURE) << "Resource" << name << "invalid type" << typeid (T).name ();
-        }
-        
+        return GetByHandle (resourceName->second);
     }
 }
 
+template <typename Base>
+template <typename T>
+T* ResourceManager<Base>::GetByName(const std::string& name)
+{
+    std::shared_ptr<T> resource = GetByName (name);
+    return resource.get ();
+}
+
 // template instantiations
-template __EAPI unsigned int ResourceManager::Load<Texture> (const std::string& name, const std::string& path);
-template __EAPI unsigned int ResourceManager::Create<Texture> (const std::string& name);
+template __EAPI ResourceManager<Resource>::ResourceManager ();
+template __EAPI ResourceManager<Resource>::~ResourceManager ();
+template __EAPI unsigned int ResourceManager<Resource>::Load<Texture> (const std::string& name, const std::string& path);
+template __EAPI unsigned int ResourceManager<Resource>::Create<Texture> (const std::string& name);
