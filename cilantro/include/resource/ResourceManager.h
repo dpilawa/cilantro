@@ -5,6 +5,7 @@
 #include "resource/Resource.h"
 #include "system/LogMessage.h"
 #include <memory>
+#include <vector>
 #include <unordered_map>
 #include <string>
 
