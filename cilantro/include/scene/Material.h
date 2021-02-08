@@ -25,7 +25,7 @@ public:
     __EAPI void SetHandle (unsigned int handle);
     __EAPI unsigned int GetHandle () const;
 
-    __EAPI Material& SetShaderProgram (std::string name);
+    __EAPI Material& SetShaderProgram (const std::string& name);
     __EAPI std::string GetShaderProgramName () const;
 
     texture_map_t& GetTexturesMap();
@@ -33,9 +33,9 @@ public:
 
 protected:
 
-    Material& SetTexture (unsigned int textureUnit, std::string label, Texture* texture);
-    Material& SetProperty (std::string propertyName, float propertyValue);
-    Material& SetProperty (std::string propertyName, Vector3f propertyValue);
+    Material& SetTexture (unsigned int textureUnit, const std::string& label, Texture* texture);
+    Material& SetProperty (const std::string& propertyName, float propertyValue);
+    Material& SetProperty (const std::string& propertyName, Vector3f propertyValue);
 
     // handle
     unsigned int materialHandle;

@@ -21,7 +21,7 @@ unsigned int Material::GetHandle () const
     return materialHandle;
 }
 
-Material& Material::SetShaderProgram (std::string name)
+Material& Material::SetShaderProgram (const std::string& name)
 {
     shaderProgramName = name;
 
@@ -43,22 +43,22 @@ property_map_t& Material::GetPropertiesMap ()
     return properties;
 }
 
-Material& Material::SetTexture (unsigned int textureUnit, std::string label, Texture* texture)
+Material& Material::SetTexture (unsigned int textureUnit, const std::string& label, Texture* texture)
 {
-    textures.emplace (textureUnit, std::make_pair (label, texture));
+    textures[textureUnit] = std::pair (label, texture);
     InvokeCallbacks ("OnUpdateMaterial", this->materialHandle, textureUnit);
 
     return *this;
 }
 
-Material& Material::SetProperty (std::string propertyName, float propertyValue)
+Material& Material::SetProperty (const std::string& propertyName, float propertyValue)
 {
     properties[propertyName] = {propertyValue};
 
     return *this;
 }
 
-Material& Material::SetProperty (std::string propertyName, Vector3f propertyValue)
+Material& Material::SetProperty (const std::string& propertyName, Vector3f propertyValue)
 {
     properties[propertyName] = {propertyValue[0], propertyValue[1], propertyValue[2]};
 
