@@ -59,28 +59,16 @@ std::shared_ptr<T> ResourceManager<Base>::GetByHandle(unsigned int handle)
     {
         LogMessage(MSG_LOCATION, EXIT_FAILURE) << "Resource handle" << handle << "out of bounds";
     }
-    else
-    {
-        auto resource = resources[handle];
-        auto resourcePtr = std::dynamic_pointer_cast<T> (resource);
-        
-        if (resourcePtr)
-        {
-            return resource;
-        }
-        else
-        {
-            LogMessage(MSG_LOCATION, EXIT_FAILURE) << "Resource" << resource->GetName () << "invalid type" << typeid (T).name ();
-        }
-    }
-}
 
-template <typename Base>
-template <typename T>
-T* ResourceManager<Base>::GetByHandle(unsigned int handle)
-{
-    std::shared_ptr<T> resource = GetByHandle (handle);
-    return resource.get ();
+    auto resource = resources[handle];
+    auto resourcePtr = std::dynamic_pointer_cast<T> (resource);
+        
+    if (resourcePtr == nullptr)
+    {
+        LogMessage(MSG_LOCATION, EXIT_FAILURE) << "Resource" << resource->GetName () << "invalid type" << typeid (T).name ();
+    }
+    
+    return resourcePtr;
 }
 
 template <typename Base>
@@ -93,18 +81,8 @@ std::shared_ptr<T> ResourceManager<Base>::GetByName(const std::string& name)
     {
         LogMessage(MSG_LOCATION, EXIT_FAILURE) << "Resource" << name << "not found";
     }
-    else
-    {
-        return GetByHandle (resourceName->second);
-    }
-}
 
-template <typename Base>
-template <typename T>
-T* ResourceManager<Base>::GetByName(const std::string& name)
-{
-    std::shared_ptr<T> resource = GetByName (name);
-    return resource.get ();
+    return GetByHandle<T> (resourceName->second);
 }
 
 // template instantiations
@@ -112,3 +90,5 @@ template __EAPI ResourceManager<Resource>::ResourceManager ();
 template __EAPI ResourceManager<Resource>::~ResourceManager ();
 template __EAPI unsigned int ResourceManager<Resource>::Load<Texture> (const std::string& name, const std::string& path);
 template __EAPI unsigned int ResourceManager<Resource>::Create<Texture> (const std::string& name);
+template __EAPI std::shared_ptr<Texture> ResourceManager<Resource>::GetByHandle<Texture> (unsigned int handle);
+template __EAPI std::shared_ptr<Texture> ResourceManager<Resource>::GetByName<Texture> (const std::string& name);

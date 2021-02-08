@@ -46,19 +46,17 @@ int main (int argc, char* argv [])
     inputController.CreateInputEvent ("mousemode", InputKey::KeySpace, InputTrigger::Release, {});
     inputController.BindInputEvent ("mousemode", [ & ]() { inputController.SetMouseGameMode (!inputController.IsGameMode ()); });
 
-    resourceManager.Load<Texture> ("albedo", "textures/scuffed-metal1_albedo.png");
-
-    Texture albedo ("albedo", "textures/scuffed-metal1_albedo.png");
-    Texture metalness ("metalness", "textures/scuffed-metal1_metallic.png");
-    Texture roughness ("roughness", "textures/scuffed-metal1_roughness.png");
-    Texture ao ("ao", "textures/scuffed-metal1_ao.png");
+    unsigned int tAlbedo = resourceManager.Load<Texture> ("albedo", "textures/scuffed-metal1_albedo.png");
+    unsigned int tMetalness = resourceManager.Load<Texture> ("metalness", "textures/scuffed-metal1_metallic.png");
+    unsigned int tRoughness = resourceManager.Load<Texture> ("roughness", "textures/scuffed-metal1_roughness.png");
+    unsigned int tAO = resourceManager.Load<Texture> ("ao", "textures/scuffed-metal1_ao.png");
 
     PBRMaterial& green = dynamic_cast<PBRMaterial&>(gameScene.AddMaterial (new PBRMaterial ()));
     green.SetAlbedo (Vector3f (0.1f, 0.4f, 0.1f)).SetRoughness (0.1f).SetMetallic (0.6f);
 
     PBRMaterial& red = dynamic_cast<PBRMaterial&>(gameScene.AddMaterial (new PBRMaterial ()));
     //red.SetAlbedo (Vector3f (0.9f, 0.1f, 0.1f)).SetMetallic(0.2f).SetRoughness(0.4f);
-    red.SetAlbedo (&albedo).SetMetallic (&metalness).SetRoughness (&roughness);
+    red.SetAlbedo (tAlbedo).SetMetallic (tMetalness).SetRoughness (tRoughness);
 
     PBRMaterial& gold = dynamic_cast<PBRMaterial&>(gameScene.AddMaterial (new PBRMaterial ()));
     gold.SetAlbedo (Vector3f (1.000f, 0.766f, 0.336f));

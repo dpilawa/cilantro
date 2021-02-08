@@ -33,24 +33,19 @@ std::string Material::GetShaderProgramName () const
     return shaderProgramName;
 }
 
-std::map<unsigned int, std::pair<std::string, Texture*>>& Material::GetTexturesMap()
+texture_map_t& Material::GetTexturesMap()
 {
     return textures;
 }
 
-unsigned int Material::GetTexturesMapSize() const
-{
-    return textures.size ();
-}
-
-std::unordered_map<std::string, std::vector<float>>& Material::GetPropertiesMap ()
+property_map_t& Material::GetPropertiesMap ()
 {
     return properties;
 }
 
 Material& Material::SetTexture (unsigned int textureUnit, std::string label, Texture* texture)
 {
-    textures[textureUnit] = std::pair (label, texture);
+    textures.emplace (textureUnit, std::make_pair (label, texture));
     InvokeCallbacks ("OnUpdateMaterial", this->materialHandle, textureUnit);
 
     return *this;

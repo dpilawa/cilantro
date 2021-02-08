@@ -1,4 +1,5 @@
 #include "cilantroengine.h"
+#include "resource/ResourceManager.h"
 #include "graphics/Renderer.h"
 #include "scene/PhongMaterial.h"
 #include "math/Vector3f.h"
@@ -14,45 +15,44 @@ PhongMaterial::PhongMaterial () : diffuse ("diffuse"), normal ("normal"), specul
 
     SetSpecularShininess (32.0f);
 
-    SetDiffuse (&diffuse);
-    SetNormal (&normal);
-    SetSpecular (&specular);
-    SetEmissive (&emissive);
+    SetTexture (static_cast<int>(PhongTexture::Diffuse), "tDiffuse", &diffuse);
+    SetTexture (static_cast<int>(PhongTexture::Normal), "tNormal", &normal);
+    SetTexture (static_cast<int>(PhongTexture::Specular), "tSpecular", &specular);
+    SetTexture (static_cast<int>(PhongTexture::Emissive), "tEmissive", &emissive);
 }
 
 PhongMaterial::~PhongMaterial ()
 {
 }
 
-void PhongMaterial::OnUpdate (Renderer& renderer, unsigned int textureUnit)
+PhongMaterial& PhongMaterial::SetDiffuse (unsigned int hDiffuse)
 {
-    renderer.Update (*this, textureUnit);
-}
-
-PhongMaterial& PhongMaterial::SetDiffuse (Texture* diffuse)
-{
-    Material::SetTexture (static_cast<int>(PhongTexture::Diffuse), "tDiffuse", diffuse);
+    auto tDiffuse = game->GetResourceManager ().GetByHandle<Texture> (hDiffuse).get ();
+    SetTexture (static_cast<int>(PhongTexture::Diffuse), "tDiffuse", tDiffuse);
 
     return *this;
 }
 
-PhongMaterial& PhongMaterial::SetNormal (Texture* normal)
+PhongMaterial& PhongMaterial::SetNormal (unsigned int hNormal)
 {
-    Material::SetTexture (static_cast<int>(PhongTexture::Normal), "tNormal", normal);
+    auto tNormal = game->GetResourceManager ().GetByHandle<Texture> (hNormal).get ();
+    SetTexture (static_cast<int>(PhongTexture::Normal), "tNormal", tNormal);
 
     return *this;
 }
 
-PhongMaterial& PhongMaterial::SetSpecular (Texture* specular)
+PhongMaterial& PhongMaterial::SetSpecular (unsigned int hSpecular)
 {
-    Material::SetTexture (static_cast<int>(PhongTexture::Specular), "tSpecular", specular);
+    auto tSpecular = game->GetResourceManager ().GetByHandle<Texture> (hSpecular).get ();
+    SetTexture (static_cast<int>(PhongTexture::Specular), "tSpecular", tSpecular);
 
     return *this;
 }
 
-PhongMaterial& PhongMaterial::SetEmissive (Texture* emissive)
+PhongMaterial& PhongMaterial::SetEmissive (unsigned int hEmissive)
 {
-    Material::SetTexture (static_cast<int>(PhongTexture::Emissive), "tEmissive", emissive);
+    auto tEmissive = game->GetResourceManager ().GetByHandle<Texture> (hEmissive).get ();
+    SetTexture (static_cast<int>(PhongTexture::Emissive), "tEmissive", tEmissive);
     
     return *this;
 }
@@ -60,7 +60,7 @@ PhongMaterial& PhongMaterial::SetEmissive (Texture* emissive)
 PhongMaterial& PhongMaterial::SetDiffuse (const Vector3f& diffuse)
 {
     this->diffuse.GenerateSolid (1, 1, diffuse);
-    PhongMaterial::SetDiffuse (&this->diffuse);
+    SetTexture (static_cast<int>(PhongTexture::Diffuse), "tDiffuse", &this->diffuse);
 
     return *this;
 }
@@ -68,14 +68,14 @@ PhongMaterial& PhongMaterial::SetDiffuse (const Vector3f& diffuse)
 PhongMaterial& PhongMaterial::SetSpecular (const Vector3f& specular)
 {
     this->specular.GenerateSolid (1, 1, specular);
-    PhongMaterial::SetSpecular (&this->specular);
+    SetTexture (static_cast<int>(PhongTexture::Specular), "tSpecular", &this->specular);
 
     return *this;
 }
 
 PhongMaterial& PhongMaterial::SetSpecularShininess (float specularShininess)
 {
-    Material::SetProperty ("fSpecularShininess", specularShininess);
+    SetProperty ("fSpecularShininess", specularShininess);
 
     return *this;
 }
@@ -83,24 +83,24 @@ PhongMaterial& PhongMaterial::SetSpecularShininess (float specularShininess)
 PhongMaterial& PhongMaterial::SetEmissive (const Vector3f& emissive)
 {
     this->emissive.GenerateSolid (1, 1, emissive);
-    PhongMaterial::SetEmissive (&this->emissive);
+    SetTexture (static_cast<int>(PhongTexture::Emissive), "tEmissive", &this->emissive);
 
     return *this;
 }
 
-Texture* PhongMaterial::GetDiffuse ()
+Texture& PhongMaterial::GetDiffuse ()
 {
-    return textures[static_cast<int>(PhongTexture::Diffuse)].second;
+    return *(textures[static_cast<int>(PhongTexture::Diffuse)].second);
 }
 
-Texture* PhongMaterial::GetNormal ()
+Texture& PhongMaterial::GetNormal ()
 {
-    return textures[static_cast<int>(PhongTexture::Normal)].second;
+    return *(textures[static_cast<int>(PhongTexture::Normal)].second);
 }
 
-Texture* PhongMaterial::GetSpecular ()
+Texture& PhongMaterial::GetSpecular ()
 {
-    return textures[static_cast<int>(PhongTexture::Specular)].second;
+    return *(textures[static_cast<int>(PhongTexture::Specular)].second);
 }
 
 float PhongMaterial::GetSpecularShininess ()
@@ -108,8 +108,8 @@ float PhongMaterial::GetSpecularShininess ()
     return properties["tSpecularShininess"][0];
 }
 
-Texture* PhongMaterial::GetEmissive ()
+Texture& PhongMaterial::GetEmissive ()
 {
-    return textures[static_cast<int>(PhongTexture::Emissive)].second;
+    return *(textures[static_cast<int>(PhongTexture::Emissive)].second);
 }
 

@@ -95,7 +95,8 @@ void GLRenderer::Initialize ()
     game->GetGameScene ().RegisterCallback ("OnUpdateLight", [&](unsigned int objectHandle, unsigned int) { game->GetGameScene ().GetGameObjects ()[objectHandle]->OnUpdate (*this); });
 
     // set callback for new or modified materials
-    game->GetGameScene ().RegisterCallback ("OnUpdateMaterial", [&](unsigned int materialHandle, unsigned int textureUnit) { game->GetGameScene ().GetMaterials ()[materialHandle]->OnUpdate (*this, textureUnit); });
+    //game->GetGameScene ().RegisterCallback ("OnUpdateMaterial", [&](unsigned int materialHandle, unsigned int textureUnit) { game->GetGameScene ().GetMaterials ()[materialHandle]->OnUpdate (*this, textureUnit); });
+    game->GetGameScene ().RegisterCallback ("OnUpdateMaterial", [&](unsigned int materialHandle, unsigned int textureUnit) { this->Update (*(game->GetGameScene ().GetMaterials ()[materialHandle]), textureUnit); });
 
     // set callback for modified scene graph (currently this only requires to reload light buffers)
     game->GetGameScene ().RegisterCallback ("OnUpdateSceneGraph", [&](unsigned int objectHandle, unsigned int) { UpdateLightBufferRecursive (objectHandle); });
@@ -551,12 +552,12 @@ void GLRenderer::Update (SpotLight& spotLight)
 void GLRenderer::Update (Material& material, unsigned int textureUnit)
 {
     unsigned int materialHandle = material.GetHandle ();
-    GLShaderProgram& shader = dynamic_cast<GLShaderProgram&>(GetShaderProgram ( material.GetShaderProgramName ()));
+    GLShaderProgram& shader = dynamic_cast<GLShaderProgram&> (GetShaderProgram (material.GetShaderProgramName ()));
     GLuint shaderId = shader.GetProgramId ();
     GLuint texture;
     GLuint format;
 
-    std::map<unsigned int, std::pair<std::string, Texture*>>& textures = material.GetTexturesMap ();
+    texture_map_t& textures = material.GetTexturesMap ();
 
     // check if material already in collection
     auto find = materialTextureUnits.find (materialHandle);
@@ -764,7 +765,7 @@ void GLRenderer::InitializeMaterialTextures ()
 {
     for (auto&& material : game->GetGameScene ().GetMaterials ())
     {
-        material.second->OnUpdate (*this);
+        this->Update (*(material.second));
     }
 }
 

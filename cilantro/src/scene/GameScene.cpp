@@ -63,6 +63,9 @@ Material& GameScene::AddMaterial (Material* material)
     unsigned int handle = materialsCount++;
     material->SetHandle (handle);
 
+    // set game loop reference
+    material->AttachToGame (this->game);
+
     // insert into collection
     materials[handle] = material;
 

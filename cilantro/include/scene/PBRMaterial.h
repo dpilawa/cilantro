@@ -23,14 +23,12 @@ public:
     __EAPI PBRMaterial ();
     __EAPI virtual ~PBRMaterial ();
 
-    __EAPI virtual void OnUpdate (Renderer &renderer, unsigned int textureUnit = 0);
-
     // setters
-    __EAPI PBRMaterial& SetAlbedo (Texture* albedo);
-    __EAPI PBRMaterial& SetNormal (Texture* normal);
-    __EAPI PBRMaterial& SetMetallic (Texture* metallic);
-    __EAPI PBRMaterial& SetRoughness (Texture* roughness);
-    __EAPI PBRMaterial& SetAO (Texture* ao);
+    __EAPI PBRMaterial& SetAlbedo (unsigned int hAlbedo);
+    __EAPI PBRMaterial& SetNormal (unsigned int hNormal);
+    __EAPI PBRMaterial& SetMetallic (unsigned int hMetallic);
+    __EAPI PBRMaterial& SetRoughness (unsigned int hRoughness);
+    __EAPI PBRMaterial& SetAO (unsigned int hAO);
 
     __EAPI PBRMaterial& SetAlbedo (const Vector3f& albedo);
     __EAPI PBRMaterial& SetMetallic (const float metallic);
@@ -38,11 +36,11 @@ public:
     __EAPI PBRMaterial& SetAO (const float ao);
 
     // getters
-    __EAPI Texture* GetAlbedo ();
-    __EAPI Texture* GetNormal ();
-    __EAPI Texture* GetMetallic ();
-    __EAPI Texture* GetRoughness ();
-    __EAPI Texture* GetAO ();
+    __EAPI Texture& GetAlbedo ();
+    __EAPI Texture& GetNormal ();
+    __EAPI Texture& GetMetallic ();
+    __EAPI Texture& GetRoughness ();
+    __EAPI Texture& GetAO ();
 
 protected:
 

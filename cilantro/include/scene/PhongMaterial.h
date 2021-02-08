@@ -22,13 +22,11 @@ public:
     __EAPI PhongMaterial ();
     __EAPI virtual ~PhongMaterial ();
 
-    __EAPI virtual void OnUpdate (Renderer &renderer, unsigned int textureUnit = 0);
-
     // setters
-    __EAPI PhongMaterial& SetDiffuse (Texture* diffuse);
-    __EAPI PhongMaterial& SetNormal (Texture* normal);
-    __EAPI PhongMaterial& SetSpecular (Texture* specular);
-    __EAPI PhongMaterial& SetEmissive (Texture* emissive);
+    __EAPI PhongMaterial& SetDiffuse (unsigned int hDiffuse);
+    __EAPI PhongMaterial& SetNormal (unsigned int hNormal);
+    __EAPI PhongMaterial& SetSpecular (unsigned int hSpecular);
+    __EAPI PhongMaterial& SetEmissive (unsigned int hEmissive);
 
     __EAPI PhongMaterial& SetDiffuse (const Vector3f& diffuse);
     __EAPI PhongMaterial& SetSpecular (const Vector3f& specular);
@@ -37,11 +35,11 @@ public:
 
 
     // getters
-    __EAPI Texture* GetDiffuse ();
-    __EAPI Texture* GetNormal ();
-    __EAPI Texture* GetSpecular ();
+    __EAPI Texture& GetDiffuse ();
+    __EAPI Texture& GetNormal ();
+    __EAPI Texture& GetSpecular ();
     __EAPI float GetSpecularShininess ();
-    __EAPI Texture* GetEmissive ();
+    __EAPI Texture& GetEmissive ();
 
 protected:
 

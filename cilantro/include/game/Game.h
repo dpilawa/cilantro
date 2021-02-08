@@ -14,7 +14,7 @@ class Game
 {
 public:
 
-    __EAPI Game (ResourceManager<Resource>& GetResourceManager, GameScene& gameScene, Renderer& renderer, RenderTarget& renderTarget, InputController& inputController);
+    __EAPI Game (ResourceManager<Resource>& resourceManager, GameScene& gameScene, Renderer& renderer, RenderTarget& renderTarget, InputController& inputController);
     __EAPI ~Game ();
 
     // run a game loop

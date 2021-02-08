@@ -26,13 +26,7 @@ public:
     __EAPI std::shared_ptr<T> GetByHandle(unsigned int handle);
 
     template <typename T>
-    __EAPI T* GetByHandle(unsigned int handle);
-
-    template <typename T>
     __EAPI std::shared_ptr<T> GetByName(const std::string& name);
-
-    template <typename T>
-    __EAPI T* GetByName(const std::string& name);
 
 private:
     unsigned int handle;
