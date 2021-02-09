@@ -34,7 +34,7 @@ private:
     std::unordered_map<std::string, unsigned int> resourceNames;
 };
 
-// deduction guide for cland (c++17)
+// deduction guide for clang (c++17)
 ResourceManager() -> ResourceManager<Resource>;
 
 #endif
