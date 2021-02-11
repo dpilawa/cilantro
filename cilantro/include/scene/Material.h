@@ -3,6 +3,7 @@
 
 #include "cilantroengine.h"
 #include "game/GameComposite.h"
+#include "resource/Resource.h"
 #include "resource/Texture.h"
 #include "math/Vector3f.h"
 #include "system/CallbackProvider.h"
@@ -16,14 +17,11 @@ class Renderer;
 typedef std::map<unsigned int, std::pair<std::string, Texture*>> texture_map_t;
 typedef std::unordered_map<std::string, std::vector<float>> property_map_t;
 
-class Material : public GameComposite, public CallbackProvider<std::string, unsigned int, unsigned int>
+class Material : public GameComposite, public Resource, public CallbackProvider<std::string, unsigned int, unsigned int>
 {
 public:
     __EAPI Material ();
     __EAPI virtual ~Material ();
-
-    __EAPI void SetHandle (unsigned int handle);
-    __EAPI unsigned int GetHandle () const;
 
     __EAPI Material& SetShaderProgram (const std::string& name);
     __EAPI std::string GetShaderProgramName () const;
@@ -33,12 +31,9 @@ public:
 
 protected:
 
-    Material& SetTexture (unsigned int textureUnit, const std::string& label, Texture* texture);
+    Material& SetTexture (unsigned int textureUnit, const std::string& label, Texture& texture);
     Material& SetProperty (const std::string& propertyName, float propertyValue);
     Material& SetProperty (const std::string& propertyName, Vector3f propertyValue);
-
-    // handle
-    unsigned int materialHandle;
 
     // textures map
     texture_map_t textures;

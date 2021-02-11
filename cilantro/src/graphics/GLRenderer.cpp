@@ -95,8 +95,7 @@ void GLRenderer::Initialize ()
     game->GetGameScene ().RegisterCallback ("OnUpdateLight", [&](unsigned int objectHandle, unsigned int) { game->GetGameScene ().GetGameObjects ()[objectHandle]->OnUpdate (*this); });
 
     // set callback for new or modified materials
-    //game->GetGameScene ().RegisterCallback ("OnUpdateMaterial", [&](unsigned int materialHandle, unsigned int textureUnit) { game->GetGameScene ().GetMaterials ()[materialHandle]->OnUpdate (*this, textureUnit); });
-    game->GetGameScene ().RegisterCallback ("OnUpdateMaterial", [&](unsigned int materialHandle, unsigned int textureUnit) { this->Update (*(game->GetGameScene ().GetMaterials ()[materialHandle]), textureUnit); });
+    game->GetGameScene ().RegisterCallback ("OnUpdateMaterial", [&](unsigned int materialHandle, unsigned int textureUnit) { this->Update (game->GetGameScene ().GetMaterials ().GetByHandle<Material> (materialHandle), textureUnit); });
 
     // set callback for modified scene graph (currently this only requires to reload light buffers)
     game->GetGameScene ().RegisterCallback ("OnUpdateSceneGraph", [&](unsigned int objectHandle, unsigned int) { UpdateLightBufferRecursive (objectHandle); });
@@ -765,7 +764,7 @@ void GLRenderer::InitializeMaterialTextures ()
 {
     for (auto&& material : game->GetGameScene ().GetMaterials ())
     {
-        this->Update (*(material.second));
+        this->Update (*material);
     }
 }
 

@@ -3,14 +3,14 @@
 
 #include "cilantroengine.h"
 #include "math/Vector3f.h"
-#include "resource/Resource.h"
+#include "resource/LoadableResource.h"
 #include <string>
 
-class Texture : public Resource
+class Texture : public LoadableResource
 {
 public:
-    __EAPI Texture (const std::string& name);
-    __EAPI Texture (const std::string& name, const std::string& path);
+    __EAPI Texture ();
+    __EAPI Texture (const std::string& path);
     __EAPI virtual ~Texture ();
 
     __EAPI Texture& GenerateSolid (const int width, const int height, float channel);

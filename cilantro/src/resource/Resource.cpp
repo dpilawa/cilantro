@@ -1,15 +1,8 @@
 #include "cilantroengine.h"
 #include "resource/Resource.h"
 
-Resource::Resource (const std::string& name)
+Resource::Resource ()
 {
-    this->name = name;
-}
-
-Resource::Resource (const std::string& name, const std::string& path)
-{
-    this->name = name;
-    this->path = path;
 }
 
 Resource::~Resource ()
@@ -17,7 +10,7 @@ Resource::~Resource ()
 
 }
 
-unsigned int Resource::GetHandle () const
+handle_t Resource::GetHandle () const
 {
     return handle;
 }

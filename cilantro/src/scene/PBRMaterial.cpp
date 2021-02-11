@@ -1,10 +1,10 @@
 #include "cilantroengine.h"
+#include "scene/PBRMaterial.h"
 #include "resource/ResourceManager.h"
 #include "graphics/Renderer.h"
-#include "scene/PBRMaterial.h"
 #include "math/Vector3f.h"
 
-PBRMaterial::PBRMaterial () : albedo ("albedo"), normal ("normal"), metallic ("metallic"), roughness ("roughness"), ao ("ao")
+PBRMaterial::PBRMaterial () : Material ()
 {
     SetShaderProgram ("pbr_shader");
 
@@ -14,11 +14,11 @@ PBRMaterial::PBRMaterial () : albedo ("albedo"), normal ("normal"), metallic ("m
     roughness.GenerateSolid (1, 1, 1.0f);
     ao.GenerateSolid (1, 1, 1.0f);
 
-    SetTexture (static_cast<int>(PBRTexture::Albedo), "tAlbedo", &albedo);
-    SetTexture (static_cast<int>(PBRTexture::Normal), "tNormal", &normal);
-    SetTexture (static_cast<int>(PBRTexture::Metallic), "tMetallic", &metallic);
-    SetTexture (static_cast<int>(PBRTexture::Roughness), "tRoughness", &roughness);
-    SetTexture (static_cast<int>(PBRTexture::AO), "tAO", &ao);
+    SetTexture (static_cast<int>(PBRTexture::Albedo), "tAlbedo", albedo);
+    SetTexture (static_cast<int>(PBRTexture::Normal), "tNormal", normal);
+    SetTexture (static_cast<int>(PBRTexture::Metallic), "tMetallic", metallic);
+    SetTexture (static_cast<int>(PBRTexture::Roughness), "tRoughness", roughness);
+    SetTexture (static_cast<int>(PBRTexture::AO), "tAO", ao);
 }
 
 PBRMaterial::~PBRMaterial ()
@@ -27,7 +27,7 @@ PBRMaterial::~PBRMaterial ()
 
 PBRMaterial& PBRMaterial::SetAlbedo (unsigned int hAlbedo)
 {
-    auto tAlbedo = game->GetResourceManager ().GetByHandle<Texture> (hAlbedo).get ();
+    Texture& tAlbedo = game->GetResourceManager ().GetByHandle<Texture> (hAlbedo);
     SetTexture (static_cast<int>(PBRTexture::Albedo), "tAlbedo", tAlbedo);
 
     return *this;
@@ -35,7 +35,7 @@ PBRMaterial& PBRMaterial::SetAlbedo (unsigned int hAlbedo)
 
 PBRMaterial& PBRMaterial::SetNormal (unsigned int hNormal)
 {
-    auto tNormal = game->GetResourceManager ().GetByHandle<Texture> (hNormal).get ();
+    Texture& tNormal = game->GetResourceManager ().GetByHandle<Texture> (hNormal);
     SetTexture (static_cast<int>(PBRTexture::Normal), "tNormal", tNormal);
 
     return *this;
@@ -43,7 +43,7 @@ PBRMaterial& PBRMaterial::SetNormal (unsigned int hNormal)
 
 PBRMaterial& PBRMaterial::SetMetallic (unsigned int hMetallic)
 {
-    auto tMetallic = game->GetResourceManager ().GetByHandle<Texture> (hMetallic).get ();
+    Texture& tMetallic = game->GetResourceManager ().GetByHandle<Texture> (hMetallic);
     SetTexture (static_cast<int>(PBRTexture::Metallic), "tMetallic", tMetallic);
 
     return *this;
@@ -51,7 +51,7 @@ PBRMaterial& PBRMaterial::SetMetallic (unsigned int hMetallic)
 
 PBRMaterial& PBRMaterial::SetRoughness (unsigned int hRoughness)
 {
-    auto tRoughness = game->GetResourceManager ().GetByHandle<Texture> (hRoughness).get ();
+    Texture& tRoughness = game->GetResourceManager ().GetByHandle<Texture> (hRoughness);
     SetTexture (static_cast<int>(PBRTexture::Roughness), "tRoughness", tRoughness);
 
     return *this;
@@ -59,7 +59,7 @@ PBRMaterial& PBRMaterial::SetRoughness (unsigned int hRoughness)
 
 PBRMaterial& PBRMaterial::SetAO (unsigned int hAo)
 {
-    auto tAO = game->GetResourceManager ().GetByHandle<Texture> (hAo).get ();
+    Texture& tAO = game->GetResourceManager ().GetByHandle<Texture> (hAo);
     SetTexture (static_cast<int>(PBRTexture::AO), "tAO", tAO);
 
     return *this;
@@ -68,7 +68,7 @@ PBRMaterial& PBRMaterial::SetAO (unsigned int hAo)
 PBRMaterial& PBRMaterial::SetAlbedo (const Vector3f& albedo)
 {
     this->albedo.GenerateSolid (1, 1, albedo);
-    SetTexture (static_cast<int>(PBRTexture::Albedo), "tAlbedo", &this->albedo);
+    SetTexture (static_cast<int>(PBRTexture::Albedo), "tAlbedo", this->albedo);
 
     return *this;
 }
@@ -76,7 +76,7 @@ PBRMaterial& PBRMaterial::SetAlbedo (const Vector3f& albedo)
 PBRMaterial& PBRMaterial::SetMetallic (const float metallic)
 {
     this->metallic.GenerateSolid (1, 1, metallic);
-    SetTexture (static_cast<int>(PBRTexture::Metallic), "tMetallic", &this->metallic);
+    SetTexture (static_cast<int>(PBRTexture::Metallic), "tMetallic", this->metallic);
 
     return *this;
 }
@@ -84,7 +84,7 @@ PBRMaterial& PBRMaterial::SetMetallic (const float metallic)
 PBRMaterial& PBRMaterial::SetRoughness (const float roughness)
 {
     this->roughness.GenerateSolid (1, 1, roughness);
-    SetTexture (static_cast<int>(PBRTexture::Roughness), "tRoughness", &this->roughness);
+    SetTexture (static_cast<int>(PBRTexture::Roughness), "tRoughness", this->roughness);
 
     return *this;
 }
@@ -92,7 +92,7 @@ PBRMaterial& PBRMaterial::SetRoughness (const float roughness)
 PBRMaterial& PBRMaterial::SetAO (const float ao)
 {
     this->ao.GenerateSolid (1, 1, ao);
-    SetTexture (static_cast<int>(PBRTexture::AO), "tAO", &this->ao);
+    SetTexture (static_cast<int>(PBRTexture::AO), "tAO", this->ao);
 
     return *this;
 }

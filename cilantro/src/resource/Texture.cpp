@@ -4,12 +4,12 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-Texture::Texture (const std::string& name) : Resource (name)
+Texture::Texture () : LoadableResource ()
 {
     data = nullptr;
 }
 
-Texture::Texture (const std::string& name, const std::string& path) : Resource (name, path)
+Texture::Texture (const std::string& path) : LoadableResource (path)
 {
     Load (path.c_str ());
 }

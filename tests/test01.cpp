@@ -51,24 +51,24 @@ int main (int argc, char* argv [])
     unsigned int tRoughness = resourceManager.Load<Texture> ("roughness", "textures/scuffed-metal1_roughness.png");
     unsigned int tAO = resourceManager.Load<Texture> ("ao", "textures/scuffed-metal1_ao.png");
 
-    PBRMaterial& green = dynamic_cast<PBRMaterial&>(gameScene.AddMaterial (new PBRMaterial ()));
-    green.SetAlbedo (Vector3f (0.1f, 0.4f, 0.1f)).SetRoughness (0.1f).SetMetallic (0.6f);
+    gameScene.AddMaterial<PBRMaterial> ("greenMaterial");
+    gameScene.GetMaterials ().GetByName<PBRMaterial> ("greenMaterial").SetAlbedo (Vector3f (0.1f, 0.4f, 0.1f)).SetRoughness (0.1f).SetMetallic (0.6f);
 
-    PBRMaterial& red = dynamic_cast<PBRMaterial&>(gameScene.AddMaterial (new PBRMaterial ()));
-    //red.SetAlbedo (Vector3f (0.9f, 0.1f, 0.1f)).SetMetallic(0.2f).SetRoughness(0.4f);
-    red.SetAlbedo (tAlbedo).SetMetallic (tMetalness).SetRoughness (tRoughness);
+    gameScene.AddMaterial<PBRMaterial> ("redMaterial");
+    gameScene.GetMaterials ().GetByName<PBRMaterial> ("redMaterial").SetAlbedo (tAlbedo).SetMetallic (tMetalness).SetRoughness (tRoughness);
 
-    PBRMaterial& gold = dynamic_cast<PBRMaterial&>(gameScene.AddMaterial (new PBRMaterial ()));
+    gameScene.AddMaterial<PBRMaterial> ("goldMaterial");
+    PBRMaterial& gold = gameScene.GetMaterials ().GetByName<PBRMaterial> ("goldMaterial");
     gold.SetAlbedo (Vector3f (1.000f, 0.766f, 0.336f));
     gold.SetMetallic (0.8f);
     gold.SetRoughness (0.2f);
     gold.SetAO (1.0f);
 
-    PBRMaterial& blue = dynamic_cast<PBRMaterial&>(gameScene.AddMaterial (new PBRMaterial ()));
-    blue.SetAlbedo (Vector3f (0.02f, 0.29f, 0.53f)).SetMetallic (0.0f).SetRoughness(0.8f);
+    gameScene.AddMaterial<PBRMaterial> ("blueMaterial");
+    gameScene.GetMaterials ().GetByName<PBRMaterial> ("blueMaterial").SetAlbedo (Vector3f (0.02f, 0.29f, 0.53f)).SetMetallic (0.0f).SetRoughness(0.8f);
 
-    PhongMaterial& lampM = dynamic_cast<PhongMaterial&>(gameScene.AddMaterial (new PhongMaterial ()));
-    lampM.SetEmissive (Vector3f (0.9f, 0.9f, 0.9f)).SetDiffuse (Vector3f (0.2f, 0.2f, 0.2f));
+    gameScene.AddMaterial<PhongMaterial> ("lampMaterial");
+    gameScene.GetMaterials ().GetByName<PhongMaterial> ("lampMaterial").SetEmissive (Vector3f (0.9f, 0.9f, 0.9f)).SetDiffuse (Vector3f (0.2f, 0.2f, 0.2f));
 
     ControlledCamera& cam = dynamic_cast<ControlledCamera&>(gameScene.AddGameObject (new ControlledCamera (60.0f, 0.01f, 100.0f, 0.1f)));
     cam.Initialize ();
@@ -77,7 +77,7 @@ int main (int argc, char* argv [])
 
     MeshObject& cube = dynamic_cast<MeshObject&>(gameScene.AddGameObject (new MeshObject ()));
     Primitives::GenerateCube (cube);
-    cube.SetMaterial (red);
+    cube.SetMaterial (gameScene.GetMaterials ().GetByName<PBRMaterial> ("redMaterial"));
     cube.GetModelTransform ().Scale (0.5f).Translate (0.0f, 1.1f, 0.0f);
 
     MeshObject& cone = dynamic_cast<MeshObject&>(gameScene.AddGameObject (new MeshObject ()));
@@ -87,18 +87,18 @@ int main (int argc, char* argv [])
 
     MeshObject& cylinder = dynamic_cast<MeshObject&>(gameScene.AddGameObject (new MeshObject ()));
     Primitives::GenerateCylinder (cylinder, 16);
-    cylinder.SetMaterial (blue).SetSmoothNormals (false);
+    cylinder.SetMaterial (gameScene.GetMaterials ().GetByName<PBRMaterial> ("blueMaterial")).SetSmoothNormals (false);
     cylinder.GetModelTransform ().Rotate (90.0f, 12.5f, 0.0f).Translate (1.7f, 0.5f, 0.7f).Scale (0.5f);
 
     MeshObject& lamp = dynamic_cast<MeshObject&>(gameScene.AddGameObject (new MeshObject ()));
     Primitives::GenerateSphere (lamp, 3);
     lamp.GetModelTransform ().Scale (0.1f, 0.1f, 0.1f).Translate (1.0f, 0.75f, 1.0f);
-    lamp.SetMaterial (lampM);
+    lamp.SetMaterial (gameScene.GetMaterials ().GetByName<PhongMaterial> ("lampMaterial"));
 
     MeshObject& floor = dynamic_cast<MeshObject&>(gameScene.AddGameObject (new MeshObject ()));
     Primitives::GenerateCube (floor);
     floor.GetModelTransform ().Scale (2.5f, 0.05f, 2.5f).Translate (0.0f, -0.05f, 0.0f);
-    floor.SetMaterial (green);
+    floor.SetMaterial (gameScene.GetMaterials ().GetByName<PBRMaterial> ("greenMaterial"));
 
     PointLight& light1 = dynamic_cast<PointLight&>(gameScene.AddGameObject (new PointLight ()));
     light1.SetParentObject (lamp);

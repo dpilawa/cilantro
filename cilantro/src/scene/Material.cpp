@@ -3,22 +3,12 @@
 #include "math/Vector3f.h"
 #include <string>
 
-Material::Material ()
+Material::Material () : Resource ()
 {
 }
 
 Material::~Material ()
 {
-}
-
-void Material::SetHandle (unsigned int handle)
-{
-    materialHandle = handle;
-}
-
-unsigned int Material::GetHandle () const
-{
-    return materialHandle;
 }
 
 Material& Material::SetShaderProgram (const std::string& name)
@@ -43,10 +33,10 @@ property_map_t& Material::GetPropertiesMap ()
     return properties;
 }
 
-Material& Material::SetTexture (unsigned int textureUnit, const std::string& label, Texture* texture)
+Material& Material::SetTexture (unsigned int textureUnit, const std::string& label, Texture& texture)
 {
-    textures[textureUnit] = std::pair (label, texture);
-    InvokeCallbacks ("OnUpdateMaterial", this->materialHandle, textureUnit);
+    textures[textureUnit] = std::pair (label, &texture);
+    InvokeCallbacks ("OnUpdateMaterial", this->GetHandle (), textureUnit);
 
     return *this;
 }

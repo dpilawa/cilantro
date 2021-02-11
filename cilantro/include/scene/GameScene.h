@@ -2,6 +2,7 @@
 #define _GAMESCENE_H_
 
 #include "cilantroengine.h"
+#include "resource/ResourceManager.h"
 #include "game/GameComposite.h"
 #include "scene/GameObject.h"
 #include "scene/Material.h"
@@ -26,11 +27,12 @@ public:
 
     // add material to the scene 
     // returns reference to that material
-    __EAPI Material& AddMaterial (Material* material);
+    template <typename T>
+    __EAPI handle_t AddMaterial (const std::string& name);
 
     // return reference to map
     __EAPI std::unordered_map <unsigned int, GameObject*>& GetGameObjects ();
-    __EAPI std::unordered_map <unsigned int, Material*>& GetMaterials ();
+    __EAPI ResourceManager<Material>& GetMaterials ();
 
     // return number of scene's GameObjects
     __EAPI unsigned int getGameObjectsCount () const;
@@ -45,11 +47,10 @@ private:
     std::unordered_map <unsigned int, GameObject*> gameObjects;
 
     // map of all Materials in the scene
-    std::unordered_map <unsigned int, Material*> materials;
+    ResourceManager<Material> materials;
 
     // counts of objects in the scene
     unsigned int gameObjectsCount;
-    unsigned int materialsCount;
 
     // reference to active camera
     Camera* activeCamera;
