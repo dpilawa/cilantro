@@ -24,11 +24,11 @@ public:
     __EAPI virtual ~PBRMaterial ();
 
     // setters
-    __EAPI PBRMaterial& SetAlbedo (unsigned int hAlbedo);
-    __EAPI PBRMaterial& SetNormal (unsigned int hNormal);
-    __EAPI PBRMaterial& SetMetallic (unsigned int hMetallic);
-    __EAPI PBRMaterial& SetRoughness (unsigned int hRoughness);
-    __EAPI PBRMaterial& SetAO (unsigned int hAO);
+    __EAPI PBRMaterial& SetAlbedo (const std::string& albedo);
+    __EAPI PBRMaterial& SetNormal (const std::string& normal);
+    __EAPI PBRMaterial& SetMetallic (const std::string& metallic);
+    __EAPI PBRMaterial& SetRoughness (const std::string& roughness);
+    __EAPI PBRMaterial& SetAO (const std::string& ao);
 
     __EAPI PBRMaterial& SetAlbedo (const Vector3f& albedo);
     __EAPI PBRMaterial& SetMetallic (const float metallic);

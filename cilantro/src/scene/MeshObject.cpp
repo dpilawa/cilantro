@@ -148,9 +148,9 @@ unsigned int MeshObject::GetIndexCount ()
     return (unsigned int) indices.size ();
 }
 
-MeshObject& MeshObject::SetMaterial (Material & material)
+MeshObject& MeshObject::SetMaterial (const std::string& materialName)
 {
-    objectMaterial = &material;
+    objectMaterial = &game->GetGameScene ().GetMaterialManager ().GetByName<Material> (materialName);
 
     return *this;
 }

@@ -2,6 +2,7 @@
 #define _GAMEOBJECT_H_
 
 #include "cilantroengine.h"
+#include "resource/Resource.h"
 #include "game/GameComposite.h"
 #include "scene/Transform.h"
 #include "system/CallbackProvider.h"
@@ -10,7 +11,7 @@
 
 class Renderer;
 
-class GameObject : public GameComposite, public CallbackProvider<std::string, unsigned int, unsigned int>
+class GameObject : public Resource, public GameComposite, public CallbackProvider<std::string, unsigned int, unsigned int>
 {
 public:
     __EAPI GameObject ();

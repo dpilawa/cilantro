@@ -23,10 +23,10 @@ public:
     __EAPI virtual ~PhongMaterial ();
 
     // setters
-    __EAPI PhongMaterial& SetDiffuse (unsigned int hDiffuse);
-    __EAPI PhongMaterial& SetNormal (unsigned int hNormal);
-    __EAPI PhongMaterial& SetSpecular (unsigned int hSpecular);
-    __EAPI PhongMaterial& SetEmissive (unsigned int hEmissive);
+    __EAPI PhongMaterial& SetDiffuse (const std::string& diffuse);
+    __EAPI PhongMaterial& SetNormal (const std::string& normal);
+    __EAPI PhongMaterial& SetSpecular (const std::string& specular);
+    __EAPI PhongMaterial& SetEmissive (const std::string& emissive);
 
     __EAPI PhongMaterial& SetDiffuse (const Vector3f& diffuse);
     __EAPI PhongMaterial& SetSpecular (const Vector3f& specular);

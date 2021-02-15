@@ -58,29 +58,12 @@ GameObject& GameScene::GetObjectByHandle (unsigned int handle)
     return *(find->second);
 }
 
-template <typename T>
-handle_t GameScene::AddMaterial (const std::string& name)
-{
-    handle_t handle = materials.Create<T> (name);
-
-    Material& material = materials.GetByHandle<T> (handle);
-
-    // set game loop reference
-    material.AttachToGame (this->game);
-
-    // register callbacks
-    material.RegisterCallback ("OnUpdateMaterial", [ & ](unsigned int materialHandle, unsigned int textureUnit) { InvokeCallbacks ("OnUpdateMaterial", materialHandle, textureUnit); });
-
-    // return material handle
-    return handle;
-}
-
 std::unordered_map<unsigned int, GameObject*>& GameScene::GetGameObjects ()
 {
     return gameObjects;
 }
 
-ResourceManager<Material>& GameScene::GetMaterials ()
+ResourceManager<Material>& GameScene::GetMaterialManager ()
 {
     return materials;
 }
@@ -100,6 +83,3 @@ Camera* GameScene::GetActiveCamera () const
     return activeCamera;
 }
 
-// template instantiations
-template __EAPI handle_t GameScene::AddMaterial<PBRMaterial> (const std::string& name);
-template __EAPI handle_t GameScene::AddMaterial<PhongMaterial> (const std::string& name);

@@ -41,7 +41,7 @@ public:
     __EAPI unsigned int GetIndexCount ();
 
     // set mesh material
-    __EAPI MeshObject& SetMaterial (Material& material);
+    __EAPI MeshObject& SetMaterial (const std::string& materialName);
 
     // get mesh material
     __EAPI Material& GetMaterial () const;

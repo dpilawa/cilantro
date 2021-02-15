@@ -18,14 +18,14 @@ class ResourceManager
     using const_iterator = typename resources_t::const_iterator;
 
 public:
-    ResourceManager();
-    virtual ~ResourceManager();
+    __EAPI ResourceManager();
+    __EAPI virtual ~ResourceManager();
 
     template <typename T>
-    handle_t Load(const std::string& name, const std::string& path = std::string ());
+    T& Load(const std::string& name, const std::string& path = std::string ());
 
     template <typename T>
-    handle_t Create(const std::string& name);
+    T& Create(const std::string& name);
 
     template <typename T>
     T& GetByHandle(unsigned int handle);
@@ -33,12 +33,12 @@ public:
     template <typename T>
     T& GetByName(const std::string& name);
 
-    iterator begin();
-    iterator end();
-    const_iterator begin() const;
-    const_iterator end() const;
-    const_iterator cbegin() const;
-    const_iterator cend() const;
+    __EAPI iterator begin();
+    __EAPI iterator end();
+    __EAPI const_iterator begin() const;
+    __EAPI const_iterator end() const;
+    __EAPI const_iterator cbegin() const;
+    __EAPI const_iterator cend() const;
 
 private:
     unsigned int handle;
@@ -47,22 +47,8 @@ private:
 };
 
 template <typename Base>
-ResourceManager<Base>::ResourceManager ()
-{
-    static_assert (std::is_base_of<Resource, Base>::value, "Resaource base object must inherit from Resource");
-    this->handle = 0;
-    LogMessage(MSG_LOCATION) << "ResourceManager started";
-}
-
-template <typename Base>
-ResourceManager<Base>::~ResourceManager ()
-{
-    LogMessage(MSG_LOCATION) << "ResourceManager stopped";
-}
-
-template <typename Base>
 template <typename T>
-handle_t ResourceManager<Base>::Load (const std::string& name, const std::string& path)
+T& ResourceManager<Base>::Load (const std::string& name, const std::string& path)
 {
     static_assert (std::is_base_of<Base, T>::value, "Invalid base object for resource");
     std::shared_ptr<T> newResource;
@@ -91,17 +77,17 @@ handle_t ResourceManager<Base>::Load (const std::string& name, const std::string
         }
 
         newResource->name = name;
-        newResource->handle = handle;
+        newResource->handle = handle++;
         resources.push_back (newResource);
-        resourceNames[name] = handle;
+        resourceNames[name] = newResource->handle;
     }
 
-    return handle++;
+    return *newResource;
 }
 
 template <typename Base>
 template <typename T>
-handle_t ResourceManager<Base>::Create (const std::string& name)
+T& ResourceManager<Base>::Create (const std::string& name)
 {
     return Load<T> (name);
 }
@@ -138,42 +124,6 @@ T& ResourceManager<Base>::GetByName(const std::string& name)
     }
 
     return GetByHandle<T> (resourceName->second);
-}
-
-template <typename Base>
-typename ResourceManager<Base>::iterator ResourceManager<Base>::begin ()
-{ 
-    return resources.begin(); 
-}
-
-template <typename Base>
-typename ResourceManager<Base>::iterator ResourceManager<Base>::end () 
-{ 
-    return resources.end(); 
-}
-
-template <typename Base>
-typename ResourceManager<Base>::const_iterator ResourceManager<Base>::begin () const 
-{ 
-    return resources.begin(); 
-}
-
-template <typename Base>
-typename ResourceManager<Base>::const_iterator ResourceManager<Base>::end () const 
-{ 
-    return resources.end(); 
-}
-
-template <typename Base>
-typename ResourceManager<Base>::const_iterator ResourceManager<Base>::cbegin () const 
-{ 
-    return resources.cbegin(); 
-}
-
-template <typename Base>
-typename ResourceManager<Base>::const_iterator ResourceManager<Base>::cend () const 
-{ 
-    return resources.cend(); 
 }
 
 // deduction guide for clang (c++17)

@@ -25,33 +25,33 @@ PhongMaterial::~PhongMaterial ()
 {
 }
 
-PhongMaterial& PhongMaterial::SetDiffuse (unsigned int hDiffuse)
+PhongMaterial& PhongMaterial::SetDiffuse (const std::string& diffuse)
 {
-    Texture& tDiffuse = game->GetResourceManager ().GetByHandle<Texture> (hDiffuse);
+    Texture& tDiffuse = game->GetResourceManager ().GetByName<Texture> (diffuse);
     SetTexture (static_cast<int>(PhongTexture::Diffuse), "tDiffuse", tDiffuse);
 
     return *this;
 }
 
-PhongMaterial& PhongMaterial::SetNormal (unsigned int hNormal)
+PhongMaterial& PhongMaterial::SetNormal (const std::string& normal)
 {
-    Texture& tNormal = game->GetResourceManager ().GetByHandle<Texture> (hNormal);
+    Texture& tNormal = game->GetResourceManager ().GetByName<Texture> (normal);
     SetTexture (static_cast<int>(PhongTexture::Normal), "tNormal", tNormal);
 
     return *this;
 }
 
-PhongMaterial& PhongMaterial::SetSpecular (unsigned int hSpecular)
+PhongMaterial& PhongMaterial::SetSpecular (const std::string& specular)
 {
-    Texture& tSpecular = game->GetResourceManager ().GetByHandle<Texture> (hSpecular);
+    Texture& tSpecular = game->GetResourceManager ().GetByName<Texture> (specular);
     SetTexture (static_cast<int>(PhongTexture::Specular), "tSpecular", tSpecular);
 
     return *this;
 }
 
-PhongMaterial& PhongMaterial::SetEmissive (unsigned int hEmissive)
+PhongMaterial& PhongMaterial::SetEmissive (const std::string& emissive)
 {
-    Texture& tEmissive = game->GetResourceManager ().GetByHandle<Texture> (hEmissive);
+    Texture& tEmissive = game->GetResourceManager ().GetByName<Texture> (emissive);
     SetTexture (static_cast<int>(PhongTexture::Emissive), "tEmissive", tEmissive);
     
     return *this;

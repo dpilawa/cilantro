@@ -12,7 +12,7 @@ public:
     virtual ~GameComposite ();
 
     // run a game loop
-    void AttachToGame (Game* game);
+    __EAPI void AttachToGame (Game* game);
 
 protected:
 
