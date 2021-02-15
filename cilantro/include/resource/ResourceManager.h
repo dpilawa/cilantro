@@ -21,11 +21,11 @@ public:
     __EAPI ResourceManager();
     __EAPI virtual ~ResourceManager();
 
-    template <typename T>
-    T& Load(const std::string& name, const std::string& path = std::string ());
+    template <typename T, typename ...Params>
+    T& Load(const std::string& name, const std::string& path, Params&&... params);
 
-    template <typename T>
-    T& Create(const std::string& name);
+    template <typename T, typename ...Params>
+    T& Create(const std::string& name, Params&&... params);
 
     template <typename T>
     T& GetByHandle(unsigned int handle);
@@ -47,8 +47,8 @@ private:
 };
 
 template <typename Base>
-template <typename T>
-T& ResourceManager<Base>::Load (const std::string& name, const std::string& path)
+template <typename T, typename ...Params>
+T& ResourceManager<Base>::Load (const std::string& name, const std::string& path, Params&&... params)
 {
     static_assert (std::is_base_of<Base, T>::value, "Invalid base object for resource");
     std::shared_ptr<T> newResource;
@@ -68,12 +68,12 @@ T& ResourceManager<Base>::Load (const std::string& name, const std::string& path
             }
             else 
             {
-                newResource = std::make_shared<T> ();
+                newResource = std::make_shared<T> (std::forward<Params>(params)...);
             }
         }
         else
         {
-            newResource = std::make_shared<T> ();
+            newResource = std::make_shared<T> (std::forward<Params>(params)...);
         }
 
         newResource->name = name;
@@ -86,10 +86,10 @@ T& ResourceManager<Base>::Load (const std::string& name, const std::string& path
 }
 
 template <typename Base>
-template <typename T>
-T& ResourceManager<Base>::Create (const std::string& name)
+template <typename T, typename ...Params>
+T& ResourceManager<Base>::Create (const std::string& name, Params&&... params)
 {
-    return Load<T> (name);
+    return Load<T> (name, std::string (), params...);
 }
 
 template <typename Base>
