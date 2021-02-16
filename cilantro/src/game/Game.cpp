@@ -43,9 +43,9 @@ Game::~Game ()
 void Game::Run ()
 {	
     // initialize all game objects
-    for (auto gameObject : gameScene.GetGameObjects ())
+    for (auto gameObject : gameScene.GetGameObjectManager ())
     {
-        gameObject.second->OnStart ();
+        gameObject->OnStart ();
     }
 
     isRunning = true;
@@ -58,9 +58,9 @@ void Game::Run ()
     isRunning = false;
 
     // deinitialize all game objects
-    for (auto gameObject : gameScene.GetGameObjects ())
+    for (auto gameObject : gameScene.GetGameObjectManager ())
     {
-        gameObject.second->OnEnd ();
+        gameObject->OnEnd ();
     }
 }
 
@@ -76,9 +76,9 @@ void Game::Step ()
     Timer::Tick ();
 
     // process all game objects
-    for (auto gameObject : gameScene.GetGameObjects ())
+    for (auto gameObject : gameScene.GetGameObjectManager ())
     {
-        gameObject.second->OnFrame ();
+        gameObject->OnFrame ();
     }
 
     // render frame

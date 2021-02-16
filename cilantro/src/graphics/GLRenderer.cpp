@@ -89,10 +89,10 @@ void GLRenderer::Initialize ()
     InitializeLightUniformBuffers ();
 
     // set callback for new MeshObjects
-    game->GetGameScene ().RegisterCallback ("OnUpdateMeshObject", [&](unsigned int objectHandle, unsigned int) { game->GetGameScene ().GetGameObjects ()[objectHandle]->OnUpdate (*this); });
+    game->GetGameScene ().RegisterCallback ("OnUpdateMeshObject", [&](unsigned int objectHandle, unsigned int) { game->GetGameScene ().GetGameObjectManager ().GetByHandle<GameObject> (objectHandle).OnUpdate (*this); });
 
     // set callback for new or modified lights
-    game->GetGameScene ().RegisterCallback ("OnUpdateLight", [&](unsigned int objectHandle, unsigned int) { game->GetGameScene ().GetGameObjects ()[objectHandle]->OnUpdate (*this); });
+    game->GetGameScene ().RegisterCallback ("OnUpdateLight", [&](unsigned int objectHandle, unsigned int) { game->GetGameScene ().GetGameObjectManager ().GetByHandle<GameObject> (objectHandle).OnUpdate (*this); });
 
     // set callback for new or modified materials
     game->GetGameScene ().RegisterCallback ("OnUpdateMaterial", [&](unsigned int materialHandle, unsigned int textureUnit) { this->Update (game->GetGameScene ().GetMaterialManager ().GetByHandle<Material> (materialHandle), textureUnit); });
@@ -140,9 +140,9 @@ void GLRenderer::RenderFrame ()
     glViewport (0, 0, this->width, this->height);
 
     // draw all objects in scene
-    for (auto&& gameObject : game->GetGameScene ().GetGameObjects ())
+    for (auto gameObject : game->GetGameScene ().GetGameObjectManager ())
     {
-        gameObject.second->OnDraw (*this);
+        gameObject->OnDraw (*this);
     }
 
 #if (CILANTRO_GL_VERSION > 140)
@@ -163,7 +163,7 @@ void GLRenderer::SetResolution (unsigned int width, unsigned int height)
 
     framebuffer->SetFramebufferResolution (width, height);
 
-    for (auto&& postprocess : postprocesses)
+    for (auto postprocess : postprocesses)
     {
         dynamic_cast<GLFramebuffer*> (postprocess->GetFramebufferPtr ())->SetFramebufferResolution (width, height);
     }
@@ -314,6 +314,11 @@ void GLRenderer::Draw (MeshObject& meshObject)
 void GLRenderer::Update (MeshObject& meshObject)
 {
     unsigned int objectHandle = meshObject.GetHandle ();
+
+    if (meshObject.GetIndexCount () == 0)
+    {
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Meshobject" << meshObject.GetName () << "is empty";
+    }
 
     // check of object's buffers are already initialized
     auto find = objectBuffers.find (objectHandle);
@@ -750,13 +755,14 @@ void GLRenderer::InitializeShaderLibrary ()
 void GLRenderer::InitializeObjectBuffers ()
 {
     // load object buffers for all existing objects
-    for (auto&& gameObject : game->GetGameScene ().GetGameObjects ())
+    for (auto gameObject : game->GetGameScene ().GetGameObjectManager ())
     {
         // load buffers for MeshObject only
-        if (dynamic_cast<MeshObject*>(gameObject.second) != nullptr)
+        if (std::dynamic_pointer_cast<MeshObject> (gameObject) != nullptr)
         {
-            gameObject.second->OnUpdate (*this);
-        }
+            gameObject->OnUpdate (*this);
+            LogMessage (MSG_LOCATION) << "Initialized object buffers for" << gameObject->GetName() << gameObject->GetHandle ();
+        }      
     }
 }
 
@@ -859,11 +865,11 @@ void GLRenderer::InitializeLightUniformBuffers ()
     }
 
     // scan objects vector for lights and populate light buffers
-    for (auto&& gameObject : game->GetGameScene ().GetGameObjects ())
+    for (auto gameObject : game->GetGameScene ().GetGameObjectManager ())
     {
-        if (gameObject.second->IsLight ())
+        if (gameObject->IsLight ())
         {
-            gameObject.second->OnUpdate (*this);
+            gameObject->OnUpdate (*this);
         }
     }
 
@@ -871,14 +877,14 @@ void GLRenderer::InitializeLightUniformBuffers ()
 
 void GLRenderer::UpdateLightBufferRecursive (unsigned int objectHandle)
 {
-    GameObject* gameObject = game->GetGameScene ().GetGameObjects ()[objectHandle];
+    GameObject& gameObject = game->GetGameScene ().GetGameObjectManager ().GetByHandle<GameObject> (objectHandle);
 
-    if (gameObject->IsLight ())
+    if (gameObject.IsLight ())
     {
-        gameObject->OnUpdate (*this);
+        gameObject.OnUpdate (*this);
     }
 
-    for (auto&& childObject : gameObject->GetChildObjects ())
+    for (auto&& childObject : gameObject.GetChildObjects ())
     {
         UpdateLightBufferRecursive (childObject->GetHandle ());
     }

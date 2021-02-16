@@ -41,9 +41,9 @@ public:
     __EAPI const_iterator cend() const;
 
 private:
-    unsigned int handle;
+    handle_t handle;
     resources_t resources;
-    std::unordered_map<std::string, unsigned int> resourceNames;
+    std::unordered_map<std::string, handle_t> resourceNames;
 };
 
 template <typename Base>
@@ -64,7 +64,7 @@ T& ResourceManager<Base>::Load (const std::string& name, const std::string& path
         {
             if (!path.empty ()) 
             {
-                newResource = std::make_shared<T> (path);
+                newResource = std::make_shared<T> (path, std::forward<Params>(params)...);
             }
             else 
             {

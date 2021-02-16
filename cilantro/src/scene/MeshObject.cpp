@@ -1,6 +1,7 @@
 #include "cilantroengine.h"
 #include "scene/MeshObject.h"
 #include "scene/GameObject.h"
+#include "scene/Primitives.h"
 #include "scene/Material.h"
 #include "math/Vector3f.h"
 #include "math/Mathf.h"

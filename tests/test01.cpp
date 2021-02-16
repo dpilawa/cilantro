@@ -57,55 +57,55 @@ int main (int argc, char* argv [])
     gameScene.AddMaterial<PBRMaterial> ("blueMaterial").SetAlbedo (Vector3f (0.02f, 0.29f, 0.53f)).SetMetallic (0.0f).SetRoughness(0.8f);
     gameScene.AddMaterial<PhongMaterial> ("lampMaterial").SetEmissive (Vector3f (0.9f, 0.9f, 0.9f)).SetDiffuse (Vector3f (0.2f, 0.2f, 0.2f));
 
-    ControlledCamera& cam = dynamic_cast<ControlledCamera&>(gameScene.AddGameObject (new ControlledCamera (60.0f, 0.01f, 100.0f, 0.1f)));
+    ControlledCamera& cam = gameScene.AddGameObject<ControlledCamera> ("camera", 60.0f, 0.01f, 100.0f, 0.1f);
     cam.Initialize ();
     cam.GetModelTransform ().Translate (5.0f, 2.5f, 5.0f).Rotate (-20.0f, 45.0f, 0.0f);
     gameScene.SetActiveCamera (&cam);
 
-    MeshObject& cube = dynamic_cast<MeshObject&>(gameScene.AddGameObject (new MeshObject ()));
+    MeshObject& cube = gameScene.AddGameObject<MeshObject> ("cube");
     Primitives::GenerateCube (cube);
     cube.SetMaterial ("redMaterial");
     cube.GetModelTransform ().Scale (0.5f).Translate (0.0f, 1.1f, 0.0f);
 
-    MeshObject& cone = dynamic_cast<MeshObject&>(gameScene.AddGameObject (new MeshObject ()));
+    MeshObject& cone = gameScene.AddGameObject<MeshObject> ("cone");
     Primitives::GenerateCone (cone, 16);
     cone.SetMaterial ("goldMaterial").SetSmoothNormals (false);
     cone.GetModelTransform ().Translate (-1.5f, 0.5f, 1.0f).Scale (0.5f);
 
-    MeshObject& cylinder = dynamic_cast<MeshObject&>(gameScene.AddGameObject (new MeshObject ()));
+    MeshObject& cylinder = gameScene.AddGameObject<MeshObject> ("cylinder");
     Primitives::GenerateCylinder (cylinder, 16);
     cylinder.SetMaterial ("blueMaterial").SetSmoothNormals (false);
     cylinder.GetModelTransform ().Rotate (90.0f, 12.5f, 0.0f).Translate (1.7f, 0.5f, 0.7f).Scale (0.5f);
 
-    MeshObject& lamp = dynamic_cast<MeshObject&>(gameScene.AddGameObject (new MeshObject ()));
+    MeshObject& lamp = gameScene.AddGameObject<MeshObject> ("lamp");
     Primitives::GenerateSphere (lamp, 3);
     lamp.GetModelTransform ().Scale (0.1f, 0.1f, 0.1f).Translate (1.0f, 0.75f, 1.0f);
     lamp.SetMaterial ("lampMaterial");
 
-    MeshObject& floor = dynamic_cast<MeshObject&>(gameScene.AddGameObject (new MeshObject ()));
+    MeshObject& floor = gameScene.AddGameObject<MeshObject> ("floor");
     Primitives::GenerateCube (floor);
     floor.GetModelTransform ().Scale (2.5f, 0.05f, 2.5f).Translate (0.0f, -0.05f, 0.0f);
     floor.SetMaterial ("greenMaterial");
 
-    PointLight& light1 = dynamic_cast<PointLight&>(gameScene.AddGameObject (new PointLight ()));
+    PointLight& light1 = gameScene.AddGameObject<PointLight> ("light1");
     light1.SetParentObject (lamp);
     light1.SetColor (Vector3f (1.5f, 1.5f, 1.5f));
     light1.SetLinearAttenuationFactor (0.0f).SetQuadraticAttenuationFactor (1.0f);
     light1.SetEnabled (true);
 
-    DirectionalLight& light2 = dynamic_cast<DirectionalLight&>(gameScene.AddGameObject (new DirectionalLight ()));
+    DirectionalLight& light2 = gameScene.AddGameObject<DirectionalLight> ("light2");
     light2.GetModelTransform ().Rotate (135.0f, 45.0f, 0.0f);
     light2.SetColor (Vector3f (2.7f, 2.7f, 2.7f));
     light2.SetEnabled (true);
 
-    SpotLight& light3 = dynamic_cast<SpotLight&>(gameScene.AddGameObject (new SpotLight ()));
+    SpotLight& light3 = gameScene.AddGameObject<SpotLight> ("light3");
     light3.GetModelTransform ().Translate (2.0f, 10.0f, 0.0f).Rotate (90.0f, 0.0f, 0.0f);
     light3.SetColor (Vector3f (2.7f, 2.7f, 2.7f));
     light3.SetInnerCutoff (5.0f);
     light3.SetOuterCutoff (12.0f);
     light3.SetEnabled (true);
 
-    SplinePath& lp = dynamic_cast<SplinePath&> (gameScene.AddGameObject (new SplinePath ()));
+    SplinePath& lp = gameScene.AddGameObject<SplinePath> ("splinepath");
     lp.AddWaypoint ({2.0f, 0.0f, 2.0f}, Mathf::EulerToQuaterion ({0.0f, 0.0f, 0.0f}));
     lp.AddWaypoint ({-2.0f, 0.0f, 2.0f}, Mathf::EulerToQuaterion ({0.0f, 0.0f, 0.0f}));
     lp.AddWaypoint ({2.0f, 0.0f, -2.0f}, Mathf::EulerToQuaterion ({0.0f, 0.0f, 0.0f}));
@@ -117,7 +117,7 @@ int main (int argc, char* argv [])
 
     lp.GetModelTransform ().Rotate ({0.0f, 0.0f, -15.0f}).Translate ({0.0f, 1.0f, 0.0f});
 
-    AnimationObject& lightAnimation = dynamic_cast<AnimationObject&> (gameScene.AddGameObject (new AnimationObject ()));
+    AnimationObject& lightAnimation = gameScene.AddGameObject<AnimationObject> ("lightAnimation");
 
     lightAnimation.AddAnimationProperty<float> (
         "t", 0.0f,

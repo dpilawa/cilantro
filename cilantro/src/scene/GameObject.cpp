@@ -25,16 +25,6 @@ GameObject::~GameObject ()
 {
 }
 
-void GameObject::SetHandle (unsigned int handle)
-{
-    objectHandle = handle;
-}
-
-unsigned int GameObject::GetHandle () const
-{
-    return objectHandle;
-}
-
 void GameObject::SetParentObject (GameObject& parent)
 {
     parentObject = &parent;

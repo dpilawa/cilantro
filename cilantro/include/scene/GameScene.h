@@ -20,22 +20,17 @@ public:
 
     // add GameObject to a scene
     // returns reference to that added object
-    __EAPI GameObject& AddGameObject (GameObject* gameObject);
-
-    // get game object by its handle
-    __EAPI GameObject& GetObjectByHandle (unsigned int handle);
+    template <typename T, typename ...Params>
+    T& AddGameObject (const std::string& name, Params&&... params);
 
     // add material to the scene 
     // returns reference to that material
-    template <typename T>
-    T& AddMaterial (const std::string& name);
+    template <typename T, typename ...Params>
+    T& AddMaterial (const std::string& name, Params&&... params);
 
     // return reference to map
-    __EAPI std::unordered_map <unsigned int, GameObject*>& GetGameObjects ();
+    __EAPI ResourceManager<GameObject>& GetGameObjectManager ();
     __EAPI ResourceManager<Material>& GetMaterialManager ();
-
-    // return number of scene's GameObjects
-    __EAPI unsigned int getGameObjectsCount () const;
 
     // active camera manipulation
     __EAPI void SetActiveCamera (Camera* camera);
@@ -44,23 +39,42 @@ public:
 private:
     
     // map of all GameObjects in the scene
-    std::unordered_map <unsigned int, GameObject*> gameObjects;
+    ResourceManager<GameObject> gameObjects;
 
     // map of all Materials in the scene
     ResourceManager<Material> materials;
-
-    // counts of objects in the scene
-    unsigned int gameObjectsCount;
 
     // reference to active camera
     Camera* activeCamera;
 
 };
 
-template <typename T>
-T& GameScene::AddMaterial (const std::string& name)
+template <typename T, typename ...Params>
+T& GameScene::AddGameObject (const std::string& name, Params&&... params)
 {
-    T& material = materials.Create<T> (name);
+    T& gameObject = gameObjects.Create<T> (name, params...);
+
+    // set game loop reference
+    gameObject.AttachToGame (this->game);
+
+    // set callbacks on object modification
+    // this is just a passthrough of callbacks to subscribers (e.g. Renderer)
+    gameObject.RegisterCallback ("OnUpdateMeshObject", [ & ](unsigned int objectHandle, unsigned int) { InvokeCallbacks ("OnUpdateMeshObject", objectHandle, 0); });
+    gameObject.RegisterCallback ("OnUpdateLight", [ & ](unsigned int objectHandle, unsigned int) { InvokeCallbacks ("OnUpdateLight", objectHandle, 0); });
+    gameObject.RegisterCallback ("OnUpdateSceneGraph", [ & ](unsigned int objectHandle, unsigned int) { InvokeCallbacks ("OnUpdateSceneGraph", objectHandle, 0); });
+    gameObject.RegisterCallback ("OnUpdateTransform", [&](unsigned int objectHandle, unsigned int) { 
+        InvokeCallbacks ("OnUpdateTransform", objectHandle, 0);
+        gameObjects.GetByHandle<T> (objectHandle).CalculateModelTransformMatrix ();
+    });
+
+    // return object handle
+    return gameObject;
+}
+
+template <typename T, typename ...Params>
+T& GameScene::AddMaterial (const std::string& name, Params&&... params)
+{
+    T& material = materials.Create<T> (name, params...);
 
     // set game loop reference
     material.AttachToGame (this->game);

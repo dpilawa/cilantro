@@ -17,10 +17,6 @@ public:
     __EAPI GameObject ();
     __EAPI virtual ~GameObject ();
 
-    // handle  operations
-    __EAPI void SetHandle (unsigned int handle);
-    __EAPI unsigned int GetHandle () const;
-
     // set pointer to parent object (i.e. put current object inside hierarchy)
     __EAPI void SetParentObject (GameObject& parent);
 
@@ -67,9 +63,6 @@ protected:
     bool isLight;
 
 private:
-
-    // object's handle (index in vector inside GameScene)
-    unsigned int objectHandle;
 
     // pointer to parent object (objects may form a hierarchy)
     GameObject* parentObject;
