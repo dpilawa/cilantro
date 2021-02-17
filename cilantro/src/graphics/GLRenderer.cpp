@@ -315,11 +315,6 @@ void GLRenderer::Update (MeshObject& meshObject)
 {
     unsigned int objectHandle = meshObject.GetHandle ();
 
-    if (meshObject.GetIndexCount () == 0)
-    {
-        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Meshobject" << meshObject.GetName () << "is empty";
-    }
-
     // check of object's buffers are already initialized
     auto find = objectBuffers.find (objectHandle);
 

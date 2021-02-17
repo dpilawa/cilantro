@@ -7,8 +7,10 @@
 #include <vector>
 #include <unordered_map>
 #include <string>
+#include <type_traits>
 
 class Resource;
+class LoadableResource;
 
 template <typename Base = Resource>
 class ResourceManager
