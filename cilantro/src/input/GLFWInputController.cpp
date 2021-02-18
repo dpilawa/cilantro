@@ -79,7 +79,7 @@ void GLFWInputController::OnFrame ()
     InputController::OnFrame ();
 }
 
-Input<bool>* GLFWInputController::CreateInputEvent (std::string name, InputKey key, InputTrigger trigger, std::set<InputModifier> modifiers)
+Input<bool>* GLFWInputController::CreateInputEvent (const std::string& name, InputKey key, InputTrigger trigger, std::set<InputModifier> modifiers)
 {
     Input<bool>* inputevent = InputController::CreateInputEvent (name);
 
@@ -93,7 +93,7 @@ Input<bool>* GLFWInputController::CreateInputEvent (std::string name, InputKey k
 }
 
 
-Input<float>* GLFWInputController::CreateInputAxis (std::string name, InputKey key, std::set<InputModifier> modifiers, float scale) 
+Input<float>* GLFWInputController::CreateInputAxis (const std::string& name, InputKey key, std::set<InputModifier> modifiers, float scale) 
 {
     Input<float>* inputaxis = InputController::CreateInputAxis (name, scale);
 
@@ -106,7 +106,7 @@ Input<float>* GLFWInputController::CreateInputAxis (std::string name, InputKey k
     return inputaxis;
 }
 
-Input<float>* GLFWInputController::CreateInputAxis (std::string name, InputAxis axis, float scale) 
+Input<float>* GLFWInputController::CreateInputAxis (const std::string& name, InputAxis axis, float scale) 
 {
     Input<float>* inputaxis = InputController::CreateInputAxis (name, scale);
 

@@ -19,7 +19,7 @@ public:
 
     virtual void OnFrame ();
 
-    __EAPI virtual void SetPostprocessParameterFloat (std::string parameterName, float parameterValue);
+    __EAPI virtual void SetPostprocessParameterFloat (const std::string& parameterName, float parameterValue);
 
 private:
 

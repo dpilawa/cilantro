@@ -145,9 +145,9 @@ public:
     __EAPI GLuint GetRendererFramebufferTexture () const;
 
     // shader library manipulation
-    __EAPI virtual void AddShader (std::string shaderName, std::string shaderSourceCode, ShaderType shaderType);
-    __EAPI virtual void AddShaderToProgram (std::string shaderProgramName, std::string shaderName);
-    __EAPI ShaderProgram& GetShaderProgram (std::string shaderProgramName);
+    __EAPI virtual void AddShader (const std::string& shaderName, const std::string& shaderSourceCode, ShaderType shaderType);
+    __EAPI virtual void AddShaderToProgram (const std::string& shaderProgramName, const std::string& shaderName);
+    __EAPI ShaderProgram& GetShaderProgram (const std::string& shaderProgramName);
 
     // object drawing and updating
     __EAPI void Draw (MeshObject& meshObject);
@@ -202,7 +202,7 @@ private:
     std::unordered_map<unsigned int, unsigned int> spotLights;
 
     // check for GL errors
-    void CheckGLError (std::string functionName);
+    void CheckGLError (const std::string& functionName);
 
     // initialize shader library
     void InitializeShaderLibrary ();

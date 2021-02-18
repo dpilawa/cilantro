@@ -10,14 +10,14 @@ LogMessage::LogMessage ()
     willExit = false;
 }
 
-LogMessage::LogMessage (std::string label)
+LogMessage::LogMessage (const std::string& label)
 {
     std::cout << label << ":";
     didPrint = true;
     willExit = false;
 }
 
-LogMessage::LogMessage (std::string label, int code) : LogMessage(label)
+LogMessage::LogMessage (const std::string& label, int code) : LogMessage(label)
 {
     willExit = true;
     errorCode = code;

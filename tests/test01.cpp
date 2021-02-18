@@ -60,7 +60,7 @@ int main (int argc, char* argv [])
     ControlledCamera& cam = gameScene.AddGameObject<ControlledCamera> ("camera", 60.0f, 0.01f, 100.0f, 0.1f);
     cam.Initialize ();
     cam.GetModelTransform ().Translate (5.0f, 2.5f, 5.0f).Rotate (-20.0f, 45.0f, 0.0f);
-    gameScene.SetActiveCamera (&cam);
+    gameScene.SetActiveCamera ("camera");
 
     MeshObject& cube = gameScene.AddGameObject<MeshObject> ("cube");
     Primitives::GenerateCube (cube);
@@ -88,7 +88,7 @@ int main (int argc, char* argv [])
     floor.SetMaterial ("greenMaterial");
 
     PointLight& light1 = gameScene.AddGameObject<PointLight> ("light1");
-    light1.SetParentObject (lamp);
+    light1.SetParentObject ("lamp");
     light1.SetColor (Vector3f (1.5f, 1.5f, 1.5f));
     light1.SetLinearAttenuationFactor (0.0f).SetQuadraticAttenuationFactor (1.0f);
     light1.SetEnabled (true);

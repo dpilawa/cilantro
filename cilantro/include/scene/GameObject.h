@@ -11,14 +11,14 @@
 
 class Renderer;
 
-class GameObject : public Resource, public GameComposite, public CallbackProvider<std::string, unsigned int, unsigned int>
+class GameObject : public Resource, public GameComposite, public CallbackProvider<std::string, handle_t, unsigned int>
 {
 public:
     __EAPI GameObject ();
     __EAPI virtual ~GameObject ();
 
     // set pointer to parent object (i.e. put current object inside hierarchy)
-    __EAPI void SetParentObject (GameObject& parent);
+    __EAPI void SetParentObject (const std::string& name);
 
     // get related objects
     __EAPI GameObject* GetParentObject ();

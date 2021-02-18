@@ -20,7 +20,7 @@ public:
     virtual void OnFrame () = 0;
 
     Framebuffer* GetFramebufferPtr () const;
-    virtual void SetPostprocessParameterFloat (std::string parameterName, float parameterValue) = 0;
+    virtual void SetPostprocessParameterFloat (const std::string& parameterName, float parameterValue) = 0;
 
 protected:
     Framebuffer* framebuffer;

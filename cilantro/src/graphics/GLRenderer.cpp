@@ -193,12 +193,12 @@ GLuint GLRenderer::GetRendererFramebufferTexture () const
     }
 }
 
-void GLRenderer::AddShader (std::string shaderName, std::string shaderSourceCode, ShaderType shaderType)
+void GLRenderer::AddShader (const std::string& shaderName, const std::string& shaderSourceCode, ShaderType shaderType)
 {
     shaders[shaderName] = GLShader (shaderSourceCode, shaderType);
 }
 
-void GLRenderer::AddShaderToProgram (std::string shaderProgramName, std::string shaderName)
+void GLRenderer::AddShaderToProgram (const std::string& shaderProgramName, const std::string& shaderName)
 {
     auto searchProgram = shaderPrograms.find (shaderProgramName);
     auto searchShader = shaders.find (shaderName);
@@ -217,7 +217,7 @@ void GLRenderer::AddShaderToProgram (std::string shaderProgramName, std::string 
     }
 }
 
-ShaderProgram& GLRenderer::GetShaderProgram (std::string shaderProgramName)
+ShaderProgram& GLRenderer::GetShaderProgram (const std::string& shaderProgramName)
 {
     auto searchProgram = shaderPrograms.find (shaderProgramName);
 
@@ -612,7 +612,7 @@ void GLRenderer::Update (Material& material, unsigned int textureUnit)
 
 }
 
-void GLRenderer::CheckGLError (std::string functionName)
+void GLRenderer::CheckGLError (const std::string& functionName)
 {
     GLuint errorCode;
 

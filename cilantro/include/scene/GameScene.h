@@ -11,7 +11,7 @@
 
 // This class represents a game world (a.k.a scene or level)
 // It contains all visible and invisible objects in a game
-class GameScene : public GameComposite, public CallbackProvider<std::string, unsigned int, unsigned int>
+class GameScene : public GameComposite, public CallbackProvider<std::string, handle_t, unsigned int>
 {
 public:
 
@@ -33,7 +33,7 @@ public:
     __EAPI ResourceManager<Material>& GetMaterialManager ();
 
     // active camera manipulation
-    __EAPI void SetActiveCamera (Camera* camera);
+    __EAPI void SetActiveCamera (const std::string& name);
     __EAPI Camera* GetActiveCamera () const;
 
 private:

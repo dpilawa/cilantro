@@ -23,15 +23,15 @@ public:
 
     virtual void OnFrame ();
 
-    virtual Input<bool>* CreateInputEvent (std::string name);
-    virtual Input<bool>* CreateInputEvent (std::string name, InputKey key, InputTrigger trigger, std::set<InputModifier> modifiers) = 0;
+    virtual Input<bool>* CreateInputEvent (const std::string& name);
+    virtual Input<bool>* CreateInputEvent (const std::string& name, InputKey key, InputTrigger trigger, std::set<InputModifier> modifiers) = 0;
 
-    virtual Input<float>*  CreateInputAxis (std::string name, float scale);
-    virtual Input<float>*  CreateInputAxis (std::string name, InputKey key, std::set<InputModifier> modifiers, float scale) = 0;
-    virtual Input<float>*  CreateInputAxis (std::string name, InputAxis value, float scale) = 0;
+    virtual Input<float>*  CreateInputAxis (const std::string& name, float scale);
+    virtual Input<float>*  CreateInputAxis (const std::string& name, InputKey key, std::set<InputModifier> modifiers, float scale) = 0;
+    virtual Input<float>*  CreateInputAxis (const std::string& name, InputAxis value, float scale) = 0;
 
-    __EAPI void BindInputEvent (std::string name, std::function<void ()>);
-    __EAPI void BindInputAxis (std::string name, std::function<void (float)>);
+    __EAPI void BindInputEvent (const std::string& name, std::function<void ()>);
+    __EAPI void BindInputAxis (const std::string& name, std::function<void (float)>);
 
     virtual void SetMouseGameMode (bool value) = 0;
     __EAPI bool IsGameMode ();

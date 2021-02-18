@@ -10,7 +10,7 @@ class GLShader : public Shader
 {
 public:
     GLShader ();
-    GLShader (std::string sourceCode, ShaderType type);
+    GLShader (const std::string& sourceCode, ShaderType type);
     ~GLShader ();
 
     // return shader ID

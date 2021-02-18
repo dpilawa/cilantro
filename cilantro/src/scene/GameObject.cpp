@@ -18,15 +18,17 @@ GameObject::GameObject ()
 
     // set callbacks on transform modification
     // this is just a passthrough of callbacks to subscribers (Scene)
-    modelTransform.RegisterCallback ("OnUpdateTransform", [&](unsigned int objectHandle) { InvokeCallbacks ("OnUpdateTransform", this->GetHandle (), 0); });
+    modelTransform.RegisterCallback ("OnUpdateTransform", [&](handle_t objectHandle) { InvokeCallbacks ("OnUpdateTransform", this->GetHandle (), 0); });
 }
 
 GameObject::~GameObject ()
 {
 }
 
-void GameObject::SetParentObject (GameObject& parent)
+void GameObject::SetParentObject (const std::string& name)
 {
+    GameObject& parent = game->GetGameScene ().GetGameObjectManager ().GetByName<GameObject> (name);
+
     parentObject = &parent;
     parent.childObjects.push_back (this);
     InvokeCallbacks ("OnUpdateSceneGraph", this->GetHandle (), 0);

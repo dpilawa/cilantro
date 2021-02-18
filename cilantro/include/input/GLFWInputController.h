@@ -45,9 +45,9 @@ public:
 
     __EAPI void OnFrame ();
 
-    __EAPI Input<bool>* CreateInputEvent (std::string name, InputKey key, InputTrigger trigger, std::set<InputModifier> modifiers); 
-    __EAPI Input<float>*  CreateInputAxis (std::string name, InputKey key, std::set<InputModifier> modifiers, float scale);
-    __EAPI Input<float>*  CreateInputAxis (std::string name, InputAxis axis, float scale);
+    __EAPI Input<bool>* CreateInputEvent (const std::string& name, InputKey key, InputTrigger trigger, std::set<InputModifier> modifiers); 
+    __EAPI Input<float>*  CreateInputAxis (const std::string& name, InputKey key, std::set<InputModifier> modifiers, float scale);
+    __EAPI Input<float>*  CreateInputAxis (const std::string& name, InputAxis axis, float scale);
 
     __EAPI void SetMouseGameMode(bool value);
 

@@ -38,21 +38,21 @@ void InputController::OnFrame ()
     }
 }
 
-Input<bool>* InputController::CreateInputEvent (std::string name) 
+Input<bool>* InputController::CreateInputEvent (const std::string& name) 
 {
     events.push_back (new Input<bool> (name));
 
     return events.back ();
 }
 
-Input<float>* InputController::CreateInputAxis (std::string name, float scale) 
+Input<float>* InputController::CreateInputAxis (const std::string& name, float scale) 
 {
     axes[name].push_back (new Input<float> (name, scale));
 
     return axes[name].back ();
 }
 
-void InputController::BindInputEvent (std::string name, std::function<void ()> function)
+void InputController::BindInputEvent (const std::string& name, std::function<void ()> function)
 {
     auto functionCallback = [function](float scale)
     {
@@ -63,7 +63,7 @@ void InputController::BindInputEvent (std::string name, std::function<void ()> f
 }
 
 
-void InputController::BindInputAxis (std::string name, std::function<void (float)> function)
+void InputController::BindInputAxis (const std::string& name, std::function<void (float)> function)
 {
     RegisterCallback (name, function);
 }

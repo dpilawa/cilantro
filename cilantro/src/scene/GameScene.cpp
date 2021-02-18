@@ -29,9 +29,9 @@ ResourceManager<Material>& GameScene::GetMaterialManager ()
     return materials;
 }
 
-void GameScene::SetActiveCamera (Camera* camera)
+void GameScene::SetActiveCamera (const std::string& name)
 {
-    activeCamera = camera;
+    activeCamera = &(gameObjects.GetByName<Camera> (name));
 }
 
 Camera* GameScene::GetActiveCamera () const

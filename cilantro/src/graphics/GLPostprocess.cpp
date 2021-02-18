@@ -30,7 +30,7 @@ void GLPostprocess::OnFrame ()
     glDrawArrays (GL_TRIANGLES, 0, 6);
 }
 
-void GLPostprocess::SetPostprocessParameterFloat (std::string parameterName, float parameterValue)
+void GLPostprocess::SetPostprocessParameterFloat (const std::string& parameterName, float parameterValue)
 {
     GLShaderProgram& glShaderProgam = dynamic_cast<GLShaderProgram&> (shaderProgram);
 

@@ -11,8 +11,8 @@ class LogMessage
 {
 public:
     __EAPI LogMessage ();
-    __EAPI LogMessage (std::string label);
-    __EAPI LogMessage (std::string label, int code);
+    __EAPI LogMessage (const std::string& label);
+    __EAPI LogMessage (const std::string& label, int code);
     __EAPI ~LogMessage ();
 
     template <class P> 

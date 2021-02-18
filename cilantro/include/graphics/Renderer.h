@@ -38,9 +38,9 @@ public:
     __EAPI virtual void AddPostprocess (Postprocess* postprocess);
 
     // shader library manipulation
-    virtual void AddShader (std::string shaderName, std::string shaderSourceCode, ShaderType shaderType) = 0;
-    virtual void AddShaderToProgram (std::string shaderProgramName, std::string shaderName) = 0;
-    virtual ShaderProgram& GetShaderProgram (std::string shaderProgramName) = 0;    
+    virtual void AddShader (const std::string& shaderName, const std::string& shaderSourceCode, ShaderType shaderType) = 0;
+    virtual void AddShaderToProgram (const std::string& shaderProgramName, const std::string& shaderName) = 0;
+    virtual ShaderProgram& GetShaderProgram (const std::string& shaderProgramName) = 0;    
 
     // object drawing and updating
     virtual void Draw (MeshObject& meshObject) = 0;
