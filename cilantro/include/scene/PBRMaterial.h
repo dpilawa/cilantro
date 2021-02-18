@@ -45,11 +45,11 @@ public:
 protected:
 
     // static textures
-    Texture albedo;
-    Texture normal;
-    Texture metallic;
-    Texture roughness;
-    Texture ao;
+    Texture albedo = {1, 1, Vector3f (1.0f, 1.0f, 1.0f)};
+    Texture normal = {1, 1, Vector3f (0.0f, 0.0f, 0.0f)};
+    Texture metallic = {1, 1, 0.0f};
+    Texture roughness = {1, 1, 1.0f};
+    Texture ao = {1, 1, 1.0f};
 
 };
 

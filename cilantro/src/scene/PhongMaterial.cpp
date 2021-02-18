@@ -8,11 +8,6 @@ PhongMaterial::PhongMaterial () : Material ()
 {
     SetShaderProgram ("blinnphong_shader");
 
-    diffuse.GenerateSolid (1, 1, Vector3f (1.0f, 1.0f, 1.0f));
-    normal.GenerateSolid (1, 1, Vector3f (0.0f, 0.0f, 0.0f));
-    specular.GenerateSolid (1, 1, Vector3f (1.0f, 1.0f, 1.0f));
-    emissive.GenerateSolid (1, 1, Vector3f (0.0f, 0.0f, 0.0f));
-
     SetSpecularShininess (32.0f);
 
     SetTexture (static_cast<int>(PhongTexture::Diffuse), "tDiffuse", diffuse);

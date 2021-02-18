@@ -8,12 +8,6 @@ PBRMaterial::PBRMaterial () : Material ()
 {
     SetShaderProgram ("pbr_shader");
 
-    albedo.GenerateSolid (1, 1, Vector3f (1.0f, 1.0f, 1.0f));
-    normal.GenerateSolid (1, 1, Vector3f (0.0f, 0.0f, 0.0f));
-    metallic.GenerateSolid (1, 1, 0.0f);
-    roughness.GenerateSolid (1, 1, 1.0f);
-    ao.GenerateSolid (1, 1, 1.0f);
-
     SetTexture (static_cast<int>(PBRTexture::Albedo), "tAlbedo", albedo);
     SetTexture (static_cast<int>(PBRTexture::Normal), "tNormal", normal);
     SetTexture (static_cast<int>(PBRTexture::Metallic), "tMetallic", metallic);

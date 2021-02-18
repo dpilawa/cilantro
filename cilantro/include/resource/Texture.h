@@ -9,7 +9,8 @@
 class Texture : public LoadableResource
 {
 public:
-    __EAPI Texture ();
+    __EAPI Texture (const int width, const int height, float channel);
+    __EAPI Texture (const int width, const int height, const Vector3f& channels);
     __EAPI Texture (const std::string& path);
     __EAPI virtual ~Texture ();
 
@@ -22,11 +23,9 @@ public:
     __EAPI int GetHeight () const;
     __EAPI int GetChannels () const;
 
-protected:
-
-    void Load (const char *path);
-
 private:
+
+    void Load (const std::string& path);
 
     std::uint8_t* data;
     int width;

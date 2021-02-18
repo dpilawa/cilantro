@@ -4,9 +4,14 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-Texture::Texture () : LoadableResource ()
+Texture::Texture (const int width, const int height, float channel) : LoadableResource ()
 {
-    data = nullptr;
+    GenerateSolid (width, height, channel);
+}
+
+Texture::Texture (const int width, const int height, const Vector3f& channels) : LoadableResource ()
+{
+    GenerateSolid (width, height, channels);
 }
 
 Texture::Texture (const std::string& path) : LoadableResource (path)
@@ -84,10 +89,10 @@ int Texture::GetChannels () const
     return this->numChannels;
 }
 
-void Texture::Load (const char* path)
+void Texture::Load (const std::string& path)
 {
     stbi_set_flip_vertically_on_load (true);
-    data = stbi_load (path, &this->width, &this->height, &this->numChannels, 0);
+    data = stbi_load (path.c_str (), &this->width, &this->height, &this->numChannels, 0);
 
     if (data == nullptr)
     {
