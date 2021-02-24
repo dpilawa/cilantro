@@ -67,7 +67,7 @@ T& GameScene::AddGameObject (const std::string& name, Params&&... params)
         gameObjects.GetByHandle<T> (objectHandle).CalculateModelTransformMatrix ();
     });
 
-    // return object handle
+    // return object reference
     return gameObject;
 }
 
@@ -82,7 +82,7 @@ T& GameScene::AddMaterial (const std::string& name, Params&&... params)
     // register callbacks
     material.RegisterCallback ("OnUpdateMaterial", [ & ](unsigned int materialHandle, unsigned int textureUnit) { InvokeCallbacks ("OnUpdateMaterial", materialHandle, textureUnit); });
 
-    // return material handle
+    // return material reference
     return material;
 }
 

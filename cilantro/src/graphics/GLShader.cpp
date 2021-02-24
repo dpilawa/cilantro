@@ -5,18 +5,11 @@
 
 #include <string>
 
-GLShader::GLShader () : Shader ()
-{
-}
-
-GLShader::GLShader (const std::string& sourceCode, ShaderType type)
+GLShader::GLShader (const std::string& path, ShaderType shaderType) : Shader (path, shaderType)
 {
     GLint success;
     char errorLog[512];
-    const char * cSourceStr;
-
-    shaderType = type;
-    shaderSourceCode = sourceCode;
+    const char* cSourceStr;
 
     switch (shaderType)
     {
@@ -39,7 +32,7 @@ GLShader::GLShader (const std::string& sourceCode, ShaderType type)
         glGetShaderInfoLog (shaderId, 512, nullptr, errorLog);
         glDeleteShader (shaderId);
         LogMessage () << errorLog;
-        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to compile shader:" << shaderId << sourceCode;
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to compile shader" << shaderId << path;
     }
 }
 

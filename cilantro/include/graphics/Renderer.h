@@ -3,6 +3,7 @@
 
 #include "cilantroengine.h"
 #include "system/CallbackProvider.h"
+#include "resource/ResourceManager.h"
 #include "game/GameComposite.h"
 #include "scene/GameScene.h"
 #include "scene/MeshObject.h"
@@ -38,7 +39,9 @@ public:
     __EAPI virtual void AddPostprocess (Postprocess* postprocess);
 
     // shader library manipulation
-    virtual void AddShader (const std::string& shaderName, const std::string& shaderSourceCode, ShaderType shaderType) = 0;
+    template <typename T, typename ...Params>
+    T& LoadShader (const std::string& shaderName, const std::string& path, ShaderType shaderType);
+    
     virtual void AddShaderToProgram (const std::string& shaderProgramName, const std::string& shaderName) = 0;
     virtual ShaderProgram& GetShaderProgram (const std::string& shaderProgramName) = 0;    
 
@@ -55,9 +58,21 @@ protected:
     unsigned int width;
     unsigned int height;
 
+    ResourceManager<Shader> shaderManager;
+    ResourceManager<ShaderProgram> shaderProgramManager;
+
     unsigned int postprocessStage;
     std::vector<Postprocess*> postprocesses;
 
 };
+
+template <typename T, typename ...Params>
+T& Renderer::LoadShader (const std::string& shaderName, const std::string& path, ShaderType shaderType)
+{
+    T& shader = shaderManager.Load<T> (shaderName, path, params...);
+
+    // return shader reference
+    return shader;
+}
 
 #endif

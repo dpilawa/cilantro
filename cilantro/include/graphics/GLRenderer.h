@@ -159,10 +159,6 @@ public:
 
 private:
 
-    // GL shader library
-    std::unordered_map <std::string, GLShader> shaders;
-    std::unordered_map <std::string, GLShaderProgram> shaderPrograms;
-
 #if (CILANTRO_GL_VERSION <= 140)
     GLFramebuffer* framebuffer;
 #else
