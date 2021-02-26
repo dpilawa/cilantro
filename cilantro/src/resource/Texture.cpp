@@ -6,11 +6,13 @@
 
 Texture::Texture (const int width, const int height, float channel) : LoadableResource ()
 {
+    data = nullptr;
     GenerateSolid (width, height, channel);
 }
 
 Texture::Texture (const int width, const int height, const Vector3f& channels) : LoadableResource ()
 {
+    data = nullptr;
     GenerateSolid (width, height, channels);
 }
 
