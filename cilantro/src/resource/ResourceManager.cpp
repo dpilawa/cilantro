@@ -83,7 +83,7 @@ template __EAPI ResourceManager<Resource>::const_iterator ResourceManager<Resour
 template __EAPI ResourceManager<Resource>::const_iterator ResourceManager<Resource>::end () const;
 template __EAPI ResourceManager<Resource>::const_iterator ResourceManager<Resource>::cbegin () const;
 template __EAPI ResourceManager<Resource>::const_iterator ResourceManager<Resource>::cend () const;
-template std::shared_ptr<Resource> ResourceManager<Resource>::Push (const std::string& name, std::shared_ptr<Resource> resource);
+template __EAPI std::shared_ptr<Resource> ResourceManager<Resource>::Push (const std::string& name, std::shared_ptr<Resource> resource);
 
 template __EAPI ResourceManager<Material>::ResourceManager ();
 template __EAPI ResourceManager<Material>::~ResourceManager ();
@@ -93,7 +93,7 @@ template __EAPI ResourceManager<Material>::const_iterator ResourceManager<Materi
 template __EAPI ResourceManager<Material>::const_iterator ResourceManager<Material>::end () const;
 template __EAPI ResourceManager<Material>::const_iterator ResourceManager<Material>::cbegin () const;
 template __EAPI ResourceManager<Material>::const_iterator ResourceManager<Material>::cend () const;
-template std::shared_ptr<Material> ResourceManager<Material>::Push (const std::string& name, std::shared_ptr<Material> resource);
+template __EAPI std::shared_ptr<Material> ResourceManager<Material>::Push (const std::string& name, std::shared_ptr<Material> resource);
 
 template __EAPI ResourceManager<GameObject>::ResourceManager ();
 template __EAPI ResourceManager<GameObject>::~ResourceManager ();
@@ -103,7 +103,7 @@ template __EAPI ResourceManager<GameObject>::const_iterator ResourceManager<Game
 template __EAPI ResourceManager<GameObject>::const_iterator ResourceManager<GameObject>::end () const;
 template __EAPI ResourceManager<GameObject>::const_iterator ResourceManager<GameObject>::cbegin () const;
 template __EAPI ResourceManager<GameObject>::const_iterator ResourceManager<GameObject>::cend () const;
-template std::shared_ptr<GameObject> ResourceManager<GameObject>::Push (const std::string& name, std::shared_ptr<GameObject> resource);
+template __EAPI std::shared_ptr<GameObject> ResourceManager<GameObject>::Push (const std::string& name, std::shared_ptr<GameObject> resource);
 
 template __EAPI ResourceManager<ShaderProgram>::ResourceManager ();
 template __EAPI ResourceManager<ShaderProgram>::~ResourceManager ();
@@ -113,4 +113,4 @@ template __EAPI ResourceManager<ShaderProgram>::const_iterator ResourceManager<S
 template __EAPI ResourceManager<ShaderProgram>::const_iterator ResourceManager<ShaderProgram>::end () const;
 template __EAPI ResourceManager<ShaderProgram>::const_iterator ResourceManager<ShaderProgram>::cbegin () const;
 template __EAPI ResourceManager<ShaderProgram>::const_iterator ResourceManager<ShaderProgram>::cend () const;
-template std::shared_ptr<ShaderProgram> ResourceManager<ShaderProgram>::Push (const std::string& name, std::shared_ptr<ShaderProgram> resource);
+template __EAPI std::shared_ptr<ShaderProgram> ResourceManager<ShaderProgram>::Push (const std::string& name, std::shared_ptr<ShaderProgram> resource);

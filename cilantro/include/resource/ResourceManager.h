@@ -44,7 +44,7 @@ public:
 
 private:
 
-    std::shared_ptr<Base> Push (const std::string& name, std::shared_ptr<Base> resource);
+    __EAPI std::shared_ptr<Base> Push (const std::string& name, std::shared_ptr<Base> resource);
 
     handle_t handle;
     resources_t resources;

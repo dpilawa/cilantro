@@ -623,7 +623,7 @@ void GLRenderer::InitializeShaderLibrary ()
     game->GetResourceManager ().Load<GLShader> ("blinnphong_fragment_shader", "shaders/blinnphong.420.fs", ShaderType::FRAGMENT_SHADER);
 #endif
 
-    game->GetResourceManager ().Load<GLShader> ("flatquad_fragment_shader", "shaders/flatquad.vs", ShaderType::FRAGMENT_SHADER);
+    game->GetResourceManager ().Load<GLShader> ("flatquad_fragment_shader", "shaders/flatquad.fs", ShaderType::FRAGMENT_SHADER);
     game->GetResourceManager ().Load<GLShader> ("post_hdr_fragment_shader", "shaders/post_hdr.fs", ShaderType::FRAGMENT_SHADER);
     game->GetResourceManager ().Load<GLShader> ("post_gamma_fragment_shader", "shaders/post_gamma.fs", ShaderType::FRAGMENT_SHADER);
 
@@ -646,6 +646,7 @@ void GLRenderer::InitializeShaderLibrary ()
 #endif
 
     // Phong model
+    CreateShaderProgram ("phong_shader");
     AddShaderToProgram ("phong_shader", "default_vertex_shader");
     AddShaderToProgram ("phong_shader", "phong_fragment_shader");
 #if (CILANTRO_GL_VERSION < 330)
@@ -662,6 +663,7 @@ void GLRenderer::InitializeShaderLibrary ()
 #endif
 
     // Blinn-Phong model
+    CreateShaderProgram ("blinnphong_shader");
     AddShaderToProgram ("blinnphong_shader", "default_vertex_shader");
     AddShaderToProgram ("blinnphong_shader", "blinnphong_fragment_shader");
 #if (CILANTRO_GL_VERSION < 330)	
@@ -677,28 +679,8 @@ void GLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation(p, "tEmissive"), 3);
 #endif
 
-    // Normals visualization model
-    AddShaderToProgram ("normals_shader", "default_vertex_shader");
-    AddShaderToProgram ("normals_shader", "normals_fragment_shader");
-#if (CILANTRO_GL_VERSION < 330)
-    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgram("normals_shader")).GetProgramId(), 0, "vPosition");
-    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgram("normals_shader")).GetProgramId(), 1, "vNormal");
-#endif
-
-    // Only emissive color rendering (no lights calculation)
-    AddShaderToProgram ("emissive_shader", "default_vertex_shader");
-    AddShaderToProgram ("emissive_shader", "emissive_fragment_shader");
-#if (CILANTRO_GL_VERSION < 330)	
-    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgram("normals_shader")).GetProgramId(), 0, "vPosition");
-    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgram("normals_shader")).GetProgramId(), 1, "vNormal");
-#endif
-#if (CILANTRO_GL_VERSION < 420)
-    p = dynamic_cast<GLShaderProgram&>(GetShaderProgram("emissive_shader")).GetProgramId ();
-    GetShaderProgram("emissive_shader").Use ();
-    glUniform1i (glGetUniformLocation(p, "tEmissive"), 3);
-#endif
-
     // Screen quad rendering
+    CreateShaderProgram ("flatquad_shader");
     AddShaderToProgram ("flatquad_shader", "flatquad_vertex_shader");
     AddShaderToProgram ("flatquad_shader", "flatquad_fragment_shader");
 #if (CILANTRO_GL_VERSION < 330)	
@@ -712,6 +694,7 @@ void GLRenderer::InitializeShaderLibrary ()
 #endif
 
     // Post-processing HDR
+    CreateShaderProgram ("post_hdr_shader");
     AddShaderToProgram ("post_hdr_shader", "flatquad_vertex_shader");
     AddShaderToProgram ("post_hdr_shader", "post_hdr_fragment_shader");
 #if (CILANTRO_GL_VERSION < 330)	
@@ -725,6 +708,7 @@ void GLRenderer::InitializeShaderLibrary ()
 #endif
 
     // Post-processing gamma
+    CreateShaderProgram ("post_gamma_shader");
     AddShaderToProgram ("post_gamma_shader", "flatquad_vertex_shader");
     AddShaderToProgram ("post_gamma_shader", "post_gamma_fragment_shader");
 #if (CILANTRO_GL_VERSION < 330)	

@@ -26,4 +26,6 @@ void Shader::Load (const std::string& path)
 
     ss << f.rdbuf ();
     shaderSourceCode = ss.str ();
+
+    LogMessage (MSG_LOCATION) << "Loaded shader" << path << shaderSourceCode.length () << "bytes";
 }
