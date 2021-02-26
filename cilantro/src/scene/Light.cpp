@@ -4,7 +4,6 @@
 
 Light::Light ()
 {
-    isLight = true;
     isEnabled = false;
     
     lightColor = Vector3f (1.0f, 1.0f, 1.0f);

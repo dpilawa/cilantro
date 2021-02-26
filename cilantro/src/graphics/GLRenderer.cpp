@@ -838,7 +838,7 @@ void GLRenderer::InitializeLightUniformBuffers ()
     // scan objects vector for lights and populate light buffers
     for (auto gameObject : game->GetGameScene ().GetGameObjectManager ())
     {
-        if (gameObject->IsLight ())
+        if (std::dynamic_pointer_cast<Light> (gameObject) != nullptr)
         {
             gameObject->OnUpdate (*this);
         }
@@ -848,17 +848,18 @@ void GLRenderer::InitializeLightUniformBuffers ()
 
 void GLRenderer::UpdateLightBufferRecursive (unsigned int objectHandle)
 {
-    GameObject& gameObject = game->GetGameScene ().GetGameObjectManager ().GetByHandle<GameObject> (objectHandle);
+    GameObject* light = &game->GetGameScene ().GetGameObjectManager ().GetByHandle<GameObject> (objectHandle);
 
-    if (gameObject.IsLight ())
+    if (dynamic_cast<Light*>(light) != nullptr)
     {
-        gameObject.OnUpdate (*this);
+        light->OnUpdate (*this);
     }
 
-    for (auto&& childObject : gameObject.GetChildObjects ())
+    for (auto& childObject : light->GetChildObjects ())
     {
         UpdateLightBufferRecursive (childObject->GetHandle ());
     }
+
 }
 
 void GLRenderer::LoadMatrixUniformBuffers ()

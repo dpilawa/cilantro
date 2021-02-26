@@ -54,14 +54,6 @@ public:
     __EAPI Vector3f GetUp () const;
     __EAPI Vector3f GetForward () const;	
 
-    // check if object is a light
-    __EAPI bool IsLight ();
-
-protected:
-
-    // is object a light
-    bool isLight;
-
 private:
 
     // pointer to parent object (objects may form a hierarchy)

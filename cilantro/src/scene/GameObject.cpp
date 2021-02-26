@@ -12,7 +12,6 @@
 GameObject::GameObject ()
 {
     parentObject = nullptr;
-    isLight = false;
 
     CalculateModelTransformMatrix ();
 
@@ -155,9 +154,4 @@ Vector3f GameObject::GetForward () const
     Matrix4f modelTransforMatrix = GetModelTransformMatrix ();
 
     return Mathf::Normalize (Vector3f (modelTransforMatrix[0][2], modelTransforMatrix[1][2], modelTransforMatrix[2][2]));
-}
-
-bool GameObject::IsLight ()
-{
-    return isLight;
 }
