@@ -24,13 +24,15 @@ GameObject::~GameObject ()
 {
 }
 
-void GameObject::SetParentObject (const std::string& name)
+GameObject& GameObject::SetParentObject (const std::string& name)
 {
     GameObject& parent = game->GetGameScene ().GetGameObjectManager ().GetByName<GameObject> (name);
 
     parentObject = &parent;
     parent.childObjects.push_back (this);
     InvokeCallbacks ("OnUpdateSceneGraph", this->GetHandle (), 0);
+
+    return *this;
 }
 
 GameObject* GameObject::GetParentObject ()

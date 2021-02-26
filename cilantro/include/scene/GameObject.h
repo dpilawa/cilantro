@@ -18,7 +18,7 @@ public:
     __EAPI virtual ~GameObject ();
 
     // set pointer to parent object (i.e. put current object inside hierarchy)
-    __EAPI void SetParentObject (const std::string& name);
+    __EAPI GameObject& SetParentObject (const std::string& name);
 
     // get related objects
     __EAPI GameObject* GetParentObject ();
