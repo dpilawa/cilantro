@@ -2,6 +2,7 @@
 #include "resource/Resource.h"
 #include "scene/Material.h"
 #include "scene/GameObject.h"
+#include "graphics/ShaderProgram.h"
 
 template <typename Base>
 ResourceManager<Base>::ResourceManager ()
@@ -53,6 +54,25 @@ typename ResourceManager<Base>::const_iterator ResourceManager<Base>::cend () co
     return resources.cend(); 
 }
 
+template <typename Base>
+std::shared_ptr<Base> ResourceManager<Base>::Push (const std::string& name, std::shared_ptr<Base> resource)
+{
+    auto resourceFound = resourceNames.find (name);
+    if (resourceFound != resourceNames.end ()) 
+    {
+        LogMessage(MSG_LOCATION, EXIT_FAILURE) << "Resource" << name << "already exists";
+    }
+    else
+    {
+        resource->name = name;
+        resource->handle = handle++;
+        resources.push_back (resource);
+        resourceNames[name] = resource->handle;
+    }
+
+    return resource;
+}
+
 // template instantiations
 
 template __EAPI ResourceManager<Resource>::ResourceManager ();
@@ -63,6 +83,7 @@ template __EAPI ResourceManager<Resource>::const_iterator ResourceManager<Resour
 template __EAPI ResourceManager<Resource>::const_iterator ResourceManager<Resource>::end () const;
 template __EAPI ResourceManager<Resource>::const_iterator ResourceManager<Resource>::cbegin () const;
 template __EAPI ResourceManager<Resource>::const_iterator ResourceManager<Resource>::cend () const;
+template std::shared_ptr<Resource> ResourceManager<Resource>::Push (const std::string& name, std::shared_ptr<Resource> resource);
 
 template __EAPI ResourceManager<Material>::ResourceManager ();
 template __EAPI ResourceManager<Material>::~ResourceManager ();
@@ -72,6 +93,7 @@ template __EAPI ResourceManager<Material>::const_iterator ResourceManager<Materi
 template __EAPI ResourceManager<Material>::const_iterator ResourceManager<Material>::end () const;
 template __EAPI ResourceManager<Material>::const_iterator ResourceManager<Material>::cbegin () const;
 template __EAPI ResourceManager<Material>::const_iterator ResourceManager<Material>::cend () const;
+template std::shared_ptr<Material> ResourceManager<Material>::Push (const std::string& name, std::shared_ptr<Material> resource);
 
 template __EAPI ResourceManager<GameObject>::ResourceManager ();
 template __EAPI ResourceManager<GameObject>::~ResourceManager ();
@@ -81,3 +103,14 @@ template __EAPI ResourceManager<GameObject>::const_iterator ResourceManager<Game
 template __EAPI ResourceManager<GameObject>::const_iterator ResourceManager<GameObject>::end () const;
 template __EAPI ResourceManager<GameObject>::const_iterator ResourceManager<GameObject>::cbegin () const;
 template __EAPI ResourceManager<GameObject>::const_iterator ResourceManager<GameObject>::cend () const;
+template std::shared_ptr<GameObject> ResourceManager<GameObject>::Push (const std::string& name, std::shared_ptr<GameObject> resource);
+
+template __EAPI ResourceManager<ShaderProgram>::ResourceManager ();
+template __EAPI ResourceManager<ShaderProgram>::~ResourceManager ();
+template __EAPI ResourceManager<ShaderProgram>::iterator ResourceManager<ShaderProgram>::begin ();
+template __EAPI ResourceManager<ShaderProgram>::iterator ResourceManager<ShaderProgram>::end ();
+template __EAPI ResourceManager<ShaderProgram>::const_iterator ResourceManager<ShaderProgram>::begin () const;
+template __EAPI ResourceManager<ShaderProgram>::const_iterator ResourceManager<ShaderProgram>::end () const;
+template __EAPI ResourceManager<ShaderProgram>::const_iterator ResourceManager<ShaderProgram>::cbegin () const;
+template __EAPI ResourceManager<ShaderProgram>::const_iterator ResourceManager<ShaderProgram>::cend () const;
+template std::shared_ptr<ShaderProgram> ResourceManager<ShaderProgram>::Push (const std::string& name, std::shared_ptr<ShaderProgram> resource);

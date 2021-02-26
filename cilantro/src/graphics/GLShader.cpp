@@ -9,7 +9,7 @@ GLShader::GLShader (const std::string& path, ShaderType shaderType) : Shader (pa
 {
     GLint success;
     char errorLog[512];
-    const char* cSourceStr;
+    const char* src;
 
     switch (shaderType)
     {
@@ -21,8 +21,8 @@ GLShader::GLShader (const std::string& path, ShaderType shaderType) : Shader (pa
             break;
     }
 
-    cSourceStr = shaderSourceCode.c_str ();
-    glShaderSource (shaderId, 1, &cSourceStr, NULL);
+    src = shaderSourceCode.c_str ();
+    glShaderSource (shaderId, 1, &src, NULL);
     glCompileShader (shaderId);
 
     glGetShaderiv (shaderId, GL_COMPILE_STATUS, &success);
@@ -40,7 +40,7 @@ GLShader::~GLShader ()
 {
 }
 
-GLuint GLShader::GetShaderId ()
+GLuint GLShader::GetShaderId () const
 {
     return shaderId;
 }

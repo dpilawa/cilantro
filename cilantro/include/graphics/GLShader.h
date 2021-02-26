@@ -9,12 +9,11 @@
 class GLShader : public Shader
 {
 public:
-    GLShader ();
-    GLShader (const std::string& sourceCode, ShaderType type);
+    GLShader (const std::string& path, ShaderType type);
     ~GLShader ();
 
     // return shader ID
-    GLuint GetShaderId ();
+    GLuint GetShaderId () const;
 
 private:
     // ID of a shader

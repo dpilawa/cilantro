@@ -15,18 +15,18 @@ GLShaderProgram::~GLShaderProgram ()
 {
 }
 
-GLuint GLShaderProgram::GetProgramId ()
+GLuint GLShaderProgram::GetProgramId () const
 {
     return shaderProgramId;
 }
 
 
-void GLShaderProgram::LinkShader (Shader& shader)
+void GLShaderProgram::LinkShader (const Shader& shader)
 {
     GLint success;
     char errorLog[512];
 
-    GLShader* glShader = static_cast<GLShader*> (&shader);
+    const GLShader* glShader = static_cast<const GLShader*> (&shader);
 
     glAttachShader (shaderProgramId, glShader->GetShaderId ());
     glLinkProgram (shaderProgramId);

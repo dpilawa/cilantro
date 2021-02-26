@@ -39,9 +39,7 @@ public:
     __EAPI virtual void AddPostprocess (Postprocess* postprocess);
 
     // shader library manipulation
-    template <typename T, typename ...Params>
-    T& LoadShader (const std::string& shaderName, const std::string& path, ShaderType shaderType);
-    
+    virtual ShaderProgram& CreateShaderProgram (const std::string& shaderProgramName) = 0;
     virtual void AddShaderToProgram (const std::string& shaderProgramName, const std::string& shaderName) = 0;
     virtual ShaderProgram& GetShaderProgram (const std::string& shaderProgramName) = 0;    
 
@@ -58,7 +56,6 @@ protected:
     unsigned int width;
     unsigned int height;
 
-    ResourceManager<Shader> shaderManager;
     ResourceManager<ShaderProgram> shaderProgramManager;
 
     unsigned int postprocessStage;
@@ -66,13 +63,5 @@ protected:
 
 };
 
-template <typename T, typename ...Params>
-T& Renderer::LoadShader (const std::string& shaderName, const std::string& path, ShaderType shaderType)
-{
-    T& shader = shaderManager.Load<T> (shaderName, path, params...);
-
-    // return shader reference
-    return shader;
-}
 
 #endif

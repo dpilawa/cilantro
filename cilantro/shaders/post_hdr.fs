@@ -1,4 +1,4 @@
-#version 130
+#version 140
 
 /* texture coords */
 in vec2 fTextureCoordinates;

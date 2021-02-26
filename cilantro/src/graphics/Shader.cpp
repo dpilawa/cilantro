@@ -4,7 +4,7 @@
 #include <fstream>
 #include <sstream>
 
-Shader::Shader (const std::string& path, ShaderType shaderType)
+Shader::Shader (const std::string& path, ShaderType shaderType) : LoadableResource (path)
 {
     this->shaderType = shaderType;
     Load (path);

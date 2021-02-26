@@ -19,17 +19,6 @@
 #include <unordered_map>
 #include <cmath>
 
-#include "graphics/default.vs.h"
-#include "graphics/flatquad.vs.h"
-#include "graphics/pbr.fs.h"
-#include "graphics/phong.fs.h"
-#include "graphics/blinnphong.fs.h"
-#include "graphics/normals.fs.h"
-#include "graphics/emissive.fs.h"
-#include "graphics/flatquad.fs.h"
-#include "graphics/post_hdr.fs.h"
-#include "graphics/post_gamma.fs.h"
-
 std::unordered_map<unsigned int, GLint> GLRenderer::textureChannelMap {
     {1, GL_RED},
     {3, GL_RGB},
@@ -39,7 +28,7 @@ std::unordered_map<unsigned int, GLint> GLRenderer::textureChannelMap {
 GLRenderer::GLRenderer (unsigned int width, unsigned int height) : Renderer (width, height)
 {
 #if (CILANTRO_GL_VERSION <= 140)
-    framebuffer = new GLFramebuffer (width, heigh);
+    framebuffer = new GLFramebuffer (width, height);
 #else
     framebuffer = new GLMultisampleFramebuffer (width, height);
 #endif
@@ -115,8 +104,6 @@ void GLRenderer::Deinitialize ()
     pointLights.clear ();
     directionalLights.clear ();
     spotLights.clear ();
-    shaders.clear ();
-    shaderPrograms.clear ();
 
     framebuffer->Deinitialize ();
 }
@@ -193,40 +180,25 @@ GLuint GLRenderer::GetRendererFramebufferTexture () const
     }
 }
 
-void GLRenderer::AddShader (const std::string& shaderName, const std::string& shaderSourceCode, ShaderType shaderType)
+ShaderProgram& GLRenderer::CreateShaderProgram (const std::string& shaderProgramName)
 {
-    shaders[shaderName] = GLShader (shaderSourceCode, shaderType);
+    GLShaderProgram& program = shaderProgramManager.Create<GLShaderProgram> (shaderProgramName);
+    LogMessage (MSG_LOCATION) << "Created shader program" << shaderProgramName << program.GetProgramId ();
+
+    return program;
 }
 
 void GLRenderer::AddShaderToProgram (const std::string& shaderProgramName, const std::string& shaderName)
 {
-    auto searchProgram = shaderPrograms.find (shaderProgramName);
-    auto searchShader = shaders.find (shaderName);
-
-    if (searchShader == shaders.end ())
-    {
-        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Shader " << shaderName << " not found when adding to program " << shaderProgramName;
-    }
-    else
-    {
-        shaderPrograms[shaderProgramName].LinkShader (searchShader->second);
-        if (searchProgram == shaderPrograms.end ())
-        {
-            LogMessage (MSG_LOCATION) << "Registered shader" << shaderProgramName << "with id" << shaderPrograms[shaderProgramName].GetProgramId ();
-        }
-    }
+    shaderProgramManager.GetByName<GLShaderProgram> (shaderProgramName).LinkShader (game->GetResourceManager ().GetByName<GLShader> (shaderName));
+    LogMessage (MSG_LOCATION) << "Linked shader" << shaderName << "to program" << shaderProgramName;
 }
 
 ShaderProgram& GLRenderer::GetShaderProgram (const std::string& shaderProgramName)
 {
-    auto searchProgram = shaderPrograms.find (shaderProgramName);
+    ShaderProgram& program = shaderProgramManager.GetByName<GLShaderProgram> (shaderProgramName);
 
-    if (searchProgram == shaderPrograms.end ())
-    {
-        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to find shader model" << shaderProgramName;
-    }
-
-    return searchProgram->second;
+    return program;
 }
 
 void GLRenderer::Draw (MeshObject& meshObject)
@@ -625,23 +597,43 @@ void GLRenderer::CheckGLError (const std::string& functionName)
 void GLRenderer::InitializeShaderLibrary ()
 {
     // initialize shader library
-    AddShader ("default_vertex_shader", gDefaultVertexShader, ShaderType::VERTEX_SHADER);
-    AddShader ("flatquad_vertex_shader", gFlatQuadVertexShader, ShaderType::VERTEX_SHADER);
-    AddShader ("pbr_fragment_shader", gPBRFragmentShader, ShaderType::FRAGMENT_SHADER);    
-    AddShader ("phong_fragment_shader", gPhongFragmentShader, ShaderType::FRAGMENT_SHADER);
-    AddShader ("blinnphong_fragment_shader", gBlinnPhongFragmentShader, ShaderType::FRAGMENT_SHADER);
-    AddShader ("normals_fragment_shader", gNormalsFragmentShader, ShaderType::FRAGMENT_SHADER);
-    AddShader ("emissive_fragment_shader", gEmissiveFragmentShader, ShaderType::FRAGMENT_SHADER);
-    AddShader ("flatquad_fragment_shader", gFlatQuadFragmentShader, ShaderType::FRAGMENT_SHADER);
-    AddShader ("post_hdr_fragment_shader", gPostHDRFragmentShader, ShaderType::FRAGMENT_SHADER);
-    AddShader ("post_gamma_fragment_shader", gPostGammaFragmentShader, ShaderType::FRAGMENT_SHADER);
+#if (CILANTRO_GL_VERSION < 330)
+    game->GetResourceManager ().Load<GLShader> ("default_vertex_shader", "shaders/default.vs", ShaderType::VERTEX_SHADER);
+#else
+    game->GetResourceManager ().Load<GLShader> ("default_vertex_shader", "shaders/default.330.vs", ShaderType::VERTEX_SHADER);
+#endif
+
+    game->GetResourceManager ().Load<GLShader> ("flatquad_vertex_shader", "shaders/flatquad.vs", ShaderType::VERTEX_SHADER);
+
+#if (CILANTRO_GL_VERSION < 420)
+    game->GetResourceManager ().Load<GLShader> ("pbr_fragment_shader", "shaders/pbr.fs", ShaderType::FRAGMENT_SHADER);    
+#else
+    game->GetResourceManager ().Load<GLShader> ("pbr_fragment_shader", "shaders/pbr.420.fs", ShaderType::FRAGMENT_SHADER);    
+#endif
+
+#if (CILANTRO_GL_VERSION < 420)
+    game->GetResourceManager ().Load<GLShader> ("phong_fragment_shader", "shaders/phong.fs", ShaderType::FRAGMENT_SHADER);
+#else
+    game->GetResourceManager ().Load<GLShader> ("phong_fragment_shader", "shaders/phong.420.fs", ShaderType::FRAGMENT_SHADER);
+#endif
+
+#if (CILANTRO_GL_VERSION < 420)
+    game->GetResourceManager ().Load<GLShader> ("blinnphong_fragment_shader", "shaders/blinnphong.fs", ShaderType::FRAGMENT_SHADER);
+#else
+    game->GetResourceManager ().Load<GLShader> ("blinnphong_fragment_shader", "shaders/blinnphong.420.fs", ShaderType::FRAGMENT_SHADER);
+#endif
+
+    game->GetResourceManager ().Load<GLShader> ("flatquad_fragment_shader", "shaders/flatquad.vs", ShaderType::FRAGMENT_SHADER);
+    game->GetResourceManager ().Load<GLShader> ("post_hdr_fragment_shader", "shaders/post_hdr.fs", ShaderType::FRAGMENT_SHADER);
+    game->GetResourceManager ().Load<GLShader> ("post_gamma_fragment_shader", "shaders/post_gamma.fs", ShaderType::FRAGMENT_SHADER);
 
     // PBR model
+    CreateShaderProgram ("pbr_shader");
     AddShaderToProgram ("pbr_shader", "default_vertex_shader");
     AddShaderToProgram ("pbr_shader", "pbr_fragment_shader");
 #if (CILANTRO_GL_VERSION < 330)
-    glBindAttribLocation(GetShaderProgram("pbr_shader").GetProgramId(), 0, "vPosition");
-    glBindAttribLocation(GetShaderProgram("pbr_shader").GetProgramId(), 1, "vNormal");
+    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgram("pbr_shader")).GetProgramId(), 0, "vPosition");
+    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgram("pbr_shader")).GetProgramId(), 1, "vNormal");
 #endif
 #if (CILANTRO_GL_VERSION < 420)
     GLuint p = dynamic_cast<GLShaderProgram&>(GetShaderProgram("pbr_shader")).GetProgramId ();
@@ -657,8 +649,8 @@ void GLRenderer::InitializeShaderLibrary ()
     AddShaderToProgram ("phong_shader", "default_vertex_shader");
     AddShaderToProgram ("phong_shader", "phong_fragment_shader");
 #if (CILANTRO_GL_VERSION < 330)
-    glBindAttribLocation(GetShaderProgram("phong_shader").GetProgramId(), 0, "vPosition");
-    glBindAttribLocation(GetShaderProgram("phong_shader").GetProgramId(), 1, "vNormal");
+    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgram("phong_shader")).GetProgramId(), 0, "vPosition");
+    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgram("phong_shader")).GetProgramId(), 1, "vNormal");
 #endif
 #if (CILANTRO_GL_VERSION < 420)
     p = dynamic_cast<GLShaderProgram&>(GetShaderProgram("phong_shader")).GetProgramId ();
@@ -673,8 +665,8 @@ void GLRenderer::InitializeShaderLibrary ()
     AddShaderToProgram ("blinnphong_shader", "default_vertex_shader");
     AddShaderToProgram ("blinnphong_shader", "blinnphong_fragment_shader");
 #if (CILANTRO_GL_VERSION < 330)	
-    glBindAttribLocation(GetShaderProgram("blinnphong_shader").GetProgramId(), 0, "vPosition");
-    glBindAttribLocation(GetShaderProgram("blinnphong_shader").GetProgramId(), 1, "vNormal");
+    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgram("blinnphong_shader")).GetProgramId(), 0, "vPosition");
+    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgram("blinnphong_shader")).GetProgramId(), 1, "vNormal");
 #endif
 #if (CILANTRO_GL_VERSION < 420)
     p = dynamic_cast<GLShaderProgram&>(GetShaderProgram("blinnphong_shader")).GetProgramId ();
@@ -689,16 +681,16 @@ void GLRenderer::InitializeShaderLibrary ()
     AddShaderToProgram ("normals_shader", "default_vertex_shader");
     AddShaderToProgram ("normals_shader", "normals_fragment_shader");
 #if (CILANTRO_GL_VERSION < 330)
-    glBindAttribLocation(GetShaderProgram("normals_shader").GetProgramId(), 0, "vPosition");
-    glBindAttribLocation(GetShaderProgram("normals_shader").GetProgramId(), 1, "vNormal");
+    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgram("normals_shader")).GetProgramId(), 0, "vPosition");
+    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgram("normals_shader")).GetProgramId(), 1, "vNormal");
 #endif
 
     // Only emissive color rendering (no lights calculation)
     AddShaderToProgram ("emissive_shader", "default_vertex_shader");
     AddShaderToProgram ("emissive_shader", "emissive_fragment_shader");
 #if (CILANTRO_GL_VERSION < 330)	
-    glBindAttribLocation(GetShaderProgram("normals_shader").GetProgramId(), 0, "vPosition");
-    glBindAttribLocation(GetShaderProgram("normals_shader").GetProgramId(), 1, "vNormal");
+    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgram("normals_shader")).GetProgramId(), 0, "vPosition");
+    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgram("normals_shader")).GetProgramId(), 1, "vNormal");
 #endif
 #if (CILANTRO_GL_VERSION < 420)
     p = dynamic_cast<GLShaderProgram&>(GetShaderProgram("emissive_shader")).GetProgramId ();
@@ -710,8 +702,8 @@ void GLRenderer::InitializeShaderLibrary ()
     AddShaderToProgram ("flatquad_shader", "flatquad_vertex_shader");
     AddShaderToProgram ("flatquad_shader", "flatquad_fragment_shader");
 #if (CILANTRO_GL_VERSION < 330)	
-    glBindAttribLocation(GetShaderProgram("flatquad_shader").GetProgramId(), 0, "vPosition");
-    glBindAttribLocation(GetShaderProgram("flatquad_shader").GetProgramId(), 1, "vTextureCoordinates");
+    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgram("flatquad_shader")).GetProgramId(), 0, "vPosition");
+    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgram("flatquad_shader")).GetProgramId(), 1, "vTextureCoordinates");
 #endif
 #if (CILANTRO_GL_VERSION < 420)
     p = dynamic_cast<GLShaderProgram&>(GetShaderProgram("flatquad_shader")).GetProgramId ();
@@ -723,8 +715,8 @@ void GLRenderer::InitializeShaderLibrary ()
     AddShaderToProgram ("post_hdr_shader", "flatquad_vertex_shader");
     AddShaderToProgram ("post_hdr_shader", "post_hdr_fragment_shader");
 #if (CILANTRO_GL_VERSION < 330)	
-    glBindAttribLocation(GetShaderProgram("post_hdr_shader").GetProgramId(), 0, "vPosition");
-    glBindAttribLocation(GetShaderProgram("post_hdr_shader").GetProgramId(), 1, "vTextureCoordinates");
+    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgram("post_hdr_shader")).GetProgramId(), 0, "vPosition");
+    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgram("post_hdr_shader")).GetProgramId(), 1, "vTextureCoordinates");
 #endif
 #if (CILANTRO_GL_VERSION < 420)
     p = dynamic_cast<GLShaderProgram&>(GetShaderProgram("post_hdr_shader")).GetProgramId ();
@@ -736,8 +728,8 @@ void GLRenderer::InitializeShaderLibrary ()
     AddShaderToProgram ("post_gamma_shader", "flatquad_vertex_shader");
     AddShaderToProgram ("post_gamma_shader", "post_gamma_fragment_shader");
 #if (CILANTRO_GL_VERSION < 330)	
-    glBindAttribLocation(GetShaderProgram("post_gamma_shader").GetProgramId(), 0, "vPosition");
-    glBindAttribLocation(GetShaderProgram("post_gamma_shader").GetProgramId(), 1, "vTextureCoordinates");
+    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgram("post_gamma_shader")).GetProgramId(), 0, "vPosition");
+    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgram("post_gamma_shader")).GetProgramId(), 1, "vTextureCoordinates");
 #endif
 #if (CILANTRO_GL_VERSION < 420)
     p = dynamic_cast<GLShaderProgram&>(GetShaderProgram("post_gamma_shader")).GetProgramId ();
@@ -781,13 +773,13 @@ void GLRenderer::InitializeMatrixUniformBuffers ()
     glBindBufferBase (GL_UNIFORM_BUFFER, BindingPoint::BP_MATRICES, sceneBuffers.UBO[UBO_MATRICES]);
 
     // set uniform block bindings
-    for (auto&& shaderProgram : shaderPrograms)
+    for (auto shaderProgram : shaderProgramManager)
     {
-        shaderProgramId = shaderProgram.second.GetProgramId ();
+        shaderProgramId = shaderProgramManager.GetByHandle<GLShaderProgram>(shaderProgram->GetHandle ()).GetProgramId ();
         uniformMatricesBlockIndex = glGetUniformBlockIndex (shaderProgramId, "UniformMatricesBlock");
         if (uniformMatricesBlockIndex == GL_INVALID_INDEX)
         {
-            LogMessage (MSG_LOCATION) << "Program id" << shaderProgram.second.GetProgramId() << "has no UniformMatricesBlock";
+            LogMessage (MSG_LOCATION) << "Program id" << shaderProgram->GetName () << "has no UniformMatricesBlock";
         }
         else {
             glUniformBlockBinding (shaderProgramId, uniformMatricesBlockIndex, BindingPoint::BP_MATRICES);
@@ -826,14 +818,14 @@ void GLRenderer::InitializeLightUniformBuffers ()
     glBindBufferBase (GL_UNIFORM_BUFFER, BindingPoint::BP_SPOTLIGHTS, sceneBuffers.UBO[UBO_SPOTLIGHTS]);
 
     // set uniform block bindings in shaders which have it
-    for (auto&& shaderProgram : shaderPrograms)
+    for (auto shaderProgram : shaderProgramManager)
     {
-        shaderProgramId = shaderProgram.second.GetProgramId ();
+        shaderProgramId = shaderProgramManager.GetByHandle<GLShaderProgram>(shaderProgram->GetHandle ()).GetProgramId ();
         
         uniformPointLightsBlockIndex = glGetUniformBlockIndex (shaderProgramId, "UniformPointLightsBlock");
         if (uniformPointLightsBlockIndex == GL_INVALID_INDEX)
         {
-            LogMessage (MSG_LOCATION) << "Program id" << shaderProgram.second.GetProgramId() << "has no UniformPointLightsBlock";
+            LogMessage (MSG_LOCATION) << "Program id" << shaderProgram->GetName () << "has no UniformPointLightsBlock";
         }
         else {
             glUniformBlockBinding(shaderProgramId, uniformPointLightsBlockIndex, BindingPoint::BP_POINTLIGHTS);
@@ -842,7 +834,7 @@ void GLRenderer::InitializeLightUniformBuffers ()
         uniformDirectionalLightsBlockIndex = glGetUniformBlockIndex (shaderProgramId, "UniformDirectionalLightsBlock");
         if (uniformDirectionalLightsBlockIndex == GL_INVALID_INDEX)
         {
-            LogMessage (MSG_LOCATION) << "Program id" << shaderProgram.second.GetProgramId() << "has no UniformDirectionalLightsBlock";
+            LogMessage (MSG_LOCATION) << "Program id" << shaderProgram->GetName () << "has no UniformDirectionalLightsBlock";
         }
         else {
             glUniformBlockBinding(shaderProgramId, uniformDirectionalLightsBlockIndex, BindingPoint::BP_DIRECTIONALLIGHTS);
@@ -851,7 +843,7 @@ void GLRenderer::InitializeLightUniformBuffers ()
         uniformSpotLightsBlockIndex = glGetUniformBlockIndex (shaderProgramId, "UniformSpotLightsBlock");
         if (uniformSpotLightsBlockIndex == GL_INVALID_INDEX)
         {
-            LogMessage (MSG_LOCATION) << "Program id" << shaderProgram.second.GetProgramId() << "has no UniformSpotLightsBlock";
+            LogMessage (MSG_LOCATION) << "Program id" << shaderProgram->GetName () << "has no UniformSpotLightsBlock";
         }
         else {
             glUniformBlockBinding(shaderProgramId, uniformSpotLightsBlockIndex, BindingPoint::BP_SPOTLIGHTS);

@@ -12,10 +12,10 @@ public:
     ~GLShaderProgram ();
 
     // return program id
-    GLuint GetProgramId ();
+    GLuint GetProgramId () const;
 
     // attach shader to a program
-    void LinkShader (Shader& shader);
+    void LinkShader (const Shader& shader);
 
     // use program
     void Use ();

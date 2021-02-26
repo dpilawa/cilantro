@@ -43,6 +43,9 @@ public:
     __EAPI const_iterator cend() const;
 
 private:
+
+    std::shared_ptr<Base> Push (const std::string& name, std::shared_ptr<Base> resource);
+
     handle_t handle;
     resources_t resources;
     std::unordered_map<std::string, handle_t> resourceNames;
@@ -52,37 +55,12 @@ template <typename Base>
 template <typename T, typename ...Params>
 T& ResourceManager<Base>::Load (const std::string& name, const std::string& path, Params&&... params)
 {
-    static_assert (std::is_base_of<Base, T>::value, "Invalid base object for resource");
+    static_assert (std::is_base_of<Base, T>::value, "Invalid base class for resource");
+    static_assert (std::is_base_of<LoadableResource, T>::value, "Resource is not derived from LoadableResource");
     std::shared_ptr<T> newResource;
 
-    auto resource = resourceNames.find (name);
-    if (resource != resourceNames.end ()) 
-    {
-        LogMessage(MSG_LOCATION, EXIT_FAILURE) << "Resource" << name << "already exists";
-    }
-    else
-    {
-        if constexpr (std::is_base_of<LoadableResource, T>::value)
-        {
-            if (!path.empty ()) 
-            {
-                newResource = std::make_shared<T> (path, std::forward<Params>(params)...);
-            }
-            else 
-            {
-                newResource = std::make_shared<T> (std::forward<Params>(params)...);
-            }
-        }
-        else
-        {
-            newResource = std::make_shared<T> (std::forward<Params>(params)...);
-        }
-
-        newResource->name = name;
-        newResource->handle = handle++;
-        resources.push_back (newResource);
-        resourceNames[name] = newResource->handle;
-    }
+    newResource = std::make_shared<T> (path, std::forward<Params>(params)...);
+    this->Push (name, newResource);
 
     return *newResource;
 }
@@ -91,7 +69,13 @@ template <typename Base>
 template <typename T, typename ...Params>
 T& ResourceManager<Base>::Create (const std::string& name, Params&&... params)
 {
-    return Load<T> (name, std::string (), params...);
+    static_assert (std::is_base_of<Base, T>::value, "Invalid base class for resource");
+    std::shared_ptr<T> newResource;
+
+    newResource = std::make_shared<T> (std::forward<Params>(params)...);
+    this->Push (name, newResource);
+
+    return *newResource;
 }
 
 template <typename Base>

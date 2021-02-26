@@ -1,4 +1,4 @@
-#version 130
+#version 140
 
 in vec2 vPosition;
 in vec2 vTextureCoordinates;

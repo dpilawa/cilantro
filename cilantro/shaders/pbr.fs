@@ -1,4 +1,4 @@
-#version 130
+#version 140
 
 #define MAX_POINT_LIGHTS 64
 #define MAX_DIRECTIONAL_LIGHTS 64
