@@ -31,16 +31,6 @@ endif()
 set(CILANTRO_FILES ${CILANTRO_FILES}
 include/cilantroengine.h
 
-include/graphics/default.vs.h
-include/graphics/flatquad.vs.h
-include/graphics/normals.fs.h
-include/graphics/pbr.fs.h
-include/graphics/phong.fs.h
-include/graphics/blinnphong.fs.h
-include/graphics/emissive.fs.h
-include/graphics/flatquad.fs.h
-include/graphics/post_hdr.fs.h
-include/graphics/post_gamma.fs.h
 include/game/Game.h
 include/game/GameComposite.h
 include/graphics/Framebuffer.h
