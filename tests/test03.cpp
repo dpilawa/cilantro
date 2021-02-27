@@ -32,48 +32,46 @@ int main (int argc, char* argv[])
     inputController.CreateInputEvent ("mousemode", InputKey::KeySpace, InputTrigger::Release, {});
     inputController.BindInputEvent ("mousemode", [ & ]() { inputController.SetMouseGameMode (!inputController.IsGameMode ()); });
 
-    PhongMaterial& m = dynamic_cast<PhongMaterial&>(gameScene.AddMaterial (new PhongMaterial ()));
-    m.SetShaderProgram ("blinnphong_shader");
-    m.SetDiffuse (Vector3f (0.4f, 0.4f, 0.4f));
-    m.SetSpecular (Vector3f (1.0f, 1.0f, 1.0f)).SetSpecularShininess (64.0f);
+    PhongMaterial& m = gameScene.AddMaterial<PhongMaterial> ("material");
+    m.SetDiffuse (Vector3f (0.4f, 0.4f, 0.4f)).SetSpecular (Vector3f (1.0f, 1.0f, 1.0f)).SetSpecularShininess (64.0f);
 
-    ControlledCamera& cam = dynamic_cast<ControlledCamera&>(gameScene.AddGameObject (new ControlledCamera (60.0f, 0.1f, 100.0f, 0.1f)));
+    ControlledCamera& cam = gameScene.AddGameObject<ControlledCamera> ("camera", 60.0f, 0.1f, 100.0f, 0.1f);
     cam.Initialize ();
     cam.GetModelTransform ().Translate (15.0f, 15.0f, 15.0f).Rotate (-35.0f, 45.0f, 0.0f);
-    gameScene.SetActiveCamera (&cam);
+    gameScene.SetActiveCamera ("camera");
 
-    GameObject& plane = gameScene.AddGameObject (new GameObject ());
+    GameObject& plane = gameScene.AddGameObject<GameObject> ("plane");
 
-    MeshObject& fuselage = dynamic_cast<MeshObject&>(gameScene.AddGameObject (new MeshObject ()));
+    MeshObject& fuselage = gameScene.AddGameObject<MeshObject> ("fuselage");
     Primitives::GenerateCube (fuselage);
     fuselage.GetModelTransform ().Scale (1.0f, 1.0f, 10.0f);
-    fuselage.SetMaterial (m);
-    fuselage.SetParentObject (plane);
+    fuselage.SetMaterial ("material");
+    fuselage.SetParentObject ("plane");
 
-    MeshObject& wings = dynamic_cast<MeshObject&>(gameScene.AddGameObject (new MeshObject ()));
+    MeshObject& wings = gameScene.AddGameObject<MeshObject> ("wings");
     Primitives::GenerateCube (wings);
     wings.GetModelTransform ().Scale (12.0f, 0.2f, 1.0f).Translate (0.0f, 0.0f, 2.0f);
-    wings.SetMaterial (m);
-    wings.SetParentObject (plane);
+    wings.SetMaterial ("material");
+    wings.SetParentObject ("plane");
 
-    MeshObject& rudder = dynamic_cast<MeshObject&>(gameScene.AddGameObject (new MeshObject ()));
+    MeshObject& rudder = gameScene.AddGameObject<MeshObject> ("rudder");
     Primitives::GenerateCube (rudder);
     rudder.GetModelTransform ().Scale (0.2f, 2.0f, 1.0f).Translate (0.0f, 1.5f, -5.0f).Rotate (-10.0f, 0.0f, 0.0f);
-    rudder.SetMaterial (m);
-    rudder.SetParentObject (plane);
+    rudder.SetMaterial ("material");
+    rudder.SetParentObject ("plane");
 
-    MeshObject& tail = dynamic_cast<MeshObject&>(gameScene.AddGameObject (new MeshObject ()));
+    MeshObject& tail = gameScene.AddGameObject<MeshObject> ("tail");
     Primitives::GenerateCube (tail);
     tail.GetModelTransform ().Scale (4.0f, 0.2f, 1.0f).Translate (0.0f, 0.2f, -5.0f);
-    tail.SetMaterial (m);
-    tail.SetParentObject (plane);
+    tail.SetMaterial ("material");
+    tail.SetParentObject ("plane");
 
-    DirectionalLight& light = dynamic_cast<DirectionalLight&>(gameScene.AddGameObject (new DirectionalLight ()));
+    DirectionalLight& light = gameScene.AddGameObject<DirectionalLight> ("light");
     light.GetModelTransform ().Rotate (90.0f, 0.0f, 10.0f);
     light.SetColor (Vector3f (1.0f, 1.0f, 1.0f));
     light.SetEnabled (true);
 
-    AnimationObject& anim1 = dynamic_cast<AnimationObject&> (gameScene.AddGameObject (new AnimationObject ()));
+    AnimationObject& anim1 = gameScene.AddGameObject<AnimationObject> ("anim1");
     anim1.AddAnimationProperty<Quaternion> ("rotation", Mathf::EulerToQuaterion (Mathf::Deg2Rad (Vector3f (0.0f, 0.0f, 0.0f))), [&](Quaternion q) { plane.GetModelTransform ().Rotate (q); }, [](Quaternion q0, Quaternion q1, float t) { return Mathf::Slerp (q0, q1, Mathf::Smoothstep(0.0f, 1.0f, t)); });
     anim1.AddKeyframe<Quaternion> ("rotation", 2.0f, Mathf::EulerToQuaterion (Mathf::Deg2Rad (Vector3f (-35.0f, 0.0f, 0.0f))));
     anim1.AddKeyframe<Quaternion> ("rotation", 5.0f, Mathf::EulerToQuaterion (Mathf::Deg2Rad (Vector3f (-35.0f, 20.0f, -45.0f))));
