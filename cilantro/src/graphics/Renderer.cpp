@@ -13,11 +13,6 @@ Renderer::Renderer (unsigned int width, unsigned int height)
 
 Renderer::~Renderer ()
 {
-    for (auto&& postprocess : postprocesses)
-    {
-        postprocess->Deinitialize ();
-        delete postprocess;
-    }
 }
 
 void Renderer::RenderFrame ()
@@ -50,8 +45,8 @@ unsigned int Renderer::GetHeight () const
     return height;
 }
 
-void Renderer::AddPostprocess (Postprocess* postprocess)
+ResourceManager<ShaderProgram>& Renderer::GetShaderProgramManager ()
 {
-    postprocesses.push_back (postprocess);
-    postprocess->Initialize ();
+    return shaderPrograms;
 }
+

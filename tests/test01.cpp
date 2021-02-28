@@ -34,11 +34,8 @@ int main (int argc, char* argv [])
 
     Game* game = new Game (resourceManager, gameScene, renderer, renderTarget, inputController);
 
-    renderer.AddPostprocess (new GLPostprocess (renderer, renderer.GetShaderProgram ("post_hdr_shader")));
-
-    GLPostprocess* gamma = new GLPostprocess (renderer, renderer.GetShaderProgram("post_gamma_shader"));
-    gamma->SetPostprocessParameterFloat ("fGamma", 2.0f);
-    renderer.AddPostprocess (gamma);
+    renderer.AddPostprocess<GLPostprocess> ("hdr_postprocess").SetShaderProgram ("post_hdr_shader");
+    renderer.AddPostprocess<GLPostprocess> ("gamma_postprocess").SetShaderProgram ("post_gamma_shader").SetPostprocessParameterFloat ("fGamma", 2.1f);
 
     inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
     inputController.BindInputEvent ("exit", [ & ]() { game->Stop (); });

@@ -2,7 +2,8 @@
 #define _GAMECOMPOSITE_H_
 
 #include "cilantroengine.h"
-#include "game/Game.h"
+
+class Game;
 
 class GameComposite
 {
@@ -11,7 +12,7 @@ public:
     GameComposite ();
     virtual ~GameComposite ();
 
-    // run a game loop
+    // attach object to game
     __EAPI void AttachToGame (Game* game);
 
 protected:

@@ -3,6 +3,7 @@
 #include "scene/Material.h"
 #include "scene/GameObject.h"
 #include "graphics/ShaderProgram.h"
+#include "graphics/Postprocess.h"
 
 template <typename Base>
 ResourceManager<Base>::ResourceManager ()
@@ -114,3 +115,13 @@ template __EAPI ResourceManager<ShaderProgram>::const_iterator ResourceManager<S
 template __EAPI ResourceManager<ShaderProgram>::const_iterator ResourceManager<ShaderProgram>::cbegin () const;
 template __EAPI ResourceManager<ShaderProgram>::const_iterator ResourceManager<ShaderProgram>::cend () const;
 template __EAPI std::shared_ptr<ShaderProgram> ResourceManager<ShaderProgram>::Push (const std::string& name, std::shared_ptr<ShaderProgram> resource);
+
+template __EAPI ResourceManager<Postprocess>::ResourceManager ();
+template __EAPI ResourceManager<Postprocess>::~ResourceManager ();
+template __EAPI ResourceManager<Postprocess>::iterator ResourceManager<Postprocess>::begin ();
+template __EAPI ResourceManager<Postprocess>::iterator ResourceManager<Postprocess>::end ();
+template __EAPI ResourceManager<Postprocess>::const_iterator ResourceManager<Postprocess>::begin () const;
+template __EAPI ResourceManager<Postprocess>::const_iterator ResourceManager<Postprocess>::end () const;
+template __EAPI ResourceManager<Postprocess>::const_iterator ResourceManager<Postprocess>::cbegin () const;
+template __EAPI ResourceManager<Postprocess>::const_iterator ResourceManager<Postprocess>::cend () const;
+template __EAPI std::shared_ptr<Postprocess> ResourceManager<Postprocess>::Push (const std::string& name, std::shared_ptr<Postprocess> resource);

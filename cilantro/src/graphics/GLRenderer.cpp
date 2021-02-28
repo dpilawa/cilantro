@@ -164,7 +164,7 @@ GLuint GLRenderer::GetRendererFramebuffer () const
     }
     else 
     {
-        return dynamic_cast<GLFramebuffer*> (postprocesses[postprocessStage - 1]->GetFramebufferPtr ())->GetFramebuffer ();
+        return dynamic_cast<GLFramebuffer*> ((*(postprocesses.begin() + postprocessStage - 1))->GetFramebufferPtr ())->GetFramebuffer ();
     }
 }
 
@@ -176,13 +176,13 @@ GLuint GLRenderer::GetRendererFramebufferTexture () const
     }
     else 
     {
-        return dynamic_cast<GLFramebuffer*> (postprocesses[postprocessStage - 1]->GetFramebufferPtr ())->GetFramebufferTexture ();
+        return dynamic_cast<GLFramebuffer*> ((*(postprocesses.begin() + postprocessStage - 1))->GetFramebufferPtr ())->GetFramebufferTexture ();
     }
 }
 
 ShaderProgram& GLRenderer::CreateShaderProgram (const std::string& shaderProgramName)
 {
-    GLShaderProgram& program = shaderProgramManager.Create<GLShaderProgram> (shaderProgramName);
+    GLShaderProgram& program = shaderPrograms.Create<GLShaderProgram> (shaderProgramName);
     LogMessage (MSG_LOCATION) << "Created shader program" << shaderProgramName << program.GetProgramId ();
 
     return program;
@@ -190,13 +190,13 @@ ShaderProgram& GLRenderer::CreateShaderProgram (const std::string& shaderProgram
 
 void GLRenderer::AddShaderToProgram (const std::string& shaderProgramName, const std::string& shaderName)
 {
-    shaderProgramManager.GetByName<GLShaderProgram> (shaderProgramName).LinkShader (game->GetResourceManager ().GetByName<GLShader> (shaderName));
+    shaderPrograms.GetByName<GLShaderProgram> (shaderProgramName).LinkShader (game->GetResourceManager ().GetByName<GLShader> (shaderName));
     LogMessage (MSG_LOCATION) << "Linked shader" << shaderName << "to program" << shaderProgramName;
 }
 
 ShaderProgram& GLRenderer::GetShaderProgram (const std::string& shaderProgramName)
 {
-    ShaderProgram& program = shaderProgramManager.GetByName<GLShaderProgram> (shaderProgramName);
+    ShaderProgram& program = shaderPrograms.GetByName<GLShaderProgram> (shaderProgramName);
 
     return program;
 }
@@ -757,9 +757,9 @@ void GLRenderer::InitializeMatrixUniformBuffers ()
     glBindBufferBase (GL_UNIFORM_BUFFER, BindingPoint::BP_MATRICES, sceneBuffers.UBO[UBO_MATRICES]);
 
     // set uniform block bindings
-    for (auto shaderProgram : shaderProgramManager)
+    for (auto shaderProgram : shaderPrograms)
     {
-        shaderProgramId = shaderProgramManager.GetByHandle<GLShaderProgram>(shaderProgram->GetHandle ()).GetProgramId ();
+        shaderProgramId = shaderPrograms.GetByHandle<GLShaderProgram>(shaderProgram->GetHandle ()).GetProgramId ();
         uniformMatricesBlockIndex = glGetUniformBlockIndex (shaderProgramId, "UniformMatricesBlock");
         if (uniformMatricesBlockIndex == GL_INVALID_INDEX)
         {
@@ -802,9 +802,9 @@ void GLRenderer::InitializeLightUniformBuffers ()
     glBindBufferBase (GL_UNIFORM_BUFFER, BindingPoint::BP_SPOTLIGHTS, sceneBuffers.UBO[UBO_SPOTLIGHTS]);
 
     // set uniform block bindings in shaders which have it
-    for (auto shaderProgram : shaderProgramManager)
+    for (auto shaderProgram : shaderPrograms)
     {
-        shaderProgramId = shaderProgramManager.GetByHandle<GLShaderProgram>(shaderProgram->GetHandle ()).GetProgramId ();
+        shaderProgramId = shaderPrograms.GetByHandle<GLShaderProgram>(shaderProgram->GetHandle ()).GetProgramId ();
         
         uniformPointLightsBlockIndex = glGetUniformBlockIndex (shaderProgramId, "UniformPointLightsBlock");
         if (uniformPointLightsBlockIndex == GL_INVALID_INDEX)

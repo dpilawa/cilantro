@@ -11,7 +11,7 @@
 class GLPostprocess : public Postprocess
 {
 public:
-    __EAPI GLPostprocess (Renderer& renderer, ShaderProgram& shaderProgram);
+    __EAPI GLPostprocess ();
     __EAPI virtual ~GLPostprocess ();
 
     virtual void Initialize ();

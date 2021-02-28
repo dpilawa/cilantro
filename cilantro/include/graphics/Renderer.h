@@ -12,6 +12,7 @@
 #include "scene/SpotLight.h"
 #include "scene/Material.h"
 #include "graphics/Shader.h"
+#include "graphics/ShaderProgram.h"
 #include "graphics/RenderTarget.h"
 #include "graphics/Postprocess.h"
 #include <string>
@@ -36,9 +37,11 @@ public:
     __EAPI unsigned int GetHeight () const;
 
     // post-processing
-    __EAPI virtual void AddPostprocess (Postprocess* postprocess);
+    template <typename T, typename ...Params>
+    T& AddPostprocess (const std::string& name, Params&&... params);
 
     // shader library manipulation
+    __EAPI ResourceManager<ShaderProgram>& GetShaderProgramManager ();    
     virtual ShaderProgram& CreateShaderProgram (const std::string& shaderProgramName) = 0;
     virtual void AddShaderToProgram (const std::string& shaderProgramName, const std::string& shaderName) = 0;
     virtual ShaderProgram& GetShaderProgram (const std::string& shaderProgramName) = 0;    
@@ -56,12 +59,24 @@ protected:
     unsigned int width;
     unsigned int height;
 
-    ResourceManager<ShaderProgram> shaderProgramManager;
-
     unsigned int postprocessStage;
-    std::vector<Postprocess*> postprocesses;
+
+    ResourceManager<ShaderProgram> shaderPrograms;
+    ResourceManager<Postprocess> postprocesses;
 
 };
 
+template <typename T, typename ...Params>
+T& Renderer::AddPostprocess (const std::string& name, Params&&... params)
+{
+    T& postprocess = postprocesses.Create<T> (name, params...);
+
+    // set renderer and initialize
+    postprocess.AttachToRenderer (this);
+    postprocess.Initialize ();
+
+    // return postprocess
+    return postprocess;
+}
 
 #endif
