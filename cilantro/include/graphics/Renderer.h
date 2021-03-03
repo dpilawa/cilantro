@@ -36,15 +36,20 @@ public:
     __EAPI unsigned int GetWidth () const;
     __EAPI unsigned int GetHeight () const;
 
+    // access to game resource manager
+    __EAPI virtual ResourceManager<Resource>& GetGameResourceManager ();
+
     // post-processing
+    __EAPI virtual ResourceManager<Postprocess>& GetPostprocessManager ();
+    
     template <typename T, typename ...Params>
     T& AddPostprocess (const std::string& name, Params&&... params);
 
     // shader library manipulation
-    __EAPI ResourceManager<ShaderProgram>& GetShaderProgramManager ();    
-    virtual ShaderProgram& CreateShaderProgram (const std::string& shaderProgramName) = 0;
-    virtual void AddShaderToProgram (const std::string& shaderProgramName, const std::string& shaderName) = 0;
-    virtual ShaderProgram& GetShaderProgram (const std::string& shaderProgramName) = 0;    
+    __EAPI virtual ResourceManager<ShaderProgram>& GetShaderProgramManager ();
+    
+    template <typename T, typename ...Params>
+    T& AddShaderProgram (const std::string& name, Params&&... params);        
 
     // object drawing and updating
     virtual void Draw (MeshObject& meshObject) = 0;
@@ -77,6 +82,18 @@ T& Renderer::AddPostprocess (const std::string& name, Params&&... params)
 
     // return postprocess
     return postprocess;
+}
+
+template <typename T, typename ...Params>
+T& Renderer::AddShaderProgram (const std::string& name, Params&&... params)
+{
+    T& shaderProgram = shaderPrograms.Create<T> (name, params...);
+
+    // set renderer and initialize
+    shaderProgram.AttachToRenderer (this);
+
+    // return program
+    return shaderProgram;
 }
 
 #endif

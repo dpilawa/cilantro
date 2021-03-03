@@ -144,11 +144,6 @@ public:
     __EAPI GLuint GetRendererFramebuffer () const;
     __EAPI GLuint GetRendererFramebufferTexture () const;
 
-    // shader library manipulation
-    __EAPI ShaderProgram& CreateShaderProgram (const std::string& shaderProgramName);
-    __EAPI void AddShaderToProgram (const std::string& shaderProgramName, const std::string& shaderName);
-    __EAPI ShaderProgram& GetShaderProgram (const std::string& shaderProgramName);
-
     // object drawing and updating
     __EAPI void Draw (MeshObject& meshObject);
     __EAPI void Update (MeshObject& meshObject);

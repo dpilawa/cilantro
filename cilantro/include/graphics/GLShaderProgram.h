@@ -14,13 +14,13 @@ public:
     // return program id
     GLuint GetProgramId () const;
 
-    // attach shader to a program
-    void LinkShader (const Shader& shader);
-
     // use program
     void Use ();
 
 private:
+
+    // attach shader to a program
+    void LinkShader (const Shader& shader);
 
     // ID of a shader program
     GLuint shaderProgramId;

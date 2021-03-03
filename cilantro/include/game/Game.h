@@ -13,7 +13,6 @@ class InputController;
 class Game
 {
 public:
-
     __EAPI Game (ResourceManager<Resource>& resourceManager, GameScene& gameScene, Renderer& renderer, RenderTarget& renderTarget, InputController& inputController);
     __EAPI ~Game ();
 
@@ -29,7 +28,6 @@ public:
     __EAPI InputController& GetInputController ();
 
 private:
-
     // game composites
     ResourceManager<Resource>& resourceManager;
     GameScene& gameScene;

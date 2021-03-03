@@ -45,6 +45,16 @@ unsigned int Renderer::GetHeight () const
     return height;
 }
 
+ResourceManager<Resource>& Renderer::GetGameResourceManager ()
+{
+    return game->GetResourceManager ();
+}
+
+ResourceManager<Postprocess>& Renderer::GetPostprocessManager ()
+{
+    return postprocesses;
+}
+
 ResourceManager<ShaderProgram>& Renderer::GetShaderProgramManager ()
 {
     return shaderPrograms;
