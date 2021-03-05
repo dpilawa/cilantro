@@ -124,7 +124,7 @@ void GLRenderer::RenderFrame ()
     LoadMatrixUniformBuffers ();
 
     // set viewport
-    glViewport (0, 0, this->width, this->height);
+    glViewport (0, 0, this->GetFramebuffer ()->GetWidth (), this->GetFramebuffer ()->GetHeight ());
 
     // draw all objects in scene
     for (auto gameObject : game->GetGameScene ().GetGameObjectManager ())
@@ -144,27 +144,20 @@ void GLRenderer::RenderFrame ()
     CheckGLError (MSG_LOCATION);
 }
 
-void GLRenderer::SetResolution (unsigned int width, unsigned int height)
+Framebuffer* GLRenderer::GetFramebuffer () const
 {
-    Renderer::SetResolution (width, height);
-
-    framebuffer->SetFramebufferResolution (width, height);
-
-    for (auto postprocess : postprocesses)
-    {
-        dynamic_cast<GLFramebuffer*> (postprocess->GetFramebufferPtr ())->SetFramebufferResolution (width, height);
-    }
+    return framebuffer;
 }
 
 GLuint GLRenderer::GetRendererFramebuffer () const
 {
     if (postprocessStage == 0) 
     {
-        return framebuffer->GetFramebuffer ();
+        return framebuffer->GetFramebufferGLId ();
     }
     else 
     {
-        return dynamic_cast<GLFramebuffer*> ((*(postprocesses.begin() + postprocessStage - 1))->GetFramebufferPtr ())->GetFramebuffer ();
+        return dynamic_cast<GLFramebuffer*> ((*(postprocesses.begin() + postprocessStage - 1))->GetFramebuffer ())->GetFramebufferGLId ();
     }
 }
 
@@ -172,11 +165,11 @@ GLuint GLRenderer::GetRendererFramebufferTexture () const
 {
     if (postprocessStage == 0) 
     {
-        return framebuffer->GetFramebufferTexture ();
+        return framebuffer->GetFramebufferTextureGLId ();
     }
     else 
     {
-        return dynamic_cast<GLFramebuffer*> ((*(postprocesses.begin() + postprocessStage - 1))->GetFramebufferPtr ())->GetFramebufferTexture ();
+        return dynamic_cast<GLFramebuffer*> ((*(postprocesses.begin() + postprocessStage - 1))->GetFramebuffer ())->GetFramebufferTextureGLId ();
     }
 }
 
@@ -629,8 +622,8 @@ void GLRenderer::InitializeShaderLibrary ()
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_shader").AddShader ("default_vertex_shader");
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_shader").AddShader ("phong_fragment_shader");
 #if (CILANTRO_GL_VERSION < 330)
-    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgram("phong_shader")).GetProgramId(), 0, "vPosition");
-    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgram("phong_shader")).GetProgramId(), 1, "vNormal");
+    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_shader")).GetProgramId(), 0, "vPosition");
+    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_shader")).GetProgramId(), 1, "vNormal");
 #endif
 #if (CILANTRO_GL_VERSION < 420)
     p = GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_shader").GetProgramId ();
@@ -646,8 +639,8 @@ void GLRenderer::InitializeShaderLibrary ()
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_shader").AddShader ("default_vertex_shader");
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_shader").AddShader ("blinnphong_fragment_shader");
 #if (CILANTRO_GL_VERSION < 330)	
-    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgram("blinnphong_shader")).GetProgramId(), 0, "vPosition");
-    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgram("blinnphong_shader")).GetProgramId(), 1, "vNormal");
+    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_shader")).GetProgramId(), 0, "vPosition");
+    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_shader")).GetProgramId(), 1, "vNormal");
 #endif
 #if (CILANTRO_GL_VERSION < 420)
     p = GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_shader").GetProgramId ();
@@ -663,8 +656,8 @@ void GLRenderer::InitializeShaderLibrary ()
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("flatquad_shader").AddShader ("flatquad_vertex_shader");
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("flatquad_shader").AddShader ("flatquad_fragment_shader");
 #if (CILANTRO_GL_VERSION < 330)	
-    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgram("flatquad_shader")).GetProgramId(), 0, "vPosition");
-    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgram("flatquad_shader")).GetProgramId(), 1, "vTextureCoordinates");
+    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgramManager ().GetByName<GLShaderProgram> ("flatquad_shader")).GetProgramId(), 0, "vPosition");
+    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgramManager ().GetByName<GLShaderProgram> ("flatquad_shader")).GetProgramId(), 1, "vTextureCoordinates");
 #endif
 #if (CILANTRO_GL_VERSION < 420)
     p = GetShaderProgramManager ().GetByName<GLShaderProgram> ("flatquad_shader").GetProgramId ();
@@ -677,8 +670,8 @@ void GLRenderer::InitializeShaderLibrary ()
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_hdr_shader").AddShader ("flatquad_vertex_shader");
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_hdr_shader").AddShader ("post_hdr_fragment_shader");
 #if (CILANTRO_GL_VERSION < 330)	
-    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgram("post_hdr_shader")).GetProgramId(), 0, "vPosition");
-    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgram("post_hdr_shader")).GetProgramId(), 1, "vTextureCoordinates");
+    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_hdr_shader")).GetProgramId(), 0, "vPosition");
+    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_hdr_shader")).GetProgramId(), 1, "vTextureCoordinates");
 #endif
 #if (CILANTRO_GL_VERSION < 420)
     p = GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_hdr_shader").GetProgramId ();
@@ -691,8 +684,8 @@ void GLRenderer::InitializeShaderLibrary ()
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_gamma_shader").AddShader ("flatquad_vertex_shader");
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_gamma_shader").AddShader ("post_gamma_fragment_shader");
 #if (CILANTRO_GL_VERSION < 330)	
-    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgram("post_gamma_shader")).GetProgramId(), 0, "vPosition");
-    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgram("post_gamma_shader")).GetProgramId(), 1, "vTextureCoordinates");
+    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_gamma_shader")).GetProgramId(), 0, "vPosition");
+    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_shader")).GetProgramId(), 1, "vTextureCoordinates");
 #endif
 #if (CILANTRO_GL_VERSION < 420)
     p = GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_gamma_shader").GetProgramId ();
@@ -857,7 +850,7 @@ void GLRenderer::LoadMatrixUniformBuffers ()
     std::memcpy (uniformMatrixBuffer.viewMatrix, Mathf::Transpose (activeCamera->GetViewMatrix ())[0], 16 * sizeof (GLfloat));
 
     // load projection matrix
-    std::memcpy (uniformMatrixBuffer.projectionMatrix, Mathf::Transpose (activeCamera->GetProjectionMatrix (this->GetWidth (), this->GetHeight ()))[0], 16 * sizeof (GLfloat));
+    std::memcpy (uniformMatrixBuffer.projectionMatrix, Mathf::Transpose (activeCamera->GetProjectionMatrix (this->GetFramebuffer ()->GetWidth (), this->GetFramebuffer ()->GetHeight ()))[0], 16 * sizeof (GLfloat));
 
     // load to GPU
     glBindBuffer (GL_UNIFORM_BUFFER, sceneBuffers.UBO[UBO_MATRICES]);

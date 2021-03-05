@@ -78,7 +78,7 @@ void GLMultisampleFramebuffer::Initialize ()
     }
     else
     {
-        LogMessage (MSG_LOCATION) << "Initialized multisample framebuffer";
+        LogMessage (MSG_LOCATION) << "Initialized multisample framebuffer" << bufferWidth << bufferHeight;
     }
     
 }

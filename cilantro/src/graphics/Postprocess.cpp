@@ -17,7 +17,7 @@ Postprocess& Postprocess::SetShaderProgram (const std::string& shaderProgramName
     return *this;
 }
 
-Framebuffer* Postprocess::GetFramebufferPtr () const
+Framebuffer* Postprocess::GetFramebuffer () const
 {
     return framebuffer;
 }

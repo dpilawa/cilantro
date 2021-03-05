@@ -26,8 +26,8 @@ public:
 
     virtual void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight);
 
-    GLuint GetFramebufferTexture () const;
-    GLuint GetFramebuffer () const;
+    GLuint GetFramebufferTextureGLId () const;
+    GLuint GetFramebufferGLId () const;
 
 protected:
 

@@ -29,12 +29,8 @@ public:
     // render
     __EAPI virtual void RenderFrame ();
 
-    // renderer state modifiers
-    __EAPI virtual void SetResolution (unsigned int width, unsigned int height);
-
-    // getters
-    __EAPI unsigned int GetWidth () const;
-    __EAPI unsigned int GetHeight () const;
+    // renderbuffer accessor
+    __EAPI virtual Framebuffer* GetFramebuffer () const = 0;
 
     // access to game resource manager
     __EAPI virtual ResourceManager<Resource>& GetGameResourceManager ();
@@ -60,9 +56,6 @@ public:
     virtual void Update (Material& material, unsigned int textureUnit) = 0;
 
 protected:
-
-    unsigned int width;
-    unsigned int height;
 
     unsigned int postprocessStage;
 

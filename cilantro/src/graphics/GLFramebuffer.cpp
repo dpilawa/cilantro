@@ -42,7 +42,7 @@ void GLFramebuffer::Initialize ()
     }
     else
     {
-        LogMessage (MSG_LOCATION) << "Initialized framebuffer";
+        LogMessage (MSG_LOCATION) << "Initialized framebuffer" << bufferWidth << bufferHeight;
     }
 }
 
@@ -70,12 +70,12 @@ void GLFramebuffer::SetFramebufferResolution (unsigned int bufferWidth, unsigned
     Initialize ();
 }
 
-GLuint GLFramebuffer::GetFramebufferTexture () const
+GLuint GLFramebuffer::GetFramebufferTextureGLId () const
 {
     return framebuffers.textureBuffer;
 }
 
-GLuint GLFramebuffer::GetFramebuffer () const
+GLuint GLFramebuffer::GetFramebufferGLId () const
 {
     return framebuffers.FBO;
 }

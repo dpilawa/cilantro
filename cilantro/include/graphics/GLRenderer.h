@@ -140,7 +140,7 @@ public:
     __EAPI void RenderFrame ();
 
     // renderbuffer
-    __EAPI void SetResolution (unsigned int width, unsigned int height);
+    __EAPI Framebuffer* GetFramebuffer () const;
     __EAPI GLuint GetRendererFramebuffer () const;
     __EAPI GLuint GetRendererFramebufferTexture () const;
 

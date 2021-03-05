@@ -12,6 +12,9 @@ public:
     virtual void Initialize () = 0;
     virtual void Deinitialize () = 0;
 
+    unsigned int GetWidth () const;
+    unsigned int GetHeight () const;
+
     virtual void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight);
 
 protected:

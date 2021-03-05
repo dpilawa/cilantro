@@ -25,6 +25,7 @@ public:
 private:
 
     void FramebufferResizeCallback (int width, int height);
+    void WindowResizeCallback (int width, int height);
 
     // GL window context
     GLFWwindow* window;

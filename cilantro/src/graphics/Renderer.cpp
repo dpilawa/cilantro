@@ -7,8 +7,6 @@
 
 Renderer::Renderer (unsigned int width, unsigned int height)
 {
-    this->width = width;
-    this->height = height;
 }
 
 Renderer::~Renderer ()
@@ -27,22 +25,6 @@ void Renderer::RenderFrame ()
 
     // update game clocks (Tock)
     Timer::Tock ();
-}
-
-void Renderer::SetResolution (unsigned int width, unsigned int height)
-{
-    this->width = width;
-    this->height = height;
-}
-
-unsigned int Renderer::GetWidth () const
-{
-    return width;
-}
-
-unsigned int Renderer::GetHeight () const
-{
-    return height;
 }
 
 ResourceManager<Resource>& Renderer::GetGameResourceManager ()
