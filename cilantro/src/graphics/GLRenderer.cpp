@@ -575,7 +575,11 @@ void GLRenderer::InitializeShaderLibrary ()
     game->GetResourceManager ().Load<GLShader> ("default_vertex_shader", "shaders/default.330.vs", ShaderType::VERTEX_SHADER);
 #endif
 
+#if (CILANTRO_GL_VERSION < 330)
     game->GetResourceManager ().Load<GLShader> ("flatquad_vertex_shader", "shaders/flatquad.vs", ShaderType::VERTEX_SHADER);
+#else
+    game->GetResourceManager ().Load<GLShader> ("flatquad_vertex_shader", "shaders/flatquad.330.vs", ShaderType::VERTEX_SHADER);
+#endif
 
 #if (CILANTRO_GL_VERSION < 420)
     game->GetResourceManager ().Load<GLShader> ("pbr_fragment_shader", "shaders/pbr.fs", ShaderType::FRAGMENT_SHADER);    

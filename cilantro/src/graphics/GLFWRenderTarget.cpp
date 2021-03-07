@@ -19,8 +19,6 @@ GLFWRenderTarget::~GLFWRenderTarget ()
 void GLFWRenderTarget::Initialize ()
 {
     GLFWmonitor* monitor; 
-    int bufferWidth;
-    int bufferHeight;
 
     // initialize GLFW
     glfwInit ();
@@ -45,7 +43,7 @@ void GLFWRenderTarget::Initialize ()
     glfwWindowHint(GLFW_VISIBLE, 1);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, 0);
+    glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, 1);
 
     // create window
     window = glfwCreateWindow (width, height, windowCaption.c_str (), monitor, nullptr);
@@ -72,11 +70,10 @@ void GLFWRenderTarget::Initialize ()
     };
 
     glfwSetFramebufferSizeCallback (window, framebufferResizeCallback);
-    //glfwSetWindowSizeCallback (window, windowResizeCallback);
+    glfwSetWindowSizeCallback (window, windowResizeCallback);
 
     // set framebuffer size (relevant for high DPI displays)
-    //glfwGetFramebufferSize (window, &bufferWidth, &bufferHeight);
-    //game->GetRenderer ().GetFramebuffer ()->SetFramebufferResolution (bufferWidth, bufferHeight);
+    glfwGetFramebufferSize (window, (int*)&this->width, (int*)&this->height);
 
     // set vsync on
     glfwSwapInterval (isVSync);
@@ -155,8 +152,6 @@ void GLFWRenderTarget::FramebufferResizeCallback (int width, int height)
 {
     // update renderer framebuffer size
     game->GetRenderer().GetFramebuffer ()->SetFramebufferResolution (width, height);
-    this->width = width;
-    this->height = height;
 
     for (auto& postprocess : game->GetRenderer ().GetPostprocessManager())
     {
