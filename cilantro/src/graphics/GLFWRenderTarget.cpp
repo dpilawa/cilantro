@@ -64,13 +64,7 @@ void GLFWRenderTarget::Initialize ()
         static_cast<GLFWRenderTarget&>(static_cast<Game*>(glfwGetWindowUserPointer (window))->GetRenderTarget ()).FramebufferResizeCallback (width, height);
     };
 
-    auto windowResizeCallback = [](GLFWwindow* window, int width, int height)
-    {
-        static_cast<GLFWRenderTarget&>(static_cast<Game*>(glfwGetWindowUserPointer (window))->GetRenderTarget ()).WindowResizeCallback (width, height);
-    };
-
     glfwSetFramebufferSizeCallback (window, framebufferResizeCallback);
-    glfwSetWindowSizeCallback (window, windowResizeCallback);
 
     // set framebuffer size (relevant for high DPI displays)
     glfwGetFramebufferSize (window, (int*)&this->width, (int*)&this->height);
@@ -153,14 +147,12 @@ void GLFWRenderTarget::FramebufferResizeCallback (int width, int height)
     // update renderer framebuffer size
     game->GetRenderer().GetFramebuffer ()->SetFramebufferResolution (width, height);
 
+    this->width = width;
+    this->height = height;
+
     for (auto& postprocess : game->GetRenderer ().GetPostprocessManager())
     {
         dynamic_cast<GLFramebuffer*> (postprocess->GetFramebuffer ())->SetFramebufferResolution (width, height);
     }
 }
 
-void GLFWRenderTarget::WindowResizeCallback (int width, int height)
-{
-    this->width = width;
-    this->height = height;
-}
