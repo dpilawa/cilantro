@@ -555,41 +555,17 @@ void GLRenderer::CheckGLError (const std::string& functionName)
 
 void GLRenderer::InitializeShaderLibrary ()
 {
+    GLuint p;
+
     // initialize shader library
-#if (CILANTRO_GL_VERSION < 330)
     game->GetResourceManager ().Load<GLShader> ("default_vertex_shader", "shaders/default.vs", ShaderType::VERTEX_SHADER);
-#else
-    game->GetResourceManager ().Load<GLShader> ("default_vertex_shader", "shaders/default.330.vs", ShaderType::VERTEX_SHADER);
-#endif
-
-#if (CILANTRO_GL_VERSION < 330)
     game->GetResourceManager ().Load<GLShader> ("flatquad_vertex_shader", "shaders/flatquad.vs", ShaderType::VERTEX_SHADER);
-#else
-    game->GetResourceManager ().Load<GLShader> ("flatquad_vertex_shader", "shaders/flatquad.330.vs", ShaderType::VERTEX_SHADER);
-#endif
-
-#if (CILANTRO_GL_VERSION < 420)
     game->GetResourceManager ().Load<GLShader> ("pbr_fragment_shader", "shaders/pbr.fs", ShaderType::FRAGMENT_SHADER);    
-#else
-    game->GetResourceManager ().Load<GLShader> ("pbr_fragment_shader", "shaders/pbr.420.fs", ShaderType::FRAGMENT_SHADER);    
-#endif
-
-#if (CILANTRO_GL_VERSION < 420)
     game->GetResourceManager ().Load<GLShader> ("phong_fragment_shader", "shaders/phong.fs", ShaderType::FRAGMENT_SHADER);
-#else
-    game->GetResourceManager ().Load<GLShader> ("phong_fragment_shader", "shaders/phong.420.fs", ShaderType::FRAGMENT_SHADER);
-#endif
-
-#if (CILANTRO_GL_VERSION < 420)
     game->GetResourceManager ().Load<GLShader> ("blinnphong_fragment_shader", "shaders/blinnphong.fs", ShaderType::FRAGMENT_SHADER);
-#else
-    game->GetResourceManager ().Load<GLShader> ("blinnphong_fragment_shader", "shaders/blinnphong.420.fs", ShaderType::FRAGMENT_SHADER);
-#endif
-
     game->GetResourceManager ().Load<GLShader> ("flatquad_fragment_shader", "shaders/flatquad.fs", ShaderType::FRAGMENT_SHADER);
     game->GetResourceManager ().Load<GLShader> ("post_hdr_fragment_shader", "shaders/post_hdr.fs", ShaderType::FRAGMENT_SHADER);
     game->GetResourceManager ().Load<GLShader> ("post_gamma_fragment_shader", "shaders/post_gamma.fs", ShaderType::FRAGMENT_SHADER);
-
 
     // PBR model
     AddShaderProgram<GLShaderProgram> ("pbr_shader");
@@ -600,18 +576,18 @@ void GLRenderer::InitializeShaderLibrary ()
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_shader").BindUniformBlock ("UniformDirectionalLightsBlock", BindingPoint::BP_DIRECTIONALLIGHTS);
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_shader").BindUniformBlock ("UniformSpotLightsBlock", BindingPoint::BP_SPOTLIGHTS);
 
+    p = GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_shader").GetProgramId ();
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_shader").Use ();
 #if (CILANTRO_GL_VERSION < 330)
-    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_shader")).GetProgramId(), 0, "vPosition");
-    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_shader")).GetProgramId(), 1, "vNormal");
+    glBindAttribLocation(p, 0, "vPosition");
+    glBindAttribLocation(p, 1, "vNormal");
 #endif
 #if (CILANTRO_GL_VERSION < 420)
-    GLuint p = GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_shader").GetProgramId ();
-    GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_shader").Use ();
-    glUniform1i (glGetUniformLocation(p, "tAlbedo"), 0);
-    glUniform1i (glGetUniformLocation(p, "tNormal"), 1);
-    glUniform1i (glGetUniformLocation(p, "tMetallic"), 2);
-    glUniform1i (glGetUniformLocation(p, "tRoughness"), 3);
-    glUniform1i (glGetUniformLocation(p, "tAO"), 4);
+    glUniform1i (glGetUniformLocation (p, "tAlbedo"), 0);
+    glUniform1i (glGetUniformLocation (p, "tNormal"), 1);
+    glUniform1i (glGetUniformLocation (p, "tMetallic"), 2);
+    glUniform1i (glGetUniformLocation (p, "tRoughness"), 3);
+    glUniform1i (glGetUniformLocation (p, "tAO"), 4);
 #endif
 
     // Phong model
@@ -622,17 +598,18 @@ void GLRenderer::InitializeShaderLibrary ()
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_shader").BindUniformBlock ("UniformPointLightsBlock", BindingPoint::BP_POINTLIGHTS);
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_shader").BindUniformBlock ("UniformDirectionalLightsBlock", BindingPoint::BP_DIRECTIONALLIGHTS);
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_shader").BindUniformBlock ("UniformSpotLightsBlock", BindingPoint::BP_SPOTLIGHTS);
-#if (CILANTRO_GL_VERSION < 330)
-    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_shader")).GetProgramId(), 0, "vPosition");
-    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_shader")).GetProgramId(), 1, "vNormal");
-#endif
-#if (CILANTRO_GL_VERSION < 420)
+
     p = GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_shader").GetProgramId ();
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_shader").Use ();
-    glUniform1i (glGetUniformLocation(p, "tDiffuse"), 0);
-    glUniform1i (glGetUniformLocation(p, "tNormal"), 1);
-    glUniform1i (glGetUniformLocation(p, "tSpecular"), 2);
-    glUniform1i (glGetUniformLocation(p, "tEmissive"), 3);
+#if (CILANTRO_GL_VERSION < 330)
+    glBindAttribLocation(p, 0, "vPosition");
+    glBindAttribLocation(p, 1, "vNormal");
+#endif
+#if (CILANTRO_GL_VERSION < 420)
+    glUniform1i (glGetUniformLocation (p, "tDiffuse"), 0);
+    glUniform1i (glGetUniformLocation (p, "tNormal"), 1);
+    glUniform1i (glGetUniformLocation (p, "tSpecular"), 2);
+    glUniform1i (glGetUniformLocation (p, "tEmissive"), 3);
 #endif
 
     // Blinn-Phong model
@@ -643,59 +620,63 @@ void GLRenderer::InitializeShaderLibrary ()
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_shader").BindUniformBlock ("UniformPointLightsBlock", BindingPoint::BP_POINTLIGHTS);
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_shader").BindUniformBlock ("UniformDirectionalLightsBlock", BindingPoint::BP_DIRECTIONALLIGHTS);
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_shader").BindUniformBlock ("UniformSpotLightsBlock", BindingPoint::BP_SPOTLIGHTS);    
-#if (CILANTRO_GL_VERSION < 330)	
-    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_shader")).GetProgramId(), 0, "vPosition");
-    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_shader")).GetProgramId(), 1, "vNormal");
-#endif
-#if (CILANTRO_GL_VERSION < 420)
+    
     p = GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_shader").GetProgramId ();
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_shader").Use ();
-    glUniform1i (glGetUniformLocation(p, "tDiffuse"), 0);
-    glUniform1i (glGetUniformLocation(p, "tNormal"), 1);
-    glUniform1i (glGetUniformLocation(p, "tSpecular"), 2);
-    glUniform1i (glGetUniformLocation(p, "tEmissive"), 3);
+#if (CILANTRO_GL_VERSION < 330)	
+    glBindAttribLocation(p, 0, "vPosition");
+    glBindAttribLocation(p, 1, "vNormal");
+#endif
+#if (CILANTRO_GL_VERSION < 420)
+    glUniform1i (glGetUniformLocation (p, "tDiffuse"), 0);
+    glUniform1i (glGetUniformLocation (p, "tNormal"), 1);
+    glUniform1i (glGetUniformLocation (p, "tSpecular"), 2);
+    glUniform1i (glGetUniformLocation (p, "tEmissive"), 3);
 #endif
 
     // Screen quad rendering
     AddShaderProgram<GLShaderProgram> ("flatquad_shader");
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("flatquad_shader").AddShader ("flatquad_vertex_shader");
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("flatquad_shader").AddShader ("flatquad_fragment_shader");
+
+    p = GetShaderProgramManager ().GetByName<GLShaderProgram> ("flatquad_shader").GetProgramId ();
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("flatquad_shader").Use ();    
 #if (CILANTRO_GL_VERSION < 330)	
-    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgramManager ().GetByName<GLShaderProgram> ("flatquad_shader")).GetProgramId(), 0, "vPosition");
-    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgramManager ().GetByName<GLShaderProgram> ("flatquad_shader")).GetProgramId(), 1, "vTextureCoordinates");
+    glBindAttribLocation(p, 0, "vPosition");
+    glBindAttribLocation(p, 1, "vTextureCoordinates");
 #endif
 #if (CILANTRO_GL_VERSION < 420)
-    p = GetShaderProgramManager ().GetByName<GLShaderProgram> ("flatquad_shader").GetProgramId ();
-    GetShaderProgramManager ().GetByName<GLShaderProgram> ("flatquad_shader").Use ();
-    glUniform1i (glGetUniformLocation(p, "fScreenTexture"), 0);
+    glUniform1i (glGetUniformLocation (p, "fScreenTexture"), 0);
 #endif
 
     // Post-processing HDR
     AddShaderProgram<GLShaderProgram> ("post_hdr_shader");
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_hdr_shader").AddShader ("flatquad_vertex_shader");
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_hdr_shader").AddShader ("post_hdr_fragment_shader");
-#if (CILANTRO_GL_VERSION < 330)	
-    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_hdr_shader")).GetProgramId(), 0, "vPosition");
-    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_hdr_shader")).GetProgramId(), 1, "vTextureCoordinates");
-#endif
-#if (CILANTRO_GL_VERSION < 420)
+
     p = GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_hdr_shader").GetProgramId ();
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_hdr_shader").Use ();
-    glUniform1i (glGetUniformLocation(p, "fScreenTexture"), 0);
+#if (CILANTRO_GL_VERSION < 330)	
+    glBindAttribLocation(p, 0, "vPosition");
+    glBindAttribLocation(p, 1, "vTextureCoordinates");
+#endif
+#if (CILANTRO_GL_VERSION < 420)
+    glUniform1i (glGetUniformLocation (p, "fScreenTexture"), 0);
 #endif
 
     // Post-processing gamma
     AddShaderProgram<GLShaderProgram> ("post_gamma_shader");
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_gamma_shader").AddShader ("flatquad_vertex_shader");
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_gamma_shader").AddShader ("post_gamma_fragment_shader");
+    
+    p = GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_gamma_shader").GetProgramId ();
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_gamma_shader").Use ();    
 #if (CILANTRO_GL_VERSION < 330)	
-    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_gamma_shader")).GetProgramId(), 0, "vPosition");
-    glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_shader")).GetProgramId(), 1, "vTextureCoordinates");
+    glBindAttribLocation(p, 0, "vPosition");
+    glBindAttribLocation(p, 1, "vTextureCoordinates");
 #endif
 #if (CILANTRO_GL_VERSION < 420)
-    p = GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_gamma_shader").GetProgramId ();
-    GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_gamma_shader").Use ();
-    glUniform1i (glGetUniformLocation(p, "fScreenTexture"), 0);
+    glUniform1i (glGetUniformLocation (p, "fScreenTexture"), 0);
 #endif
 
 }

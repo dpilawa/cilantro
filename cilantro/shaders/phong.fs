@@ -1,4 +1,4 @@
-#version 140
+#version %%CILANTRO_GL_VERSION%%
 
 #define MAX_POINT_LIGHTS 64
 #define MAX_DIRECTIONAL_LIGHTS 64
@@ -18,10 +18,17 @@ in vec2 fUV;
 vec3 viewDirection;
 
 /* material properties */
+#if (__VERSION__ >= 420)
+layout (binding = 0) uniform sampler2D tDiffuse;
+layout (binding = 1) uniform sampler2D tNormal;
+layout (binding = 2) uniform sampler2D tSpecular;
+layout (binding = 3) uniform sampler2D tEmissive;
+#else
 uniform sampler2D tDiffuse;
 uniform sampler2D tNormal;
 uniform sampler2D tSpecular;
 uniform sampler2D tEmissive;
+#endif
 
 uniform float fSpecularShininess;
 

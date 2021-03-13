@@ -1,4 +1,4 @@
-#version 140
+#version %%CILANTRO_GL_VERSION%%
 
 /* texture coords */
 in vec2 fTextureCoordinates;

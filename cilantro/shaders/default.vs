@@ -1,4 +1,4 @@
-#version 140
+#version %%CILANTRO_GL_VERSION%%
 
 /* transformation matrices */
 uniform mat4 mModel;
@@ -10,9 +10,15 @@ layout(std140) uniform UniformMatricesBlock
     mat4 mProjection;
 };
 
+#if (__VERSION__ >= 330)
+layout (location = 0) in vec3 vPosition;
+layout (location = 1) in vec3 vNormal;
+layout (location = 2) in vec2 vUV;
+#else
 in vec3 vPosition;
 in vec3 vNormal;
 in vec2 vUV;
+#endif
 
 out vec3 fPosition;
 out vec3 fNormal;

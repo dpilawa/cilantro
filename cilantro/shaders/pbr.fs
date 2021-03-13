@@ -1,4 +1,4 @@
-#version 140
+#version %%CILANTRO_GL_VERSION%%
 
 #define MAX_POINT_LIGHTS 64
 #define MAX_DIRECTIONAL_LIGHTS 64
@@ -20,11 +20,19 @@ in vec2 fUV;
 vec3 viewDirection;
 
 /* material properties */
+#if (__VERSION__ >= 420)
+layout (binding = 0) uniform sampler2D tAlbedo;
+layout (binding = 1) uniform sampler2D tNormal;
+layout (binding = 2) uniform sampler2D tMetallic;
+layout (binding = 3) uniform sampler2D tRoughness;
+layout (binding = 4) uniform sampler2D tAO;
+#else
 uniform sampler2D tAlbedo;
 uniform sampler2D tNormal;
 uniform sampler2D tMetallic;
 uniform sampler2D tRoughness;
 uniform sampler2D tAO;
+#endif
 
 vec3 fAlbedo;
 vec3 fNormalMap;
