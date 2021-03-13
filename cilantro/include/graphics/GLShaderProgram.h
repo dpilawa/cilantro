@@ -4,6 +4,9 @@
 #include "glad/glad.h"
 #include "graphics/ShaderProgram.h"
 #include "graphics/GLShader.h"
+#include <string>
+
+enum BindingPoint { BP_MATRICES = 1, BP_POINTLIGHTS, BP_DIRECTIONALLIGHTS, BP_SPOTLIGHTS };
 
 class GLShaderProgram : public ShaderProgram
 {
@@ -13,6 +16,9 @@ public:
 
     // return program id
     GLuint GetProgramId () const;
+
+    // bind uniform block
+    void BindUniformBlock (const std::string& blockName, BindingPoint bp);
 
     // use program
     void Use ();

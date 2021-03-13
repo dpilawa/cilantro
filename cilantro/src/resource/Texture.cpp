@@ -24,7 +24,6 @@ Texture::Texture (const std::string& path) : LoadableResource (path)
 Texture::~Texture ()
 {
     free (data);
-    LogMessage (MSG_LOCATION) << "Destroyed texture" << this->name;
 }
 
 Texture& Texture::GenerateSolid (const int width, const int height, float channel)
@@ -102,7 +101,7 @@ void Texture::Load (const std::string& path)
     }
     else 
     {
-        LogMessage (MSG_LOCATION) << "Loaded texture" << path << "[" << this->width << this->height << this->numChannels << "]";
+        LogMessage (MSG_LOCATION) << "Loaded texture" << path << this->width << this->height << this->numChannels;
     }
 }
 

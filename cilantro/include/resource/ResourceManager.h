@@ -62,6 +62,8 @@ T& ResourceManager<Base>::Load (const std::string& name, const std::string& path
     newResource = std::make_shared<T> (path, std::forward<Params>(params)...);
     this->Push (name, newResource);
 
+    LogMessage (MSG_LOCATION) << "Loaded" << typeid (T).name () << name;
+
     return *newResource;
 }
 
@@ -74,6 +76,8 @@ T& ResourceManager<Base>::Create (const std::string& name, Params&&... params)
 
     newResource = std::make_shared<T> (std::forward<Params>(params)...);
     this->Push (name, newResource);
+
+    LogMessage (MSG_LOCATION) << "Created" << typeid (T).name () << name;
 
     return *newResource;
 }

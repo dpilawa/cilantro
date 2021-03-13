@@ -46,8 +46,6 @@ MeshObject& MeshObject::CalculateVertexNormals ()
         normals.push_back (0.0f);
     }
 
-    LogMessage(MSG_LOCATION) << "Calculate vertex normals for object" << this->GetHandle ();
-
     if (!smoothNormals)
     {
         // loop through all faces

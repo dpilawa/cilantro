@@ -20,6 +20,20 @@ GLuint GLShaderProgram::GetProgramId () const
     return shaderProgramId;
 }
 
+void GLShaderProgram::BindUniformBlock (const std::string& blockName, BindingPoint bp)
+{
+    GLuint uniformBlockIndex = glGetUniformBlockIndex (shaderProgramId, blockName.c_str ());
+
+    if (uniformBlockIndex != GL_INVALID_INDEX)
+    {
+        glUniformBlockBinding (shaderProgramId, uniformBlockIndex, bp);
+    }	
+    else
+    {
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Shader" << this->GetName () << "has no uniform" << blockName;
+    }
+    
+}
 
 void GLShaderProgram::LinkShader (const Shader& shader)
 {
@@ -38,7 +52,7 @@ void GLShaderProgram::LinkShader (const Shader& shader)
         glGetProgramInfoLog (shaderProgramId, 512, nullptr, errorLog);
         glDeleteProgram (shaderProgramId);
         LogMessage () << errorLog;
-        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to link shader" << glShader->GetShaderId () << " to program" << shaderProgramId;
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to link shader" << glShader->GetShaderId () << "to program" << shaderProgramId;
     }
 }
 

@@ -62,9 +62,6 @@ void GLRenderer::Initialize ()
     // initialize framebuffer
     framebuffer->Initialize ();
 
-    // initialize shader library
-    InitializeShaderLibrary ();
-
     // initialize object buffers
     InitializeObjectBuffers ();
 
@@ -91,6 +88,9 @@ void GLRenderer::Initialize ()
 
     // set callback for modified transforms (currently this only requires to reload light buffers)
     game->GetGameScene ().RegisterCallback ("OnUpdateTransform", [&](unsigned int objectHandle, unsigned int) { UpdateLightBufferRecursive (objectHandle); });
+
+    // initialize shader library
+    InitializeShaderLibrary ();
 
     // check for any outstanding errors
     CheckGLError (MSG_LOCATION);
@@ -267,8 +267,6 @@ void GLRenderer::Update (MeshObject& meshObject)
         // it is a new object, perform full buffers initialization and load data
         objectBuffers.insert ({ objectHandle, ObjectBuffers () });
 
-        LogMessage (MSG_LOCATION) << "New MeshObject" << objectHandle;
-
         // generate and bind Vertex Array Object (VAO)
         glGenVertexArrays (1, &objectBuffers[objectHandle].VAO);
         glBindVertexArray (objectBuffers[objectHandle].VAO);
@@ -347,7 +345,6 @@ void GLRenderer::Update (PointLight& pointLight)
 
     if (find == pointLights.end ())
     {
-        LogMessage (MSG_LOCATION) << "New PointLight" << objectHandle;
         lightId = uniformPointLightBuffer.pointLightCount++;
         pointLights.insert ({ objectHandle, lightId });
     }
@@ -398,7 +395,6 @@ void GLRenderer::Update (DirectionalLight& directionalLight)
 
     if (find == directionalLights.end ())
     {
-        LogMessage (MSG_LOCATION) << "New DirectionalLight" << objectHandle;
         lightId = uniformDirectionalLightBuffer.directionalLightCount++;
         directionalLights.insert ({ objectHandle, lightId });
     }
@@ -443,7 +439,6 @@ void GLRenderer::Update (SpotLight& spotLight)
 
     if (find == spotLights.end ())
     {
-        LogMessage (MSG_LOCATION) << "New SpotLight" << objectHandle;
         lightId = uniformSpotLightBuffer.spotLightCount++;
         spotLights.insert ({ objectHandle, lightId });
     }
@@ -507,8 +502,6 @@ void GLRenderer::Update (Material& material, unsigned int textureUnit)
 
     if (find == materialTextureUnits.end ())
     {
-        LogMessage (MSG_LOCATION) << "New Material texture units map" << materialHandle;
-
         materialTextureUnits.insert ({ materialHandle, MaterialTextureUnits() });
         
         for (auto&& t : textures)
@@ -519,7 +512,6 @@ void GLRenderer::Update (Material& material, unsigned int textureUnit)
             format = textureChannelMap[tPtr->GetChannels ()];
 
             glGenTextures(1, &texture);
-            LogMessage (MSG_LOCATION) << "Generate and bind texture" << texture << "name" << tName << "unit" << t.first << "[" << tPtr->GetWidth () << tPtr->GetHeight () << tPtr->GetChannels () << "]";
             glBindTexture(GL_TEXTURE_2D, texture);
             glTexImage2D(GL_TEXTURE_2D, 0, format, tPtr->GetWidth (), tPtr->GetHeight (), 0, format, GL_UNSIGNED_BYTE, tPtr->Data ());
             glGenerateMipmap(GL_TEXTURE_2D);
@@ -535,8 +527,6 @@ void GLRenderer::Update (Material& material, unsigned int textureUnit)
     }
     else
     {
-        LogMessage (MSG_LOCATION) << "Update Material texture units map" << materialHandle;
-        
         auto& t = textures[textureUnit];
         Texture* tPtr = t.second;
         std::string tName = t.first;
@@ -544,14 +534,11 @@ void GLRenderer::Update (Material& material, unsigned int textureUnit)
         format = textureChannelMap[tPtr->GetChannels ()];
 
         glBindTexture(GL_TEXTURE_2D, materialTextureUnits[materialHandle].textureUnits[unit]);
-        LogMessage (MSG_LOCATION) << "Bind texture" <<  materialTextureUnits[materialHandle].textureUnits[unit] << "name" << tName << "unit" << unit << "[" << tPtr->GetWidth () << tPtr->GetHeight () << tPtr->GetChannels () << "]";
         glTexImage2D(GL_TEXTURE_2D, 0, format, tPtr->GetWidth (), tPtr->GetHeight (), 0, format, GL_UNSIGNED_BYTE, tPtr->Data ());
         glGenerateMipmap(GL_TEXTURE_2D);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glBindTexture (GL_TEXTURE_2D, 0);
-        
-
     }
 
 }
@@ -603,10 +590,16 @@ void GLRenderer::InitializeShaderLibrary ()
     game->GetResourceManager ().Load<GLShader> ("post_hdr_fragment_shader", "shaders/post_hdr.fs", ShaderType::FRAGMENT_SHADER);
     game->GetResourceManager ().Load<GLShader> ("post_gamma_fragment_shader", "shaders/post_gamma.fs", ShaderType::FRAGMENT_SHADER);
 
+
     // PBR model
     AddShaderProgram<GLShaderProgram> ("pbr_shader");
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_shader").AddShader ("default_vertex_shader");
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_shader").AddShader ("pbr_fragment_shader");
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_shader").BindUniformBlock ("UniformMatricesBlock", BindingPoint::BP_MATRICES);
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_shader").BindUniformBlock ("UniformPointLightsBlock", BindingPoint::BP_POINTLIGHTS);
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_shader").BindUniformBlock ("UniformDirectionalLightsBlock", BindingPoint::BP_DIRECTIONALLIGHTS);
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_shader").BindUniformBlock ("UniformSpotLightsBlock", BindingPoint::BP_SPOTLIGHTS);
+
 #if (CILANTRO_GL_VERSION < 330)
     glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_shader")).GetProgramId(), 0, "vPosition");
     glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_shader")).GetProgramId(), 1, "vNormal");
@@ -625,6 +618,10 @@ void GLRenderer::InitializeShaderLibrary ()
     AddShaderProgram<GLShaderProgram> ("phong_shader");
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_shader").AddShader ("default_vertex_shader");
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_shader").AddShader ("phong_fragment_shader");
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_shader").BindUniformBlock ("UniformMatricesBlock", BindingPoint::BP_MATRICES);
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_shader").BindUniformBlock ("UniformPointLightsBlock", BindingPoint::BP_POINTLIGHTS);
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_shader").BindUniformBlock ("UniformDirectionalLightsBlock", BindingPoint::BP_DIRECTIONALLIGHTS);
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_shader").BindUniformBlock ("UniformSpotLightsBlock", BindingPoint::BP_SPOTLIGHTS);
 #if (CILANTRO_GL_VERSION < 330)
     glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_shader")).GetProgramId(), 0, "vPosition");
     glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_shader")).GetProgramId(), 1, "vNormal");
@@ -642,6 +639,10 @@ void GLRenderer::InitializeShaderLibrary ()
     AddShaderProgram<GLShaderProgram> ("blinnphong_shader");
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_shader").AddShader ("default_vertex_shader");
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_shader").AddShader ("blinnphong_fragment_shader");
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_shader").BindUniformBlock ("UniformMatricesBlock", BindingPoint::BP_MATRICES);
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_shader").BindUniformBlock ("UniformPointLightsBlock", BindingPoint::BP_POINTLIGHTS);
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_shader").BindUniformBlock ("UniformDirectionalLightsBlock", BindingPoint::BP_DIRECTIONALLIGHTS);
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_shader").BindUniformBlock ("UniformSpotLightsBlock", BindingPoint::BP_SPOTLIGHTS);    
 #if (CILANTRO_GL_VERSION < 330)	
     glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_shader")).GetProgramId(), 0, "vPosition");
     glBindAttribLocation(dynamic_cast<GLShaderProgram&>(GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_shader")).GetProgramId(), 1, "vNormal");
@@ -708,7 +709,6 @@ void GLRenderer::InitializeObjectBuffers ()
         if (std::dynamic_pointer_cast<MeshObject> (gameObject) != nullptr)
         {
             gameObject->OnUpdate (*this);
-            LogMessage (MSG_LOCATION) << "Initialized object buffers for" << gameObject->GetName() << gameObject->GetHandle ();
         }      
     }
 }
@@ -723,37 +723,15 @@ void GLRenderer::InitializeMaterialTextures ()
 
 void GLRenderer::InitializeMatrixUniformBuffers ()
 {
-    GLuint shaderProgramId;
-    GLuint uniformMatricesBlockIndex;
-
     // create and pre-load uniform buffer for view and projection matrices
     glGenBuffers (1, &sceneBuffers.UBO[UBO_MATRICES]);
     glBindBuffer (GL_UNIFORM_BUFFER, sceneBuffers.UBO[UBO_MATRICES]);
     glBufferData (GL_UNIFORM_BUFFER, sizeof (UniformMatrixBuffer), &uniformMatrixBuffer, GL_DYNAMIC_DRAW);
     glBindBufferBase (GL_UNIFORM_BUFFER, BindingPoint::BP_MATRICES, sceneBuffers.UBO[UBO_MATRICES]);
-
-    // set uniform block bindings
-    for (auto shaderProgram : shaderPrograms)
-    {
-        shaderProgramId = shaderPrograms.GetByHandle<GLShaderProgram>(shaderProgram->GetHandle ()).GetProgramId ();
-        uniformMatricesBlockIndex = glGetUniformBlockIndex (shaderProgramId, "UniformMatricesBlock");
-        if (uniformMatricesBlockIndex == GL_INVALID_INDEX)
-        {
-            LogMessage (MSG_LOCATION) << "Program id" << shaderProgram->GetName () << "has no UniformMatricesBlock";
-        }
-        else {
-            glUniformBlockBinding (shaderProgramId, uniformMatricesBlockIndex, BindingPoint::BP_MATRICES);
-        }		
-    }
 }
 
 void GLRenderer::InitializeLightUniformBuffers ()
 {
-    GLuint shaderProgramId;
-    GLuint uniformPointLightsBlockIndex;
-    GLuint uniformDirectionalLightsBlockIndex;
-    GLuint uniformSpotLightsBlockIndex;
-
     // initialize structs
     uniformPointLightBuffer.pointLightCount = 0;
     uniformDirectionalLightBuffer.directionalLightCount = 0;
@@ -776,40 +754,6 @@ void GLRenderer::InitializeLightUniformBuffers ()
     glBindBuffer (GL_UNIFORM_BUFFER, sceneBuffers.UBO[UBO_SPOTLIGHTS]);
     glBufferData (GL_UNIFORM_BUFFER, sizeof (UniformSpotLightBuffer), &uniformSpotLightBuffer, GL_STATIC_DRAW);
     glBindBufferBase (GL_UNIFORM_BUFFER, BindingPoint::BP_SPOTLIGHTS, sceneBuffers.UBO[UBO_SPOTLIGHTS]);
-
-    // set uniform block bindings in shaders which have it
-    for (auto shaderProgram : shaderPrograms)
-    {
-        shaderProgramId = shaderPrograms.GetByHandle<GLShaderProgram>(shaderProgram->GetHandle ()).GetProgramId ();
-        
-        uniformPointLightsBlockIndex = glGetUniformBlockIndex (shaderProgramId, "UniformPointLightsBlock");
-        if (uniformPointLightsBlockIndex == GL_INVALID_INDEX)
-        {
-            LogMessage (MSG_LOCATION) << "Program id" << shaderProgram->GetName () << "has no UniformPointLightsBlock";
-        }
-        else {
-            glUniformBlockBinding(shaderProgramId, uniformPointLightsBlockIndex, BindingPoint::BP_POINTLIGHTS);
-        }
-
-        uniformDirectionalLightsBlockIndex = glGetUniformBlockIndex (shaderProgramId, "UniformDirectionalLightsBlock");
-        if (uniformDirectionalLightsBlockIndex == GL_INVALID_INDEX)
-        {
-            LogMessage (MSG_LOCATION) << "Program id" << shaderProgram->GetName () << "has no UniformDirectionalLightsBlock";
-        }
-        else {
-            glUniformBlockBinding(shaderProgramId, uniformDirectionalLightsBlockIndex, BindingPoint::BP_DIRECTIONALLIGHTS);
-        }
-
-        uniformSpotLightsBlockIndex = glGetUniformBlockIndex (shaderProgramId, "UniformSpotLightsBlock");
-        if (uniformSpotLightsBlockIndex == GL_INVALID_INDEX)
-        {
-            LogMessage (MSG_LOCATION) << "Program id" << shaderProgram->GetName () << "has no UniformSpotLightsBlock";
-        }
-        else {
-            glUniformBlockBinding(shaderProgramId, uniformSpotLightsBlockIndex, BindingPoint::BP_SPOTLIGHTS);
-        }
-
-    }
 
     // scan objects vector for lights and populate light buffers
     for (auto gameObject : game->GetGameScene ().GetGameObjectManager ())
