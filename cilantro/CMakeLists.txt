@@ -61,6 +61,7 @@ include/math/Vector2f.h
 include/math/Vector3f.h
 include/math/Vector4f.h
 include/resource/LoadableResource.h
+include/resource/Mesh.h
 include/resource/Resource.h
 include/resource/ResourceManager.h
 include/resource/Texture.h
@@ -116,6 +117,7 @@ src/math/Vector2f.cpp
 src/math/Vector3f.cpp
 src/math/Vector4f.cpp
 src/resource/LoadableResource.cpp
+src/resource/Mesh.cpp
 src/resource/Resource.cpp
 src/resource/ResourceManager.cpp
 src/resource/Texture.cpp

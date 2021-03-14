@@ -5,7 +5,6 @@
 #include "resource/ResourceManager.h"
 #include <string>
 
-
 class Resource
 {
     template <typename Base>
