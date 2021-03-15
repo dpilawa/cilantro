@@ -36,9 +36,9 @@ public:
     __EAPI MeshObject& SetSmoothNormals (bool smoothNormals);
 
     // get mesh counts
-    __EAPI unsigned int GetVertexCount ();
-    __EAPI unsigned int GetFaceCount ();
-    __EAPI unsigned int GetIndexCount ();
+    __EAPI unsigned int GetVertexCount () const;
+    __EAPI unsigned int GetFaceCount () const;
+    __EAPI unsigned int GetIndexCount () const;
 
     // set mesh material
     __EAPI MeshObject& SetMaterial (const std::string& materialName);

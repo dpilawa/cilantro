@@ -132,17 +132,17 @@ MeshObject& MeshObject::SetSmoothNormals (bool smoothNormals)
     return *this;
 }
 
-unsigned int MeshObject::GetVertexCount ()
+unsigned int MeshObject::GetVertexCount () const
 {
     return (unsigned int) (vertices.size () / 3);
 }
 
-unsigned int MeshObject::GetFaceCount ()
+unsigned int MeshObject::GetFaceCount () const
 {
     return (unsigned int) (indices.size () / 3);
 }
 
-unsigned int MeshObject::GetIndexCount ()
+unsigned int MeshObject::GetIndexCount () const
 {
     return (unsigned int) indices.size ();
 }

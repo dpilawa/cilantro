@@ -28,6 +28,7 @@ public:
     __EAPI InputController& GetInputController ();
 
 private:
+
     // game composites
     ResourceManager<Resource>& resourceManager;
     GameScene& gameScene;
