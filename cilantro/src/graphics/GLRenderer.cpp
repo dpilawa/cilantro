@@ -250,7 +250,7 @@ void GLRenderer::Draw (MeshObject& meshObject)
 
     // draw mesh
     glBindVertexArray (objectBuffers[meshObject.GetHandle ()].VAO);
-    glDrawElements (GL_TRIANGLES, meshObject.GetIndexCount (), GL_UNSIGNED_INT, 0);
+    glDrawElements (GL_TRIANGLES, meshObject.GetMesh ().GetIndexCount (), GL_UNSIGNED_INT, 0);
     glBindVertexArray (0);
 
 }
@@ -274,28 +274,28 @@ void GLRenderer::Update (MeshObject& meshObject)
         // generate vertex buffer and copy vertices to GPU
         glGenBuffers (1, &objectBuffers[objectHandle].VBO[VBOType::VBO_VERTICES]);
         glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_VERTICES]);
-        glBufferData (GL_ARRAY_BUFFER, meshObject.GetVertexCount () * sizeof (float) * 3, meshObject.GetVerticesData (), GL_STATIC_DRAW);
+        glBufferData (GL_ARRAY_BUFFER, meshObject.GetMesh ().GetVertexCount () * sizeof (float) * 3, meshObject.GetMesh ().GetVerticesData (), GL_STATIC_DRAW);
         // location = 0 (vertex position)
         glVertexAttribPointer (VBOType::VBO_VERTICES, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (GLvoid*)0);
 
         // generate normals buffer and copy normals to GPU
         glGenBuffers (1, &objectBuffers[objectHandle].VBO[VBOType::VBO_NORMALS]);
         glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_NORMALS]);
-        glBufferData (GL_ARRAY_BUFFER, meshObject.GetVertexCount () * sizeof (float) * 3, meshObject.GetNormalsData (), GL_STATIC_DRAW);
+        glBufferData (GL_ARRAY_BUFFER, meshObject.GetMesh ().GetVertexCount () * sizeof (float) * 3, meshObject.GetMesh ().GetNormalsData (), GL_STATIC_DRAW);
         // location = 1 (vertex normal)
         glVertexAttribPointer (VBOType::VBO_NORMALS, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (GLvoid*)0);
 
         // generate uv buffer and copy uvs to GPU
         glGenBuffers (1, &objectBuffers[objectHandle].VBO[VBOType::VBO_UVS]);
         glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_UVS]);
-        glBufferData (GL_ARRAY_BUFFER, meshObject.GetVertexCount () * sizeof (float) * 2, meshObject.GetUVData (), GL_STATIC_DRAW);
+        glBufferData (GL_ARRAY_BUFFER, meshObject.GetMesh ().GetVertexCount () * sizeof (float) * 2, meshObject.GetMesh ().GetUVData (), GL_STATIC_DRAW);
         // location = 2 (vertex uv)
         glVertexAttribPointer (VBOType::VBO_UVS, 2, GL_FLOAT, GL_FALSE, 2 * sizeof (float), (GLvoid*)0);
 
         // generate index buffer and copy face indices to GPU
         glGenBuffers (1, &objectBuffers[objectHandle].EBO);
         glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, objectBuffers[objectHandle].EBO);
-        glBufferData (GL_ELEMENT_ARRAY_BUFFER, meshObject.GetIndexCount () * sizeof (unsigned int), meshObject.GetFacesData (), GL_STATIC_DRAW);
+        glBufferData (GL_ELEMENT_ARRAY_BUFFER, meshObject.GetMesh ().GetIndexCount () * sizeof (unsigned int), meshObject.GetMesh ().GetFacesData (), GL_STATIC_DRAW);
 
         // enable VBO arrays
         glEnableVertexAttribArray (VBOType::VBO_VERTICES);
@@ -314,19 +314,19 @@ void GLRenderer::Update (MeshObject& meshObject)
 
         // load vertex buffer
         glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_VERTICES]);
-        glBufferData (GL_ARRAY_BUFFER, meshObject.GetVertexCount () * sizeof (float) * 3, meshObject.GetVerticesData (), GL_STATIC_DRAW);
+        glBufferData (GL_ARRAY_BUFFER, meshObject.GetMesh ().GetVertexCount () * sizeof (float) * 3, meshObject.GetMesh ().GetVerticesData (), GL_STATIC_DRAW);
 
         // load normals buffer
         glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_NORMALS]);
-        glBufferData (GL_ARRAY_BUFFER, meshObject.GetVertexCount () * sizeof (float) * 3, meshObject.GetNormalsData (), GL_STATIC_DRAW);
+        glBufferData (GL_ARRAY_BUFFER, meshObject.GetMesh ().GetVertexCount () * sizeof (float) * 3, meshObject.GetMesh ().GetNormalsData (), GL_STATIC_DRAW);
 
         // load uv buffer
         glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_UVS]);
-        glBufferData (GL_ARRAY_BUFFER, meshObject.GetVertexCount () * sizeof (float) * 2, meshObject.GetUVData (), GL_STATIC_DRAW);
+        glBufferData (GL_ARRAY_BUFFER, meshObject.GetMesh ().GetVertexCount () * sizeof (float) * 2, meshObject.GetMesh ().GetUVData (), GL_STATIC_DRAW);
 
         // load index buffer
         glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, objectBuffers[objectHandle].EBO);
-        glBufferData (GL_ELEMENT_ARRAY_BUFFER, meshObject.GetIndexCount () * sizeof (unsigned int), meshObject.GetFacesData (), GL_STATIC_DRAW);
+        glBufferData (GL_ELEMENT_ARRAY_BUFFER, meshObject.GetMesh ().GetIndexCount () * sizeof (unsigned int), meshObject.GetMesh ().GetFacesData (), GL_STATIC_DRAW);
 
         // unbind VAO
         glBindVertexArray (0);

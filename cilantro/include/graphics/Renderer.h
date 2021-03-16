@@ -2,20 +2,17 @@
 #define _RENDERER_H_
 
 #include "cilantroengine.h"
-#include "system/CallbackProvider.h"
 #include "resource/ResourceManager.h"
 #include "game/GameComposite.h"
-#include "scene/GameScene.h"
-#include "scene/MeshObject.h"
-#include "scene/PointLight.h"
-#include "scene/DirectionalLight.h"
-#include "scene/SpotLight.h"
-#include "scene/Material.h"
-#include "graphics/Shader.h"
 #include "graphics/ShaderProgram.h"
-#include "graphics/RenderTarget.h"
 #include "graphics/Postprocess.h"
 #include <string>
+
+class MeshObject;
+class PointLight;
+class DirectionalLight;
+class SpotLight;
+class Material;
 
 class Renderer : public GameComposite
 {

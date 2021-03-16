@@ -2,8 +2,7 @@
 #define _GAMECOMPOSITE_H_
 
 #include "cilantroengine.h"
-
-class Game;
+#include "game/Game.h"
 
 class GameComposite
 {

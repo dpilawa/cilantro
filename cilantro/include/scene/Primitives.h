@@ -2,18 +2,22 @@
 #define _PRIMITIVES_H_
 
 #include "cilantroengine.h"
-#include "scene/MeshObject.h"
+#include <vector>
+
+class Mesh;
+class Vector2f;
+class Vector3f;
 
 class Primitives
 {
 public:
-    __EAPI static void GeneratePlane (MeshObject& m);
-    __EAPI static void GenerateCube (MeshObject& m);
-    __EAPI static void GenerateSphere (MeshObject& m, unsigned int subdivisions);
-    __EAPI static void GenerateCone (MeshObject& m, unsigned int subdivisions);
-    __EAPI static void GenerateCylinder (MeshObject& m, unsigned int subdivisions);
+    __EAPI static void GeneratePlane (Mesh& m);
+    __EAPI static void GenerateCube (Mesh& m);
+    __EAPI static void GenerateSphere (Mesh& m, unsigned int subdivisions);
+    __EAPI static void GenerateCone (Mesh& m, unsigned int subdivisions);
+    __EAPI static void GenerateCylinder (Mesh& m, unsigned int subdivisions);
 private:
-    static void GenerateMeshFromArrays (MeshObject& m, const std::vector<Vector3f>& vertices, const std::vector<Vector2f>& uv, const std::vector<std::size_t> varray);
+    static void GenerateMeshFromArrays (Mesh& m, const std::vector<Vector3f>& vertices, const std::vector<Vector2f>& uv, const std::vector<std::size_t> varray);
 };
 
 #endif

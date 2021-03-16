@@ -42,28 +42,28 @@ int main (int argc, char* argv[])
 
     GameObject& plane = gameScene.AddGameObject<GameObject> ("plane");
 
-    MeshObject& fuselage = gameScene.AddGameObject<MeshObject> ("fuselage");
-    Primitives::GenerateCube (fuselage);
+    Mesh& fuselageMesh = resourceManager.Create<Mesh> ("fuselageMesh");
+    MeshObject& fuselage = gameScene.AddGameObject<MeshObject> ("fuselage", "fuselageMesh", "material");
+    Primitives::GenerateCube (fuselageMesh);
     fuselage.GetModelTransform ().Scale (1.0f, 1.0f, 10.0f);
-    fuselage.SetMaterial ("material");
     fuselage.SetParentObject ("plane");
 
-    MeshObject& wings = gameScene.AddGameObject<MeshObject> ("wings");
-    Primitives::GenerateCube (wings);
+    Mesh& wingsMesh = resourceManager.Create<Mesh> ("wingsMesh");
+    MeshObject& wings = gameScene.AddGameObject<MeshObject> ("wings", "wingsMesh", "material");
+    Primitives::GenerateCube (wingsMesh);
     wings.GetModelTransform ().Scale (12.0f, 0.2f, 1.0f).Translate (0.0f, 0.0f, 2.0f);
-    wings.SetMaterial ("material");
     wings.SetParentObject ("plane");
 
-    MeshObject& rudder = gameScene.AddGameObject<MeshObject> ("rudder");
-    Primitives::GenerateCube (rudder);
+    Mesh& rudderMesh = resourceManager.Create<Mesh> ("rudderMesh");
+    MeshObject& rudder = gameScene.AddGameObject<MeshObject> ("rudder", "rudderMesh", "material");
+    Primitives::GenerateCube (rudderMesh);
     rudder.GetModelTransform ().Scale (0.2f, 2.0f, 1.0f).Translate (0.0f, 1.5f, -5.0f).Rotate (-10.0f, 0.0f, 0.0f);
-    rudder.SetMaterial ("material");
     rudder.SetParentObject ("plane");
 
-    MeshObject& tail = gameScene.AddGameObject<MeshObject> ("tail");
-    Primitives::GenerateCube (tail);
+    Mesh& tailMesh = resourceManager.Create<Mesh> ("tailMesh");
+    MeshObject& tail = gameScene.AddGameObject<MeshObject> ("tail", "tailMesh", "material");
+    Primitives::GenerateCube (tailMesh);
     tail.GetModelTransform ().Scale (4.0f, 0.2f, 1.0f).Translate (0.0f, 0.2f, -5.0f);
-    tail.SetMaterial ("material");
     tail.SetParentObject ("plane");
 
     DirectionalLight& light = gameScene.AddGameObject<DirectionalLight> ("light");

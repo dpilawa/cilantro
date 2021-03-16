@@ -44,26 +44,24 @@ int main (int argc, char* argv [])
     cam.GetModelTransform ().Translate (0.0f, 0.0f, 160.0f);
     gameScene.SetActiveCamera ("camera");
 
-    MeshObject& sun = gameScene.AddGameObject<MeshObject> ("sun");
-    Primitives::GenerateSphere (sun, 8);
+    Mesh& sunMesh = resourceManager.Create<Mesh> ("sunMesh");
+    MeshObject& sun = gameScene.AddGameObject<MeshObject> ("sun", "sunMesh", "mSun");
+    Primitives::GenerateSphere (sunMesh, 8);
     sun.GetModelTransform ().Scale (10.0f);
-    sun.SetMaterial ("mSun");
 
     Orbiter& earthOrbit = gameScene.AddGameObject<Orbiter> ("earthOrbit", gameScene.GetGameObjectManager ().GetByName<GameObject> ("sun"), 1.0f, 23.5f, 365.256f, 50.0f, 0.0f);
-    MeshObject& earth = gameScene.AddGameObject<MeshObject> ("earth");
-    Primitives::GenerateSphere (earth, 8);
-    earth.SetMaterial ("mEarth");
+    Mesh& earthMesh = resourceManager.Create<Mesh> ("earthMesh").SetSmoothNormals (true);
+    MeshObject& earth = gameScene.AddGameObject<MeshObject> ("earth", "earthMesh", "mEarth");
+    Primitives::GenerateSphere (earthMesh, 8);
     earth.SetParentObject ("earthOrbit");
     earth.GetModelTransform ().Scale (3.0f);
-    earth.SetSmoothNormals (true);
 
     Orbiter& moonOrbit = gameScene.AddGameObject<Orbiter> ("moonOrbit", gameScene.GetGameObjectManager ().GetByName<GameObject> ("earth"), 27.321f, -6.68f, 27.321f, 20.0f, -5.14f);
-    MeshObject& moon = gameScene.AddGameObject<MeshObject> ("moon");
-    Primitives::GenerateSphere (moon, 8);
+    Mesh& moonMesh = resourceManager.Create<Mesh> ("moonMesh").SetSmoothNormals (true);
+    MeshObject& moon = gameScene.AddGameObject<MeshObject> ("moon", "moonMesh", "mMoon");
+    Primitives::GenerateSphere (moonMesh, 8);
     moon.GetModelTransform ().Scale (0.273f * 5.0f);
-    moon.SetMaterial ("mMoon");
     moon.SetParentObject ("moonOrbit");
-    moon.SetSmoothNormals (true);
 
     PointLight& sunLight = gameScene.AddGameObject<PointLight> ("sunLight");
     sunLight.SetParentObject ("sun");

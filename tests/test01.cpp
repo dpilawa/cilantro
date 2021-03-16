@@ -11,6 +11,7 @@
 #include "scene/SpotLight.h"
 #include "scene/LinearPath.h"
 #include "scene/SplinePath.h"
+#include "resource/Mesh.h"
 #include "resource/ResourceManager.h"
 #include "resource/Texture.h"
 #include "graphics/GLRenderer.h"
@@ -59,30 +60,30 @@ int main (int argc, char* argv [])
     cam.GetModelTransform ().Translate (5.0f, 2.5f, 5.0f).Rotate (-20.0f, 45.0f, 0.0f);
     gameScene.SetActiveCamera ("camera");
 
-    MeshObject& cube = gameScene.AddGameObject<MeshObject> ("cube");
-    Primitives::GenerateCube (cube);
-    cube.SetMaterial ("redMaterial");
+    Mesh& cubeMesh = resourceManager.Create<Mesh> ("cubeMesh");
+    Primitives::GenerateCube (cubeMesh);
+    MeshObject& cube = gameScene.AddGameObject<MeshObject> ("cube", "cubeMesh", "redMaterial");
     cube.GetModelTransform ().Scale (0.5f).Translate (0.0f, 1.1f, 0.0f);
 
-    MeshObject& cone = gameScene.AddGameObject<MeshObject> ("cone");
-    Primitives::GenerateCone (cone, 16);
-    cone.SetMaterial ("goldMaterial").SetSmoothNormals (false);
+    Mesh& coneMesh = resourceManager.Create<Mesh> ("coneMesh").SetSmoothNormals (false);
+    Primitives::GenerateCone (coneMesh, 16);
+    MeshObject& cone = gameScene.AddGameObject<MeshObject> ("cone", "coneMesh", "goldMaterial");
     cone.GetModelTransform ().Translate (-1.5f, 0.5f, 1.0f).Scale (0.5f);
 
-    MeshObject& cylinder = gameScene.AddGameObject<MeshObject> ("cylinder");
-    Primitives::GenerateCylinder (cylinder, 16);
-    cylinder.SetMaterial ("blueMaterial").SetSmoothNormals (false);
+    Mesh& cylinderMesh = resourceManager.Create<Mesh> ("cylinderMesh").SetSmoothNormals (false);
+    Primitives::GenerateCylinder (cylinderMesh, 16);
+    MeshObject& cylinder = gameScene.AddGameObject<MeshObject> ("cylinder", "cylinderMesh", "blueMaterial");
     cylinder.GetModelTransform ().Rotate (90.0f, 12.5f, 0.0f).Translate (1.7f, 0.5f, 0.7f).Scale (0.5f);
 
-    MeshObject& lamp = gameScene.AddGameObject<MeshObject> ("lamp");
-    Primitives::GenerateSphere (lamp, 3);
+    Mesh& lampMesh = resourceManager.Create<Mesh> ("lampMesh");
+    Primitives::GenerateSphere (lampMesh, 3);
+    MeshObject& lamp = gameScene.AddGameObject<MeshObject> ("lamp", "lampMesh", "lampMaterial");
     lamp.GetModelTransform ().Scale (0.1f, 0.1f, 0.1f).Translate (1.0f, 0.75f, 1.0f);
-    lamp.SetMaterial ("lampMaterial");
 
-    MeshObject& floor = gameScene.AddGameObject<MeshObject> ("floor");
-    Primitives::GenerateCube (floor);
+    Mesh& floorMesh = resourceManager.Create<Mesh> ("floorMesh");
+    Primitives::GenerateCube (floorMesh);
+    MeshObject& floor = gameScene.AddGameObject<MeshObject> ("floor", "floorMesh", "greenMaterial");
     floor.GetModelTransform ().Scale (2.5f, 0.05f, 2.5f).Translate (0.0f, -0.05f, 0.0f);
-    floor.SetMaterial ("greenMaterial");
 
     PointLight& light1 = gameScene.AddGameObject<PointLight> ("light1");
     light1.SetParentObject ("lamp");
