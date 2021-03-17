@@ -86,6 +86,7 @@ include/scene/SplinePath.h
 include/scene/SpotLight.h
 include/scene/Transform.h
 include/system/CallbackProvider.h
+include/system/EngineContext.h
 include/system/LogMessage.h
 include/system/Timer.h
 src/game/Game.cpp
@@ -141,6 +142,7 @@ src/scene/Primitives.cpp
 src/scene/SplinePath.cpp
 src/scene/SpotLight.cpp
 src/scene/Transform.cpp
+src/system/EngineContext.cpp
 src/system/LogMessage.cpp
 src/system/Timer.cpp
 )

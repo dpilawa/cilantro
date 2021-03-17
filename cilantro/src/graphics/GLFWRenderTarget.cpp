@@ -43,7 +43,7 @@ void GLFWRenderTarget::Initialize ()
     glfwWindowHint(GLFW_VISIBLE, 1);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, 1);
+    glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GL_TRUE);
 
     // create window
     window = glfwCreateWindow (width, height, windowCaption.c_str (), monitor, nullptr);
@@ -68,6 +68,7 @@ void GLFWRenderTarget::Initialize ()
 
     // set framebuffer size (relevant for high DPI displays)
     glfwGetFramebufferSize (window, (int*)&this->width, (int*)&this->height);
+    FramebufferResizeCallback (this->width, this->height);
 
     // set vsync on
     glfwSwapInterval (isVSync);
