@@ -1,5 +1,5 @@
 #include "graphics/ShaderProgram.h"
-#include "graphics/Renderer.h"
+#include "system/EngineContext.h"
 
 ShaderProgram::ShaderProgram () : Resource ()
 {
@@ -13,7 +13,7 @@ ShaderProgram::~ShaderProgram ()
 
 ShaderProgram& ShaderProgram::AddShader (const std::string& shaderName)
 {
-    LinkShader (renderer->GetGameResourceManager ().GetByName<Shader> (shaderName));
+    LinkShader (EngineContext::GetResourceManager ().GetByName<Shader> (shaderName));
 
     return *this;
 }

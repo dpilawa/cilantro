@@ -1,7 +1,7 @@
 #include "cilantroengine.h"
 #include "graphics/GLFWRenderTarget.h"
 #include "system/LogMessage.h"
-#include "system/Timer.h"
+#include "system/EngineContext.h"
 #include "math/Vector3f.h"
 
 GLFWRenderTarget::GLFWRenderTarget (std::string windowCaption, unsigned int width, unsigned int height, bool isFullscreen, bool isResizable, bool isVSync) : RenderTarget (width, height)
@@ -57,11 +57,9 @@ void GLFWRenderTarget::Initialize ()
     glfwMakeContextCurrent (window);
 
     // set resize callback
-    glfwSetWindowUserPointer (window, this->game);
-
     auto framebufferResizeCallback = [](GLFWwindow* window, int width, int height)
     {
-        static_cast<GLFWRenderTarget&>(static_cast<Game*>(glfwGetWindowUserPointer (window))->GetRenderTarget ()).FramebufferResizeCallback (width, height);
+        static_cast<GLFWRenderTarget&>(EngineContext::GetRenderTarget ()).FramebufferResizeCallback (width, height);
     };
 
     glfwSetFramebufferSizeCallback (window, framebufferResizeCallback);
@@ -111,7 +109,7 @@ void GLFWRenderTarget::Deinitialize ()
 
 void GLFWRenderTarget::OnFrame ()
 {
-    GLRenderer& renderer = dynamic_cast<GLRenderer&>(game->GetRenderer ());
+    GLRenderer& renderer = dynamic_cast<GLRenderer&>(EngineContext::GetRenderer ());
 
     // draw quad on screen
     glBindFramebuffer (GL_FRAMEBUFFER, 0);
@@ -134,7 +132,7 @@ void GLFWRenderTarget::OnFrame ()
     // check window closing
     if (glfwWindowShouldClose (window))
     {
-        game->Stop ();
+        EngineContext::GetGame ().Stop ();
     }
 }
 
@@ -146,12 +144,12 @@ GLFWwindow* GLFWRenderTarget::GetWindow ()
 void GLFWRenderTarget::FramebufferResizeCallback (int width, int height)
 {
     // update renderer framebuffer size
-    game->GetRenderer().GetFramebuffer ()->SetFramebufferResolution (width, height);
+    EngineContext::GetRenderer().GetFramebuffer ()->SetFramebufferResolution (width, height);
 
     this->width = width;
     this->height = height;
 
-    for (auto& postprocess : game->GetRenderer ().GetPostprocessManager())
+    for (auto& postprocess : EngineContext::GetRenderer ().GetPostprocessManager())
     {
         dynamic_cast<GLFramebuffer*> (postprocess->GetFramebuffer ())->SetFramebufferResolution (width, height);
     }

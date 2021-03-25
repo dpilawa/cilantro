@@ -3,7 +3,7 @@
 
 #include "cilantroengine.h"
 #include "resource/ResourceManager.h"
-#include "game/GameComposite.h"
+#include "graphics/Framebuffer.h"
 #include "graphics/ShaderProgram.h"
 #include "graphics/Postprocess.h"
 #include <string>
@@ -14,7 +14,7 @@ class DirectionalLight;
 class SpotLight;
 class Material;
 
-class Renderer : public GameComposite
+class Renderer
 {
 public:
     __EAPI Renderer (unsigned int width, unsigned int height);
@@ -28,9 +28,6 @@ public:
 
     // renderbuffer accessor
     __EAPI virtual Framebuffer* GetFramebuffer () const = 0;
-
-    // access to game resource manager
-    __EAPI virtual ResourceManager<Resource>& GetGameResourceManager ();
 
     // post-processing
     __EAPI virtual ResourceManager<Postprocess>& GetPostprocessManager ();
@@ -54,6 +51,8 @@ public:
 
 protected:
 
+    Framebuffer* framebuffer;
+
     unsigned int postprocessStage;
 
     ResourceManager<ShaderProgram> shaderPrograms;
@@ -66,8 +65,7 @@ T& Renderer::AddPostprocess (const std::string& name, Params&&... params)
 {
     T& postprocess = postprocesses.Create<T> (name, params...);
 
-    // set renderer and initialize
-    postprocess.AttachToRenderer (this);
+    // initialize
     postprocess.Initialize ();
 
     // return postprocess
@@ -78,9 +76,6 @@ template <typename T, typename ...Params>
 T& Renderer::AddShaderProgram (const std::string& name, Params&&... params)
 {
     T& shaderProgram = shaderPrograms.Create<T> (name, params...);
-
-    // set renderer and initialize
-    shaderProgram.AttachToRenderer (this);
 
     // return program
     return shaderProgram;

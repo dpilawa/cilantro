@@ -12,6 +12,7 @@
 #include "scene/DirectionalLight.h"
 #include "scene/SpotLight.h"
 #include "scene/Camera.h"
+#include "system/EngineContext.h"
 #include "system/CallbackProvider.h"
 #include "system/LogMessage.h"
 #include "math/Mathf.h"
@@ -36,7 +37,6 @@ GLRenderer::GLRenderer (unsigned int width, unsigned int height) : Renderer (wid
 
 GLRenderer::~GLRenderer ()
 {
-    delete framebuffer;
 }
 
 void GLRenderer::Initialize ()
@@ -75,19 +75,19 @@ void GLRenderer::Initialize ()
     InitializeLightUniformBuffers ();
 
     // set callback for new MeshObjects
-    game->GetGameScene ().RegisterCallback ("OnUpdateMeshObject", [&](unsigned int objectHandle, unsigned int) { game->GetGameScene ().GetGameObjectManager ().GetByHandle<GameObject> (objectHandle).OnUpdate (*this); });
+    EngineContext::GetGameScene ().RegisterCallback ("OnUpdateMeshObject", [&](unsigned int objectHandle, unsigned int) { EngineContext::GetGameScene ().GetGameObjectManager ().GetByHandle<GameObject> (objectHandle).OnUpdate (*this); });
 
     // set callback for new or modified lights
-    game->GetGameScene ().RegisterCallback ("OnUpdateLight", [&](unsigned int objectHandle, unsigned int) { game->GetGameScene ().GetGameObjectManager ().GetByHandle<GameObject> (objectHandle).OnUpdate (*this); });
+    EngineContext::GetGameScene ().RegisterCallback ("OnUpdateLight", [&](unsigned int objectHandle, unsigned int) { EngineContext::GetGameScene ().GetGameObjectManager ().GetByHandle<GameObject> (objectHandle).OnUpdate (*this); });
 
     // set callback for new or modified materials
-    game->GetGameScene ().RegisterCallback ("OnUpdateMaterial", [&](unsigned int materialHandle, unsigned int textureUnit) { this->Update (game->GetGameScene ().GetMaterialManager ().GetByHandle<Material> (materialHandle), textureUnit); });
+    EngineContext::GetGameScene ().RegisterCallback ("OnUpdateMaterial", [&](unsigned int materialHandle, unsigned int textureUnit) { this->Update (EngineContext::GetGameScene ().GetMaterialManager ().GetByHandle<Material> (materialHandle), textureUnit); });
 
     // set callback for modified scene graph (currently this only requires to reload light buffers)
-    game->GetGameScene ().RegisterCallback ("OnUpdateSceneGraph", [&](unsigned int objectHandle, unsigned int) { UpdateLightBufferRecursive (objectHandle); });
+    EngineContext::GetGameScene ().RegisterCallback ("OnUpdateSceneGraph", [&](unsigned int objectHandle, unsigned int) { UpdateLightBufferRecursive (objectHandle); });
 
     // set callback for modified transforms (currently this only requires to reload light buffers)
-    game->GetGameScene ().RegisterCallback ("OnUpdateTransform", [&](unsigned int objectHandle, unsigned int) { UpdateLightBufferRecursive (objectHandle); });
+    EngineContext::GetGameScene ().RegisterCallback ("OnUpdateTransform", [&](unsigned int objectHandle, unsigned int) { UpdateLightBufferRecursive (objectHandle); });
 
     // initialize shader library
     InitializeShaderLibrary ();
@@ -111,7 +111,7 @@ void GLRenderer::Deinitialize ()
 void GLRenderer::RenderFrame ()
 {
     // bind framebuffer
-    framebuffer->BindFramebuffer ();
+    static_cast<GLFramebuffer*>(framebuffer)->BindFramebuffer ();
 
     // clear frame and depth buffers
     glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
@@ -127,14 +127,14 @@ void GLRenderer::RenderFrame ()
     glViewport (0, 0, this->GetFramebuffer ()->GetWidth (), this->GetFramebuffer ()->GetHeight ());
 
     // draw all objects in scene
-    for (auto gameObject : game->GetGameScene ().GetGameObjectManager ())
+    for (auto gameObject : EngineContext::GetGameScene ().GetGameObjectManager ())
     {
         gameObject->OnDraw (*this);
     }
 
 #if (CILANTRO_GL_VERSION > 140)
     // blit framebuffer
-    framebuffer->BlitFramebuffer ();
+    static_cast<GLMultisampleFramebuffer*>(framebuffer)->BlitFramebuffer ();
 #endif
 
     // base class functions
@@ -153,7 +153,7 @@ GLuint GLRenderer::GetRendererFramebuffer () const
 {
     if (postprocessStage == 0) 
     {
-        return framebuffer->GetFramebufferGLId ();
+        return static_cast<GLFramebuffer*>(framebuffer)->GetFramebufferGLId ();
     }
     else 
     {
@@ -165,7 +165,7 @@ GLuint GLRenderer::GetRendererFramebufferTexture () const
 {
     if (postprocessStage == 0) 
     {
-        return framebuffer->GetFramebufferTextureGLId ();
+        return static_cast<GLFramebuffer*>(framebuffer)->GetFramebufferTextureGLId ();
     }
     else 
     {
@@ -231,7 +231,7 @@ void GLRenderer::Draw (MeshObject& meshObject)
     eyePositionId = glGetUniformLocation (shaderProgramId, "eyePosition");
     if (eyePositionId != GL_INVALID_INDEX)
     {
-        glUniform3fv (eyePositionId, 1, &game->GetGameScene ().GetActiveCamera ()->GetPosition ()[0]);
+        glUniform3fv (eyePositionId, 1, &EngineContext::GetGameScene ().GetActiveCamera ()->GetPosition ()[0]);
     }
 
     // get world matrix for drawn objects and set uniform value
@@ -558,14 +558,14 @@ void GLRenderer::InitializeShaderLibrary ()
     GLuint p;
 
     // initialize shader library
-    game->GetResourceManager ().Load<GLShader> ("default_vertex_shader", "shaders/default.vs", ShaderType::VERTEX_SHADER);
-    game->GetResourceManager ().Load<GLShader> ("flatquad_vertex_shader", "shaders/flatquad.vs", ShaderType::VERTEX_SHADER);
-    game->GetResourceManager ().Load<GLShader> ("pbr_fragment_shader", "shaders/pbr.fs", ShaderType::FRAGMENT_SHADER);    
-    game->GetResourceManager ().Load<GLShader> ("phong_fragment_shader", "shaders/phong.fs", ShaderType::FRAGMENT_SHADER);
-    game->GetResourceManager ().Load<GLShader> ("blinnphong_fragment_shader", "shaders/blinnphong.fs", ShaderType::FRAGMENT_SHADER);
-    game->GetResourceManager ().Load<GLShader> ("flatquad_fragment_shader", "shaders/flatquad.fs", ShaderType::FRAGMENT_SHADER);
-    game->GetResourceManager ().Load<GLShader> ("post_hdr_fragment_shader", "shaders/post_hdr.fs", ShaderType::FRAGMENT_SHADER);
-    game->GetResourceManager ().Load<GLShader> ("post_gamma_fragment_shader", "shaders/post_gamma.fs", ShaderType::FRAGMENT_SHADER);
+    EngineContext::GetResourceManager ().Load<GLShader> ("default_vertex_shader", "shaders/default.vs", ShaderType::VERTEX_SHADER);
+    EngineContext::GetResourceManager ().Load<GLShader> ("flatquad_vertex_shader", "shaders/flatquad.vs", ShaderType::VERTEX_SHADER);
+    EngineContext::GetResourceManager ().Load<GLShader> ("pbr_fragment_shader", "shaders/pbr.fs", ShaderType::FRAGMENT_SHADER);    
+    EngineContext::GetResourceManager ().Load<GLShader> ("phong_fragment_shader", "shaders/phong.fs", ShaderType::FRAGMENT_SHADER);
+    EngineContext::GetResourceManager ().Load<GLShader> ("blinnphong_fragment_shader", "shaders/blinnphong.fs", ShaderType::FRAGMENT_SHADER);
+    EngineContext::GetResourceManager ().Load<GLShader> ("flatquad_fragment_shader", "shaders/flatquad.fs", ShaderType::FRAGMENT_SHADER);
+    EngineContext::GetResourceManager ().Load<GLShader> ("post_hdr_fragment_shader", "shaders/post_hdr.fs", ShaderType::FRAGMENT_SHADER);
+    EngineContext::GetResourceManager ().Load<GLShader> ("post_gamma_fragment_shader", "shaders/post_gamma.fs", ShaderType::FRAGMENT_SHADER);
 
     // PBR model
     AddShaderProgram<GLShaderProgram> ("pbr_shader");
@@ -684,7 +684,7 @@ void GLRenderer::InitializeShaderLibrary ()
 void GLRenderer::InitializeObjectBuffers ()
 {
     // load object buffers for all existing objects
-    for (auto gameObject : game->GetGameScene ().GetGameObjectManager ())
+    for (auto gameObject : EngineContext::GetGameScene ().GetGameObjectManager ())
     {
         // load buffers for MeshObject only
         if (std::dynamic_pointer_cast<MeshObject> (gameObject) != nullptr)
@@ -696,7 +696,7 @@ void GLRenderer::InitializeObjectBuffers ()
 
 void GLRenderer::InitializeMaterialTextures ()
 {
-    for (auto&& material : game->GetGameScene ().GetMaterialManager ())
+    for (auto&& material : EngineContext::GetGameScene ().GetMaterialManager ())
     {
         this->Update (*material);
     }
@@ -737,7 +737,7 @@ void GLRenderer::InitializeLightUniformBuffers ()
     glBindBufferBase (GL_UNIFORM_BUFFER, BindingPoint::BP_SPOTLIGHTS, sceneBuffers.UBO[UBO_SPOTLIGHTS]);
 
     // scan objects vector for lights and populate light buffers
-    for (auto gameObject : game->GetGameScene ().GetGameObjectManager ())
+    for (auto gameObject : EngineContext::GetGameScene ().GetGameObjectManager ())
     {
         if (std::dynamic_pointer_cast<Light> (gameObject) != nullptr)
         {
@@ -749,7 +749,7 @@ void GLRenderer::InitializeLightUniformBuffers ()
 
 void GLRenderer::UpdateLightBufferRecursive (unsigned int objectHandle)
 {
-    GameObject* light = &game->GetGameScene ().GetGameObjectManager ().GetByHandle<GameObject> (objectHandle);
+    GameObject* light = &EngineContext::GetGameScene ().GetGameObjectManager ().GetByHandle<GameObject> (objectHandle);
 
     if (dynamic_cast<Light*>(light) != nullptr)
     {
@@ -768,7 +768,7 @@ void GLRenderer::LoadMatrixUniformBuffers ()
     Camera* activeCamera;
 
     // get active camera of rendered scene
-    activeCamera = game->GetGameScene ().GetActiveCamera ();
+    activeCamera = EngineContext::GetGameScene ().GetActiveCamera ();
 
     if (activeCamera == nullptr)
     {

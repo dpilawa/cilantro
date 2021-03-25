@@ -3,12 +3,11 @@
 
 #include "cilantroengine.h"
 #include "resource/Resource.h"
-#include "graphics/RendererComposite.h"
 #include "graphics/Framebuffer.h"
 #include "graphics/ShaderProgram.h"
 #include <string>
 
-class Postprocess : public RendererComposite, public Resource
+class Postprocess : public Resource
 {
 public:
     __EAPI Postprocess ();

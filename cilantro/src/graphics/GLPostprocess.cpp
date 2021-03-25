@@ -1,5 +1,6 @@
 #include "graphics/GLPostprocess.h"
 #include "system/LogMessage.h"
+#include "system/EngineContext.h"
 
 GLPostprocess::GLPostprocess () : Postprocess ()
 {
@@ -13,7 +14,7 @@ GLPostprocess::~GLPostprocess ()
 void GLPostprocess::OnFrame ()
 {
     // draw quad on screen
-    GLRenderer* glRenderer = dynamic_cast<GLRenderer*>(renderer);
+    GLRenderer& glRenderer = dynamic_cast<GLRenderer&>(EngineContext::GetRenderer ());
 
     glBindFramebuffer (GL_FRAMEBUFFER, dynamic_cast<GLFramebuffer*>(framebuffer)->GetFramebufferGLId ());
     glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
@@ -22,7 +23,7 @@ void GLPostprocess::OnFrame ()
     shaderProgram->Use ();
     glBindVertexArray (VAO);
     glActiveTexture (GL_TEXTURE0);
-    glBindTexture (GL_TEXTURE_2D, glRenderer->GetRendererFramebufferTexture ()); 
+    glBindTexture (GL_TEXTURE_2D, glRenderer.GetRendererFramebufferTexture ()); 
     glViewport (0, 0, framebuffer->GetWidth (), framebuffer->GetHeight ());
     glDrawArrays (GL_TRIANGLES, 0, 6);
 }
@@ -45,7 +46,7 @@ void GLPostprocess::SetPostprocessParameterFloat (const std::string& parameterNa
 void GLPostprocess::Initialize ()
 {
     // initialize framebuffers
-    framebuffer = new GLFramebuffer (renderer->GetFramebuffer ()->GetWidth (), renderer->GetFramebuffer ()->GetHeight ());
+    framebuffer = new GLFramebuffer (EngineContext::GetRenderer ().GetFramebuffer ()->GetWidth (), EngineContext::GetRenderer ().GetFramebuffer ()->GetHeight ());
     framebuffer->Initialize ();
 
     // set up VBO and VAO

@@ -13,6 +13,8 @@
 #include "graphics/GLFWRenderTarget.h"
 #include "input/GLFWInputController.h"
 #include "math/Mathf.h"
+#include "system/EngineContext.h"
+#include "system/Timer.h"
 
 #include "Orbiter.h"
 
@@ -23,11 +25,14 @@ int main (int argc, char* argv [])
     GLFWRenderTarget renderTarget ("Test 2", 960, 600, false, true, true);
     GLRenderer renderer (960, 600);
     GLFWInputController inputController;
+    Timer timer;
+    Game game;
 
-    Game* game = new Game (resourceManager, gameScene, renderer, renderTarget, inputController);
+    EngineContext::Set (game, resourceManager, timer, gameScene, renderer, renderTarget, inputController);
+    EngineContext::Initialize ();
 
     inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
-    inputController.BindInputEvent ("exit", [ & ]() { game->Stop (); });
+    inputController.BindInputEvent ("exit", [ & ]() { game.Stop (); });
 
     resourceManager.Load<Texture> ("tEarthDiffuse", "textures/2k_earth_daymap.jpg");
     resourceManager.Load<Texture> ("tEarthSpec", "textures/2k_earth_specular_map.png");
@@ -89,9 +94,9 @@ int main (int argc, char* argv [])
     animation.SetLooping (false);
     animation.Play ();
 
-    game->Run ();
+    game.Run ();
 
-    delete game;
+    EngineContext::Deinitialize ();
 
     return 0;
 }

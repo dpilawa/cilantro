@@ -2,9 +2,8 @@
 #define _RENDERTARGET_H_
 
 #include "cilantroengine.h"
-#include "game/GameComposite.h"
 
-class RenderTarget : public GameComposite
+class RenderTarget
 {
 public:
 

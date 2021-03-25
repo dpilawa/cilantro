@@ -1,9 +1,6 @@
 #include "cilantroengine.h"
 #include "graphics/Renderer.h"
-#include "graphics/RenderTarget.h"
-#include "scene/GameScene.h"
-#include "scene/MeshObject.h"
-#include "system/Timer.h"
+#include "system/EngineContext.h"
 
 Renderer::Renderer (unsigned int width, unsigned int height)
 {
@@ -11,6 +8,7 @@ Renderer::Renderer (unsigned int width, unsigned int height)
 
 Renderer::~Renderer ()
 {
+    delete framebuffer;
 }
 
 void Renderer::RenderFrame ()
@@ -24,12 +22,7 @@ void Renderer::RenderFrame ()
     }
 
     // update game clocks (Tock)
-    Timer::Tock ();
-}
-
-ResourceManager<Resource>& Renderer::GetGameResourceManager ()
-{
-    return game->GetResourceManager ();
+    EngineContext::GetTimer ().Tock ();
 }
 
 ResourceManager<Postprocess>& Renderer::GetPostprocessManager ()

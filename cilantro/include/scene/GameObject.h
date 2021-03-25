@@ -4,7 +4,6 @@
 #include "cilantroengine.h"
 #include "resource/Resource.h"
 #include "game/Game.h"
-#include "game/GameComposite.h"
 #include "scene/Transform.h"
 #include "system/CallbackProvider.h"
 #include <string>
@@ -12,7 +11,7 @@
 
 class Renderer;
 
-class GameObject : public Resource, public GameComposite, public CallbackProvider<std::string, handle_t, unsigned int>
+class GameObject : public Resource, public CallbackProvider<std::string, handle_t, unsigned int>
 {
 public:
     __EAPI GameObject ();

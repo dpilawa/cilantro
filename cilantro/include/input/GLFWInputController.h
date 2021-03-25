@@ -2,7 +2,6 @@
 #define _GLFWINPUTCONTROLLER_H_
 
 #include "cilantroengine.h"
-#include "game/Game.h"
 #include "input/InputController.h"
 #include "graphics/GLFWRenderTarget.h"
 #include "GLFW/glfw3.h"

@@ -6,6 +6,7 @@
 #include "scene/GameScene.h"
 #include "scene/GameObject.h"
 #include "scene/Transform.h"
+#include "system/EngineContext.h"
 #include "system/CallbackProvider.h"
 #include <string>
 
@@ -26,7 +27,7 @@ GameObject::~GameObject ()
 
 GameObject& GameObject::SetParentObject (const std::string& name)
 {
-    GameObject& parent = game->GetGameScene ().GetGameObjectManager ().GetByName<GameObject> (name);
+    GameObject& parent = EngineContext::GetGameScene ().GetGameObjectManager ().GetByName<GameObject> (name);
 
     parentObject = &parent;
     parent.childObjects.push_back (this);

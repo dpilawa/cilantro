@@ -3,12 +3,6 @@
 
 #include <chrono>
 
-std::chrono::duration<float> Timer::frameDeltaTime;
-std::chrono::duration<float> Timer::frameRenderTime;
-std::chrono::high_resolution_clock::time_point Timer::timeOfFrameStart;
-std::chrono::high_resolution_clock::time_point Timer::timeOfFrameEnd;
-std::chrono::high_resolution_clock::time_point Timer::splitTime;
-
 Timer::Timer ()
 {
     ResetSplitTime ();

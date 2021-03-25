@@ -4,6 +4,7 @@
 #include "math/Mathf.h"
 #include "math/Quaternion.h"
 #include "system/Timer.h"
+#include "system/EngineContext.h"
 #include <cmath>
 
 Orbiter::Orbiter (GameObject& parent, float axisPeriod, float axisAngle, float orbitingPeriod, float orbitingDistance, float orbitInclination) : parent (parent)
@@ -28,8 +29,8 @@ Orbiter::~Orbiter ()
 
 void Orbiter::OnFrame ()
 {
-    currentOrbitRotation = std::fmod (currentOrbitRotation + (1.0f / orbitingPeriod * 360.0f) * Timer::GetFrameDeltaTime () * daysPerSecond, 360.0f);
-    currentAxisRotation = std::fmod (currentAxisRotation + (1.0f / axisPeriod * 360.0f) * Timer::GetFrameDeltaTime () * daysPerSecond, 360.0f);
+    currentOrbitRotation = std::fmod (currentOrbitRotation + (1.0f / orbitingPeriod * 360.0f) * EngineContext::GetTimer ().GetFrameDeltaTime () * daysPerSecond, 360.0f);
+    currentAxisRotation = std::fmod (currentAxisRotation + (1.0f / axisPeriod * 360.0f) * EngineContext::GetTimer ().GetFrameDeltaTime () * daysPerSecond, 360.0f);
 
     Quaternion axis = Mathf::GenRotationQuaternion (Vector3f(0.0f, 1.0f, 0.0f), Mathf::Deg2Rad (currentAxisRotation));
     Quaternion q = Mathf::Product (tilt, axis);

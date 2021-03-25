@@ -2,7 +2,6 @@
 #define _INPUTCONTROLLER_H_
 
 #include "cilantroengine.h"
-#include "game/GameComposite.h"
 #include "system/CallbackProvider.h"
 #include "input/Input.h"
 #include <string>
@@ -12,7 +11,7 @@
 #include <vector>
 
 
-class InputController : public GameComposite, public CallbackProvider <std::string, float>
+class InputController : public CallbackProvider <std::string, float>
 {
 public:
     InputController ();
@@ -42,8 +41,6 @@ private:
     std::unordered_map<std::string, std::vector<Input<float>*>> axes;
 
 protected:
-
-    Game* gameLoop;
 
     bool isGameMode;
 

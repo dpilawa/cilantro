@@ -2,12 +2,11 @@
 #define _SHADERPROGRAM_H_
 
 #include "cilantroengine.h"
-#include "graphics/RendererComposite.h"
 #include "resource/Resource.h"
 #include "graphics/Shader.h"
 #include <string>
 
-class ShaderProgram : public RendererComposite, public Resource
+class ShaderProgram : public Resource
 {
 public:
     ShaderProgram ();

@@ -1,5 +1,6 @@
 #include "scene/AnimationObject.h"
 #include "scene/AnimationProperty.h"
+#include "system/EngineContext.h"
 #include "system/LogMessage.h"
 #include "system/Timer.h"
 
@@ -73,7 +74,7 @@ void AnimationObject::OnFrame ()
         UpdateProperties<Vector3f> ();
         UpdateProperties<Quaternion> ();
 
-        playedTime += Timer::GetFrameDeltaTime ();
+        playedTime += EngineContext::GetTimer ().GetFrameDeltaTime ();
     }
 }
 

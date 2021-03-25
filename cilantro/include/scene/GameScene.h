@@ -3,7 +3,6 @@
 
 #include "cilantroengine.h"
 #include "resource/ResourceManager.h"
-#include "game/GameComposite.h"
 #include "scene/GameObject.h"
 #include "scene/Material.h"
 #include "scene/Camera.h"
@@ -11,7 +10,7 @@
 
 // This class represents a game world (a.k.a scene or level)
 // It contains all visible and invisible objects in a game
-class GameScene : public GameComposite, public CallbackProvider<std::string, handle_t, unsigned int>
+class GameScene : public CallbackProvider<std::string, handle_t, unsigned int>
 {
 public:
 
@@ -54,9 +53,6 @@ T& GameScene::AddGameObject (const std::string& name, Params&&... params)
 {
     T& gameObject = gameObjects.Create<T> (name, params...);
 
-    // set game loop reference
-    gameObject.AttachToGame (this->game);
-
     // set callbacks on object modification
     // this is just a passthrough of callbacks to subscribers (e.g. Renderer)
     gameObject.RegisterCallback ("OnUpdateMeshObject", [ & ](unsigned int objectHandle, unsigned int) { InvokeCallbacks ("OnUpdateMeshObject", objectHandle, 0); });
@@ -75,9 +71,6 @@ template <typename T, typename ...Params>
 T& GameScene::AddMaterial (const std::string& name, Params&&... params)
 {
     T& material = materials.Create<T> (name, params...);
-
-    // set game loop reference
-    material.AttachToGame (this->game);
 
     // register callbacks
     material.RegisterCallback ("OnUpdateMaterial", [ & ](unsigned int materialHandle, unsigned int textureUnit) { InvokeCallbacks ("OnUpdateMaterial", materialHandle, textureUnit); });

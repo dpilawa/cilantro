@@ -20,6 +20,8 @@
 #include "input/GLFWInputController.h"
 #include "math/Mathf.h"
 #include "system/LogMessage.h"
+#include "system/EngineContext.h"
+#include "system/Timer.h"
 
 #include "ControlledCamera.h"
 
@@ -32,14 +34,17 @@ int main (int argc, char* argv [])
     GLFWRenderTarget renderTarget ("Test 1", 800, 600, false, true, true);
     GLRenderer renderer (800, 600);
     GLFWInputController inputController;
+    Timer timer;
+    Game game;
 
-    Game* game = new Game (resourceManager, gameScene, renderer, renderTarget, inputController);
+    EngineContext::Set (game, resourceManager, timer, gameScene, renderer, renderTarget, inputController);
+    EngineContext::Initialize ();
 
     renderer.AddPostprocess<GLPostprocess> ("hdr_postprocess").SetShaderProgram ("post_hdr_shader");
     renderer.AddPostprocess<GLPostprocess> ("gamma_postprocess").SetShaderProgram ("post_gamma_shader").SetPostprocessParameterFloat ("fGamma", 2.1f);
 
     inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
-    inputController.BindInputEvent ("exit", [ & ]() { game->Stop (); });
+    inputController.BindInputEvent ("exit", [ & ]() { game.Stop (); });
 
     inputController.CreateInputEvent ("mousemode", InputKey::KeySpace, InputTrigger::Release, {});
     inputController.BindInputEvent ("mousemode", [ & ]() { inputController.SetMouseGameMode (!inputController.IsGameMode ()); });
@@ -129,9 +134,9 @@ int main (int argc, char* argv [])
     lightAnimation.SetLooping (true);
     lightAnimation.Play ();
 
-    game->Run ();
+    game.Run ();
 
-    delete game;
+    EngineContext::Deinitialize ();
 
     return 0;
 }

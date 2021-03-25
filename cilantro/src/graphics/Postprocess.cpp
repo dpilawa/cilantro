@@ -1,5 +1,5 @@
 #include "graphics/Postprocess.h"
-#include "graphics/Renderer.h"
+#include "system/EngineContext.h"
 #include "graphics/ShaderProgram.h"
 
 Postprocess::Postprocess ()
@@ -12,7 +12,7 @@ Postprocess::~Postprocess ()
 
 Postprocess& Postprocess::SetShaderProgram (const std::string& shaderProgramName)
 {
-    shaderProgram = &(renderer->GetShaderProgramManager ().GetByName<ShaderProgram> (shaderProgramName));
+    shaderProgram = &(EngineContext::GetRenderer ().GetShaderProgramManager ().GetByName<ShaderProgram> (shaderProgramName));
 
     return *this;
 }

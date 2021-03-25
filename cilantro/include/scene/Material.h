@@ -2,7 +2,6 @@
 #define _MATERIAL_H_
 
 #include "cilantroengine.h"
-#include "game/GameComposite.h"
 #include "resource/Resource.h"
 #include "resource/Texture.h"
 #include "math/Vector3f.h"
@@ -17,7 +16,7 @@ class Renderer;
 typedef std::map<unsigned int, std::pair<std::string, Texture*>> texture_map_t;
 typedef std::unordered_map<std::string, std::vector<float>> property_map_t;
 
-class Material : public GameComposite, public Resource, public CallbackProvider<std::string, unsigned int, unsigned int>
+class Material : public Resource, public CallbackProvider<std::string, unsigned int, unsigned int>
 {
 public:
     __EAPI Material ();

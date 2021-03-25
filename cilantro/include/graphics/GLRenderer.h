@@ -153,12 +153,6 @@ public:
 
 private:
 
-#if (CILANTRO_GL_VERSION <= 140)
-    GLFramebuffer* framebuffer;
-#else
-    GLMultisampleFramebuffer* framebuffer;
-#endif
-
     // GL buffers and arrays for scene objects
     // These buffers contain data for objects to be rendered
     // * MeshObject vertices, uvs, normals, etc

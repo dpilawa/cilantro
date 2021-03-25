@@ -1,49 +1,29 @@
 #include "cilantroengine.h"
 #include "game/Game.h"
-#include "scene/GameScene.h"
-#include "graphics/Renderer.h"
-#include "graphics/RenderTarget.h"
-#include "input/InputController.h"
+#include "system/EngineContext.h"
 #include "system/LogMessage.h"
-#include "system/Timer.h"
 
-Game::Game (ResourceManager<Resource>& resourceManager, GameScene& gameScene, Renderer& renderer, RenderTarget& renderTarget, InputController& inputController) 
-: resourceManager (resourceManager), gameScene (gameScene), renderer (renderer), renderTarget (renderTarget), inputController (inputController)
+Game::Game ()
 {
     LogMessage (MSG_LOCATION) << "Engine starting";
-
-    // set composite references
-    gameScene.AttachToGame (this);
-    renderTarget.AttachToGame (this);
-    renderer.AttachToGame (this);
-    inputController.AttachToGame (this);
-
-    // initialize
-    renderTarget.Initialize ();
-    renderer.Initialize ();
-    inputController.Initialize ();
 
     // set flags
     shouldStop = false;
     isRunning = false;
 
     // pre-set game clocks
-    Timer::Tick ();
+    EngineContext::GetTimer ().Tick ();
 }
 
 Game::~Game ()
 {
-    inputController.Deinitialize ();
-    renderer.Deinitialize ();
-    renderTarget.Deinitialize ();
- 
     LogMessage (MSG_LOCATION) << "Engine stopped";
 }
 
 void Game::Run ()
 {	
     // initialize all game objects
-    for (auto gameObject : gameScene.GetGameObjectManager ())
+    for (auto gameObject : EngineContext::GetGameScene ().GetGameObjectManager ())
     {
         gameObject->OnStart ();
     }
@@ -58,7 +38,7 @@ void Game::Run ()
     isRunning = false;
 
     // deinitialize all game objects
-    for (auto gameObject : gameScene.GetGameObjectManager ())
+    for (auto gameObject : EngineContext::GetGameScene ().GetGameObjectManager ())
     {
         gameObject->OnEnd ();
     }
@@ -73,47 +53,24 @@ void Game::Stop ()
 void Game::Step ()
 {
     // update game clocks (Tick)
-    Timer::Tick ();
+    EngineContext::GetTimer ().Tick ();
 
     // process all game objects
-    for (auto gameObject : gameScene.GetGameObjectManager ())
+    for (auto gameObject : EngineContext::GetGameScene ().GetGameObjectManager ())
     {
         gameObject->OnFrame ();
     }
 
     // render frame
-    renderer.RenderFrame ();
+    EngineContext::GetRenderer ().RenderFrame ();
 
     // process rendertarget
-    renderTarget.OnFrame ();
+    EngineContext::GetRenderTarget ().OnFrame ();
 
     // process controller events
-    inputController.OnFrame ();
+    EngineContext::GetInputController ().OnFrame ();
 
 }
 
-ResourceManager<Resource>& Game::GetResourceManager ()
-{
-    return this->resourceManager;
-}
 
-GameScene& Game::GetGameScene ()
-{
-    return this->gameScene;
-}
-
-Renderer& Game::GetRenderer ()
-{
-    return this->renderer;
-}
-
-RenderTarget& Game::GetRenderTarget ()
-{
-    return this->renderTarget;
-}
-
-InputController& Game::GetInputController ()
-{
-    return this->inputController;
-}
 

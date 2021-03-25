@@ -32,7 +32,6 @@ set(CILANTRO_FILES ${CILANTRO_FILES}
 include/cilantroengine.h
 
 include/game/Game.h
-include/game/GameComposite.h
 include/graphics/Framebuffer.h
 include/graphics/GLFramebuffer.h
 include/graphics/GLPostprocess.h
@@ -41,7 +40,6 @@ include/graphics/GLShader.h
 include/graphics/GLShaderProgram.h
 include/graphics/Postprocess.h
 include/graphics/Renderer.h
-include/graphics/RendererComposite.h
 include/graphics/RenderTarget.h
 include/graphics/Shader.h
 include/graphics/ShaderProgram.h
@@ -90,7 +88,6 @@ include/system/EngineContext.h
 include/system/LogMessage.h
 include/system/Timer.h
 src/game/Game.cpp
-src/game/GameComposite.cpp
 src/graphics/Framebuffer.cpp
 src/graphics/GLFramebuffer.cpp
 src/graphics/GLPostprocess.cpp
@@ -99,7 +96,6 @@ src/graphics/GLShader.cpp
 src/graphics/GLShaderProgram.cpp
 src/graphics/Postprocess.cpp
 src/graphics/Renderer.cpp
-src/graphics/RendererComposite.cpp
 src/graphics/RenderTarget.cpp
 src/graphics/Shader.cpp
 src/graphics/ShaderProgram.cpp
