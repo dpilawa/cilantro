@@ -13,6 +13,7 @@ class PointLight;
 class DirectionalLight;
 class SpotLight;
 class Material;
+class Camera;
 
 class Renderer
 {

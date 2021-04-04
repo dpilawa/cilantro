@@ -52,6 +52,7 @@ template <typename T, typename ...Params>
 T& GameScene::AddGameObject (const std::string& name, Params&&... params)
 {
     T& gameObject = gameObjects.Create<T> (name, params...);
+    handle_t handle = gameObject.GetHandle ();
 
     // set callbacks on object modification
     // this is just a passthrough of callbacks to subscribers (e.g. Renderer)
@@ -59,9 +60,20 @@ T& GameScene::AddGameObject (const std::string& name, Params&&... params)
     gameObject.RegisterCallback ("OnUpdateLight", [ & ](unsigned int objectHandle, unsigned int) { InvokeCallbacks ("OnUpdateLight", objectHandle, 0); });
     gameObject.RegisterCallback ("OnUpdateSceneGraph", [ & ](unsigned int objectHandle, unsigned int) { InvokeCallbacks ("OnUpdateSceneGraph", objectHandle, 0); });
     gameObject.RegisterCallback ("OnUpdateTransform", [&](unsigned int objectHandle, unsigned int) { 
-        InvokeCallbacks ("OnUpdateTransform", objectHandle, 0);
         gameObjects.GetByHandle<T> (objectHandle).CalculateModelTransformMatrix ();
+        InvokeCallbacks ("OnUpdateTransform", objectHandle, 0);
     });
+
+    // update renderer data
+    if constexpr (std::is_base_of<MeshObject, T>::value)
+    {
+        InvokeCallbacks ("OnUpdateMeshObject", handle, 0);
+        InvokeCallbacks ("OnUpdateSceneGraph", handle, 0);
+    }
+    else if constexpr (std::is_base_of<Light, T>::value)
+    {
+        InvokeCallbacks ("OnUpdateLight", handle, 0);
+    }
 
     // return object reference
     return gameObject;

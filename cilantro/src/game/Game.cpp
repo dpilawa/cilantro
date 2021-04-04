@@ -10,14 +10,22 @@ Game::Game ()
     // set flags
     shouldStop = false;
     isRunning = false;
-
-    // pre-set game clocks
-    EngineContext::GetTimer ().Tick ();
 }
 
 Game::~Game ()
 {
     LogMessage (MSG_LOCATION) << "Engine stopped";
+}
+
+void Game::Initialize ()
+{
+    // pre-set game clocks
+    EngineContext::GetTimer ().Tick ();
+}
+
+void Game::Deinitialize ()
+{
+    
 }
 
 void Game::Run ()

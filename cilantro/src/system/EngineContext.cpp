@@ -24,10 +24,12 @@ void EngineContext::Initialize ()
     contextRenderTarget->Initialize ();
     contextRenderer->Initialize ();
     contextInputController->Initialize ();
+    contextGame->Initialize ();
 }
 
 void EngineContext::Deinitialize ()
 {
+    contextGame->Deinitialize ();
     contextInputController->Deinitialize ();
     contextRenderer->Deinitialize ();
     contextRenderTarget->Deinitialize ();

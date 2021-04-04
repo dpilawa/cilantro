@@ -13,7 +13,7 @@
 #include <unordered_map>
 
 MeshObject::MeshObject (const std::string& meshName, const std::string materialName) :
-mesh (EngineContext::GetGameScene ().GetMaterialManager ().GetByName<Mesh> (meshName)),
+mesh (EngineContext::GetResourceManager ().GetByName<Mesh> (meshName)),
 material (EngineContext::GetGameScene ().GetMaterialManager ().GetByName<Material> (materialName))
 {
     mesh.RegisterCallback ("OnUpdateMesh", [&] (handle_t objectHandle) { InvokeCallbacks ("OnUpdateMeshObject", this->GetHandle (), 0); });
