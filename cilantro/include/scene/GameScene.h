@@ -4,6 +4,7 @@
 #include "cilantroengine.h"
 #include "resource/ResourceManager.h"
 #include "scene/GameObject.h"
+#include "scene/MeshObject.h"
 #include "scene/Material.h"
 #include "scene/Camera.h"
 #include "scene/Light.h"
