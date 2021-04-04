@@ -22,3 +22,6 @@ ControlledCamera.cpp ControlledCamera.h
 target_link_libraries (test01 cilantro)
 target_link_libraries (test02 cilantro)
 target_link_libraries (test03 cilantro)
+
+add_custom_command (TARGET test01 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/cilantro/shaders/ $<TARGET_FILE_DIR:test01>/shaders/)
+add_custom_command (TARGET test01 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/tests/textures/ $<TARGET_FILE_DIR:test01>/textures/)

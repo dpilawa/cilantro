@@ -21,6 +21,9 @@ set(GLAD_API "gl=${CILANTRO_GL_VERSION_MAJOR}.${CILANTRO_GL_VERSION_MINOR}")
 set(GLAD_PROFILE "core")
 set(GLAD_EXTENSIONS "") 
 
+set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
 add_subdirectory (ext/glfw)
 add_subdirectory (ext/glad)
 add_subdirectory (cilantro)
