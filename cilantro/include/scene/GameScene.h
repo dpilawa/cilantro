@@ -6,6 +6,7 @@
 #include "scene/GameObject.h"
 #include "scene/Material.h"
 #include "scene/Camera.h"
+#include "scene/Light.h"
 #include <string>
 
 // This class represents a game world (a.k.a scene or level)
