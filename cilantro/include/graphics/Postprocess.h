@@ -2,26 +2,30 @@
 #define _POSTPROCESS_H_
 
 #include "cilantroengine.h"
+#include "resource/Resource.h"
+#include "graphics/Framebuffer.h"
 #include "graphics/ShaderProgram.h"
 #include <string>
 
-class Renderer;
-
-class Postprocess
+class Postprocess : public Resource
 {
 public:
-    Postprocess () = delete;
-    __EAPI Postprocess (Renderer* renderer, ShaderProgram* shaderProgram);
+    __EAPI Postprocess ();
     __EAPI virtual ~Postprocess ();
+
+    __EAPI Postprocess& SetShaderProgram (const std::string& shaderProgramName);
+
+    virtual void Initialize () = 0;
+    virtual void Deinitialize () = 0;
 
     virtual void OnFrame () = 0;
 
-    virtual void SetPostprocessParameterFloat (std::string parameterName, float parameterValue) = 0;
+    Framebuffer* GetFramebuffer () const;
+    virtual void SetPostprocessParameterFloat (const std::string& parameterName, float parameterValue) = 0;
 
 protected:
-    Renderer* renderer;
+    Framebuffer* framebuffer;
     ShaderProgram* shaderProgram;
-
 };
 
 #endif

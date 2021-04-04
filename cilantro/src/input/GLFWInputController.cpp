@@ -1,8 +1,8 @@
 #include "cilantroengine.h"
-#include "GLFW/glfw3.h"
-#include "util/LogMessage.h"
-#include "input/Input.h"
 #include "input/GLFWInputController.h"
+#include "system/EngineContext.h"
+#include "system/LogMessage.h"
+#include "input/Input.h"
 
 std::unordered_map<InputKey, int, InputKeyHash> GLFWInputController::glfwKeyMap {
         {InputKey::KeyA, GLFW_KEY_A},
@@ -59,7 +59,7 @@ std::unordered_map<InputKey, int, InputKeyHash> GLFWInputController::glfwKeyMap 
         {InputKey::MouseRight, GLFW_MOUSE_BUTTON_RIGHT}
 };
 
-GLFWInputController::GLFWInputController (GameLoop* gameLoop, GLFWwindow* window) : InputController (gameLoop)
+GLFWInputController::GLFWInputController () : InputController ()
 {
     axisMouseX = nullptr;
     axisMouseY = nullptr;
@@ -67,15 +67,11 @@ GLFWInputController::GLFWInputController (GameLoop* gameLoop, GLFWwindow* window
     axisMouseScrollY = nullptr;
 
     isGameMode = false;
-
-    this->window = window;
-
-    this->Initialize ();
 }
 
 GLFWInputController::~GLFWInputController ()
 {
-    this->Deinitialize ();
+
 }
 
 void GLFWInputController::OnFrame ()
@@ -84,34 +80,34 @@ void GLFWInputController::OnFrame ()
     InputController::OnFrame ();
 }
 
-Input<bool>* GLFWInputController::CreateInputEvent (std::string name, InputKey key, InputTrigger trigger, std::set<InputModifier> modifiers)
+Input<bool>* GLFWInputController::CreateInputEvent (const std::string& name, InputKey key, InputTrigger trigger, std::set<InputModifier> modifiers)
 {
     Input<bool>* inputevent = InputController::CreateInputEvent (name);
 
     if (inputevent) 
     {
         glfwKeyEventMap[std::make_tuple (GetGLFWKey (key), GetGLFWTrigger (trigger), GetGLFWModifiers (modifiers))] = inputevent;
-        LogMessage (__func__) << "Mapped key event" << GetGLFWKey (key) << GetGLFWTrigger (trigger) << GetGLFWModifiers (modifiers);
+        LogMessage (MSG_LOCATION) << "Mapped key event" << GetGLFWKey (key) << GetGLFWTrigger (trigger) << GetGLFWModifiers (modifiers);
     }
 
     return inputevent;
 }
 
 
-Input<float>* GLFWInputController::CreateInputAxis (std::string name, InputKey key, std::set<InputModifier> modifiers, float scale) 
+Input<float>* GLFWInputController::CreateInputAxis (const std::string& name, InputKey key, std::set<InputModifier> modifiers, float scale) 
 {
     Input<float>* inputaxis = InputController::CreateInputAxis (name, scale);
 
     if (inputaxis) 
     {
         glfwKeyAxisMap[std::make_pair (GetGLFWKey (key), GetGLFWModifiers (modifiers))] = inputaxis;
-        LogMessage (__func__) << "Mapped key axis" << GetGLFWKey (key) << GetGLFWModifiers (modifiers);
+        LogMessage (MSG_LOCATION) << "Mapped key axis" << GetGLFWKey (key) << GetGLFWModifiers (modifiers);
     }
 
     return inputaxis;
 }
 
-Input<float>* GLFWInputController::CreateInputAxis (std::string name, InputAxis axis, float scale) 
+Input<float>* GLFWInputController::CreateInputAxis (const std::string& name, InputAxis axis, float scale) 
 {
     Input<float>* inputaxis = InputController::CreateInputAxis (name, scale);
 
@@ -136,7 +132,7 @@ Input<float>* GLFWInputController::CreateInputAxis (std::string name, InputAxis 
                 break;
 
             default :
-                LogMessage (__func__, EXIT_FAILURE) << "Unsupported axis";
+                LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unsupported axis";
 
         }
     }
@@ -168,24 +164,26 @@ void GLFWInputController::SetMouseGameMode(bool value)
 
 void GLFWInputController::Initialize () 
 {
+    this->window = dynamic_cast<GLFWRenderTarget&> (EngineContext::GetRenderTarget ()).GetWindow ();
+
     auto keyCallback = [](GLFWwindow* _window, int _key, int _scancode, int _action, int _mods)
     {
-        static_cast<GLFWInputController*>(static_cast<GameLoop*>(glfwGetWindowUserPointer (_window))->gameInputController)->KeyCallback(_key, _scancode, _action, _mods);
+        static_cast<GLFWInputController&>(EngineContext::GetInputController ()).KeyCallback(_key, _scancode, _action, _mods);
     };
 
     auto mouseButtonCallback = [](GLFWwindow* _window, int _button, int _action, int _mods)
     {
-        static_cast<GLFWInputController*>(static_cast<GameLoop*>(glfwGetWindowUserPointer (_window))->gameInputController)->KeyCallback(_button, 0, _action, _mods);
+        static_cast<GLFWInputController&>(EngineContext::GetInputController ()).KeyCallback(_button, 0, _action, _mods);
     };
 
     auto mouseCursorCallback = [](GLFWwindow* _window, double _xPos, double _yPos)
     {
-        static_cast<GLFWInputController*>(static_cast<GameLoop*>(glfwGetWindowUserPointer (_window))->gameInputController)->MouseCursorCallback(_xPos, _yPos);
+        static_cast<GLFWInputController&>(EngineContext::GetInputController ()).MouseCursorCallback(_xPos, _yPos);
     };
 
     auto mouseScrollCallback = [](GLFWwindow* _window, double _xOffset, double _yOffset)
     {
-        static_cast<GLFWInputController*>(static_cast<GameLoop*>(glfwGetWindowUserPointer (_window))->gameInputController)->MouseScrollCallback(_xOffset, _yOffset);
+        static_cast<GLFWInputController&>(EngineContext::GetInputController ()).MouseScrollCallback(_xOffset, _yOffset);
     };
 
     glfwSetKeyCallback (window, keyCallback);
@@ -193,7 +191,7 @@ void GLFWInputController::Initialize ()
     glfwSetCursorPosCallback (window, mouseCursorCallback);
     glfwSetScrollCallback (window, mouseScrollCallback);
 
-    LogMessage (__func__) << "GLFWInputController started";
+    LogMessage (MSG_LOCATION) << "GLFWInputController started";
 }
 
 void GLFWInputController::Deinitialize () 
@@ -206,7 +204,7 @@ int GLFWInputController::GetGLFWKey (InputKey key)
     auto find = glfwKeyMap.find (key);
     if (find == glfwKeyMap.end())
     {
-        LogMessage (__func__, EXIT_FAILURE) << "Unsupported event key";
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unsupported event key";
         return 0;
     }
     else 

@@ -1,13 +1,7 @@
 #include "cilantroengine.h"
-#include "util/Timer.h"
+#include "system/Timer.h"
 
 #include <chrono>
-
-std::chrono::duration<float> Timer::frameDeltaTime;
-std::chrono::duration<float> Timer::frameRenderTime;
-std::chrono::high_resolution_clock::time_point Timer::timeOfFrameStart;
-std::chrono::high_resolution_clock::time_point Timer::timeOfFrameEnd;
-std::chrono::high_resolution_clock::time_point Timer::splitTime;
 
 Timer::Timer ()
 {

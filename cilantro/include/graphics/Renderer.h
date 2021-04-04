@@ -2,42 +2,45 @@
 #define _RENDERER_H_
 
 #include "cilantroengine.h"
-#include "util/CallbackProvider.h"
-#include "game/GameLoop.h"
-#include "scene/GameScene.h"
-#include "scene/MeshObject.h"
-#include "scene/PointLight.h"
-#include "scene/DirectionalLight.h"
-#include "scene/SpotLight.h"
-#include "scene/Material.h"
-#include "graphics/Shader.h"
-#include "graphics/RenderTarget.h"
+#include "resource/ResourceManager.h"
+#include "graphics/Framebuffer.h"
+#include "graphics/ShaderProgram.h"
 #include "graphics/Postprocess.h"
 #include <string>
+
+class MeshObject;
+class PointLight;
+class DirectionalLight;
+class SpotLight;
+class Material;
+class Camera;
 
 class Renderer
 {
 public:
-    Renderer () = delete;
-    __EAPI Renderer (GameLoop* gameLoop, unsigned int width, unsigned int height);
+    __EAPI Renderer (unsigned int width, unsigned int height);
     __EAPI virtual ~Renderer ();
+
+    virtual void Initialize () = 0;
+    virtual void Deinitialize () = 0;
 
     // render
     __EAPI virtual void RenderFrame ();
 
-    // renderer state modifiers
-    __EAPI virtual void SetResolution (unsigned int width, unsigned int height);
-
-    // getters
-    __EAPI unsigned int GetWidth () const;
-    __EAPI unsigned int GetHeight () const;
+    // renderbuffer accessor
+    __EAPI virtual Framebuffer* GetFramebuffer () const = 0;
 
     // post-processing
-    __EAPI virtual void AddPostprocess (Postprocess* postprocess);
+    __EAPI virtual ResourceManager<Postprocess>& GetPostprocessManager ();
+    
+    template <typename T, typename ...Params>
+    T& AddPostprocess (const std::string& name, Params&&... params);
 
     // shader library manipulation
-    virtual void AddShader (std::string shaderName, std::string shaderSourceCode, ShaderType shaderType) = 0;
-    virtual void AddShaderToProgram (std::string shaderProgramName, std::string shaderName) = 0;
+    __EAPI virtual ResourceManager<ShaderProgram>& GetShaderProgramManager ();
+    
+    template <typename T, typename ...Params>
+    T& AddShaderProgram (const std::string& name, Params&&... params);        
 
     // object drawing and updating
     virtual void Draw (MeshObject& meshObject) = 0;
@@ -49,16 +52,34 @@ public:
 
 protected:
 
-    GameLoop* gameLoop;
-
-    unsigned int width;
-    unsigned int height;
+    Framebuffer* framebuffer;
 
     unsigned int postprocessStage;
-    std::vector<Postprocess*> postprocesses;
 
-    virtual void Initialize () = 0;
-    virtual void Deinitialize () = 0;
+    ResourceManager<ShaderProgram> shaderPrograms;
+    ResourceManager<Postprocess> postprocesses;
+
 };
+
+template <typename T, typename ...Params>
+T& Renderer::AddPostprocess (const std::string& name, Params&&... params)
+{
+    T& postprocess = postprocesses.Create<T> (name, params...);
+
+    // initialize
+    postprocess.Initialize ();
+
+    // return postprocess
+    return postprocess;
+}
+
+template <typename T, typename ...Params>
+T& Renderer::AddShaderProgram (const std::string& name, Params&&... params)
+{
+    T& shaderProgram = shaderPrograms.Create<T> (name, params...);
+
+    // return program
+    return shaderProgram;
+}
 
 #endif

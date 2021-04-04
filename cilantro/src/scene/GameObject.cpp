@@ -6,45 +6,34 @@
 #include "scene/GameScene.h"
 #include "scene/GameObject.h"
 #include "scene/Transform.h"
-#include "util/CallbackProvider.h"
+#include "system/EngineContext.h"
+#include "system/CallbackProvider.h"
 #include <string>
 
 GameObject::GameObject ()
 {
     parentObject = nullptr;
-    isLight = false;
 
     CalculateModelTransformMatrix ();
 
     // set callbacks on transform modification
     // this is just a passthrough of callbacks to subscribers (Scene)
-    modelTransform.RegisterCallback ("OnUpdateTransform", [&](unsigned int objectHandle) { InvokeCallbacks ("OnUpdateTransform", this->GetHandle (), 0); });
+    modelTransform.RegisterCallback ("OnUpdateTransform", [&](handle_t objectHandle) { InvokeCallbacks ("OnUpdateTransform", this->GetHandle (), 0); });
 }
 
 GameObject::~GameObject ()
 {
 }
 
-void GameObject::SetGameLoop (GameLoop* gameLoop)
+GameObject& GameObject::SetParentObject (const std::string& name)
 {
-    this->gameLoop = gameLoop;
-}
+    GameObject& parent = EngineContext::GetGameScene ().GetGameObjectManager ().GetByName<GameObject> (name);
 
-void GameObject::SetHandle (unsigned int handle)
-{
-    objectHandle = handle;
-}
-
-unsigned int GameObject::GetHandle () const
-{
-    return objectHandle;
-}
-
-void GameObject::SetParentObject (GameObject& parent)
-{
     parentObject = &parent;
     parent.childObjects.push_back (this);
     InvokeCallbacks ("OnUpdateSceneGraph", this->GetHandle (), 0);
+
+    return *this;
 }
 
 GameObject* GameObject::GetParentObject ()
@@ -168,9 +157,4 @@ Vector3f GameObject::GetForward () const
     Matrix4f modelTransforMatrix = GetModelTransformMatrix ();
 
     return Mathf::Normalize (Vector3f (modelTransforMatrix[0][2], modelTransforMatrix[1][2], modelTransforMatrix[2][2]));
-}
-
-bool GameObject::IsLight ()
-{
-    return isLight;
 }

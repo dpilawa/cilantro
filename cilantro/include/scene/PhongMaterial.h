@@ -3,7 +3,7 @@
 
 #include "cilantroengine.h"
 #include "scene/Material.h"
-#include "scene/Texture.h"
+#include "resource/Texture.h"
 #include "math/Vector3f.h"
 
 class Renderer;
@@ -22,13 +22,11 @@ public:
     __EAPI PhongMaterial ();
     __EAPI virtual ~PhongMaterial ();
 
-    __EAPI virtual void OnUpdate (Renderer &renderer, unsigned int textureUnit = 0);
-
     // setters
-    __EAPI PhongMaterial& SetDiffuse (Texture* diffuse);
-    __EAPI PhongMaterial& SetNormal (Texture* normal);
-    __EAPI PhongMaterial& SetSpecular (Texture* specular);
-    __EAPI PhongMaterial& SetEmissive (Texture* emissive);
+    __EAPI PhongMaterial& SetDiffuse (const std::string& diffuse);
+    __EAPI PhongMaterial& SetNormal (const std::string& normal);
+    __EAPI PhongMaterial& SetSpecular (const std::string& specular);
+    __EAPI PhongMaterial& SetEmissive (const std::string& emissive);
 
     __EAPI PhongMaterial& SetDiffuse (const Vector3f& diffuse);
     __EAPI PhongMaterial& SetSpecular (const Vector3f& specular);
@@ -37,19 +35,19 @@ public:
 
 
     // getters
-    __EAPI Texture* GetDiffuse ();
-    __EAPI Texture* GetNormal ();
-    __EAPI Texture* GetSpecular ();
+    __EAPI Texture& GetDiffuse ();
+    __EAPI Texture& GetNormal ();
+    __EAPI Texture& GetSpecular ();
     __EAPI float GetSpecularShininess ();
-    __EAPI Texture* GetEmissive ();
+    __EAPI Texture& GetEmissive ();
 
 protected:
 
     // static textures
-    Texture diffuse;
-    Texture normal;
-    Texture specular;
-    Texture emissive;
+    Texture diffuse {1, 1, Vector3f (1.0f, 1.0f, 1.0f)};
+    Texture normal {1, 1, Vector3f (0.0f, 0.0f, 0.0f)};
+    Texture specular {1, 1, Vector3f (1.0f, 1.0f, 1.0f)};
+    Texture emissive {1, 1, Vector3f (0.0f, 0.0f, 0.0f)};
 
 };
 

@@ -1,9 +1,10 @@
 #include "scene/Primitives.h"
+#include "resource/Mesh.h"
 #include "math/Vector2f.h"
 #include "math/Vector3f.h"
 #include "math/Mathf.h"
 
-void Primitives::GeneratePlane (MeshObject& m)
+void Primitives::GeneratePlane (Mesh& m)
 {
     m.Clear ();
 
@@ -28,11 +29,11 @@ void Primitives::GeneratePlane (MeshObject& m)
     
     m.CalculateVertexNormals ();
 
-    m.InvokeCallbacks ("OnUpdateMeshObject", m.GetHandle (), 0);
+    m.InvokeCallbacks ("OnUpdateMesh", m.GetHandle ());
     
 }
 
-void Primitives::GenerateCube (MeshObject& m)
+void Primitives::GenerateCube (Mesh& m)
 {
     m.Clear ();
 
@@ -92,11 +93,11 @@ void Primitives::GenerateCube (MeshObject& m)
 
     m.CalculateVertexNormals ();
 
-    m.InvokeCallbacks ("OnUpdateMeshObject", m.GetHandle (), 0);
+    m.InvokeCallbacks ("OnUpdateMesh", m.GetHandle ());
     
 }
 
-void Primitives::GenerateSphere (MeshObject& m, unsigned int subdivisions)
+void Primitives::GenerateSphere (Mesh& m, unsigned int subdivisions)
 {
     float step;
     float theta, phi;
@@ -181,11 +182,11 @@ void Primitives::GenerateSphere (MeshObject& m, unsigned int subdivisions)
 
     m.CalculateVertexNormals ();
 
-    m.InvokeCallbacks ("OnUpdateMeshObject", m.GetHandle (), 0);
+    m.InvokeCallbacks ("OnUpdateMesh", m.GetHandle ());
 
 }
 
-void Primitives::GenerateCone (MeshObject& m, unsigned int subdivisions)
+void Primitives::GenerateCone (Mesh& m, unsigned int subdivisions)
 {
     float step;
     float phi;
@@ -235,11 +236,11 @@ void Primitives::GenerateCone (MeshObject& m, unsigned int subdivisions)
 
     m.CalculateVertexNormals ();
 
-    m.InvokeCallbacks ("OnUpdateMeshObject", m.GetHandle (), 0);
+    m.InvokeCallbacks ("OnUpdateMesh", m.GetHandle ());
 
 }
 
-void Primitives::GenerateCylinder (MeshObject& m, unsigned int subdivisions)
+void Primitives::GenerateCylinder (Mesh& m, unsigned int subdivisions)
 {
     float step;
     float phi;
@@ -309,11 +310,11 @@ void Primitives::GenerateCylinder (MeshObject& m, unsigned int subdivisions)
 
     m.CalculateVertexNormals ();
 
-    m.InvokeCallbacks ("OnUpdateMeshObject", m.GetHandle (), 0);
+    m.InvokeCallbacks ("OnUpdateMesh", m.GetHandle ());
 
 }
 
-void Primitives::GenerateMeshFromArrays (MeshObject& m, const std::vector<Vector3f>& vertices, const std::vector<Vector2f>& uv, const std::vector<std::size_t> varray)
+void Primitives::GenerateMeshFromArrays (Mesh& m, const std::vector<Vector3f>& vertices, const std::vector<Vector2f>& uv, const std::vector<std::size_t> varray)
 {
 
     for (std::size_t i = 0; i < varray.size (); i += 3)

@@ -1,46 +1,13 @@
 #include "cilantroengine.h"
 #include "graphics/GLFramebuffer.h"
-#include "util/LogMessage.h"
+#include "system/LogMessage.h"
 
-GLFramebuffer::GLFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight)
+GLFramebuffer::GLFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight) : Framebuffer (bufferWidth, bufferHeight)
 {
-    this->bufferWidth = bufferWidth;
-    this->bufferHeight = bufferHeight;
-
-    this->Initialize ();
 }
 
 GLFramebuffer::~GLFramebuffer ()
 {
-    this->Deinitialize ();
-}
-
-void GLFramebuffer::BindFramebuffer () const
-{
-    glBindFramebuffer (GL_FRAMEBUFFER, framebuffers.FBO);
-}
-
-void GLFramebuffer::SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight)
-{
-    // resize framebuffer texture and viewport
-    glDeleteRenderbuffers (1, &framebuffers.RBO);
-    glDeleteTextures (1, &framebuffers.textureBuffer);
-    glDeleteFramebuffers (1, &framebuffers.FBO);
-
-    this->bufferWidth = bufferWidth;
-    this->bufferHeight = bufferHeight;
-
-    Initialize ();
-}
-
-GLuint GLFramebuffer::GetFramebufferTexture () const
-{
-    return framebuffers.textureBuffer;
-}
-
-GLuint GLFramebuffer::GetFramebuffer () const
-{
-    return framebuffers.FBO;
 }
 
 void GLFramebuffer::Initialize ()
@@ -71,11 +38,11 @@ void GLFramebuffer::Initialize ()
     // check status
     if (glCheckFramebufferStatus (GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     {
-        LogMessage (__func__, EXIT_FAILURE) << "Framebuffer is not complete";
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Framebuffer is not complete";
     }
     else
     {
-        LogMessage (__func__) << "Initialized framebuffer";
+        LogMessage (MSG_LOCATION) << "Initialized framebuffer" << bufferWidth << bufferHeight;
     }
 }
 
@@ -84,4 +51,31 @@ void GLFramebuffer::Deinitialize ()
     glDeleteRenderbuffers (1, &framebuffers.RBO);
     glDeleteTextures (1, &framebuffers.textureBuffer);
     glDeleteFramebuffers (1, &framebuffers.FBO);
+}
+
+void GLFramebuffer::BindFramebuffer () const
+{
+    glBindFramebuffer (GL_FRAMEBUFFER, framebuffers.FBO);
+}
+
+void GLFramebuffer::SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight)
+{
+    // resize framebuffer texture and viewport
+    glDeleteRenderbuffers (1, &framebuffers.RBO);
+    glDeleteTextures (1, &framebuffers.textureBuffer);
+    glDeleteFramebuffers (1, &framebuffers.FBO);
+
+    Framebuffer::SetFramebufferResolution (bufferWidth, bufferHeight);
+
+    Initialize ();
+}
+
+GLuint GLFramebuffer::GetFramebufferTextureGLId () const
+{
+    return framebuffers.textureBuffer;
+}
+
+GLuint GLFramebuffer::GetFramebufferGLId () const
+{
+    return framebuffers.FBO;
 }

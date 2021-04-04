@@ -31,17 +31,8 @@ endif()
 set(CILANTRO_FILES ${CILANTRO_FILES}
 include/cilantroengine.h
 
-include/graphics/default.vs.h
-include/graphics/flatquad.vs.h
-include/graphics/normals.fs.h
-include/graphics/pbr.fs.h
-include/graphics/phong.fs.h
-include/graphics/blinnphong.fs.h
-include/graphics/emissive.fs.h
-include/graphics/flatquad.fs.h
-include/graphics/post_hdr.fs.h
-include/graphics/post_gamma.fs.h
-include/game/GameLoop.h
+include/game/Game.h
+include/graphics/Framebuffer.h
 include/graphics/GLFramebuffer.h
 include/graphics/GLPostprocess.h
 include/graphics/GLRenderer.h
@@ -67,6 +58,11 @@ include/math/Quaternion.h
 include/math/Vector2f.h
 include/math/Vector3f.h
 include/math/Vector4f.h
+include/resource/LoadableResource.h
+include/resource/Mesh.h
+include/resource/Resource.h
+include/resource/ResourceManager.h
+include/resource/Texture.h
 include/scene/AnimationObject.h
 include/scene/AnimationProperty.h
 include/scene/Camera.h
@@ -86,12 +82,13 @@ include/scene/PointLight.h
 include/scene/Primitives.h
 include/scene/SplinePath.h
 include/scene/SpotLight.h
-include/scene/Texture.h
 include/scene/Transform.h
-include/util/CallbackProvider.h
-include/util/LogMessage.h
-include/util/Timer.h
-src/game/GameLoop.cpp
+include/system/CallbackProvider.h
+include/system/EngineContext.h
+include/system/LogMessage.h
+include/system/Timer.h
+src/game/Game.cpp
+src/graphics/Framebuffer.cpp
 src/graphics/GLFramebuffer.cpp
 src/graphics/GLPostprocess.cpp
 src/graphics/GLRenderer.cpp
@@ -116,6 +113,11 @@ src/math/Quaternion.cpp
 src/math/Vector2f.cpp
 src/math/Vector3f.cpp
 src/math/Vector4f.cpp
+src/resource/LoadableResource.cpp
+src/resource/Mesh.cpp
+src/resource/Resource.cpp
+src/resource/ResourceManager.cpp
+src/resource/Texture.cpp
 src/scene/AnimationObject.cpp
 src/scene/AnimationProperty.cpp
 src/scene/Camera.cpp
@@ -135,10 +137,10 @@ src/scene/PointLight.cpp
 src/scene/Primitives.cpp
 src/scene/SplinePath.cpp
 src/scene/SpotLight.cpp
-src/scene/Texture.cpp
 src/scene/Transform.cpp
-src/util/LogMessage.cpp
-src/util/Timer.cpp
+src/system/EngineContext.cpp
+src/system/LogMessage.cpp
+src/system/Timer.cpp
 )
 
 add_library(cilantro SHARED ${CILANTRO_FILES})

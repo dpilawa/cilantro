@@ -1,15 +1,13 @@
 #include "cilantroengine.h"
 #include "graphics/GLMultisampleFramebuffer.h"
-#include "util/LogMessage.h"
+#include "system/LogMessage.h"
 
 GLMultisampleFramebuffer::GLMultisampleFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight) : GLFramebuffer (bufferWidth, bufferHeight)
 {
-    this->Initialize ();
 }
 
 GLMultisampleFramebuffer::~GLMultisampleFramebuffer ()
 {
-    this->Deinitialize ();
 }
 
 void GLMultisampleFramebuffer::BindFramebuffer () const
@@ -51,6 +49,8 @@ GLuint GLMultisampleFramebuffer::GetMultisampleFramebuffer () const
 
 void GLMultisampleFramebuffer::Initialize ()
 {
+    GLFramebuffer::Initialize ();
+
     // create and bind framebuffer
     glGenFramebuffers (1, &multisampleFramebuffers.FBO);
     glBindFramebuffer (GL_FRAMEBUFFER, multisampleFramebuffers.FBO);
@@ -74,11 +74,11 @@ void GLMultisampleFramebuffer::Initialize ()
     // check status
     if (glCheckFramebufferStatus (GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     {
-        LogMessage (__func__, EXIT_FAILURE) << "Multisample framebuffer is not complete";
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Multisample framebuffer is not complete";
     }
     else
     {
-        LogMessage (__func__) << "Initialized multisample framebuffer";
+        LogMessage (MSG_LOCATION) << "Initialized multisample framebuffer" << bufferWidth << bufferHeight;
     }
     
 }
@@ -88,4 +88,6 @@ void GLMultisampleFramebuffer::Deinitialize ()
     glDeleteRenderbuffers (1, &multisampleFramebuffers.RBO);
     glDeleteTextures (1, &multisampleFramebuffers.textureBuffer);
     glDeleteFramebuffers (1, &multisampleFramebuffers.FBO);
+
+    GLFramebuffer::Deinitialize ();
 }

@@ -1,10 +1,8 @@
 #include "cilantroengine.h"
 #include "graphics/RenderTarget.h"
 
-RenderTarget::RenderTarget (GameLoop* gameLoop, unsigned int width, unsigned int height)
+RenderTarget::RenderTarget (unsigned int width, unsigned int height)
 {
-    this->gameLoop = gameLoop;
-
     this->width = width;
     this->height = height;
 }

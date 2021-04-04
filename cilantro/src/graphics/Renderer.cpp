@@ -1,20 +1,14 @@
 #include "cilantroengine.h"
 #include "graphics/Renderer.h"
-#include "graphics/RenderTarget.h"
-#include "scene/GameScene.h"
-#include "scene/MeshObject.h"
-#include "util/Timer.h"
+#include "system/EngineContext.h"
 
-Renderer::Renderer (GameLoop* gameLoop, unsigned int width, unsigned int height)
+Renderer::Renderer (unsigned int width, unsigned int height)
 {
-    this->gameLoop = gameLoop;
-
-    this->width = width;
-    this->height = height;
 }
 
 Renderer::~Renderer ()
 {
+    delete framebuffer;
 }
 
 void Renderer::RenderFrame ()
@@ -28,26 +22,16 @@ void Renderer::RenderFrame ()
     }
 
     // update game clocks (Tock)
-    Timer::Tock ();
+    EngineContext::GetTimer ().Tock ();
 }
 
-void Renderer::SetResolution (unsigned int width, unsigned int height)
+ResourceManager<Postprocess>& Renderer::GetPostprocessManager ()
 {
-    this->width = width;
-    this->height = height;
+    return postprocesses;
 }
 
-unsigned int Renderer::GetWidth () const
+ResourceManager<ShaderProgram>& Renderer::GetShaderProgramManager ()
 {
-    return width;
+    return shaderPrograms;
 }
 
-unsigned int Renderer::GetHeight () const
-{
-    return height;
-}
-
-void Renderer::AddPostprocess (Postprocess* postprocess)
-{
-    postprocesses.push_back (postprocess);
-}

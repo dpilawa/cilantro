@@ -2,30 +2,23 @@
 #define _GAMEOBJECT_H_
 
 #include "cilantroengine.h"
-#include "game/GameLoop.h"
+#include "resource/Resource.h"
+#include "game/Game.h"
 #include "scene/Transform.h"
-#include "util/CallbackProvider.h"
+#include "system/CallbackProvider.h"
 #include <string>
 #include <vector>
 
-class GameScene;
 class Renderer;
 
-class GameObject : public CallbackProvider<std::string, unsigned int, unsigned int>
+class GameObject : public Resource, public CallbackProvider<std::string, handle_t, unsigned int>
 {
 public:
     __EAPI GameObject ();
     __EAPI virtual ~GameObject ();
 
-    // attach to game loop
-    __EAPI void SetGameLoop (GameLoop* gameLoop);
-
-    // handle  operations
-    __EAPI void SetHandle (unsigned int handle);
-    __EAPI unsigned int GetHandle () const;
-
     // set pointer to parent object (i.e. put current object inside hierarchy)
-    __EAPI void SetParentObject (GameObject& parent);
+    __EAPI GameObject& SetParentObject (const std::string& name);
 
     // get related objects
     __EAPI GameObject* GetParentObject ();
@@ -61,20 +54,7 @@ public:
     __EAPI Vector3f GetUp () const;
     __EAPI Vector3f GetForward () const;	
 
-    // check if object is a light
-    __EAPI bool IsLight ();
-
-protected:
-
-    GameLoop* gameLoop;
-
-    // is object a light
-    bool isLight;
-
 private:
-
-    // object's handle (index in vector inside GameScene)
-    unsigned int objectHandle;
 
     // pointer to parent object (objects may form a hierarchy)
     GameObject* parentObject;

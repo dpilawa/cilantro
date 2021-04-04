@@ -1,22 +1,15 @@
 #include "cilantroengine.h"
 #include "graphics/Renderer.h"
 #include "graphics/GLShader.h"
-#include "util/LogMessage.h"
+#include "system/LogMessage.h"
 
 #include <string>
 
-GLShader::GLShader () : Shader ()
-{
-}
-
-GLShader::GLShader (std::string sourceCode, ShaderType type)
+GLShader::GLShader (const std::string& path, ShaderType shaderType) : Shader (path, shaderType)
 {
     GLint success;
     char errorLog[512];
-    const char * cSourceStr;
-
-    shaderType = type;
-    shaderSourceCode = sourceCode;
+    const char* src;
 
     switch (shaderType)
     {
@@ -28,8 +21,8 @@ GLShader::GLShader (std::string sourceCode, ShaderType type)
             break;
     }
 
-    cSourceStr = shaderSourceCode.c_str ();
-    glShaderSource (shaderId, 1, &cSourceStr, NULL);
+    src = shaderSourceCode.c_str ();
+    glShaderSource (shaderId, 1, &src, NULL);
     glCompileShader (shaderId);
 
     glGetShaderiv (shaderId, GL_COMPILE_STATUS, &success);
@@ -39,7 +32,7 @@ GLShader::GLShader (std::string sourceCode, ShaderType type)
         glGetShaderInfoLog (shaderId, 512, nullptr, errorLog);
         glDeleteShader (shaderId);
         LogMessage () << errorLog;
-        LogMessage (__func__, EXIT_FAILURE) << "Unable to compile shader:" << shaderId << sourceCode;
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to compile shader" << shaderId << path;
     }
 }
 
@@ -47,7 +40,7 @@ GLShader::~GLShader ()
 {
 }
 
-GLuint GLShader::GetShaderId ()
+GLuint GLShader::GetShaderId () const
 {
     return shaderId;
 }

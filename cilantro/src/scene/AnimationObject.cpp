@@ -1,16 +1,17 @@
 #include "scene/AnimationObject.h"
 #include "scene/AnimationProperty.h"
-#include "util/LogMessage.h"
-#include "util/Timer.h"
+#include "system/EngineContext.h"
+#include "system/LogMessage.h"
+#include "system/Timer.h"
 
 // template instantiations
-template __EAPI void AnimationObject::AddAnimationProperty<float> (std::string propertyName, float startValue, std::function<void (float)> updateFunction, std::function<float (float, float, float)> interpolateFunction);
-template __EAPI void AnimationObject::AddAnimationProperty<Vector3f> (std::string propertyName, Vector3f startValue, std::function<void (Vector3f)> updateFunction, std::function<Vector3f (Vector3f, Vector3f, float)> interpolateFunction);
-template __EAPI void AnimationObject::AddAnimationProperty<Quaternion> (std::string propertyName, Quaternion startValue, std::function<void (Quaternion)> updateFunction, std::function<Quaternion (Quaternion, Quaternion, float)> interpolateFunction);
+template __EAPI void AnimationObject::AddAnimationProperty<float> (const std::string& propertyName, float startValue, std::function<void (float)> updateFunction, std::function<float (float, float, float)> interpolateFunction);
+template __EAPI void AnimationObject::AddAnimationProperty<Vector3f> (const std::string& propertyName, Vector3f startValue, std::function<void (Vector3f)> updateFunction, std::function<Vector3f (Vector3f, Vector3f, float)> interpolateFunction);
+template __EAPI void AnimationObject::AddAnimationProperty<Quaternion> (const std::string& propertyName, Quaternion startValue, std::function<void (Quaternion)> updateFunction, std::function<Quaternion (Quaternion, Quaternion, float)> interpolateFunction);
 
-template __EAPI void AnimationObject::AddKeyframe<float> (std::string propertyName, float time, float value);
-template __EAPI void AnimationObject::AddKeyframe<Vector3f> (std::string propertyName, float time, Vector3f value);
-template __EAPI void AnimationObject::AddKeyframe<Quaternion> (std::string propertyName, float time, Quaternion value);
+template __EAPI void AnimationObject::AddKeyframe<float> (const std::string& propertyName, float time, float value);
+template __EAPI void AnimationObject::AddKeyframe<Vector3f> (const std::string& propertyName, float time, Vector3f value);
+template __EAPI void AnimationObject::AddKeyframe<Quaternion> (const std::string& propertyName, float time, Quaternion value);
 
 template __EAPI void AnimationObject::UpdateProperties<float> ();
 template __EAPI void AnimationObject::UpdateProperties<Vector3f> ();
@@ -73,12 +74,12 @@ void AnimationObject::OnFrame ()
         UpdateProperties<Vector3f> ();
         UpdateProperties<Quaternion> ();
 
-        playedTime += Timer::GetFrameDeltaTime ();
+        playedTime += EngineContext::GetTimer ().GetFrameDeltaTime ();
     }
 }
 
 template <typename P>
-void AnimationObject::AddAnimationProperty (std::string propertyName, P startValue, std::function<void (P)> updateFunction, std::function<P (P, P, float)> interpolateFunction)
+void AnimationObject::AddAnimationProperty (const std::string& propertyName, P startValue, std::function<void (P)> updateFunction, std::function<P (P, P, float)> interpolateFunction)
 {
     auto find = GetProperties<P> ().find (propertyName);
     std::shared_ptr<AnimationProperty<P>> property;
@@ -91,12 +92,12 @@ void AnimationObject::AddAnimationProperty (std::string propertyName, P startVal
     }
     else
     {
-        LogMessage (__func__, EXIT_FAILURE) << "Animation property" << propertyName << "already exists for this AnimationObject";
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Animation property" << propertyName << "already exists for this AnimationObject";
     }
 }
 
 template <typename P>
-void AnimationObject::AddKeyframe (std::string propertyName, float time, P value)
+void AnimationObject::AddKeyframe (const std::string& propertyName, float time, P value)
 {
     auto find = GetProperties<P> ().find (propertyName);
 
@@ -111,12 +112,12 @@ void AnimationObject::AddKeyframe (std::string propertyName, float time, P value
         }
         else
         {
-            LogMessage (__func__, EXIT_FAILURE) << "Unable to insert keyframe in property" << propertyName << "(t =" << time << ")";
+            LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to insert keyframe in property" << propertyName << "(t =" << time << ")";
         }
     }
     else
     {
-        LogMessage (__func__, EXIT_FAILURE) << "Animation property" << propertyName << "does not exist";
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Animation property" << propertyName << "does not exist";
     }
 }
 

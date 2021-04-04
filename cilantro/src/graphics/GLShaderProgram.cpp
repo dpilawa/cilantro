@@ -1,7 +1,7 @@
 #include "cilantroengine.h"
 #include "graphics/GLShader.h"
 #include "graphics/GLShaderProgram.h"
-#include "util/LogMessage.h"
+#include "system/LogMessage.h"
 
 #include <iostream>
 
@@ -15,18 +15,32 @@ GLShaderProgram::~GLShaderProgram ()
 {
 }
 
-GLuint GLShaderProgram::GetProgramId ()
+GLuint GLShaderProgram::GetProgramId () const
 {
     return shaderProgramId;
 }
 
+void GLShaderProgram::BindUniformBlock (const std::string& blockName, BindingPoint bp)
+{
+    GLuint uniformBlockIndex = glGetUniformBlockIndex (shaderProgramId, blockName.c_str ());
 
-void GLShaderProgram::LinkShader (Shader& shader)
+    if (uniformBlockIndex != GL_INVALID_INDEX)
+    {
+        glUniformBlockBinding (shaderProgramId, uniformBlockIndex, bp);
+    }	
+    else
+    {
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Shader" << this->GetName () << "has no uniform" << blockName;
+    }
+    
+}
+
+void GLShaderProgram::LinkShader (const Shader& shader)
 {
     GLint success;
     char errorLog[512];
 
-    GLShader* glShader = static_cast<GLShader*> (&shader);
+    const GLShader* glShader = static_cast<const GLShader*> (&shader);
 
     glAttachShader (shaderProgramId, glShader->GetShaderId ());
     glLinkProgram (shaderProgramId);
@@ -38,7 +52,7 @@ void GLShaderProgram::LinkShader (Shader& shader)
         glGetProgramInfoLog (shaderProgramId, 512, nullptr, errorLog);
         glDeleteProgram (shaderProgramId);
         LogMessage () << errorLog;
-        LogMessage (__func__, EXIT_FAILURE) << "Unable to link shader" << glShader->GetShaderId () << " to program" << shaderProgramId;
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to link shader" << glShader->GetShaderId () << "to program" << shaderProgramId;
     }
 }
 

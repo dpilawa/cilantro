@@ -1,5 +1,5 @@
 #include "cilantroengine.h"
-#include "game/GameLoop.h"
+#include "game/Game.h"
 #include "scene/Primitives.h"
 #include "scene/AnimationObject.h"
 #include "scene/GameScene.h"
@@ -11,13 +11,17 @@
 #include "scene/SpotLight.h"
 #include "scene/LinearPath.h"
 #include "scene/SplinePath.h"
-#include "scene/Texture.h"
+#include "resource/Mesh.h"
+#include "resource/ResourceManager.h"
+#include "resource/Texture.h"
 #include "graphics/GLRenderer.h"
 #include "graphics/GLFWRenderTarget.h"
 #include "graphics/GLPostprocess.h"
 #include "input/GLFWInputController.h"
 #include "math/Mathf.h"
-#include "util/LogMessage.h"
+#include "system/LogMessage.h"
+#include "system/EngineContext.h"
+#include "system/Timer.h"
 
 #include "ControlledCamera.h"
 
@@ -25,111 +29,86 @@
 
 int main (int argc, char* argv [])
 {
-    GameLoop game;
+    ResourceManager resourceManager;
+    GameScene gameScene;
+    GLFWRenderTarget renderTarget ("Test 1", 800, 600, false, true, true);
+    GLRenderer renderer (800, 600);
+    GLFWInputController inputController;
+    Timer timer;
+    Game game;
 
-    GameScene scene (&game);
-    game.gameScene = &scene;
-    
-    GLFWRenderTarget target (&game, "Test 1", 800, 600, false, true, true);
-    game.gameRenderTarget = dynamic_cast<RenderTarget*>(&target);
+    EngineContext::Set (game, resourceManager, timer, gameScene, renderer, renderTarget, inputController);
+    EngineContext::Initialize ();
 
-    GLFWInputController controller (&game, target.GetWindow ());
-    game.gameInputController = dynamic_cast<InputController*>(&controller);
+    renderer.AddPostprocess<GLPostprocess> ("hdr_postprocess").SetShaderProgram ("post_hdr_shader");
+    renderer.AddPostprocess<GLPostprocess> ("gamma_postprocess").SetShaderProgram ("post_gamma_shader").SetPostprocessParameterFloat ("fGamma", 2.1f);
 
-    GLRenderer renderer (&game, 800, 600);
-    game.gameRenderer = dynamic_cast<Renderer*>(&renderer);
+    inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
+    inputController.BindInputEvent ("exit", [ & ]() { game.Stop (); });
 
-    GLPostprocess hdr (&renderer, &renderer.GetShaderProgram("post_hdr_shader"));
-    renderer.AddPostprocess (&hdr);
+    inputController.CreateInputEvent ("mousemode", InputKey::KeySpace, InputTrigger::Release, {});
+    inputController.BindInputEvent ("mousemode", [ & ]() { inputController.SetMouseGameMode (!inputController.IsGameMode ()); });
 
-    GLPostprocess gamma (&renderer, &renderer.GetShaderProgram("post_gamma_shader"));
-    gamma.SetPostprocessParameterFloat ("fGamma", 2.2f);
-    renderer.AddPostprocess (&gamma);
+    resourceManager.Load<Texture> ("tAlbedo", "textures/scuffed-metal1_albedo.png");
+    resourceManager.Load<Texture> ("tMetalness", "textures/scuffed-metal1_metallic.png");
+    resourceManager.Load<Texture> ("tRoughness", "textures/scuffed-metal1_roughness.png");
+    resourceManager.Load<Texture> ("tAO", "textures/scuffed-metal1_ao.png");
 
-    controller.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
-    controller.BindInputEvent ("exit", [ & ]() { game.Stop (); });
+    gameScene.AddMaterial<PBRMaterial> ("greenMaterial").SetAlbedo (Vector3f (0.1f, 0.4f, 0.1f)).SetRoughness (0.1f).SetMetallic (0.6f);
+    gameScene.AddMaterial<PBRMaterial> ("redMaterial").SetAlbedo ("tAlbedo").SetMetallic ("tMetalness").SetRoughness ("tRoughness");
+    gameScene.AddMaterial<PBRMaterial> ("goldMaterial").SetAlbedo (Vector3f (1.000f, 0.766f, 0.336f)).SetMetallic (0.8f).SetRoughness (0.2f).SetAO (1.0f);
+    gameScene.AddMaterial<PBRMaterial> ("blueMaterial").SetAlbedo (Vector3f (0.02f, 0.29f, 0.53f)).SetMetallic (0.0f).SetRoughness(0.8f);
+    gameScene.AddMaterial<PhongMaterial> ("lampMaterial").SetEmissive (Vector3f (0.9f, 0.9f, 0.9f)).SetDiffuse (Vector3f (0.2f, 0.2f, 0.2f));
 
-    controller.CreateInputEvent ("mousemode", InputKey::KeySpace, InputTrigger::Release, {});
-    controller.BindInputEvent ("mousemode", [ & ]() { controller.SetMouseGameMode (!controller.IsGameMode ()); });
-
-    Texture albedo;
-    Texture metalness;
-    Texture roughness;
-    Texture ao;
-
-    albedo.Load ("textures/scuffed-metal1_albedo.png");
-    metalness.Load ("textures/scuffed-metal1_metallic.png");
-    roughness.Load ("textures/scuffed-metal1_roughness.png");
-    ao.Load ("textures/scuffed-metal1_ao.png");
-
-    PBRMaterial& green = dynamic_cast<PBRMaterial&>(scene.AddMaterial (new PBRMaterial ()));
-    green.SetAlbedo (Vector3f (0.1f, 0.4f, 0.1f)).SetRoughness (0.1f).SetMetallic (0.6f);
-
-    PBRMaterial& red = dynamic_cast<PBRMaterial&>(scene.AddMaterial (new PBRMaterial ()));
-    //red.SetAlbedo (Vector3f (0.9f, 0.1f, 0.1f)).SetMetallic(0.2f).SetRoughness(0.4f);
-    red.SetAlbedo (&albedo).SetMetallic (&metalness).SetRoughness (&roughness);
-
-    PBRMaterial& gold = dynamic_cast<PBRMaterial&>(scene.AddMaterial (new PBRMaterial ()));
-    gold.SetAlbedo (Vector3f (1.000f, 0.766f, 0.336f));
-    gold.SetMetallic (0.8f);
-    gold.SetRoughness (0.2f);
-    gold.SetAO (1.0f);
-
-    PBRMaterial& blue = dynamic_cast<PBRMaterial&>(scene.AddMaterial (new PBRMaterial ()));
-    blue.SetAlbedo (Vector3f (0.02f, 0.29f, 0.53f)).SetMetallic (0.0f).SetRoughness(0.8f);
-
-    PhongMaterial& lampM = dynamic_cast<PhongMaterial&>(scene.AddMaterial (new PhongMaterial ()));
-    lampM.SetEmissive (Vector3f (0.9f, 0.9f, 0.9f)).SetDiffuse (Vector3f (0.2f, 0.2f, 0.2f));
-
-    ControlledCamera& cam = dynamic_cast<ControlledCamera&>(scene.AddGameObject (new ControlledCamera (60.0f, 0.01f, 100.0f, 0.1f)));
+    ControlledCamera& cam = gameScene.AddGameObject<ControlledCamera> ("camera", 60.0f, 0.01f, 100.0f, 0.1f);
     cam.Initialize ();
     cam.GetModelTransform ().Translate (5.0f, 2.5f, 5.0f).Rotate (-20.0f, 45.0f, 0.0f);
-    scene.SetActiveCamera (&cam);
+    gameScene.SetActiveCamera ("camera");
 
-    MeshObject& cube = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-    Primitives::GenerateCube (cube);
-    cube.SetMaterial (red);
+    Mesh& cubeMesh = resourceManager.Create<Mesh> ("cubeMesh");
+    Primitives::GenerateCube (cubeMesh);
+    MeshObject& cube = gameScene.AddGameObject<MeshObject> ("cube", "cubeMesh", "redMaterial");
     cube.GetModelTransform ().Scale (0.5f).Translate (0.0f, 1.1f, 0.0f);
 
-    MeshObject& cone = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-    Primitives::GenerateCone (cone, 16);
-    cone.SetMaterial (gold).SetSmoothNormals (false);
+    Mesh& coneMesh = resourceManager.Create<Mesh> ("coneMesh").SetSmoothNormals (false);
+    Primitives::GenerateCone (coneMesh, 16);
+    MeshObject& cone = gameScene.AddGameObject<MeshObject> ("cone", "coneMesh", "goldMaterial");
     cone.GetModelTransform ().Translate (-1.5f, 0.5f, 1.0f).Scale (0.5f);
 
-    MeshObject& cylinder = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-    Primitives::GenerateCylinder (cylinder, 16);
-    cylinder.SetMaterial (blue).SetSmoothNormals (false);
+    Mesh& cylinderMesh = resourceManager.Create<Mesh> ("cylinderMesh").SetSmoothNormals (false);
+    Primitives::GenerateCylinder (cylinderMesh, 16);
+    MeshObject& cylinder = gameScene.AddGameObject<MeshObject> ("cylinder", "cylinderMesh", "blueMaterial");
     cylinder.GetModelTransform ().Rotate (90.0f, 12.5f, 0.0f).Translate (1.7f, 0.5f, 0.7f).Scale (0.5f);
 
-    MeshObject& lamp = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-    Primitives::GenerateSphere (lamp, 3);
+    Mesh& lampMesh = resourceManager.Create<Mesh> ("lampMesh");
+    Primitives::GenerateSphere (lampMesh, 3);
+    MeshObject& lamp = gameScene.AddGameObject<MeshObject> ("lamp", "lampMesh", "lampMaterial");
     lamp.GetModelTransform ().Scale (0.1f, 0.1f, 0.1f).Translate (1.0f, 0.75f, 1.0f);
-    lamp.SetMaterial (lampM);
 
-    MeshObject& floor = dynamic_cast<MeshObject&>(scene.AddGameObject (new MeshObject ()));
-    Primitives::GenerateCube (floor);
+    Mesh& floorMesh = resourceManager.Create<Mesh> ("floorMesh");
+    Primitives::GenerateCube (floorMesh);
+    MeshObject& floor = gameScene.AddGameObject<MeshObject> ("floor", "floorMesh", "greenMaterial");
     floor.GetModelTransform ().Scale (2.5f, 0.05f, 2.5f).Translate (0.0f, -0.05f, 0.0f);
-    floor.SetMaterial (green);
 
-    PointLight& light1 = dynamic_cast<PointLight&>(scene.AddGameObject (new PointLight ()));
-    light1.SetParentObject (lamp);
+    PointLight& light1 = gameScene.AddGameObject<PointLight> ("light1");
+    light1.SetParentObject ("lamp");
     light1.SetColor (Vector3f (1.5f, 1.5f, 1.5f));
     light1.SetLinearAttenuationFactor (0.0f).SetQuadraticAttenuationFactor (1.0f);
     light1.SetEnabled (true);
 
-    DirectionalLight& light2 = dynamic_cast<DirectionalLight&>(scene.AddGameObject (new DirectionalLight ()));
+    DirectionalLight& light2 = gameScene.AddGameObject<DirectionalLight> ("light2");
     light2.GetModelTransform ().Rotate (135.0f, 45.0f, 0.0f);
     light2.SetColor (Vector3f (2.7f, 2.7f, 2.7f));
     light2.SetEnabled (true);
 
-    SpotLight& light3 = dynamic_cast<SpotLight&>(scene.AddGameObject (new SpotLight ()));
+    SpotLight& light3 = gameScene.AddGameObject<SpotLight> ("light3");
     light3.GetModelTransform ().Translate (2.0f, 10.0f, 0.0f).Rotate (90.0f, 0.0f, 0.0f);
     light3.SetColor (Vector3f (2.7f, 2.7f, 2.7f));
     light3.SetInnerCutoff (5.0f);
     light3.SetOuterCutoff (12.0f);
     light3.SetEnabled (true);
 
-    SplinePath& lp = dynamic_cast<SplinePath&> (scene.AddGameObject (new SplinePath ()));
+    SplinePath& lp = gameScene.AddGameObject<SplinePath> ("splinepath");
     lp.AddWaypoint ({2.0f, 0.0f, 2.0f}, Mathf::EulerToQuaterion ({0.0f, 0.0f, 0.0f}));
     lp.AddWaypoint ({-2.0f, 0.0f, 2.0f}, Mathf::EulerToQuaterion ({0.0f, 0.0f, 0.0f}));
     lp.AddWaypoint ({2.0f, 0.0f, -2.0f}, Mathf::EulerToQuaterion ({0.0f, 0.0f, 0.0f}));
@@ -141,7 +120,7 @@ int main (int argc, char* argv [])
 
     lp.GetModelTransform ().Rotate ({0.0f, 0.0f, -15.0f}).Translate ({0.0f, 1.0f, 0.0f});
 
-    AnimationObject& lightAnimation = dynamic_cast<AnimationObject&> (scene.AddGameObject (new AnimationObject ()));
+    AnimationObject& lightAnimation = gameScene.AddGameObject<AnimationObject> ("lightAnimation");
 
     lightAnimation.AddAnimationProperty<float> (
         "t", 0.0f,
@@ -156,6 +135,8 @@ int main (int argc, char* argv [])
     lightAnimation.Play ();
 
     game.Run ();
+
+    EngineContext::Deinitialize ();
 
     return 0;
 }

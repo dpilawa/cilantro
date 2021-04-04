@@ -2,48 +2,43 @@
 #define _MATERIAL_H_
 
 #include "cilantroengine.h"
-#include "scene/Texture.h"
+#include "resource/Resource.h"
+#include "resource/Texture.h"
 #include "math/Vector3f.h"
-#include "util/CallbackProvider.h"
+#include "system/CallbackProvider.h"
 #include <vector>
 #include <string>
 #include <map>
+#include <functional>
 
 class Renderer;
 
-class Material : public CallbackProvider<std::string, unsigned int, unsigned int>
+typedef std::map<unsigned int, std::pair<std::string, Texture*>> texture_map_t;
+typedef std::unordered_map<std::string, std::vector<float>> property_map_t;
+
+class Material : public Resource, public CallbackProvider<std::string, unsigned int, unsigned int>
 {
 public:
     __EAPI Material ();
     __EAPI virtual ~Material ();
 
-    __EAPI void SetHandle (unsigned int handle);
-    __EAPI unsigned int GetHandle () const;
-
-    __EAPI virtual void OnUpdate (Renderer &renderer, unsigned int textureUnit = 0) = 0;
-
-    __EAPI Material& SetShaderProgram (std::string name);
+    __EAPI Material& SetShaderProgram (const std::string& name);
     __EAPI std::string GetShaderProgramName () const;
 
-    __EAPI std::map<unsigned int, std::pair<std::string, Texture*>>& GetTexturesMap();
-    __EAPI unsigned int GetTexturesMapSize() const;
-
-    __EAPI std::unordered_map<std::string, std::vector<float>>& GetPropertiesMap ();
-
-    __EAPI Material& SetTexture (unsigned int textureUnit, std::string label, Texture* texture);
-    __EAPI Material& SetProperty (std::string propertyName, float propertyValue);
-    __EAPI Material& SetProperty (std::string propertyName, Vector3f propertyValue);
+    texture_map_t& GetTexturesMap();
+    property_map_t& GetPropertiesMap ();
 
 protected:
 
-    // handle
-    unsigned int materialHandle;
+    Material& SetTexture (unsigned int textureUnit, const std::string& label, Texture& texture);
+    Material& SetProperty (const std::string& propertyName, float propertyValue);
+    Material& SetProperty (const std::string& propertyName, Vector3f propertyValue);
 
     // textures map
-    std::map<unsigned int, std::pair<std::string, Texture*>> textures;
+    texture_map_t textures;
 
     // properties map
-    std::unordered_map<std::string, std::vector<float>> properties;
+    property_map_t properties;
 
 private:
 

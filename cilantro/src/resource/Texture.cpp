@@ -1,19 +1,29 @@
-#include "scene/Texture.h"
-#include "util/LogMessage.h"
+#include "resource/Texture.h"
+#include "system/LogMessage.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-Texture::Texture ()
+Texture::Texture (const int width, const int height, float channel) : LoadableResource ()
 {
     data = nullptr;
+    GenerateSolid (width, height, channel);
+}
+
+Texture::Texture (const int width, const int height, const Vector3f& channels) : LoadableResource ()
+{
+    data = nullptr;
+    GenerateSolid (width, height, channels);
+}
+
+Texture::Texture (const std::string& path) : LoadableResource (path)
+{
+    Load (path.c_str ());
 }
 
 Texture::~Texture ()
 {
-    // stbi_image_free (data);
     free (data);
-    LogMessage (__func__) << "Unloaded texture" << this;
 }
 
 Texture& Texture::GenerateSolid (const int width, const int height, float channel)
@@ -60,24 +70,7 @@ Texture& Texture::GenerateSolid (const int width, const int height, const Vector
     return *this;
 }
 
-Texture& Texture::Load (const char* filename)
-{
-    stbi_set_flip_vertically_on_load (true);
-    data = stbi_load (filename, &this->width, &this->height, &this->numChannels, 0);
-
-    if (data == nullptr)
-    {
-        LogMessage (__func__, EXIT_FAILURE) << "Unable to load texture" << filename << "[" << stbi_failure_reason () << "]";
-    }
-    else 
-    {
-        LogMessage (__func__) << "Loaded texture" << this << filename << "[" << this->width << this->height << this->numChannels << "]";
-    }
-
-    return *this;
-}
-
-unsigned char* Texture::Data ()
+std::uint8_t* Texture::Data ()
 {
     return this->data;
 }
@@ -96,3 +89,19 @@ int Texture::GetChannels () const
 {
     return this->numChannels;
 }
+
+void Texture::Load (const std::string& path)
+{
+    stbi_set_flip_vertically_on_load (true);
+    data = stbi_load (path.c_str (), &this->width, &this->height, &this->numChannels, 0);
+
+    if (data == nullptr)
+    {
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to load texture" << path << "[" << stbi_failure_reason () << "]";
+    }
+    else 
+    {
+        LogMessage (MSG_LOCATION) << "Loaded texture" << path << this->width << this->height << this->numChannels;
+    }
+}
+

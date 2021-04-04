@@ -1,58 +1,54 @@
 #include "cilantroengine.h"
-#include "graphics/Renderer.h"
 #include "scene/PhongMaterial.h"
+#include "resource/ResourceManager.h"
+#include "graphics/Renderer.h"
+#include "system/EngineContext.h"
 #include "math/Vector3f.h"
 
-PhongMaterial::PhongMaterial ()
+PhongMaterial::PhongMaterial () : Material ()
 {
     SetShaderProgram ("blinnphong_shader");
 
-    diffuse.GenerateSolid (1, 1, Vector3f (1.0f, 1.0f, 1.0f));
-    normal.GenerateSolid (1, 1, Vector3f (0.0f, 0.0f, 0.0f));
-    specular.GenerateSolid (1, 1, Vector3f (1.0f, 1.0f, 1.0f));
-    emissive.GenerateSolid (1, 1, Vector3f (0.0f, 0.0f, 0.0f));
-
     SetSpecularShininess (32.0f);
 
-    SetDiffuse (&diffuse);
-    SetNormal (&normal);
-    SetSpecular (&specular);
-    SetEmissive (&emissive);
+    SetTexture (static_cast<int>(PhongTexture::Diffuse), "tDiffuse", diffuse);
+    SetTexture (static_cast<int>(PhongTexture::Normal), "tNormal", normal);
+    SetTexture (static_cast<int>(PhongTexture::Specular), "tSpecular", specular);
+    SetTexture (static_cast<int>(PhongTexture::Emissive), "tEmissive", emissive);
 }
 
 PhongMaterial::~PhongMaterial ()
 {
 }
 
-void PhongMaterial::OnUpdate (Renderer& renderer, unsigned int textureUnit)
+PhongMaterial& PhongMaterial::SetDiffuse (const std::string& diffuse)
 {
-    renderer.Update (*this, textureUnit);
-}
-
-PhongMaterial& PhongMaterial::SetDiffuse (Texture* diffuse)
-{
-    Material::SetTexture (static_cast<int>(PhongTexture::Diffuse), "tDiffuse", diffuse);
+    Texture& tDiffuse = EngineContext::GetResourceManager ().GetByName<Texture> (diffuse);
+    SetTexture (static_cast<int>(PhongTexture::Diffuse), "tDiffuse", tDiffuse);
 
     return *this;
 }
 
-PhongMaterial& PhongMaterial::SetNormal (Texture* normal)
+PhongMaterial& PhongMaterial::SetNormal (const std::string& normal)
 {
-    Material::SetTexture (static_cast<int>(PhongTexture::Normal), "tNormal", normal);
+    Texture& tNormal = EngineContext::GetResourceManager ().GetByName<Texture> (normal);
+    SetTexture (static_cast<int>(PhongTexture::Normal), "tNormal", tNormal);
 
     return *this;
 }
 
-PhongMaterial& PhongMaterial::SetSpecular (Texture* specular)
+PhongMaterial& PhongMaterial::SetSpecular (const std::string& specular)
 {
-    Material::SetTexture (static_cast<int>(PhongTexture::Specular), "tSpecular", specular);
+    Texture& tSpecular = EngineContext::GetResourceManager ().GetByName<Texture> (specular);
+    SetTexture (static_cast<int>(PhongTexture::Specular), "tSpecular", tSpecular);
 
     return *this;
 }
 
-PhongMaterial& PhongMaterial::SetEmissive (Texture* emissive)
+PhongMaterial& PhongMaterial::SetEmissive (const std::string& emissive)
 {
-    Material::SetTexture (static_cast<int>(PhongTexture::Emissive), "tEmissive", emissive);
+    Texture& tEmissive = EngineContext::GetResourceManager ().GetByName<Texture> (emissive);
+    SetTexture (static_cast<int>(PhongTexture::Emissive), "tEmissive", tEmissive);
     
     return *this;
 }
@@ -60,7 +56,7 @@ PhongMaterial& PhongMaterial::SetEmissive (Texture* emissive)
 PhongMaterial& PhongMaterial::SetDiffuse (const Vector3f& diffuse)
 {
     this->diffuse.GenerateSolid (1, 1, diffuse);
-    PhongMaterial::SetDiffuse (&this->diffuse);
+    SetTexture (static_cast<int>(PhongTexture::Diffuse), "tDiffuse", this->diffuse);
 
     return *this;
 }
@@ -68,14 +64,14 @@ PhongMaterial& PhongMaterial::SetDiffuse (const Vector3f& diffuse)
 PhongMaterial& PhongMaterial::SetSpecular (const Vector3f& specular)
 {
     this->specular.GenerateSolid (1, 1, specular);
-    PhongMaterial::SetSpecular (&this->specular);
+    SetTexture (static_cast<int>(PhongTexture::Specular), "tSpecular", this->specular);
 
     return *this;
 }
 
 PhongMaterial& PhongMaterial::SetSpecularShininess (float specularShininess)
 {
-    Material::SetProperty ("fSpecularShininess", specularShininess);
+    SetProperty ("fSpecularShininess", specularShininess);
 
     return *this;
 }
@@ -83,24 +79,24 @@ PhongMaterial& PhongMaterial::SetSpecularShininess (float specularShininess)
 PhongMaterial& PhongMaterial::SetEmissive (const Vector3f& emissive)
 {
     this->emissive.GenerateSolid (1, 1, emissive);
-    PhongMaterial::SetEmissive (&this->emissive);
+    SetTexture (static_cast<int>(PhongTexture::Emissive), "tEmissive", this->emissive);
 
     return *this;
 }
 
-Texture* PhongMaterial::GetDiffuse ()
+Texture& PhongMaterial::GetDiffuse ()
 {
-    return textures[static_cast<int>(PhongTexture::Diffuse)].second;
+    return *(textures[static_cast<int>(PhongTexture::Diffuse)].second);
 }
 
-Texture* PhongMaterial::GetNormal ()
+Texture& PhongMaterial::GetNormal ()
 {
-    return textures[static_cast<int>(PhongTexture::Normal)].second;
+    return *(textures[static_cast<int>(PhongTexture::Normal)].second);
 }
 
-Texture* PhongMaterial::GetSpecular ()
+Texture& PhongMaterial::GetSpecular ()
 {
-    return textures[static_cast<int>(PhongTexture::Specular)].second;
+    return *(textures[static_cast<int>(PhongTexture::Specular)].second);
 }
 
 float PhongMaterial::GetSpecularShininess ()
@@ -108,8 +104,8 @@ float PhongMaterial::GetSpecularShininess ()
     return properties["tSpecularShininess"][0];
 }
 
-Texture* PhongMaterial::GetEmissive ()
+Texture& PhongMaterial::GetEmissive ()
 {
-    return textures[static_cast<int>(PhongTexture::Emissive)].second;
+    return *(textures[static_cast<int>(PhongTexture::Emissive)].second);
 }
 

@@ -5,12 +5,14 @@
 #include <string>
 #include <iostream>
 
+#define MSG_LOCATION typeid (*this).name () + std::string (": ") + std::string (__func__)
+
 class LogMessage
 {
 public:
     __EAPI LogMessage ();
-    __EAPI LogMessage (std::string label);
-    __EAPI LogMessage (std::string label, int code);
+    __EAPI LogMessage (const std::string& label);
+    __EAPI LogMessage (const std::string& label, int code);
     __EAPI ~LogMessage ();
 
     template <class P> 

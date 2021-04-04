@@ -11,7 +11,6 @@
 #include "graphics/GLShaderProgram.h"
 #include "graphics/Renderer.h"
 #include "graphics/RenderTarget.h"
-#include "scene/GameScene.h"
 #include <cstring>
 
 #define MAX_POINT_LIGHTS 64
@@ -21,7 +20,6 @@
 
 enum VBOType { VBO_VERTICES = 0, VBO_NORMALS, VBO_UVS };
 enum UBOType { UBO_MATRICES = 0, UBO_POINTLIGHTS, UBO_DIRECTIONALLIGHTS, UBO_SPOTLIGHTS };
-enum BindingPoint { BP_MATRICES = 1, BP_POINTLIGHTS, BP_DIRECTIONALLIGHTS, BP_SPOTLIGHTS };
 
 struct ObjectBuffers
 {
@@ -127,30 +125,23 @@ public:
     SpotLightStruct spotLights[MAX_SPOT_LIGHTS];
 };
 
-class GLRenderer : public Renderer, 
-#if (CILANTRO_GL_VERSION <= 140)
-public GLFramebuffer
-#else
-public GLMultisampleFramebuffer
-#endif
+class GLRenderer : public Renderer
 {
 public:
-    GLRenderer () = delete;
-    __EAPI GLRenderer (GameLoop* gameLoop, unsigned int width, unsigned int height);
+    __EAPI GLRenderer (unsigned int width, unsigned int height);
     __EAPI ~GLRenderer ();
+
+    // (de)initializers
+    __EAPI void Initialize ();
+    __EAPI void Deinitialize ();
 
     // render
     __EAPI void RenderFrame ();
 
     // renderbuffer
-    __EAPI void SetResolution (unsigned int width, unsigned int height);
+    __EAPI Framebuffer* GetFramebuffer () const;
     __EAPI GLuint GetRendererFramebuffer () const;
     __EAPI GLuint GetRendererFramebufferTexture () const;
-
-    // shader library manipulation
-    __EAPI virtual void AddShader (std::string shaderName, std::string shaderSourceCode, ShaderType shaderType);
-    __EAPI virtual void AddShaderToProgram (std::string shaderProgramName, std::string shaderName);
-    __EAPI GLShaderProgram& GetShaderProgram (std::string shaderProgramName);
 
     // object drawing and updating
     __EAPI void Draw (MeshObject& meshObject);
@@ -161,10 +152,6 @@ public:
     __EAPI void Update (Material& material, unsigned int textureUnit = 0);
 
 private:
-
-    // GL shader library
-    std::unordered_map <std::string, GLShader> shaders;
-    std::unordered_map <std::string, GLShaderProgram> shaderPrograms;
 
     // GL buffers and arrays for scene objects
     // These buffers contain data for objects to be rendered
@@ -198,12 +185,8 @@ private:
     std::unordered_map<unsigned int, unsigned int> directionalLights;
     std::unordered_map<unsigned int, unsigned int> spotLights;
 
-    // (de)initializers
-    void Initialize ();
-    void Deinitialize ();
-
     // check for GL errors
-    void CheckGLError (std::string functionName);
+    void CheckGLError (const std::string& functionName);
 
     // initialize shader library
     void InitializeShaderLibrary ();
