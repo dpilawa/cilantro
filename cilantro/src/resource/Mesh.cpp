@@ -131,6 +131,8 @@ Mesh& Mesh::CalculateTangentsBitangents ()
 
     tangents.clear ();
     bitangents.clear ();
+    tangents.resize (GetVertexCount () * 3);
+    bitangents.resize (GetVertexCount () * 3);
 
     // loop through all faces
     for (unsigned int f = 0; f < GetFaceCount (); f++)
