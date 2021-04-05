@@ -292,6 +292,20 @@ void GLRenderer::Update (MeshObject& meshObject)
         // location = 2 (vertex uv)
         glVertexAttribPointer (VBOType::VBO_UVS, 2, GL_FLOAT, GL_FALSE, 2 * sizeof (float), (GLvoid*)0);
 
+        // generate tangents buffer and copy tangents to GPU
+        glGenBuffers (1, &objectBuffers[objectHandle].VBO[VBOType::VBO_TANGENTS]);
+        glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_TANGENTS]);
+        glBufferData (GL_ARRAY_BUFFER, meshObject.GetMesh ().GetVertexCount () * sizeof (float) * 3, meshObject.GetMesh ().GetTangentData (), GL_STATIC_DRAW);
+        // location = 3 (vertex tangent)
+        glVertexAttribPointer (VBOType::VBO_TANGENTS, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (GLvoid*)0);
+
+        // generate bitangents buffer and copy tangents to GPU
+        glGenBuffers (1, &objectBuffers[objectHandle].VBO[VBOType::VBO_BITANGENTS]);
+        glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_BITANGENTS]);
+        glBufferData (GL_ARRAY_BUFFER, meshObject.GetMesh ().GetVertexCount () * sizeof (float) * 3, meshObject.GetMesh ().GetBitangentData (), GL_STATIC_DRAW);
+        // location = 4 (vertex bitangent)
+        glVertexAttribPointer (VBOType::VBO_BITANGENTS, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (GLvoid*)0);
+
         // generate index buffer and copy face indices to GPU
         glGenBuffers (1, &objectBuffers[objectHandle].EBO);
         glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, objectBuffers[objectHandle].EBO);

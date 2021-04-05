@@ -117,7 +117,56 @@ Mesh& Mesh::CalculateVertexNormals ()
     }
 
     return *this;
+}
 
+Mesh& Mesh::CalculateTangentsBitangents ()
+{
+    Vector3f v0, v1, v2;
+    Vector2f uv0, uv1, uv2;
+    Vector3f edge1, edge2;
+    Vector2f deltaUV1, deltaUV2;
+    Vector3f tangent;
+    Vector3f bitangent;
+    float detInv;
+
+    tangents.clear ();
+    bitangents.clear ();
+
+    // loop through all faces
+    for (unsigned int f = 0; f < GetFaceCount (); f++)
+    {
+        // get face vertices
+        v0 = GetVertex (GetFaceVertexIndex (f, 0));
+        v1 = GetVertex (GetFaceVertexIndex (f, 1));
+        v2 = GetVertex (GetFaceVertexIndex (f, 2));
+
+        // get face texture coordinates
+        uv0 = GetUV (GetFaceVertexIndex (f, 0));
+        uv1 = GetUV (GetFaceVertexIndex (f, 1));
+        uv2 = GetUV (GetFaceVertexIndex (f, 2));
+
+        // face edge deltas
+        edge1 = v1 - v0;
+        edge2 = v2 - v0;
+        deltaUV1 = uv1 - uv0;
+        deltaUV2 = uv2 - uv2; 
+
+        // calculate tangents and bitangents
+        detInv = 1.0f / (deltaUV1[0] * deltaUV2[1] - deltaUV2[0] * deltaUV1[1]);
+
+        tangent = detInv * (deltaUV2[1] * edge1 - deltaUV1[1] * edge2);
+        bitangent = detInv * (deltaUV1[0] * edge2 - deltaUV2[0] * edge1);
+
+        // set tangent and bitangent on all vertices of a face
+        SetTangent (GetFaceVertexIndex (f, 0), tangent);
+        SetTangent (GetFaceVertexIndex (f, 1), tangent);
+        SetTangent (GetFaceVertexIndex (f, 2), tangent);
+        SetBitangent (GetFaceVertexIndex (f, 0), bitangent);
+        SetBitangent (GetFaceVertexIndex (f, 1), bitangent);
+        SetBitangent (GetFaceVertexIndex (f, 2), bitangent);
+    }
+
+    return *this;
 }
 
 Mesh& Mesh::SetSmoothNormals (bool smoothNormals)
@@ -159,6 +208,16 @@ float* Mesh::GetUVData ()
     return uvs.data ();
 }
 
+float* Mesh::GetTangentData ()
+{
+    return tangents.data ();
+}
+
+float* Mesh::GetBitangentData ()
+{
+    return bitangents.data ();
+}
+
 unsigned int* Mesh::GetFacesData ()
 {
     return indices.data ();
@@ -185,14 +244,19 @@ Mesh& Mesh::AddFace (unsigned int v1, unsigned int v2, unsigned int v3)
     return *this;
 }
 
+unsigned int Mesh::GetFaceVertexIndex (unsigned int face, unsigned int faceVertex) const
+{
+    return indices[face * 3 + faceVertex];
+}
+
 Vector3f Mesh::GetVertex (unsigned int index) const
 {
     return Vector3f (vertices[index * 3], vertices[index * 3 + 1], vertices[index * 3 + 2]);
 }
 
-unsigned int Mesh::GetFaceVertexIndex (unsigned int face, unsigned int faceVertex) const
+Vector2f Mesh::GetUV (unsigned int index) const
 {
-    return indices[face * 3 + faceVertex];
+    return Vector2f (uvs[index * 2], uvs[index * 2 + 1]);
 }
 
 Vector3f Mesh::GetNormal (unsigned int index) const
@@ -200,11 +264,39 @@ Vector3f Mesh::GetNormal (unsigned int index) const
     return Vector3f (normals[index * 3], normals[index * 3 + 1], normals[index * 3 + 2]);
 }
 
-Mesh& Mesh::SetNormal (unsigned int vertex, const Vector3f& normal)
+Vector3f Mesh::GetTangent (unsigned int index) const
 {
-    normals[vertex * 3] = normal[0];
-    normals[vertex * 3 + 1] = normal[1];
-    normals[vertex * 3 + 2] = normal[2];
+    return Vector3f (tangents[index * 3], tangents[index * 3 + 1], tangents[index * 3 + 2]);
+}
+
+Vector3f Mesh::GetBitangent (unsigned int index) const
+{
+    return Vector3f (bitangents[index * 3], bitangents[index * 3 + 1], bitangents[index * 3 + 2]);
+}
+
+Mesh& Mesh::SetNormal (unsigned int index, const Vector3f& normal)
+{
+    normals[index * 3] = normal[0];
+    normals[index * 3 + 1] = normal[1];
+    normals[index * 3 + 2] = normal[2];
+
+    return *this;
+}
+
+Mesh& Mesh::SetTangent (unsigned int index, const Vector3f& tangent)
+{
+    tangents[index * 3] = tangent[0];
+    tangents[index * 3 + 1] = tangent[1];
+    tangents[index * 3 + 2] = tangent[2];
+
+    return *this;
+}
+
+Mesh& Mesh::SetBitangent (unsigned int index, const Vector3f& bitangent)
+{
+    bitangents[index * 3] = bitangent[0];
+    bitangents[index * 3 + 1] = bitangent[1];
+    bitangents[index * 3 + 2] = bitangent[2];
 
     return *this;
 }

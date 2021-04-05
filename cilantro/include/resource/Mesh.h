@@ -32,6 +32,9 @@ public:
     __EAPI Mesh& CalculateVertexNormals ();
     __EAPI Mesh& SetSmoothNormals (bool smoothNormals);
 
+    // calculate tangents and bitangents
+    __EAPI Mesh& CalculateTangentsBitangents ();
+
     // get mesh counts
     __EAPI unsigned int GetVertexCount () const;
     __EAPI unsigned int GetFaceCount () const;
@@ -41,6 +44,8 @@ public:
     __EAPI float* GetVerticesData ();
     __EAPI float* GetNormalsData ();
     __EAPI float* GetUVData ();
+    __EAPI float* GetTangentData ();
+    __EAPI float* GetBitangentData ();
 
     // get faces raw data
     __EAPI unsigned int* GetFacesData ();
@@ -50,11 +55,17 @@ public:
     __EAPI Mesh& AddFace (unsigned int v1, unsigned int v2, unsigned int v3);
 
 private:
+    unsigned int GetFaceVertexIndex (unsigned int face, unsigned int faceVertex) const;
 
     Vector3f GetVertex (unsigned int index) const;
-    unsigned int GetFaceVertexIndex (unsigned int face, unsigned int faceVertex) const;
+    Vector2f GetUV (unsigned int index) const;
     Vector3f GetNormal (unsigned int index) const;
-    Mesh& SetNormal (unsigned int vertex, const Vector3f& normal);
+    Vector3f GetTangent (unsigned int index) const;
+    Vector3f GetBitangent (unsigned int index) const;
+
+    Mesh& SetNormal (unsigned int index, const Vector3f& normal);
+    Mesh& SetTangent (unsigned int index, const Vector3f& tangent);
+    Mesh& SetBitangent (unsigned int index, const Vector3f& bitangent);
 
     std::string materialName;
     bool smoothNormals;
@@ -63,6 +74,8 @@ private:
     std::vector<unsigned int> indices;
     std::vector<float> normals;
     std::vector<float> uvs;
+    std::vector<float> tangents;
+    std::vector<float> bitangents;
 
 };
 
