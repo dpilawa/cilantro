@@ -38,7 +38,6 @@ public:
     // how many units in use 
     unsigned int unitsCount;
     // using 16 texture units, as per minimum defined in OpenGL 3.x
-    GLuint textureUniforms[MAX_TEXTURE_UNITS];
     GLuint textureUnits[MAX_TEXTURE_UNITS];
 };
 

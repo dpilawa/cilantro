@@ -315,6 +315,8 @@ void GLRenderer::Update (MeshObject& meshObject)
         glEnableVertexAttribArray (VBOType::VBO_VERTICES);
         glEnableVertexAttribArray (VBOType::VBO_NORMALS);
         glEnableVertexAttribArray (VBOType::VBO_UVS);
+        glEnableVertexAttribArray (VBOType::VBO_TANGENTS);
+        glEnableVertexAttribArray (VBOType::VBO_BITANGENTS);
 
         // unbind VAO
         glBindVertexArray (0);
@@ -337,6 +339,14 @@ void GLRenderer::Update (MeshObject& meshObject)
         // load uv buffer
         glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_UVS]);
         glBufferData (GL_ARRAY_BUFFER, meshObject.GetMesh ().GetVertexCount () * sizeof (float) * 2, meshObject.GetMesh ().GetUVData (), GL_STATIC_DRAW);
+
+        // load tangents buffer
+        glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_TANGENTS]);
+        glBufferData (GL_ARRAY_BUFFER, meshObject.GetMesh ().GetVertexCount () * sizeof (float) * 3, meshObject.GetMesh ().GetTangentData (), GL_STATIC_DRAW);
+
+        // load bitangents buffer
+        glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_BITANGENTS]);
+        glBufferData (GL_ARRAY_BUFFER, meshObject.GetMesh ().GetVertexCount () * sizeof (float) * 3, meshObject.GetMesh ().GetBitangentData (), GL_STATIC_DRAW);
 
         // load index buffer
         glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, objectBuffers[objectHandle].EBO);
@@ -595,6 +605,9 @@ void GLRenderer::InitializeShaderLibrary ()
 #if (CILANTRO_GL_VERSION < 330)
     glBindAttribLocation(p, 0, "vPosition");
     glBindAttribLocation(p, 1, "vNormal");
+    glBindAttribLocation(p, 2, "vUV");
+    glBindAttribLocation(p, 3, "vTangent");
+    glBindAttribLocation(p, 4, "vBitangent");
 #endif
 #if (CILANTRO_GL_VERSION < 420)
     glUniform1i (glGetUniformLocation (p, "tAlbedo"), 0);
@@ -618,6 +631,9 @@ void GLRenderer::InitializeShaderLibrary ()
 #if (CILANTRO_GL_VERSION < 330)
     glBindAttribLocation(p, 0, "vPosition");
     glBindAttribLocation(p, 1, "vNormal");
+    glBindAttribLocation(p, 2, "vUV");
+    glBindAttribLocation(p, 3, "vTangent");
+    glBindAttribLocation(p, 4, "vBitangent");
 #endif
 #if (CILANTRO_GL_VERSION < 420)
     glUniform1i (glGetUniformLocation (p, "tDiffuse"), 0);
@@ -640,6 +656,9 @@ void GLRenderer::InitializeShaderLibrary ()
 #if (CILANTRO_GL_VERSION < 330)	
     glBindAttribLocation(p, 0, "vPosition");
     glBindAttribLocation(p, 1, "vNormal");
+    glBindAttribLocation(p, 2, "vUV");
+    glBindAttribLocation(p, 3, "vTangent");
+    glBindAttribLocation(p, 4, "vBitangent");
 #endif
 #if (CILANTRO_GL_VERSION < 420)
     glUniform1i (glGetUniformLocation (p, "tDiffuse"), 0);

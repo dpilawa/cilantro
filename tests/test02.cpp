@@ -36,13 +36,12 @@ int main (int argc, char* argv [])
 
     resourceManager.Load<Texture> ("tEarthDiffuse", "textures/2k_earth_daymap.jpg");
     resourceManager.Load<Texture> ("tEarthSpec", "textures/2k_earth_specular_map.png");
+    resourceManager.Load<Texture> ("tEarthNormal", "textures/2k_earth_normal_map.png");
     resourceManager.Load<Texture> ("tMoon", "textures/2k_moon.jpg");
     resourceManager.Load<Texture> ("tSun", "textures/2k_sun.jpg");
 
     gameScene.AddMaterial<PhongMaterial> ("mSun").SetEmissive ("tSun");
-
-    gameScene.AddMaterial<PhongMaterial> ("mEarth").SetDiffuse ("tEarthDiffuse").SetSpecular ("tEarthSpec").SetSpecularShininess (32.0f);
-
+    gameScene.AddMaterial<PhongMaterial> ("mEarth").SetDiffuse ("tEarthDiffuse").SetSpecular ("tEarthSpec").SetNormal("tEarthNormal").SetSpecularShininess (32.0f);
     gameScene.AddMaterial<PhongMaterial> ("mMoon").SetDiffuse ("tMoon").SetSpecularShininess (1.0f).SetSpecular (Vector3f(0.2f, 0.2f, 0.2f));
 
     PerspectiveCamera& cam = gameScene.AddGameObject<PerspectiveCamera> ("camera", 25.0f, 1.0f, 500.0f);

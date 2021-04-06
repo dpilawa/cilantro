@@ -7,9 +7,8 @@
 /* fragment position in world space */
 in vec3 fPosition;
 
-/* fragment normal */
-in vec3 fNormal;
-vec3 surfaceNormal;
+/* TBN matrix */
+in mat3 TBN;
 
 /* texture uv coordinates */
 in vec2 fUV;
@@ -30,6 +29,7 @@ uniform sampler2D tSpecular;
 uniform sampler2D tEmissive;
 #endif
 
+vec3 fNormal;
 vec3 fDiffuseColor;
 vec3 fSpecularColor;
 vec3 fEmissiveColor;
@@ -39,8 +39,7 @@ uniform float fSpecularShininess;
 /* eye position in world space */
 uniform vec3 eyePosition;
 
-/* point lights data structures */
-
+/* light data structures */
 struct PointLightStruct
 {
     vec3 lightPosition;	/* world space */
@@ -95,10 +94,11 @@ float CalculateDiffuse (float n_dot_l)
     return clamp (n_dot_l, 0.0, 1.0);
 }
 
+/* calculate specular coefficient */
 float CalculateSpecular (vec3 lightDirection, float n_dot_l)
 {
-    vec3 halfwayDirection = normalize(lightDirection + viewDirection);
-    return pow(clamp(dot(surfaceNormal, halfwayDirection), 0.0, 1.0), fSpecularShininess) * smoothstep(0.0, 0.5, n_dot_l);		
+    vec3 halfwayDirection = normalize (lightDirection + viewDirection);
+    return pow (clamp (dot (fNormal, halfwayDirection), 0.0, 1.0), fSpecularShininess) * smoothstep(0.0, 0.5, n_dot_l);		
 }
 
 vec3 CalculateOutputColor (float diffuseCoefficient, float attenuationFactor, float specularCoefficient, vec3 lightColor)
@@ -112,7 +112,7 @@ vec4 CalculatePointLight (PointLightStruct light)
     vec3 lightDirection = normalize (light.lightPosition - fPosition);
 
     /* diffuse component */
-    float n_dot_l = dot (surfaceNormal, lightDirection);
+    float n_dot_l = dot (fNormal, lightDirection);
     float diffuseCoefficient = CalculateDiffuse (n_dot_l);
     
     /* specular component */
@@ -132,7 +132,7 @@ vec4 CalculateDirectionalLight (DirectionalLightStruct light)
     vec3 lightDirection = normalize (-light.lightDirection);
 
     /* diffuse component */
-    float n_dot_l = dot (surfaceNormal, lightDirection);		
+    float n_dot_l = dot (fNormal, lightDirection);		
     float diffuseCoefficient = CalculateDiffuse (n_dot_l);
 
     /* specular component */
@@ -151,12 +151,12 @@ vec4 CalculateSpotLight (SpotLightStruct light)
     vec3 lightDirection = normalize (light.lightPosition - fPosition);
 
     /* check if in cone */
-    float theta = dot(lightDirection, normalize(-light.lightDirection));
+    float theta = dot (lightDirection, normalize (-light.lightDirection));
     float epsilon = light.innerCutoffCosine - light.outerCutoffCosine;
     float intensity = clamp ((theta - light.outerCutoffCosine) / epsilon, 0.0, 1.0); 		
 
     /* diffuse component */
-    float n_dot_l = dot (surfaceNormal, lightDirection);
+    float n_dot_l = dot (fNormal, lightDirection);
     float diffuseCoefficient = CalculateDiffuse (n_dot_l);
     
     /* specular component */
@@ -175,13 +175,11 @@ void main()
     fDiffuseColor = texture (tDiffuse, fUV).rgb;
     fSpecularColor = texture (tSpecular, fUV).rgb;
     fEmissiveColor = texture (tEmissive, fUV).rgb;
-
+    fNormal = normalize (TBN * (texture (tNormal, fUV).rgb * 2.0 - 1.0));
+    
     color = vec4 (fEmissiveColor, 1.0);
     
-    /* normalize normal again to fix interpolated normals */
-    surfaceNormal = normalize (fNormal);
-
-    /* calculate viewing direction */
+    /* calculate viewing direction in tangent space */
     viewDirection = normalize (eyePosition - fPosition);
 
     for (int i=0; i < pointLightCount; i++)
@@ -199,4 +197,3 @@ void main()
         color += CalculateSpotLight (spotLights[i]);
     }		
 } 
-

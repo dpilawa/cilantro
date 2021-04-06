@@ -151,7 +151,7 @@ Mesh& Mesh::CalculateTangentsBitangents ()
         edge1 = v1 - v0;
         edge2 = v2 - v0;
         deltaUV1 = uv1 - uv0;
-        deltaUV2 = uv2 - uv2; 
+        deltaUV2 = uv2 - uv0; 
 
         // calculate tangents and bitangents
         detInv = 1.0f / (deltaUV1[0] * deltaUV2[1] - deltaUV2[0] * deltaUV1[1]);

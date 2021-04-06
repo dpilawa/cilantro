@@ -72,7 +72,7 @@ int main (int argc, char* argv[])
     tail.SetParentObject ("plane");
 
     DirectionalLight& light = gameScene.AddGameObject<DirectionalLight> ("light");
-    light.GetModelTransform ().Rotate (90.0f, 0.0f, 10.0f);
+    light.GetModelTransform ().Rotate (90.0f, 10.0f, 10.0f);
     light.SetColor (Vector3f (1.0f, 1.0f, 1.0f));
     light.SetEnabled (true);
 

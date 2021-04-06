@@ -9,9 +9,8 @@ const float PI = 3.14159265359;
 /* fragment position in world space */
 in vec3 fPosition;
 
-/* fragment normal */
-in vec3 fNormal;
-vec3 surfaceNormal;
+/* TBN matrix */
+in mat3 TBN;
 
 /* texture uv coordinates */
 in vec2 fUV;
@@ -34,6 +33,7 @@ uniform sampler2D tRoughness;
 uniform sampler2D tAO;
 #endif
 
+vec3 fNormal;
 vec3 fAlbedo;
 vec3 fNormalMap;
 float fMetallic;
@@ -167,7 +167,7 @@ vec3 CalculateDirectionalLightRadiance (DirectionalLightStruct light)
 vec3 CalculateSpotLightRadiance (SpotLightStruct light, vec3 L)
 {
     /* check if in cone */
-    float theta = dot(L, normalize(-light.lightDirection));
+    float theta = dot (L, normalize (-light.lightDirection));
     float epsilon = light.innerCutoffCosine - light.outerCutoffCosine;
     float intensity = clamp ((theta - light.outerCutoffCosine) / epsilon, 0.0, 1.0); 		
     
@@ -183,8 +183,8 @@ void main()
 {
     vec3 Lo = vec3 (0.0);
     
-    /* normalize normal again to fix interpolated normals */
-    surfaceNormal = normalize (fNormal);
+    /* sample normal map */
+    fNormal = normalize (TBN * (texture (tNormal, fUV).rgb * 2.0 - 1.0));
 
     /* calculate viewing direction */
     viewDirection = normalize (eyePosition - fPosition);
@@ -202,7 +202,7 @@ void main()
         vec3 halfwayDirection = normalize (viewDirection + lightDirection);
 
         vec3 radiance = CalculatePointLightRadiance (pointLights[i]);
-        vec3 specular = CalculateCookTorranceSpecularBRDF (surfaceNormal, lightDirection, viewDirection, halfwayDirection);
+        vec3 specular = CalculateCookTorranceSpecularBRDF (fNormal, lightDirection, viewDirection, halfwayDirection);
         
         vec3 F0 = vec3(0.04); 
         F0 = mix(F0, fAlbedo, fMetallic);
@@ -211,7 +211,7 @@ void main()
         vec3 kD = vec3 (1.0) - F;
         kD = kD * (1.0 - fMetallic);	
 
-        float NdotL = max (dot (surfaceNormal, lightDirection), 0.0);        
+        float NdotL = max (dot (fNormal, lightDirection), 0.0);        
         Lo += (kD * fAlbedo / PI + specular) * radiance * NdotL + vec3(0.01) * fAlbedo * fAO;
     }
 
@@ -221,7 +221,7 @@ void main()
         vec3 halfwayDirection = normalize (viewDirection + lightDirection);
 
         vec3 radiance = CalculateDirectionalLightRadiance (directionalLights[i]);
-        vec3 specular = CalculateCookTorranceSpecularBRDF (surfaceNormal, lightDirection, viewDirection, halfwayDirection);
+        vec3 specular = CalculateCookTorranceSpecularBRDF (fNormal, lightDirection, viewDirection, halfwayDirection);
         
         vec3 F0 = vec3(0.04); 
         F0 = mix(F0, fAlbedo, fMetallic);
@@ -230,7 +230,7 @@ void main()
         vec3 kD = vec3 (1.0) - F;
         kD = kD * (1.0 - fMetallic);	
 
-        float NdotL = max (dot (surfaceNormal, lightDirection), 0.0);        
+        float NdotL = max (dot (fNormal, lightDirection), 0.0);        
         Lo += (kD * fAlbedo / PI + specular) * radiance * NdotL + vec3(0.01) * fAlbedo * fAO;
     }
 
@@ -240,7 +240,7 @@ void main()
         vec3 halfwayDirection = normalize (viewDirection + lightDirection);
 
         vec3 radiance = CalculateSpotLightRadiance (spotLights[i], lightDirection);
-        vec3 specular = CalculateCookTorranceSpecularBRDF (surfaceNormal, lightDirection, viewDirection, halfwayDirection);
+        vec3 specular = CalculateCookTorranceSpecularBRDF (fNormal, lightDirection, viewDirection, halfwayDirection);
         
         vec3 F0 = vec3(0.04); 
         F0 = mix(F0, fAlbedo, fMetallic);
@@ -249,7 +249,7 @@ void main()
         vec3 kD = vec3 (1.0) - F;
         kD = kD * (1.0 - fMetallic);	
 
-        float NdotL = max (dot (surfaceNormal, lightDirection), 0.0);        
+        float NdotL = max (dot (fNormal, lightDirection), 0.0);        
         Lo += (kD * fAlbedo / PI + specular) * radiance * NdotL + vec3(0.01) * fAlbedo * fAO;
     }
 

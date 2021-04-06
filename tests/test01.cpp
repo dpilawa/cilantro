@@ -51,11 +51,12 @@ int main (int argc, char* argv [])
 
     resourceManager.Load<Texture> ("tAlbedo", "textures/scuffed-metal1_albedo.png");
     resourceManager.Load<Texture> ("tMetalness", "textures/scuffed-metal1_metallic.png");
+    resourceManager.Load<Texture> ("tNormal", "textures/scuffed-metal1_normal-dx.png");
     resourceManager.Load<Texture> ("tRoughness", "textures/scuffed-metal1_roughness.png");
     resourceManager.Load<Texture> ("tAO", "textures/scuffed-metal1_ao.png");
 
-    gameScene.AddMaterial<PBRMaterial> ("greenMaterial").SetAlbedo (Vector3f (0.1f, 0.4f, 0.1f)).SetRoughness (0.1f).SetMetallic (0.6f);
-    gameScene.AddMaterial<PBRMaterial> ("redMaterial").SetAlbedo ("tAlbedo").SetMetallic ("tMetalness").SetRoughness ("tRoughness");
+    gameScene.AddMaterial<PBRMaterial> ("greenMaterial").SetAlbedo (Vector3f (0.1f, 0.4f, 0.1f)).SetRoughness (0.1f).SetMetallic (0.6f).SetNormal ("tNormal");
+    gameScene.AddMaterial<PBRMaterial> ("redMaterial").SetAlbedo ("tAlbedo").SetMetallic ("tMetalness").SetRoughness ("tRoughness").SetNormal("tNormal");
     gameScene.AddMaterial<PBRMaterial> ("goldMaterial").SetAlbedo (Vector3f (1.000f, 0.766f, 0.336f)).SetMetallic (0.8f).SetRoughness (0.2f).SetAO (1.0f);
     gameScene.AddMaterial<PBRMaterial> ("blueMaterial").SetAlbedo (Vector3f (0.02f, 0.29f, 0.53f)).SetMetallic (0.0f).SetRoughness(0.8f);
     gameScene.AddMaterial<PhongMaterial> ("lampMaterial").SetEmissive (Vector3f (0.9f, 0.9f, 0.9f)).SetDiffuse (Vector3f (0.2f, 0.2f, 0.2f));

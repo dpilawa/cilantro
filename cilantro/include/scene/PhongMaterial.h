@@ -45,7 +45,7 @@ protected:
 
     // static textures
     Texture diffuse {1, 1, Vector3f (1.0f, 1.0f, 1.0f)};
-    Texture normal {1, 1, Vector3f (0.0f, 0.0f, 0.0f)};
+    Texture normal {1, 1, Vector3f (0.5f, 0.5f, 1.0f)};
     Texture specular {1, 1, Vector3f (1.0f, 1.0f, 1.0f)};
     Texture emissive {1, 1, Vector3f (0.0f, 0.0f, 0.0f)};
 
