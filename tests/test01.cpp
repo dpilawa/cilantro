@@ -41,7 +41,7 @@ int main (int argc, char* argv [])
     EngineContext::Initialize ();
 
     renderer.AddPostprocess<GLPostprocess> ("hdr_postprocess").SetShaderProgram ("post_hdr_shader");
-    renderer.AddPostprocess<GLPostprocess> ("gamma_postprocess").SetShaderProgram ("post_gamma_shader").SetPostprocessParameterFloat ("fGamma", 1.8f);
+    renderer.AddPostprocess<GLPostprocess> ("gamma_postprocess").SetShaderProgram ("post_gamma_shader").SetPostprocessParameterFloat ("fGamma", 2.1f);
 
     inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
     inputController.BindInputEvent ("exit", [ & ]() { game.Stop (); });
@@ -49,22 +49,20 @@ int main (int argc, char* argv [])
     inputController.CreateInputEvent ("mousemode", InputKey::KeySpace, InputTrigger::Release, {});
     inputController.BindInputEvent ("mousemode", [ & ]() { inputController.SetMouseGameMode (!inputController.IsGameMode ()); });
 
-    /*
-    resourceManager.Load<Texture> ("tAlbedo", "textures/scuffed-metal1_albedo.png");
-    resourceManager.Load<Texture> ("tMetalness", "textures/scuffed-metal1_metallic.png");
-    resourceManager.Load<Texture> ("tNormal", "textures/scuffed-metal1_normal-dx.png");
-    resourceManager.Load<Texture> ("tRoughness", "textures/scuffed-metal1_roughness.png");
-    resourceManager.Load<Texture> ("tAO", "textures/scuffed-metal1_ao.png");
-    */
+    resourceManager.Load<Texture> ("tAlbedoMetal", "textures/scuffed-metal1_albedo.png");
+    resourceManager.Load<Texture> ("tMetalnessMetal", "textures/scuffed-metal1_metallic.png");
+    resourceManager.Load<Texture> ("tNormalMetal", "textures/scuffed-metal1_normal-dx.png");
+    resourceManager.Load<Texture> ("tRoughnessMetal", "textures/scuffed-metal1_roughness.png");
+    resourceManager.Load<Texture> ("tAOMetal", "textures/scuffed-metal1_ao.png");
 
-    resourceManager.Load<Texture> ("tAlbedo", "textures/Metal007_1K_Color.png");
-    resourceManager.Load<Texture> ("tMetalness", "textures/Metal007_1K_Metalness.png");
-    resourceManager.Load<Texture> ("tNormal", "textures/Metal007_1K_Normal.png");
-    resourceManager.Load<Texture> ("tRoughness", "textures/Metal007_1K_Roughness.png");
+    resourceManager.Load<Texture> ("tAlbedoGold", "textures/Metal007_1K_Color.png");
+    resourceManager.Load<Texture> ("tMetalnessGold", "textures/Metal007_1K_Metalness.png");
+    resourceManager.Load<Texture> ("tNormalGold", "textures/Metal007_1K_Normal.png");
+    resourceManager.Load<Texture> ("tRoughnessGold", "textures/Metal007_1K_Roughness.png");
 
-    gameScene.AddMaterial<PBRMaterial> ("greenMaterial").SetAlbedo (Vector3f (0.1f, 0.4f, 0.1f)).SetRoughness (0.1f).SetMetallic (0.6f).SetNormal ("tNormal");
-    gameScene.AddMaterial<PBRMaterial> ("redMaterial").SetAlbedo ("tAlbedo").SetMetallic ("tMetalness").SetRoughness ("tRoughness").SetNormal("tNormal");
-    gameScene.AddMaterial<PBRMaterial> ("goldMaterial").SetAlbedo (Vector3f (1.000f, 0.766f, 0.336f)).SetMetallic (0.8f).SetRoughness (0.2f).SetAO (1.0f);
+    gameScene.AddMaterial<PBRMaterial> ("greenMaterial").SetAlbedo (Vector3f (0.1f, 0.4f, 0.1f)).SetRoughness (0.1f).SetMetallic (0.6f).SetNormal ("tNormalMetal");
+    gameScene.AddMaterial<PBRMaterial> ("redMaterial").SetAlbedo ("tAlbedoMetal").SetMetallic ("tMetalnessMetal").SetRoughness ("tRoughnessMetal").SetNormal("tNormalMetal").SetAO ("tAOMetal");
+    gameScene.AddMaterial<PBRMaterial> ("goldMaterial").SetAlbedo ("tAlbedoGold").SetMetallic ("tMetalnessGold").SetRoughness ("tRoughnessGold").SetNormal("tNormalGold");
     gameScene.AddMaterial<PBRMaterial> ("blueMaterial").SetAlbedo (Vector3f (0.02f, 0.29f, 0.53f)).SetMetallic (0.0f).SetRoughness(0.8f);
     gameScene.AddMaterial<PhongMaterial> ("lampMaterial").SetEmissive (Vector3f (0.9f, 0.9f, 0.9f)).SetDiffuse (Vector3f (0.2f, 0.2f, 0.2f));
 
@@ -79,12 +77,12 @@ int main (int argc, char* argv [])
     cube.GetModelTransform ().Scale (0.5f).Translate (0.0f, 1.1f, 0.0f);
 
     Mesh& coneMesh = resourceManager.Create<Mesh> ("coneMesh").SetSmoothNormals (false);
-    Primitives::GenerateCone (coneMesh, 16);
+    Primitives::GenerateCone (coneMesh, 32);
     MeshObject& cone = gameScene.AddGameObject<MeshObject> ("cone", "coneMesh", "goldMaterial");
     cone.GetModelTransform ().Translate (-1.5f, 0.5f, 1.0f).Scale (0.5f);
 
     Mesh& cylinderMesh = resourceManager.Create<Mesh> ("cylinderMesh").SetSmoothNormals (false);
-    Primitives::GenerateCylinder (cylinderMesh, 16);
+    Primitives::GenerateCylinder (cylinderMesh, 32);
     MeshObject& cylinder = gameScene.AddGameObject<MeshObject> ("cylinder", "cylinderMesh", "blueMaterial");
     cylinder.GetModelTransform ().Rotate (90.0f, 12.5f, 0.0f).Translate (1.7f, 0.5f, 0.7f).Scale (0.5f);
 
