@@ -41,7 +41,7 @@ int main (int argc, char* argv [])
     EngineContext::Initialize ();
 
     renderer.AddPostprocess<GLPostprocess> ("hdr_postprocess").SetShaderProgram ("post_hdr_shader");
-    renderer.AddPostprocess<GLPostprocess> ("gamma_postprocess").SetShaderProgram ("post_gamma_shader").SetPostprocessParameterFloat ("fGamma", 2.1f);
+    renderer.AddPostprocess<GLPostprocess> ("gamma_postprocess").SetShaderProgram ("post_gamma_shader").SetPostprocessParameterFloat ("fGamma", 1.8f);
 
     inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
     inputController.BindInputEvent ("exit", [ & ]() { game.Stop (); });
@@ -49,11 +49,18 @@ int main (int argc, char* argv [])
     inputController.CreateInputEvent ("mousemode", InputKey::KeySpace, InputTrigger::Release, {});
     inputController.BindInputEvent ("mousemode", [ & ]() { inputController.SetMouseGameMode (!inputController.IsGameMode ()); });
 
+    /*
     resourceManager.Load<Texture> ("tAlbedo", "textures/scuffed-metal1_albedo.png");
     resourceManager.Load<Texture> ("tMetalness", "textures/scuffed-metal1_metallic.png");
     resourceManager.Load<Texture> ("tNormal", "textures/scuffed-metal1_normal-dx.png");
     resourceManager.Load<Texture> ("tRoughness", "textures/scuffed-metal1_roughness.png");
     resourceManager.Load<Texture> ("tAO", "textures/scuffed-metal1_ao.png");
+    */
+
+    resourceManager.Load<Texture> ("tAlbedo", "textures/Metal007_1K_Color.png");
+    resourceManager.Load<Texture> ("tMetalness", "textures/Metal007_1K_Metalness.png");
+    resourceManager.Load<Texture> ("tNormal", "textures/Metal007_1K_Normal.png");
+    resourceManager.Load<Texture> ("tRoughness", "textures/Metal007_1K_Roughness.png");
 
     gameScene.AddMaterial<PBRMaterial> ("greenMaterial").SetAlbedo (Vector3f (0.1f, 0.4f, 0.1f)).SetRoughness (0.1f).SetMetallic (0.6f).SetNormal ("tNormal");
     gameScene.AddMaterial<PBRMaterial> ("redMaterial").SetAlbedo ("tAlbedo").SetMetallic ("tMetalness").SetRoughness ("tRoughness").SetNormal("tNormal");

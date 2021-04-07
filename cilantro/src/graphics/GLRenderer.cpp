@@ -526,7 +526,7 @@ void GLRenderer::Update (Material& material, unsigned int textureUnit)
 
     if (find == materialTextureUnits.end ())
     {
-        materialTextureUnits.insert ({ materialHandle, MaterialTextureUnits() });
+        materialTextureUnits.insert ({ materialHandle, MaterialTextureUnits () });
         
         for (auto&& t : textures)
         {
@@ -537,6 +537,7 @@ void GLRenderer::Update (Material& material, unsigned int textureUnit)
 
             glGenTextures(1, &texture);
             glBindTexture(GL_TEXTURE_2D, texture);
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
             glTexImage2D(GL_TEXTURE_2D, 0, format, tPtr->GetWidth (), tPtr->GetHeight (), 0, format, GL_UNSIGNED_BYTE, tPtr->Data ());
             glGenerateMipmap(GL_TEXTURE_2D);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -558,6 +559,7 @@ void GLRenderer::Update (Material& material, unsigned int textureUnit)
         format = textureChannelMap[tPtr->GetChannels ()];
 
         glBindTexture(GL_TEXTURE_2D, materialTextureUnits[materialHandle].textureUnits[unit]);
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         glTexImage2D(GL_TEXTURE_2D, 0, format, tPtr->GetWidth (), tPtr->GetHeight (), 0, format, GL_UNSIGNED_BYTE, tPtr->Data ());
         glGenerateMipmap(GL_TEXTURE_2D);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_LINEAR_MIPMAP_LINEAR);

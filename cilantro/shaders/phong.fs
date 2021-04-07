@@ -97,8 +97,8 @@ float CalculateDiffuse (float n_dot_l)
 /* calculate specular coefficient */
 float CalculateSpecular (vec3 lightDirection, float n_dot_l)
 {
-    vec3 reflectionDirection = reflect (-lightDirection, surfaceNormal);
-    return pow(clamp(dot(viewDirection, reflectionDirection), 0.0, 1.0), fSpecularShininess) * smoothstep(0.0, 0.15, n_dot_l);
+    vec3 reflectionDirection = reflect (-lightDirection, fNormal);
+    return pow (clamp (dot (viewDirection, reflectionDirection), 0.0, 1.0), fSpecularShininess) * smoothstep (0.0, 0.15, n_dot_l);
 }
 
 
