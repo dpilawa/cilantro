@@ -55,7 +55,7 @@ void AssimpModelLoader::ImportMesh (const aiScene* scene, const aiMesh* mesh)
         for (unsigned int i = 0; i < mesh->mNumVertices; i++)
         {
             /* vertices with UV coordinates */
-            if (mesh->HasTextureCoords (0))
+            if (!mesh->HasTextureCoords (0))
             {
                 myMesh.AddVertex (Vector3f (mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z), Vector2f (mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y));
             }
@@ -73,7 +73,7 @@ void AssimpModelLoader::ImportMesh (const aiScene* scene, const aiMesh* mesh)
             /* tangents and bitangents */
             if (mesh->HasTangentsAndBitangents ())
             {
-                myMesh.AddTangentBitangent (Vector3f (mesh->mTangents[i].x, mesh->mTangents[i].x, mesh->mTangents[i].z), Vector3f (mesh->mBitangents[i].x, mesh->mBitangents[i].x, mesh->mBitangents[i].z));
+                myMesh.AddTangentBitangent (Vector3f (mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z), Vector3f (mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z));
             }
 
         }

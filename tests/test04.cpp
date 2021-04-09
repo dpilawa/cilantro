@@ -31,7 +31,7 @@ int main (int argc, char* argv [])
     EngineContext::Set (game, resourceManager, timer, gameScene, renderer, renderTarget, inputController);
     EngineContext::Initialize ();
 
-    modelLoader.Load ("assets/Cerberus_by_Andrew_Maximov/Cerberus_LP.FBX");
+    modelLoader.Load ("assets/Cerberus_LP.FBX");
 
     renderer.AddPostprocess<GLPostprocess> ("hdr_postprocess").SetShaderProgram ("post_hdr_shader");
     renderer.AddPostprocess<GLPostprocess> ("gamma_postprocess").SetShaderProgram ("post_gamma_shader").SetPostprocessParameterFloat ("fGamma", 2.1f);
