@@ -53,6 +53,8 @@ public:
     // add vertices and primitives
     __EAPI Mesh& AddVertex (const Vector3f& vertex, const Vector2f& uv);
     __EAPI Mesh& AddFace (unsigned int v1, unsigned int v2, unsigned int v3);
+    __EAPI Mesh& AddNormal (const Vector3f& normal);
+    __EAPI Mesh& AddTangentBitangent (const Vector3f& tangent, const Vector3f& bitangent);
 
 private:
     unsigned int GetFaceVertexIndex (unsigned int face, unsigned int faceVertex) const;

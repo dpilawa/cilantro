@@ -246,6 +246,28 @@ Mesh& Mesh::AddFace (unsigned int v1, unsigned int v2, unsigned int v3)
     return *this;
 }
 
+Mesh& Mesh::AddNormal (const Vector3f& normal)
+{
+    normals.push_back (normal[0]);
+    normals.push_back (normal[1]);
+    normals.push_back (normal[2]);
+
+    return *this;
+}
+
+Mesh& Mesh::AddTangentBitangent (const Vector3f& tangent, const Vector3f& bitangent)
+{
+    tangents.push_back (tangent[0]);
+    tangents.push_back (tangent[1]);
+    tangents.push_back (tangent[2]);
+
+    bitangents.push_back (bitangent[0]);
+    bitangents.push_back (bitangent[1]);
+    bitangents.push_back (bitangent[2]);
+
+    return *this;
+}
+
 unsigned int Mesh::GetFaceVertexIndex (unsigned int face, unsigned int faceVertex) const
 {
     return indices[face * 3 + faceVertex];

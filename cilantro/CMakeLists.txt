@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 
 include_directories ("${PROJECT_SOURCE_DIR}/ext/glfw/include")
 include_directories ("${PROJECT_SOURCE_DIR}/ext/stb")
+include_directories ("${PROJECT_SOURCE_DIR}/ext/assimp/include")
 include_directories ("${PROJECT_SOURCE_DIR}/cilantro/include")
 
 add_compile_definitions(CILANTRO_GL_VERSION=${CILANTRO_GL_VERSION})
@@ -58,8 +59,10 @@ include/math/Quaternion.h
 include/math/Vector2f.h
 include/math/Vector3f.h
 include/math/Vector4f.h
+include/resource/AssimpModelLoader.h
 include/resource/LoadableResource.h
 include/resource/Mesh.h
+include/resource/ModelLoader.h
 include/resource/Resource.h
 include/resource/ResourceManager.h
 include/resource/Texture.h
@@ -113,8 +116,10 @@ src/math/Quaternion.cpp
 src/math/Vector2f.cpp
 src/math/Vector3f.cpp
 src/math/Vector4f.cpp
+src/resource/AssimpModelLoader.cpp
 src/resource/LoadableResource.cpp
 src/resource/Mesh.cpp
+src/resource/ModelLoader.cpp
 src/resource/Resource.cpp
 src/resource/ResourceManager.cpp
 src/resource/Texture.cpp

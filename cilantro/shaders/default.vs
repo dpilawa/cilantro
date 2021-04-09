@@ -39,6 +39,12 @@ void main ()
     vec3 N = normalize (mNormal * vNormal);
     T = normalize (T - dot (T, N) * N);
     vec3 B = cross (N, T);
+
+    if (dot (cross (N, T), B) < 0.0)
+    {
+        T = -T;
+    }
+
     TBN = mat3 (T, B, N);
 
     /* world space vertex position */
