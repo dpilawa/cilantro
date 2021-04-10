@@ -110,11 +110,21 @@ void AssimpModelLoader::ImportMeshFaces (Mesh& myMesh, const aiScene* scene, con
 
 void AssimpModelLoader::ImportMeshMaterial (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh)
 {
-    std::string textureName;
+    std::string textureTypes;
 
     if (mesh->mMaterialIndex >= 0)
     {
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+
+        for (unsigned int t = static_cast<unsigned int>(aiTextureType_NONE); t < AI_TEXTURE_TYPE_MAX; t++)
+        {
+            if (HasTexture (material, static_cast<aiTextureType>(t)))
+            {
+                textureTypes += (std::to_string (t) + " ");
+            }
+        }
+
+        LogMessage (MSG_LOCATION) << "Texture types found:" << textureTypes;
 
         if (HasTexture (material, aiTextureType_DIFFUSE))
         {

@@ -38,7 +38,7 @@ int main (int argc, char* argv [])
     resourceManager.Load<Texture> ("tRoughness", "assets/Textures/Cerberus_R.tga");
 
     renderer.AddPostprocess<GLPostprocess> ("hdr_postprocess").SetShaderProgram ("post_hdr_shader");
-    renderer.AddPostprocess<GLPostprocess> ("gamma_postprocess").SetShaderProgram ("post_gamma_shader").SetPostprocessParameterFloat ("fGamma", 2.1f);
+    renderer.AddPostprocess<GLPostprocess> ("gamma_postprocess").SetShaderProgram ("post_gamma_shader").SetPostprocessParameterFloat ("fGamma", 2.0f);
 
     inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
     inputController.BindInputEvent ("exit", [ & ]() { game.Stop (); });
@@ -50,7 +50,7 @@ int main (int argc, char* argv [])
     m.SetAlbedo ("tAlbedo").SetNormal ("tNormal").SetMetallic ("tMetalness").SetRoughness ("tRoughness");
 
     MeshObject& gun = gameScene.AddGameObject<MeshObject> ("gun", "Cerberus00_Fixed", "gunMaterial");
-    gun.GetModelTransform ().Scale (0.1f).Rotate (-90.0f, 0.0f, 0.0f);
+    gun.GetModelTransform ().Scale (0.1f).Rotate (-90.0f, 45.0f, 0.0f);
 
     ControlledCamera& cam = gameScene.AddGameObject<ControlledCamera> ("camera", 60.0f, 0.01f, 100.0f, 0.1f);
     cam.Initialize ();
@@ -58,14 +58,14 @@ int main (int argc, char* argv [])
     gameScene.SetActiveCamera ("camera");
 
     PointLight& light1 = gameScene.AddGameObject<PointLight> ("light1");
-    light1.SetColor (Vector3f (1.5f, 1.5f, 1.5f));
+    light1.SetColor (Vector3f (2.5f, 2.5f, 2.5f));
     light1.SetLinearAttenuationFactor (0.0f).SetQuadraticAttenuationFactor (1.0f);
     light1.GetModelTransform ().Translate (Vector3f (20.0f, 20.0f, 20.0f));
     light1.SetEnabled (true);
 
     DirectionalLight& light2 = gameScene.AddGameObject<DirectionalLight> ("light2");
     light2.GetModelTransform ().Rotate (135.0f, 45.0f, 0.0f);
-    light2.SetColor (Vector3f (5.0f, 5.0f, 5.0f));
+    light2.SetColor (Vector3f (10.0f, 10.0f, 10.0f));
     light2.SetEnabled (true);
 
     game.Run ();

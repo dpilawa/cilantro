@@ -8,7 +8,12 @@ Renderer::Renderer (unsigned int width, unsigned int height)
 
 Renderer::~Renderer ()
 {
-    delete framebuffer;
+    for (auto&& postprocess : postprocesses)
+    {
+        postprocess->Deinitialize ();
+    }
+
+    framebuffer->Deinitialize ();
 }
 
 void Renderer::RenderFrame ()

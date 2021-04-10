@@ -8,7 +8,7 @@ GLPostprocess::GLPostprocess () : Postprocess ()
 
 GLPostprocess::~GLPostprocess ()
 {
-    this->Deinitialize ();
+
 }
 
 void GLPostprocess::OnFrame ()

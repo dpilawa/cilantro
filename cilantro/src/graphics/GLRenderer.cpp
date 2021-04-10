@@ -104,8 +104,6 @@ void GLRenderer::Deinitialize ()
     pointLights.clear ();
     directionalLights.clear ();
     spotLights.clear ();
-
-    framebuffer->Deinitialize ();
 }
 
 void GLRenderer::RenderFrame ()
