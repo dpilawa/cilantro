@@ -32,6 +32,10 @@ int main (int argc, char* argv [])
     EngineContext::Initialize ();
 
     modelLoader.Load ("assets/Cerberus_LP.FBX");
+    resourceManager.Load<Texture> ("tAlbedo", "assets/Textures/Cerberus_A.tga");
+    resourceManager.Load<Texture> ("tNormal", "assets/Textures/Cerberus_N.tga");
+    resourceManager.Load<Texture> ("tMetalness", "assets/Textures/Cerberus_M.tga");
+    resourceManager.Load<Texture> ("tRoughness", "assets/Textures/Cerberus_R.tga");
 
     renderer.AddPostprocess<GLPostprocess> ("hdr_postprocess").SetShaderProgram ("post_hdr_shader");
     renderer.AddPostprocess<GLPostprocess> ("gamma_postprocess").SetShaderProgram ("post_gamma_shader").SetPostprocessParameterFloat ("fGamma", 2.1f);
@@ -42,9 +46,10 @@ int main (int argc, char* argv [])
     inputController.CreateInputEvent ("mousemode", InputKey::KeySpace, InputTrigger::Release, {});
     inputController.BindInputEvent ("mousemode", [ & ]() { inputController.SetMouseGameMode (!inputController.IsGameMode ()); });
 
-    gameScene.AddMaterial<PBRMaterial> ("blueMaterial").SetAlbedo (Vector3f (0.02f, 0.29f, 0.53f)).SetMetallic (0.3f).SetRoughness (0.7f);
+    PBRMaterial& m = gameScene.AddMaterial<PBRMaterial> ("gunMaterial");
+    m.SetAlbedo ("tAlbedo").SetNormal ("tNormal").SetMetallic ("tMetalness").SetRoughness ("tRoughness");
 
-    MeshObject& gun = gameScene.AddGameObject<MeshObject> ("gun", "Cerberus00_Fixed", "blueMaterial");
+    MeshObject& gun = gameScene.AddGameObject<MeshObject> ("gun", "Cerberus00_Fixed", "gunMaterial");
     gun.GetModelTransform ().Scale (0.1f).Rotate (-90.0f, 0.0f, 0.0f);
 
     ControlledCamera& cam = gameScene.AddGameObject<ControlledCamera> ("camera", 60.0f, 0.01f, 100.0f, 0.1f);

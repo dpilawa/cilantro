@@ -47,5 +47,4 @@ add_custom_command (TARGET test01 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_di
 add_custom_command (TARGET test01 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/tests/textures/ $<TARGET_FILE_DIR:test01>/textures/)
 
 externalproject_get_property(cerberus SOURCE_DIR)
-add_custom_command (TARGET cerberus POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SOURCE_DIR}/Cerberus_LP.FBX $<TARGET_FILE_DIR:test01>/assets)
-add_custom_command (TARGET cerberus POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${SOURCE_DIR}/Textures $<TARGET_FILE_DIR:test01>/textures)
+add_custom_command (TARGET cerberus POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${SOURCE_DIR} $<TARGET_FILE_DIR:test01>/assets/)
