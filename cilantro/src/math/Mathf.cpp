@@ -512,8 +512,8 @@ Matrix4f Mathf::GenRotationYMatrix (float angle)
 
     m.InitIdentity ();
     m[0][0] = std::cos (angle);
-    m[0][2] = -std::sin (angle);
-    m[2][0] = std::sin (angle);
+    m[0][2] = std::sin (angle);
+    m[2][0] = -std::sin (angle);
     m[2][2] = std::cos (angle);
 
     return m;

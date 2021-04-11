@@ -50,23 +50,17 @@ int main (int argc, char* argv [])
     m.SetAlbedo ("tAlbedo").SetNormal ("tNormal").SetMetallic ("tMetalness").SetRoughness ("tRoughness");
 
     MeshObject& gun = gameScene.AddGameObject<MeshObject> ("gun", "Cerberus00_Fixed", "gunMaterial");
-    gun.GetModelTransform ().Scale (0.1f).Rotate (-90.0f, 45.0f, 0.0f);
+    gun.GetModelTransform ().Scale (0.1f).Rotate (-90.0f, 0.0f, 0.0f);
 
     ControlledCamera& cam = gameScene.AddGameObject<ControlledCamera> ("camera", 60.0f, 0.01f, 100.0f, 0.1f);
     cam.Initialize ();
     cam.GetModelTransform ().Translate (0.0f, 0.0f, 20.0f);
     gameScene.SetActiveCamera ("camera");
 
-    PointLight& light1 = gameScene.AddGameObject<PointLight> ("light1");
-    light1.SetColor (Vector3f (2.5f, 2.5f, 2.5f));
-    light1.SetLinearAttenuationFactor (0.0f).SetQuadraticAttenuationFactor (1.0f);
-    light1.GetModelTransform ().Translate (Vector3f (20.0f, 20.0f, 20.0f));
-    light1.SetEnabled (true);
-
-    DirectionalLight& light2 = gameScene.AddGameObject<DirectionalLight> ("light2");
-    light2.GetModelTransform ().Rotate (135.0f, 45.0f, 0.0f);
-    light2.SetColor (Vector3f (10.0f, 10.0f, 10.0f));
-    light2.SetEnabled (true);
+    DirectionalLight& light = gameScene.AddGameObject<DirectionalLight> ("light");
+    light.GetModelTransform ().Rotate (45.0f, -135.0f, 0.0f);
+    light.SetColor (Vector3f (5.0f, 4.2f, 3.3f));
+    light.SetEnabled (true);
 
     game.Run ();
 

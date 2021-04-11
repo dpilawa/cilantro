@@ -103,7 +103,7 @@ int main (int argc, char* argv [])
     light1.SetEnabled (true);
 
     DirectionalLight& light2 = gameScene.AddGameObject<DirectionalLight> ("light2");
-    light2.GetModelTransform ().Rotate (135.0f, 45.0f, 0.0f);
+    light2.GetModelTransform ().Rotate (45.0f, -135.0f, 0.0f);
     light2.SetColor (Vector3f (2.7f, 2.7f, 2.7f));
     light2.SetEnabled (true);
 

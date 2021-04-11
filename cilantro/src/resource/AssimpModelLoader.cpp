@@ -22,8 +22,7 @@ AssimpModelLoader::~AssimpModelLoader ()
 
 void AssimpModelLoader::Load (std::string path)
 {
-    const aiScene* scene = importer.ReadFile (path, 
-            aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_CalcTangentSpace);
+    const aiScene* scene = importer.ReadFile (path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) 
     {
@@ -78,7 +77,7 @@ void AssimpModelLoader::ImportMeshPositions (Mesh& myMesh, const aiScene* scene,
             /* normals */
             if (mesh->HasNormals ())
             {
-                myMesh.AddNormal (Vector3f (mesh->mNormals[i].x, mesh->mNormals[i].x, mesh->mNormals[i].z));
+                myMesh.AddNormal (Vector3f (mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z));
             }
 
             /* tangents and bitangents */
