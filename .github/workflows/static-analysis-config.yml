@@ -1,5 +1,0 @@
-name: "static-analysis config"
-
-paths-ignore:
-  - ext
-  - tests
