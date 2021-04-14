@@ -1,0 +1,5 @@
+name: 'codeql-config'
+
+paths-ignore:
+  - ext
+  - tests
