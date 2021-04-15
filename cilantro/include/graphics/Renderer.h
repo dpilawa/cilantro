@@ -21,8 +21,8 @@ public:
     __EAPI Renderer (unsigned int width, unsigned int height);
     __EAPI virtual ~Renderer ();
 
-    virtual void Initialize () = 0;
-    virtual void Deinitialize () = 0;
+    virtual void Initialize ();
+    virtual void Deinitialize ();
 
     // render
     __EAPI virtual void RenderFrame ();
