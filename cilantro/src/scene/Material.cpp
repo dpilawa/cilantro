@@ -11,16 +11,28 @@ Material::~Material ()
 {
 }
 
-Material& Material::SetShaderProgram (const std::string& name)
+Material& Material::SetForwardShaderProgram (const std::string& name)
 {
-    shaderProgramName = name;
+    forwardShaderProgramName = name;
 
     return *this;
 }
 
-std::string Material::GetShaderProgramName () const
+Material& Material::SetDeferredShaderProgram (const std::string& name)
 {
-    return shaderProgramName;
+    deferredShaderProgramName = name;
+
+    return *this;
+}
+
+std::string Material::GetForwardShaderProgramName () const
+{
+    return forwardShaderProgramName;
+}
+
+std::string Material::GetDeferredShaderProgramName () const
+{
+    return deferredShaderProgramName;
 }
 
 texture_map_t& Material::GetTexturesMap()

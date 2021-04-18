@@ -9,7 +9,7 @@
 #include "scene/PointLight.h"
 #include "scene/SplinePath.h"
 #include "resource/ResourceManager.h"
-#include "graphics/GLRenderer.h"
+#include "graphics/GLForwardRenderer.h"
 #include "graphics/GLFWRenderTarget.h"
 #include "input/GLFWInputController.h"
 #include "math/Mathf.h"
@@ -23,7 +23,7 @@ int main (int argc, char* argv [])
     ResourceManager resourceManager;
     GameScene gameScene;
     GLFWRenderTarget renderTarget ("Test 2", 960, 600, false, true, true);
-    GLRenderer renderer (960, 600);
+    GLForwardRenderer renderer (960, 600);
     GLFWInputController inputController;
     Timer timer;
     Game game;

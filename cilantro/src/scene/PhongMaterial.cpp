@@ -7,7 +7,7 @@
 
 PhongMaterial::PhongMaterial () : Material ()
 {
-    SetShaderProgram ("blinnphong_shader");
+    SetForwardShaderProgram ("blinnphong_shader");
 
     SetSpecularShininess (32.0f);
 

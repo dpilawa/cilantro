@@ -8,7 +8,7 @@
 
 PBRMaterial::PBRMaterial () : Material ()
 {
-    SetShaderProgram ("pbr_shader");
+    SetForwardShaderProgram ("pbr_shader");
 
     SetTexture (static_cast<int>(PBRTexture::Albedo), "tAlbedo", albedo);
     SetTexture (static_cast<int>(PBRTexture::Normal), "tNormal", normal);

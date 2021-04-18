@@ -59,6 +59,11 @@ protected:
     ResourceManager<ShaderProgram> shaderPrograms;
     ResourceManager<Postprocess> postprocesses;
 
+private:
+
+    long int totalRenderFrames;
+    float totalRenderTime;
+    float totalFrameRenderTime;
 };
 
 template <typename T, typename ...Params>

@@ -36,6 +36,8 @@ include/game/Game.h
 include/graphics/Framebuffer.h
 include/graphics/GLFramebuffer.h
 include/graphics/GLPostprocess.h
+include/graphics/GLDeferredRenderer.h
+include/graphics/GLForwardRenderer.h
 include/graphics/GLRenderer.h
 include/graphics/GLShader.h
 include/graphics/GLShaderProgram.h
@@ -95,6 +97,8 @@ src/graphics/Framebuffer.cpp
 src/graphics/GLFramebuffer.cpp
 src/graphics/GLPostprocess.cpp
 src/graphics/GLRenderer.cpp
+src/graphics/GLDeferredRenderer.cpp
+src/graphics/GLForwardRenderer.cpp
 src/graphics/GLShader.cpp
 src/graphics/GLShaderProgram.cpp
 src/graphics/Postprocess.cpp

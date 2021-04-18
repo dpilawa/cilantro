@@ -28,11 +28,7 @@ std::unordered_map<unsigned int, GLint> GLRenderer::textureChannelMap {
 
 GLRenderer::GLRenderer (unsigned int width, unsigned int height) : Renderer (width, height)
 {
-#if (CILANTRO_GL_VERSION <= 140)
-    framebuffer = new GLFramebuffer (width, height);
-#else
-    framebuffer = new GLMultisampleFramebuffer (width, height);
-#endif
+
 }
 
 GLRenderer::~GLRenderer ()
@@ -58,9 +54,6 @@ void GLRenderer::Initialize ()
 
     // enable multisampling
     glEnable (GL_MULTISAMPLE);
-
-    // initialize framebuffer
-    framebuffer->Initialize ();
 
     // initialize object buffers
     InitializeObjectBuffers ();
@@ -181,10 +174,10 @@ void GLRenderer::Draw (MeshObject& meshObject)
     GLuint shaderProgramId;
     GLuint uniformId;
 
-    // pick shader
-    GLShaderProgram& shaderProgram = GetShaderProgramManager ().GetByName<GLShaderProgram> (meshObject.GetMaterial ().GetShaderProgramName ());
-    shaderProgramId = shaderProgram.GetProgramId ();
+    // get shader program for rendered meshobject
+    GLShaderProgram& shaderProgram = GetShaderMeshObjectProgram (meshObject);
     shaderProgram.Use ();
+    shaderProgramId = shaderProgram.GetProgramId ();
 
     // bind textures for active material
     if (materialTextureUnits.find(meshObject.GetMaterial ().GetHandle ()) != materialTextureUnits.end ())
@@ -514,8 +507,6 @@ void GLRenderer::Update (SpotLight& spotLight)
 void GLRenderer::Update (Material& material, unsigned int textureUnit)
 {
     unsigned int materialHandle = material.GetHandle ();
-    GLShaderProgram& shader = GetShaderProgramManager ().GetByName<GLShaderProgram> (material.GetShaderProgramName ());
-    GLuint shaderId = shader.GetProgramId ();
     GLuint texture;
     GLuint format;
 

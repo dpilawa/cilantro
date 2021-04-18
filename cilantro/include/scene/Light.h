@@ -37,8 +37,6 @@ private:
     bool isEnabled;
 
     Vector3f lightColor;
-    float ambiencePower;
-    float specularPower;
 };
 
 #endif

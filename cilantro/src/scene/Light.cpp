@@ -7,9 +7,6 @@ Light::Light ()
     isEnabled = false;
     
     lightColor = Vector3f (1.0f, 1.0f, 1.0f);
-    
-    ambiencePower = 0.0f;
-    specularPower = 0.0f;
 }
 
 Light::~Light ()

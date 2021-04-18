@@ -131,8 +131,8 @@ public:
     __EAPI ~GLRenderer ();
 
     // (de)initializers
-    __EAPI void Initialize ();
-    __EAPI void Deinitialize ();
+    __EAPI virtual void Initialize ();
+    __EAPI virtual void Deinitialize ();
 
     // render
     __EAPI void RenderFrame ();
@@ -203,6 +203,8 @@ private:
 
     // update uniform buffers of view and projection matrices
     void LoadMatrixUniformBuffers ();
+
+    virtual GLShaderProgram& GetShaderMeshObjectProgram (const MeshObject& meshObject) = 0;
 
 };
 

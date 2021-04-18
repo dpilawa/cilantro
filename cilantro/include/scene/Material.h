@@ -22,8 +22,10 @@ public:
     __EAPI Material ();
     __EAPI virtual ~Material ();
 
-    __EAPI Material& SetShaderProgram (const std::string& name);
-    __EAPI std::string GetShaderProgramName () const;
+    __EAPI Material& SetForwardShaderProgram (const std::string& name);
+    __EAPI Material& SetDeferredShaderProgram (const std::string& name);
+    __EAPI std::string GetForwardShaderProgramName () const;
+    __EAPI std::string GetDeferredShaderProgramName () const;
 
     texture_map_t& GetTexturesMap();
     property_map_t& GetPropertiesMap ();
@@ -43,7 +45,8 @@ protected:
 private:
 
     // name of a shader program defined in renderer
-    std::string shaderProgramName;
+    std::string forwardShaderProgramName;
+    std::string deferredShaderProgramName;
 
 };
 
