@@ -49,7 +49,7 @@ void GLPostprocess::SetPostprocessParameterFloat (const std::string& parameterNa
 void GLPostprocess::Initialize ()
 {
     // initialize framebuffers
-    framebuffer = new GLFramebuffer (EngineContext::GetRenderer ().GetFramebuffer ()->GetWidth (), EngineContext::GetRenderer ().GetFramebuffer ()->GetHeight ());
+    framebuffer = new GLFramebuffer (EngineContext::GetRenderer ().GetFramebuffer ()->GetWidth (), EngineContext::GetRenderer ().GetFramebuffer ()->GetHeight (), 1, 0);
     framebuffer->Initialize ();
 
     // set up VBO and VAO

@@ -8,7 +8,7 @@
 class GLMultisampleFramebuffer : public GLFramebuffer 
 {
 public:
-    GLMultisampleFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight);
+    GLMultisampleFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount);
     virtual ~GLMultisampleFramebuffer ();
 
     void Initialize ();
@@ -17,10 +17,9 @@ public:
     virtual void BindFramebuffer () const;
     virtual void BlitFramebuffer ();
 
-    void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight);
-
-    GLuint GetMultisampleFramebufferTexture () const;
-    GLuint GetMultisampleFramebuffer () const;
+    GLuint GetMultisampleFramebufferRenderbufferGLId () const;
+    GLuint GetMultisampleFramebufferTextureGLId (unsigned int textureNumber) const;
+    GLuint GetMultisampleFramebufferGLId () const;
 
 protected:
 

@@ -4,19 +4,22 @@
 #include "cilantroengine.h"
 #include "graphics/Framebuffer.h"
 #include "glad/glad.h"
+#include <vector>
+
+#define MAX_FRAMEBUFFER_TEXTURES 8
 
 struct Framebuffers
 {
 public:
     GLuint FBO;
     GLuint RBO;
-    GLuint textureBuffer;
+    GLuint textureBuffer[MAX_FRAMEBUFFER_TEXTURES];
 };
 
 class GLFramebuffer : public Framebuffer
 {
 public:
-    GLFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight);
+    GLFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount);
     virtual ~GLFramebuffer ();
 
     virtual void Initialize ();
@@ -26,11 +29,14 @@ public:
 
     virtual void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight);
 
-    GLuint GetFramebufferTextureGLId () const;
+    GLuint GetFramebufferRenderbufferGLId () const;
+    GLuint GetFramebufferTextureGLId (unsigned int textureNumber) const;
     GLuint GetFramebufferGLId () const;
 
 protected:
 
+    unsigned int rgbTextureCount;
+    unsigned int rgbaTextureCount;
     Framebuffers framebuffers;
 
 };

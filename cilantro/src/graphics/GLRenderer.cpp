@@ -158,11 +158,11 @@ GLuint GLRenderer::GetRendererFramebufferTexture () const
 {
     if (postprocessStage == 0) 
     {
-        return static_cast<GLFramebuffer*>(framebuffer)->GetFramebufferTextureGLId ();
+        return static_cast<GLFramebuffer*>(framebuffer)->GetFramebufferTextureGLId (0);
     }
     else 
     {
-        return dynamic_cast<GLFramebuffer*> ((*(postprocesses.begin() + postprocessStage - 1))->GetFramebuffer ())->GetFramebufferTextureGLId ();
+        return dynamic_cast<GLFramebuffer*> ((*(postprocesses.begin() + postprocessStage - 1))->GetFramebuffer ())->GetFramebufferTextureGLId (0);
     }
 }
 

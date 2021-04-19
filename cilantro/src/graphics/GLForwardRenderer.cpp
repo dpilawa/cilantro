@@ -4,9 +4,9 @@
 GLForwardRenderer::GLForwardRenderer (unsigned int width, unsigned int height) : GLRenderer (width, height)
 {
 #if (CILANTRO_GL_VERSION <= 140)
-    framebuffer = new GLFramebuffer (width, height);
+    framebuffer = new GLFramebuffer (width, height, 1, 0);
 #else
-    framebuffer = new GLMultisampleFramebuffer (width, height);
+    framebuffer = new GLMultisampleFramebuffer (width, height, 1, 0);
 #endif
 }
 
@@ -19,7 +19,6 @@ void GLForwardRenderer::Initialize ()
 {
     // initialize framebuffer
     framebuffer->Initialize ();
-
     GLRenderer::Initialize ();
 }
 
