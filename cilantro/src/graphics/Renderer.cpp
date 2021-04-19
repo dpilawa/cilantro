@@ -2,6 +2,7 @@
 #include "graphics/Renderer.h"
 #include "system/EngineContext.h"
 #include "system/LogMessage.h"
+#include <cmath>
 
 Renderer::Renderer (unsigned int width, unsigned int height)
 {
