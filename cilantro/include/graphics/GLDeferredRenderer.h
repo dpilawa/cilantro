@@ -10,8 +10,14 @@ public:
     __EAPI GLDeferredRenderer (unsigned int width, unsigned int height);
     __EAPI virtual ~GLDeferredRenderer ();
 
+    __EAPI virtual void Initialize ();
+
 private:
-    GLuint gBuffer;
+
+    Framebuffer* gBuffer;
+
+    GLShaderProgram& GetShaderMeshObjectProgram (const MeshObject& meshObject);
+
 };
 
 #endif
