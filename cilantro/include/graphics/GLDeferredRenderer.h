@@ -12,11 +12,13 @@ public:
 
     __EAPI virtual void Initialize ();
 
+    __EAPI virtual void RenderFrame ();
+
 private:
 
     Framebuffer* gBuffer;
 
-    GLShaderProgram& GetShaderMeshObjectProgram (const MeshObject& meshObject);
+    GLShaderProgram& GetMeshObjectShaderProgram (const MeshObject& meshObject);
 
 };
 

@@ -24,7 +24,12 @@ void GLDeferredRenderer::Initialize ()
     GLRenderer::Initialize ();
 }
 
-GLShaderProgram& GLDeferredRenderer::GetShaderMeshObjectProgram (const MeshObject& meshObject) 
+void GLDeferredRenderer::RenderFrame ()
+{
+
+}
+
+GLShaderProgram& GLDeferredRenderer::GetMeshObjectShaderProgram (const MeshObject& meshObject) 
 {
     GLShaderProgram& shaderProgram = GetShaderProgramManager ().GetByName<GLShaderProgram> (meshObject.GetMaterial ().GetDeferredShaderProgramName ());
 

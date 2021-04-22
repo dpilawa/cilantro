@@ -12,9 +12,11 @@ public:
 
     __EAPI virtual void Initialize ();
 
+    __EAPI virtual void RenderFrame ();
+
 private:
 
-    GLShaderProgram& GetShaderMeshObjectProgram (const MeshObject& meshObject);
+    GLShaderProgram& GetMeshObjectShaderProgram (const MeshObject& meshObject);
 
 };
 

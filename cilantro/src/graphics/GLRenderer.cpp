@@ -175,7 +175,7 @@ void GLRenderer::Draw (MeshObject& meshObject)
     GLuint uniformId;
 
     // get shader program for rendered meshobject
-    GLShaderProgram& shaderProgram = GetShaderMeshObjectProgram (meshObject);
+    GLShaderProgram& shaderProgram = GetMeshObjectShaderProgram (meshObject);
     shaderProgram.Use ();
     shaderProgramId = shaderProgram.GetProgramId ();
 

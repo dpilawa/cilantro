@@ -135,7 +135,7 @@ public:
     __EAPI virtual void Deinitialize ();
 
     // render
-    __EAPI void RenderFrame ();
+    __EAPI virtual void RenderFrame () = 0;
 
     // renderbuffer
     __EAPI Framebuffer* GetFramebuffer () const;
@@ -150,7 +150,7 @@ public:
     __EAPI void Update (SpotLight& spotLight);
     __EAPI void Update (Material& material, unsigned int textureUnit = 0);
 
-private:
+protected:
 
     // GL buffers and arrays for scene objects
     // These buffers contain data for objects to be rendered
@@ -204,7 +204,7 @@ private:
     // update uniform buffers of view and projection matrices
     void LoadMatrixUniformBuffers ();
 
-    virtual GLShaderProgram& GetShaderMeshObjectProgram (const MeshObject& meshObject) = 0;
+    virtual GLShaderProgram& GetMeshObjectShaderProgram (const MeshObject& meshObject) = 0;
 
 };
 
