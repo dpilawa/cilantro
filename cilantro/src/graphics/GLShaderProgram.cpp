@@ -35,16 +35,12 @@ void GLShaderProgram::BindUniformBlock (const std::string& blockName, BindingPoi
     
 }
 
-void GLShaderProgram::LinkShader (const Shader& shader)
+void GLShaderProgram::Link ()
 {
     GLint success;
     char errorLog[512];
 
-    const GLShader* glShader = static_cast<const GLShader*> (&shader);
-
-    glAttachShader (shaderProgramId, glShader->GetShaderId ());
     glLinkProgram (shaderProgramId);
-
     glGetProgramiv (shaderProgramId, GL_LINK_STATUS, &success);
 
     if (!success)
@@ -52,7 +48,7 @@ void GLShaderProgram::LinkShader (const Shader& shader)
         glGetProgramInfoLog (shaderProgramId, 512, nullptr, errorLog);
         glDeleteProgram (shaderProgramId);
         LogMessage () << errorLog;
-        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to link shader" << glShader->GetShaderId () << "to program" << shaderProgramId;
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to link program" << shaderProgramId;
     }
 }
 
@@ -60,3 +56,12 @@ void GLShaderProgram::Use ()
 {
     glUseProgram (shaderProgramId);
 }
+
+void GLShaderProgram::AttachShader (const Shader& shader)
+{
+    const GLShader* glShader = static_cast<const GLShader*> (&shader);
+
+    glAttachShader (shaderProgramId, glShader->GetShaderId ());
+}
+
+

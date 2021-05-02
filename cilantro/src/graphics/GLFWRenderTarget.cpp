@@ -37,13 +37,17 @@ void GLFWRenderTarget::Initialize ()
     }
 
     // set up GL & window properties
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, CILANTRO_GL_VERSION_MAJOR);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, CILANTRO_GL_VERSION_MINOR);
-    glfwWindowHint(GLFW_RESIZABLE, isResizable);
-    glfwWindowHint(GLFW_VISIBLE, 1);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GL_TRUE);
+    glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, CILANTRO_GL_VERSION_MAJOR);
+	glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, CILANTRO_GL_VERSION_MINOR);
+    glfwWindowHint (GLFW_RESIZABLE, isResizable);
+    glfwWindowHint (GLFW_VISIBLE, 1);
+#if (CILANTRO_GL_VERSION < 150)
+    glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_ANY_PROFILE);
+#else
+    glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#endif
+    glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint (GLFW_COCOA_RETINA_FRAMEBUFFER, GL_TRUE);
 
     // create window
     window = glfwCreateWindow (width, height, windowCaption.c_str (), monitor, nullptr);
@@ -87,15 +91,15 @@ void GLFWRenderTarget::Initialize ()
          1.0f,  1.0f,  1.0f, 1.0f
     };
 
-    glGenVertexArrays(1, &targetVAO);
-    glGenBuffers(1, &targetVBO);
-    glBindVertexArray(targetVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, targetVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof (quadVertices), &quadVertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);    
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof (float)));
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
+    glGenVertexArrays (1, &targetVAO);
+    glGenBuffers (1, &targetVBO);
+    glBindVertexArray (targetVAO);
+    glBindBuffer (GL_ARRAY_BUFFER, targetVBO);
+    glBufferData (GL_ARRAY_BUFFER, sizeof (quadVertices), &quadVertices, GL_STATIC_DRAW);
+    glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);    
+    glVertexAttribPointer (1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof (float)));
+    glEnableVertexAttribArray (0);
+    glEnableVertexAttribArray( 1);
 
     LogMessage (MSG_LOCATION) << "GLFWRenderTarget started";
 }

@@ -14,13 +14,14 @@ public:
 
      // attach shader to a program
     __EAPI ShaderProgram& AddShader (const std::string& shaderName);   
+    __EAPI virtual void Link () = 0;
 
     // use program
     virtual void Use () = 0;
 
 private:
     // attach shader to a program
-    virtual void LinkShader (const Shader& shader) = 0;
+    virtual void AttachShader (const Shader& shader) = 0;
 };
 
 #endif

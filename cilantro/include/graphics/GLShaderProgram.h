@@ -20,13 +20,16 @@ public:
     // bind uniform block
     void BindUniformBlock (const std::string& blockName, BindingPoint bp);
 
+    // link program
+    void Link ();
+
     // use program
     void Use ();
 
 private:
 
     // attach shader to a program
-    void LinkShader (const Shader& shader);
+    void AttachShader (const Shader& shader);
 
     // ID of a shader program
     GLuint shaderProgramId;

@@ -13,7 +13,7 @@ ShaderProgram::~ShaderProgram ()
 
 ShaderProgram& ShaderProgram::AddShader (const std::string& shaderName)
 {
-    LinkShader (EngineContext::GetResourceManager ().GetByName<Shader> (shaderName));
+    AttachShader (EngineContext::GetResourceManager ().GetByName<Shader> (shaderName));
 
     return *this;
 }
