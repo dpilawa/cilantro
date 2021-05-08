@@ -20,7 +20,7 @@ void GLFramebuffer::Initialize ()
     glGenTextures (1, &framebuffers.textureBuffer);
     glActiveTexture (GL_TEXTURE0);
     glBindTexture (GL_TEXTURE_2D, framebuffers.textureBuffer);
-    glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, bufferWidth, bufferHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+    glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA16F, bufferWidth, bufferHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glBindTexture (GL_TEXTURE_2D, 0);

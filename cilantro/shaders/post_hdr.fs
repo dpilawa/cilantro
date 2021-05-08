@@ -12,5 +12,7 @@ uniform sampler2D fScreenTexture;
 void main()
 {
     color = texture (fScreenTexture, fTextureCoordinates);
+
+    /* reinhard tone mapping */
     color = color / (color + vec4 (1.0));
 } 

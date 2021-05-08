@@ -59,7 +59,7 @@ void GLMultisampleFramebuffer::Initialize ()
     // on GL versions <= 3.1 use normal texture instead of multisampled
     glGenTextures (1, &multisampleFramebuffers.textureBuffer);
     glBindTexture (GL_TEXTURE_2D_MULTISAMPLE, multisampleFramebuffers.textureBuffer);
-    glTexImage2DMultisample (GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGB, bufferWidth, bufferHeight, GL_TRUE);
+    glTexImage2DMultisample (GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA16F, bufferWidth, bufferHeight, GL_TRUE);
     glBindTexture (GL_TEXTURE_2D_MULTISAMPLE, 0);
 
     glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, multisampleFramebuffers.textureBuffer, 0);
