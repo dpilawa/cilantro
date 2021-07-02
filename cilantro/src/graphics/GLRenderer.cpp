@@ -592,6 +592,7 @@ void GLRenderer::InitializeShaderLibrary ()
     EngineContext::GetResourceManager ().Load<GLShader> ("flatquad_fragment_shader", "shaders/flatquad.fs", ShaderType::FRAGMENT_SHADER);
     EngineContext::GetResourceManager ().Load<GLShader> ("post_hdr_fragment_shader", "shaders/post_hdr.fs", ShaderType::FRAGMENT_SHADER);
     EngineContext::GetResourceManager ().Load<GLShader> ("post_gamma_fragment_shader", "shaders/post_gamma.fs", ShaderType::FRAGMENT_SHADER);
+    EngineContext::GetResourceManager ().Load<GLShader> ("post_fxaa_fragment_shader", "shaders/post_fxaa.fs", ShaderType::FRAGMENT_SHADER);
 
     // PBR model
     p = AddShaderProgram<GLShaderProgram> ("pbr_shader").GetProgramId ();
@@ -704,6 +705,20 @@ void GLRenderer::InitializeShaderLibrary ()
 #endif
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_gamma_shader").Link ();
     GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_gamma_shader").Use (); 
+#if (CILANTRO_GL_VERSION < 420)
+    glUniform1i (glGetUniformLocation (p, "fScreenTexture"), 0);
+#endif
+
+    // Post-processing fxaa
+    p = AddShaderProgram<GLShaderProgram> ("post_fxaa_shader").GetProgramId ();
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_fxaa_shader").AddShader ("flatquad_vertex_shader");
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_fxaa_shader").AddShader ("post_fxaa_fragment_shader");   
+#if (CILANTRO_GL_VERSION < 330)	
+    glBindAttribLocation (p, 0, "vPosition");
+    glBindAttribLocation (p, 1, "vTextureCoordinates");
+#endif
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_fxaa_shader").Link ();
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_fxaa_shader").Use (); 
 #if (CILANTRO_GL_VERSION < 420)
     glUniform1i (glGetUniformLocation (p, "fScreenTexture"), 0);
 #endif

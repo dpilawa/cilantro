@@ -15,8 +15,8 @@ public:
 
     virtual void OnFrame () = 0;
 
-    unsigned int GetWidth () const;
-    unsigned int GetHeight () const;
+    __EAPI unsigned int GetWidth () const;
+    __EAPI unsigned int GetHeight () const;
 
 protected:
 

@@ -11,41 +11,6 @@ GLPostprocess::~GLPostprocess ()
 
 }
 
-void GLPostprocess::OnFrame ()
-{
-    // draw quad on screen
-    GLRenderer& glRenderer = dynamic_cast<GLRenderer&>(EngineContext::GetRenderer ());
-
-    glBindFramebuffer (GL_FRAMEBUFFER, dynamic_cast<GLFramebuffer*>(framebuffer)->GetFramebufferGLId ());
-    glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
-    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glDisable (GL_DEPTH_TEST);
-    shaderProgram->Use ();
-    glBindVertexArray (VAO);
-    glActiveTexture (GL_TEXTURE0);
-    glBindTexture (GL_TEXTURE_2D, glRenderer.GetRendererFramebufferTexture ()); 
-    glViewport (0, 0, framebuffer->GetWidth (), framebuffer->GetHeight ());
-    glDrawArrays (GL_TRIANGLES, 0, 6);
-    glBindTexture (GL_TEXTURE_2D, 0);
-    glBindVertexArray (0);
-    glBindFramebuffer (GL_FRAMEBUFFER, 0);
-}
-
-void GLPostprocess::SetPostprocessParameterFloat (const std::string& parameterName, float parameterValue)
-{
-    GLShaderProgram* glShaderProgam = dynamic_cast<GLShaderProgram*> (shaderProgram);
-
-    glShaderProgam->Use ();
-    GLuint paramUniformLocation = glGetUniformLocation (glShaderProgam->GetProgramId (), parameterName.c_str ());
-
-    if (paramUniformLocation == GL_INVALID_INDEX)
-    {
-        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Uniform not found in postprocessor shader:" << parameterName;
-    }
-
-    glUniform1f (paramUniformLocation, parameterValue);
-}
-
 void GLPostprocess::Initialize ()
 {
     // initialize framebuffers
@@ -83,3 +48,63 @@ void GLPostprocess::Deinitialize ()
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
 }
+
+void GLPostprocess::OnFrame ()
+{
+    // draw quad on screen
+    GLRenderer& glRenderer = dynamic_cast<GLRenderer&>(EngineContext::GetRenderer ());
+
+    glBindFramebuffer (GL_FRAMEBUFFER, dynamic_cast<GLFramebuffer*>(framebuffer)->GetFramebufferGLId ());
+    glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
+    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glDisable (GL_DEPTH_TEST);
+    shaderProgram->Use ();
+    glBindVertexArray (VAO);
+    glActiveTexture (GL_TEXTURE0);
+    glBindTexture (GL_TEXTURE_2D, glRenderer.GetRendererFramebufferTexture ()); 
+    glViewport (0, 0, framebuffer->GetWidth (), framebuffer->GetHeight ());
+    glDrawArrays (GL_TRIANGLES, 0, 6);
+    glBindTexture (GL_TEXTURE_2D, 0);
+    glBindVertexArray (0);
+    glBindFramebuffer (GL_FRAMEBUFFER, 0);
+}
+
+void GLPostprocess::SetPostprocessParameterFloat (const std::string& parameterName, float parameterValue)
+{
+    GLuint location = GetUniformLocation (parameterName);
+    glUniform1f (location, parameterValue);
+}
+
+void GLPostprocess::SetPostprocessParameterVector2f (const std::string& parameterName, const Vector2f& parameterValue)
+{
+    GLuint location = GetUniformLocation (parameterName);
+    glUniform2fv (location, 1, &parameterValue[0]);
+}
+
+void GLPostprocess::SetPostprocessParameterVector3f (const std::string& parameterName, const Vector3f& parameterValue)
+{    
+    GLuint location = GetUniformLocation (parameterName);
+    glUniform3fv (location, 1, &parameterValue[0]);
+}
+
+void GLPostprocess::SetPostprocessParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue)
+{
+    GLuint location = GetUniformLocation (parameterName);
+    glUniform4fv (location, 1, &parameterValue[0]);
+}
+
+GLuint GLPostprocess::GetUniformLocation (const std::string& parameterName)
+{
+    GLShaderProgram* glShaderProgam = dynamic_cast<GLShaderProgram*> (shaderProgram);
+
+    glShaderProgam->Use ();
+    GLuint paramUniformLocation = glGetUniformLocation (glShaderProgam->GetProgramId (), parameterName.c_str ());
+
+    if (paramUniformLocation == GL_INVALID_INDEX)
+    {
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Uniform not found in postprocessor shader:" << parameterName;
+    }
+
+    return paramUniformLocation;
+}
+
