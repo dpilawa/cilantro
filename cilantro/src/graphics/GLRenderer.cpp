@@ -577,24 +577,25 @@ void GLRenderer::InitializeShaderLibrary ()
     // initialize shader library
     EngineContext::GetResourceManager ().Load<GLShader> ("default_vertex_shader", "shaders/default.vs", ShaderType::VERTEX_SHADER);
     EngineContext::GetResourceManager ().Load<GLShader> ("flatquad_vertex_shader", "shaders/flatquad.vs", ShaderType::VERTEX_SHADER);
-    EngineContext::GetResourceManager ().Load<GLShader> ("pbr_fragment_shader", "shaders/pbr.fs", ShaderType::FRAGMENT_SHADER);    
-    EngineContext::GetResourceManager ().Load<GLShader> ("phong_fragment_shader", "shaders/phong.fs", ShaderType::FRAGMENT_SHADER);
-    EngineContext::GetResourceManager ().Load<GLShader> ("blinnphong_fragment_shader", "shaders/blinnphong.fs", ShaderType::FRAGMENT_SHADER);
+    EngineContext::GetResourceManager ().Load<GLShader> ("pbr_forward_fragment_shader", "shaders/pbr_forward.fs", ShaderType::FRAGMENT_SHADER);    
+    EngineContext::GetResourceManager ().Load<GLShader> ("pbr_deferred_geometrypass_fragment_shader", "shaders/pbr_deferred_geometrypass.fs", ShaderType::FRAGMENT_SHADER); 
+    EngineContext::GetResourceManager ().Load<GLShader> ("phong_forward_fragment_shader", "shaders/phong_forward.fs", ShaderType::FRAGMENT_SHADER);
+    EngineContext::GetResourceManager ().Load<GLShader> ("blinnphong_forward_fragment_shader", "shaders/blinnphong_forward.fs", ShaderType::FRAGMENT_SHADER);
     EngineContext::GetResourceManager ().Load<GLShader> ("flatquad_fragment_shader", "shaders/flatquad.fs", ShaderType::FRAGMENT_SHADER);
     EngineContext::GetResourceManager ().Load<GLShader> ("post_hdr_fragment_shader", "shaders/post_hdr.fs", ShaderType::FRAGMENT_SHADER);
     EngineContext::GetResourceManager ().Load<GLShader> ("post_gamma_fragment_shader", "shaders/post_gamma.fs", ShaderType::FRAGMENT_SHADER);
 
-    // PBR model
-    AddShaderProgram<GLShaderProgram> ("pbr_shader");
-    GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_shader").AddShader ("default_vertex_shader");
-    GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_shader").AddShader ("pbr_fragment_shader");
-    GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_shader").BindUniformBlock ("UniformMatricesBlock", BindingPoint::BP_MATRICES);
-    GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_shader").BindUniformBlock ("UniformPointLightsBlock", BindingPoint::BP_POINTLIGHTS);
-    GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_shader").BindUniformBlock ("UniformDirectionalLightsBlock", BindingPoint::BP_DIRECTIONALLIGHTS);
-    GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_shader").BindUniformBlock ("UniformSpotLightsBlock", BindingPoint::BP_SPOTLIGHTS);
+    // PBR model (forward)
+    AddShaderProgram<GLShaderProgram> ("pbr_forward_shader");
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_forward_shader").AddShader ("default_vertex_shader");
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_forward_shader").AddShader ("pbr_forward_fragment_shader");
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_forward_shader").BindUniformBlock ("UniformMatricesBlock", BindingPoint::BP_MATRICES);
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_forward_shader").BindUniformBlock ("UniformPointLightsBlock", BindingPoint::BP_POINTLIGHTS);
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_forward_shader").BindUniformBlock ("UniformDirectionalLightsBlock", BindingPoint::BP_DIRECTIONALLIGHTS);
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_forward_shader").BindUniformBlock ("UniformSpotLightsBlock", BindingPoint::BP_SPOTLIGHTS);
 
-    p = GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_shader").GetProgramId ();
-    GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_shader").Use ();
+    p = GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_forward_shader").GetProgramId ();
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_forward_shader").Use ();
 #if (CILANTRO_GL_VERSION < 330)
     glBindAttribLocation(p, 0, "vPosition");
     glBindAttribLocation(p, 1, "vNormal");
@@ -610,17 +611,40 @@ void GLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation (p, "tAO"), 4);
 #endif
 
-    // Phong model
-    AddShaderProgram<GLShaderProgram> ("phong_shader");
-    GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_shader").AddShader ("default_vertex_shader");
-    GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_shader").AddShader ("phong_fragment_shader");
-    GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_shader").BindUniformBlock ("UniformMatricesBlock", BindingPoint::BP_MATRICES);
-    GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_shader").BindUniformBlock ("UniformPointLightsBlock", BindingPoint::BP_POINTLIGHTS);
-    GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_shader").BindUniformBlock ("UniformDirectionalLightsBlock", BindingPoint::BP_DIRECTIONALLIGHTS);
-    GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_shader").BindUniformBlock ("UniformSpotLightsBlock", BindingPoint::BP_SPOTLIGHTS);
+    // PBR model (deferred, geometry pass)
+    AddShaderProgram<GLShaderProgram> ("pbr_deferred_geometrypass_shader");
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_deferred_geometrypass_shader").AddShader ("default_vertex_shader");
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_deferred_geometrypass_shader").AddShader ("pbr_deferred_geometrypass_fragment_shader");
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_deferred_geometrypass_shader").BindUniformBlock ("UniformMatricesBlock", BindingPoint::BP_MATRICES);
 
-    p = GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_shader").GetProgramId ();
-    GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_shader").Use ();
+    p = GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_deferred_geometrypass_shader").GetProgramId ();
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_deferred_geometrypass_shader").Use ();
+#if (CILANTRO_GL_VERSION < 330)
+    glBindAttribLocation(p, 0, "vPosition");
+    glBindAttribLocation(p, 1, "vNormal");
+    glBindAttribLocation(p, 2, "vUV");
+    glBindAttribLocation(p, 3, "vTangent");
+    glBindAttribLocation(p, 4, "vBitangent");
+#endif
+#if (CILANTRO_GL_VERSION < 420)
+    glUniform1i (glGetUniformLocation (p, "tAlbedo"), 0);
+    glUniform1i (glGetUniformLocation (p, "tNormal"), 1);
+    glUniform1i (glGetUniformLocation (p, "tMetallic"), 2);
+    glUniform1i (glGetUniformLocation (p, "tRoughness"), 3);
+    glUniform1i (glGetUniformLocation (p, "tAO"), 4);
+#endif
+
+    // Phong model (forward)
+    AddShaderProgram<GLShaderProgram> ("phong_forward_shader");
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_forward_shader").AddShader ("default_vertex_shader");
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_forward_shader").AddShader ("phong_forward_fragment_shader");
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_forward_shader").BindUniformBlock ("UniformMatricesBlock", BindingPoint::BP_MATRICES);
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_forward_shader").BindUniformBlock ("UniformPointLightsBlock", BindingPoint::BP_POINTLIGHTS);
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_forward_shader").BindUniformBlock ("UniformDirectionalLightsBlock", BindingPoint::BP_DIRECTIONALLIGHTS);
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_forward_shader").BindUniformBlock ("UniformSpotLightsBlock", BindingPoint::BP_SPOTLIGHTS);
+
+    p = GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_forward_shader").GetProgramId ();
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("phong_forward_shader").Use ();
 #if (CILANTRO_GL_VERSION < 330)
     glBindAttribLocation(p, 0, "vPosition");
     glBindAttribLocation(p, 1, "vNormal");
@@ -635,17 +659,17 @@ void GLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation (p, "tEmissive"), 3);
 #endif
 
-    // Blinn-Phong model
-    AddShaderProgram<GLShaderProgram> ("blinnphong_shader");
-    GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_shader").AddShader ("default_vertex_shader");
-    GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_shader").AddShader ("blinnphong_fragment_shader");
-    GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_shader").BindUniformBlock ("UniformMatricesBlock", BindingPoint::BP_MATRICES);
-    GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_shader").BindUniformBlock ("UniformPointLightsBlock", BindingPoint::BP_POINTLIGHTS);
-    GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_shader").BindUniformBlock ("UniformDirectionalLightsBlock", BindingPoint::BP_DIRECTIONALLIGHTS);
-    GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_shader").BindUniformBlock ("UniformSpotLightsBlock", BindingPoint::BP_SPOTLIGHTS);    
+    // Blinn-Phong model (forward)
+    AddShaderProgram<GLShaderProgram> ("blinnphong_forward_shader");
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_forward_shader").AddShader ("default_vertex_shader");
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_forward_shader").AddShader ("blinnphong_forward_fragment_shader");
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_forward_shader").BindUniformBlock ("UniformMatricesBlock", BindingPoint::BP_MATRICES);
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_forward_shader").BindUniformBlock ("UniformPointLightsBlock", BindingPoint::BP_POINTLIGHTS);
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_forward_shader").BindUniformBlock ("UniformDirectionalLightsBlock", BindingPoint::BP_DIRECTIONALLIGHTS);
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_forward_shader").BindUniformBlock ("UniformSpotLightsBlock", BindingPoint::BP_SPOTLIGHTS);    
     
-    p = GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_shader").GetProgramId ();
-    GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_shader").Use ();
+    p = GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_forward_shader").GetProgramId ();
+    GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_forward_shader").Use ();
 #if (CILANTRO_GL_VERSION < 330)	
     glBindAttribLocation(p, 0, "vPosition");
     glBindAttribLocation(p, 1, "vNormal");

@@ -52,8 +52,11 @@ void GLForwardRenderer::RenderFrame ()
     static_cast<GLMultisampleFramebuffer*>(framebuffer)->BlitFramebuffer ();
 #endif
 
-    // base class functions
+    // base class function
     Renderer::RenderFrame ();
+
+    // unbind framebuffer
+    static_cast<GLFramebuffer*>(framebuffer)->UnbindFramebuffer ();
 
     // check for errors
     CheckGLError (MSG_LOCATION);

@@ -6,6 +6,11 @@ GLFramebuffer::GLFramebuffer (unsigned int bufferWidth, unsigned int bufferHeigh
 {
     this->rgbTextureCount = rgbTextureCount;
     this->rgbaTextureCount = rgbaTextureCount;
+
+    for (int i = 0; i < MAX_FRAMEBUFFER_TEXTURES; i++)
+    {
+        framebuffers.attachments[i] = GL_COLOR_ATTACHMENT0 + i;
+    }
 }
 
 GLFramebuffer::~GLFramebuffer ()
@@ -30,6 +35,8 @@ void GLFramebuffer::Initialize ()
         
         glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, framebuffers.textureBuffer[i], 0);
     }
+
+    glDrawBuffers (rgbTextureCount + rgbaTextureCount, framebuffers.attachments);
 
     // create renderbuffer for a (combined) depth and stencil buffer
     glGenRenderbuffers (1, &framebuffers.RBO);
@@ -60,6 +67,11 @@ void GLFramebuffer::Deinitialize ()
 void GLFramebuffer::BindFramebuffer () const
 {
     glBindFramebuffer (GL_FRAMEBUFFER, framebuffers.FBO);
+}
+
+void GLFramebuffer::UnbindFramebuffer () const
+{
+    glBindFramebuffer (GL_FRAMEBUFFER, (GLint) 0);
 }
 
 void GLFramebuffer::SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight)
