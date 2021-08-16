@@ -31,8 +31,8 @@ int main (int argc, char* argv [])
 {
     ResourceManager resourceManager;
     GameScene gameScene;
-    GLFWRenderTarget renderTarget ("Test 1", 800, 600, false, true, true);
-    GLRenderer renderer (800, 600);
+    GLFWRenderTarget renderTarget ("Test 1", 1024, 768, false, true, true);
+    GLRenderer renderer (1024, 768);
     GLFWInputController inputController;
     Timer timer;
     Game game;
