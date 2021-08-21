@@ -29,6 +29,7 @@ public:
 
     // renderbuffer accessor
     __EAPI virtual Framebuffer* GetFramebuffer () const = 0;
+    __EAPI virtual Framebuffer* GetCurrentFramebuffer () const = 0;
 
     // post-processing
     __EAPI virtual ResourceManager<Postprocess>& GetPostprocessManager ();

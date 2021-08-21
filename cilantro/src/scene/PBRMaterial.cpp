@@ -9,7 +9,8 @@
 PBRMaterial::PBRMaterial () : Material ()
 {
     SetForwardShaderProgram ("pbr_forward_shader");
-    SetDeferredShaderProgram ("pbr_deferred_geometrypass_shader");
+    SetDeferredGeometryPassShaderProgram ("pbr_deferred_geometrypass_shader");
+    SetDeferredLightingPassShaderProgram ("pbr_deferred_lightingpass_shader");
 
     SetTexture (static_cast<int>(PBRTexture::Albedo), "tAlbedo", albedo);
     SetTexture (static_cast<int>(PBRTexture::Normal), "tNormal", normal);

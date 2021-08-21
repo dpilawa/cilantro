@@ -2,6 +2,7 @@
 #define _MATERIAL_H_
 
 #include "cilantroengine.h"
+#include "graphics/ShaderProgram.h"
 #include "resource/Resource.h"
 #include "resource/Texture.h"
 #include "math/Vector3f.h"
@@ -23,9 +24,11 @@ public:
     __EAPI virtual ~Material ();
 
     __EAPI Material& SetForwardShaderProgram (const std::string& name);
-    __EAPI Material& SetDeferredShaderProgram (const std::string& name);
-    __EAPI std::string GetForwardShaderProgramName () const;
-    __EAPI std::string GetDeferredShaderProgramName () const;
+    __EAPI Material& SetDeferredGeometryPassShaderProgram (const std::string& name);
+    __EAPI Material& SetDeferredLightingPassShaderProgram (const std::string& name);
+    __EAPI ShaderProgram& GetForwardShaderProgram () const;
+    __EAPI ShaderProgram& GetDeferredGeometryPassShaderProgram () const;
+    __EAPI ShaderProgram& GetDeferredLightingPassShaderProgram () const;
 
     texture_map_t& GetTexturesMap();
     property_map_t& GetPropertiesMap ();
@@ -44,9 +47,10 @@ protected:
 
 private:
 
-    // name of a shader program defined in renderer
-    std::string forwardShaderProgramName;
-    std::string deferredShaderProgramName;
+    // shader programs defined in renderer
+    ShaderProgram* forwardShaderProgram;
+    ShaderProgram* deferredGeometryPassShaderProgram;
+    ShaderProgram* deferredLightingPassShaderProgram;
 
 };
 

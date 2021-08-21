@@ -26,7 +26,7 @@ void GLForwardRenderer::Initialize ()
 void GLForwardRenderer::RenderFrame ()
 {
     // bind framebuffer
-    static_cast<GLFramebuffer*>(framebuffer)->BindFramebuffer ();
+    framebuffer->BindFramebuffer ();
 
     // clear frame and depth buffers
     glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
@@ -53,18 +53,29 @@ void GLForwardRenderer::RenderFrame ()
 #endif
 
     // base class function
+    postprocessStage = 0;
     Renderer::RenderFrame ();
 
     // unbind framebuffer
-    static_cast<GLFramebuffer*>(framebuffer)->UnbindFramebuffer ();
+    framebuffer->UnbindFramebuffer ();
 
     // check for errors
     CheckGLError (MSG_LOCATION);
 }
 
-GLShaderProgram& GLForwardRenderer::GetMeshObjectShaderProgram (const MeshObject& meshObject) 
+Framebuffer* GLForwardRenderer::GetCurrentFramebuffer () const
 {
-    GLShaderProgram& shaderProgram = GetShaderProgramManager ().GetByName<GLShaderProgram> (meshObject.GetMaterial ().GetForwardShaderProgramName ());
+    if (postprocessStage == 0) 
+    {
+        return GetFramebuffer ();
+    }
+    else 
+    {
+        return (*(postprocesses.begin() + (postprocessStage - 1))).get()->GetFramebuffer ();
+    }
+}
 
-    return shaderProgram;
+ShaderProgram& GLForwardRenderer::GetMeshObjectShaderProgram (const MeshObject& meshObject) 
+{
+    return meshObject.GetMaterial ().GetForwardShaderProgram ();
 }

@@ -1,6 +1,7 @@
 #include "cilantroengine.h"
 #include "scene/Material.h"
 #include "math/Vector3f.h"
+#include "system/EngineContext.h"
 #include <string>
 
 Material::Material () : Resource ()
@@ -13,26 +14,38 @@ Material::~Material ()
 
 Material& Material::SetForwardShaderProgram (const std::string& name)
 {
-    forwardShaderProgramName = name;
+    forwardShaderProgram = &EngineContext::GetRenderer ().GetShaderProgramManager ().GetByName<ShaderProgram> (name);
 
     return *this;
 }
 
-Material& Material::SetDeferredShaderProgram (const std::string& name)
+Material& Material::SetDeferredGeometryPassShaderProgram (const std::string& name)
 {
-    deferredShaderProgramName = name;
+    deferredGeometryPassShaderProgram = &EngineContext::GetRenderer ().GetShaderProgramManager ().GetByName<ShaderProgram> (name);
 
     return *this;
 }
 
-std::string Material::GetForwardShaderProgramName () const
+Material& Material::SetDeferredLightingPassShaderProgram (const std::string& name)
 {
-    return forwardShaderProgramName;
+    deferredLightingPassShaderProgram = &EngineContext::GetRenderer ().GetShaderProgramManager ().GetByName<ShaderProgram> (name);
+
+    return *this;
 }
 
-std::string Material::GetDeferredShaderProgramName () const
+ShaderProgram& Material::GetForwardShaderProgram () const
 {
-    return deferredShaderProgramName;
+    return *forwardShaderProgram;
+}
+
+ShaderProgram& Material::GetDeferredGeometryPassShaderProgram () const
+{
+    return *deferredGeometryPassShaderProgram;
+}
+
+ShaderProgram& Material::GetDeferredLightingPassShaderProgram () const
+{
+    return *deferredLightingPassShaderProgram;
 }
 
 texture_map_t& Material::GetTexturesMap()

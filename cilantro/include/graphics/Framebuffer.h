@@ -12,6 +12,9 @@ public:
     virtual void Initialize () = 0;
     virtual void Deinitialize () = 0;
 
+    virtual void BindFramebuffer () const = 0;
+    virtual void UnbindFramebuffer () const = 0;
+
     unsigned int GetWidth () const;
     unsigned int GetHeight () const;
 

@@ -138,9 +138,8 @@ public:
     __EAPI virtual void RenderFrame () = 0;
 
     // renderbuffer
-    __EAPI Framebuffer* GetFramebuffer () const;
-    __EAPI GLuint GetRendererFramebuffer () const;
-    __EAPI GLuint GetRendererFramebufferTexture () const;
+    __EAPI virtual Framebuffer* GetFramebuffer () const;
+    __EAPI virtual Framebuffer* GetCurrentFramebuffer () const = 0;
 
     // object drawing and updating
     __EAPI void Draw (MeshObject& meshObject);
@@ -204,7 +203,7 @@ protected:
     // update uniform buffers of view and projection matrices
     void LoadMatrixUniformBuffers ();
 
-    virtual GLShaderProgram& GetMeshObjectShaderProgram (const MeshObject& meshObject) = 0;
+    virtual ShaderProgram& GetMeshObjectShaderProgram (const MeshObject& meshObject) = 0;
 
 };
 

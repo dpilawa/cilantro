@@ -82,6 +82,11 @@ void GLFramebuffer::SetFramebufferResolution (unsigned int bufferWidth, unsigned
     Initialize ();
 }
 
+int GLFramebuffer::GetTextureCount () const
+{
+    return rgbTextureCount + rgbaTextureCount;
+}
+
 GLuint GLFramebuffer::GetFramebufferRenderbufferGLId () const
 {
     return framebuffers.RBO;

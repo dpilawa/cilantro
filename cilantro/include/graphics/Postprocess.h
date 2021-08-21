@@ -7,6 +7,8 @@
 #include "graphics/ShaderProgram.h"
 #include <string>
 
+enum StencilTestFunction { FUNCTION_NEVER, FUNCTION_LESS, FUNCTION_LEQUAL, FUNCTION_GREATER, FUNCTION_GEQUAL, FUNCTION_EQUAL, FUNCTION_NOTEQUAL, FUNCTION_ALWAYS };
+
 class Postprocess : public Resource
 {
 public:
@@ -14,6 +16,10 @@ public:
     __EAPI virtual ~Postprocess ();
 
     __EAPI Postprocess& SetShaderProgram (const std::string& shaderProgramName);
+    __EAPI Postprocess& SetStencilTest (StencilTestFunction stencilTestFunction, int stencilTestValue);
+
+    __EAPI Postprocess& SetStencilTestEnabled (bool value);
+    __EAPI Postprocess& SetClearOnFrameEnabled (bool value);
 
     virtual void Initialize () = 0;
     virtual void Deinitialize () = 0;
@@ -24,8 +30,20 @@ public:
     virtual void SetPostprocessParameterFloat (const std::string& parameterName, float parameterValue) = 0;
 
 protected:
+
+    // flags
+    bool stencilTestEnabled;
+    bool clearOnFrameEnabled;
+
+    // output framebuffer
     Framebuffer* framebuffer;
+
+    // postprocess shader
     ShaderProgram* shaderProgram;
+
+    // stencil testing parameters
+    StencilTestFunction stencilTestFunction;
+    int stencilTestValue;
 };
 
 #endif

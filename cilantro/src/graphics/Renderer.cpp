@@ -44,7 +44,6 @@ void Renderer::RenderFrame ()
     }
 
     // run post-processing
-    postprocessStage = 0;
     for (auto&& postprocess : postprocesses)
     {
         postprocess->OnFrame ();

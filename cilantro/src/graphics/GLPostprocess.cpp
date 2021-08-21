@@ -13,17 +13,56 @@ GLPostprocess::~GLPostprocess ()
 
 void GLPostprocess::OnFrame ()
 {
-    // draw quad on screen
-    GLRenderer& glRenderer = dynamic_cast<GLRenderer&>(EngineContext::GetRenderer ());
+    GLuint glStencilFunction;
 
+    // draw quad on screen
+    GLRenderer& renderer = dynamic_cast<GLRenderer&>(EngineContext::GetRenderer ());
+    GLFramebuffer* inputFramebuffer = dynamic_cast<GLFramebuffer*>(renderer.GetCurrentFramebuffer ());
+    
+    // attach input renderbuffer's stencil to output
     glBindFramebuffer (GL_FRAMEBUFFER, dynamic_cast<GLFramebuffer*>(framebuffer)->GetFramebufferGLId ());
-    glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
-    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, dynamic_cast<GLFramebuffer*>(inputFramebuffer)->GetFramebufferRenderbufferGLId ());
+
+    // optionally clear
+    if (clearOnFrameEnabled)
+    {
+        glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
+        glClear (GL_COLOR_BUFFER_BIT);
+    }
+    
+    // disable depth test
     glDisable (GL_DEPTH_TEST);
+
+    // optionally enable stencil test
+    glDisable (GL_STENCIL_TEST);
+    if (stencilTestEnabled)
+    {
+        glEnable (GL_STENCIL_TEST);
+        glStencilOp (GL_KEEP, GL_KEEP, GL_KEEP);
+        switch (stencilTestFunction)   
+        {
+            case StencilTestFunction::FUNCTION_ALWAYS: glStencilFunction = GL_ALWAYS; break;
+            case StencilTestFunction::FUNCTION_EQUAL: glStencilFunction = GL_EQUAL; break;
+            case StencilTestFunction::FUNCTION_GEQUAL: glStencilFunction = GL_GEQUAL; break;
+            case StencilTestFunction::FUNCTION_GREATER: glStencilFunction = GL_GREATER; break;
+            case StencilTestFunction::FUNCTION_LEQUAL: glStencilFunction = GL_LEQUAL; break;
+            case StencilTestFunction::FUNCTION_LESS: glStencilFunction = GL_LESS; break;
+            case StencilTestFunction::FUNCTION_NEVER: glStencilFunction = GL_NEVER; break;
+            case StencilTestFunction::FUNCTION_NOTEQUAL: glStencilFunction = GL_NOTEQUAL; break;
+            default: glStencilFunction = GL_ALWAYS; break;
+        }
+        glStencilFunc (glStencilFunction, stencilTestValue, 0xff);
+        glStencilMask (0xff);
+    }
+
+    // bind textures and draw
     shaderProgram->Use ();
     glBindVertexArray (VAO);
-    glActiveTexture (GL_TEXTURE0);
-    glBindTexture (GL_TEXTURE_2D, glRenderer.GetRendererFramebufferTexture ()); 
+    for (int i = 0; i < inputFramebuffer->GetTextureCount (); i++)
+    {
+        glActiveTexture (GL_TEXTURE0 + i);
+        glBindTexture (GL_TEXTURE_2D, inputFramebuffer->GetFramebufferTextureGLId (i));
+    }
     glViewport (0, 0, framebuffer->GetWidth (), framebuffer->GetHeight ());
     glDrawArrays (GL_TRIANGLES, 0, 6);
     glBindTexture (GL_TEXTURE_2D, 0);

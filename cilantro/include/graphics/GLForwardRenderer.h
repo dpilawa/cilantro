@@ -14,9 +14,11 @@ public:
 
     __EAPI virtual void RenderFrame ();
 
+    __EAPI virtual Framebuffer* GetCurrentFramebuffer () const;
+
 private:
 
-    GLShaderProgram& GetMeshObjectShaderProgram (const MeshObject& meshObject);
+    ShaderProgram& GetMeshObjectShaderProgram (const MeshObject& meshObject);
 
 };
 

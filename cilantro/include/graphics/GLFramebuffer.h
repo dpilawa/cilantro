@@ -31,6 +31,8 @@ public:
 
     virtual void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight);
 
+    int GetTextureCount() const;
+
     GLuint GetFramebufferRenderbufferGLId () const;
     GLuint GetFramebufferTextureGLId (unsigned int textureNumber) const;
     GLuint GetFramebufferGLId () const;

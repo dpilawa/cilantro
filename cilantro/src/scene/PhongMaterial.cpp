@@ -8,7 +8,8 @@
 PhongMaterial::PhongMaterial () : Material ()
 {
     SetForwardShaderProgram ("blinnphong_forward_shader");
-    SetDeferredShaderProgram ("blinnphong_deferred_geometrypass_shader");
+    SetDeferredGeometryPassShaderProgram ("blinnphong_deferred_geometrypass_shader");
+    SetDeferredLightingPassShaderProgram ("blinnphong_deferred_lightingpass_shader");
 
     SetSpecularShininess (32.0f);
 

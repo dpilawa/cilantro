@@ -14,18 +14,18 @@ vec3 viewDirection;
 
 /* material properties */
 #if (__VERSION__ >= 420)
-layout (binding = 0) uniform sampler2D tAlbedo;
+layout (binding = 0) uniform sampler2D tDiffuse;
 layout (binding = 1) uniform sampler2D tNormal;
-layout (binding = 2) uniform sampler2D tMetallic;
-layout (binding = 3) uniform sampler2D tRoughness;
-layout (binding = 4) uniform sampler2D tAO;
+layout (binding = 2) uniform sampler2D tSpecular;
+layout (binding = 3) uniform sampler2D tEmissive;
 #else
-uniform sampler2D tAlbedo;
+uniform sampler2D tDiffuse;
 uniform sampler2D tNormal;
-uniform sampler2D tMetallic;
-uniform sampler2D tRoughness;
-uniform sampler2D tAO;
+uniform sampler2D tSpecular;
+uniform sampler2D tEmissive;
 #endif
+
+uniform float fSpecularShininess;
 
 /* eye position in world space */
 uniform vec3 eyePosition;
@@ -33,9 +33,9 @@ uniform vec3 eyePosition;
 /* output g-buffer */
 layout (location=0) out vec3 gPosition;
 layout (location=1) out vec3 gNormal;
-layout (location=2) out vec3 gMetallic;
-layout (location=3) out vec3 gRoughness;
-layout (location=4) out vec4 gAlbedoAO;
+layout (location=2) out vec3 gEmissive;
+layout (location=3) out vec3 gUnused;
+layout (location=4) out vec4 gSpecular;
 
 void main()
 {
@@ -46,10 +46,9 @@ void main()
     gNormal = normalize (TBN * (texture (tNormal, fUV).rgb * 2.0 - 1.0));
 
     /* pbr material properties */
-    gMetallic.rgb = texture (tMetallic, fUV).rgb;
-    gRoughness.rgb = texture (tRoughness, fUV).rgb;
-    gAlbedoAO.rgb = texture (tAlbedo, fUV).rgb;
-    gAlbedoAO.a = texture (tAO, fUV).a;
+    gEmissive.rgb = texture (tEmissive, fUV).rgb;
+    gSpecular.rgb = texture (tSpecular, fUV).rgb;
+    gSpecular.a = fSpecularShininess;
 
 } 
 

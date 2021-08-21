@@ -4,6 +4,8 @@
 #include "cilantroengine.h"
 #include "graphics/GLRenderer.h"
 
+class GLPostprocess;
+
 class GLDeferredRenderer : public GLRenderer
 {
 public:
@@ -14,11 +16,13 @@ public:
 
     __EAPI virtual void RenderFrame ();
 
+    __EAPI virtual Framebuffer* GetCurrentFramebuffer () const;
+
 private:
 
-    Framebuffer* gBuffer;
+    GLPostprocess* lightingPass;
 
-    GLShaderProgram& GetMeshObjectShaderProgram (const MeshObject& meshObject);
+    ShaderProgram& GetMeshObjectShaderProgram (const MeshObject& meshObject);
 
 };
 
