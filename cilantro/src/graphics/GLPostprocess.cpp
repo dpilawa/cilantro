@@ -57,12 +57,14 @@ void GLPostprocess::OnFrame ()
 
     // bind textures and draw
     shaderProgram->Use ();
+
     glBindVertexArray (VAO);
     for (int i = 0; i < inputFramebuffer->GetTextureCount (); i++)
     {
         glActiveTexture (GL_TEXTURE0 + i);
         glBindTexture (GL_TEXTURE_2D, inputFramebuffer->GetFramebufferTextureGLId (i));
     }
+    
     glViewport (0, 0, framebuffer->GetWidth (), framebuffer->GetHeight ());
     glDrawArrays (GL_TRIANGLES, 0, 6);
     glBindTexture (GL_TEXTURE_2D, 0);
@@ -88,7 +90,7 @@ void GLPostprocess::SetPostprocessParameterFloat (const std::string& parameterNa
 void GLPostprocess::Initialize ()
 {
     // initialize framebuffers
-    framebuffer = new GLFramebuffer (EngineContext::GetRenderer ().GetFramebuffer ()->GetWidth (), EngineContext::GetRenderer ().GetFramebuffer ()->GetHeight (), 1, 0);
+    framebuffer = new GLFramebuffer (EngineContext::GetRenderer ().GetFramebuffer ()->GetWidth (), EngineContext::GetRenderer ().GetFramebuffer ()->GetHeight (), 0, 1);
     framebuffer->Initialize ();
 
     // set up VBO and VAO

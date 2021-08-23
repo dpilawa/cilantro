@@ -203,7 +203,8 @@ protected:
     // update uniform buffers of view and projection matrices
     void LoadMatrixUniformBuffers ();
 
-    virtual ShaderProgram& GetMeshObjectShaderProgram (const MeshObject& meshObject) = 0;
+    virtual ShaderProgram& GetMeshObjectGeometryShaderProgram (const MeshObject& meshObject) = 0;
+    virtual ShaderProgram& GetMeshObjectLightingShaderProgram (const MeshObject& meshObject) = 0;
 
 };
 

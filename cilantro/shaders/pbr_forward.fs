@@ -35,7 +35,6 @@ uniform sampler2D tAO;
 
 vec3 fNormal;
 vec3 fAlbedo;
-vec3 fNormalMap;
 float fMetallic;
 float fRoughness;
 float fAO;
@@ -191,7 +190,6 @@ void main()
 
     /* sample textures */
     fAlbedo = texture (tAlbedo, fUV).rgb;
-    fNormalMap = texture (tNormal, fUV).rgb;
     fMetallic = texture (tMetallic, fUV).r;
     fRoughness = texture (tRoughness, fUV).r;
     fAO = texture (tAO, fUV).r;

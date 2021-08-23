@@ -115,6 +115,7 @@ void GLFWRenderTarget::OnFrame ()
     glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glDisable (GL_DEPTH_TEST);
+    glDisable (GL_STENCIL_TEST);
     glDisable (GL_FRAMEBUFFER_SRGB);
     renderer.GetShaderProgramManager ().GetByName<GLShaderProgram> ("flatquad_shader").Use ();
     glBindVertexArray (targetVAO);

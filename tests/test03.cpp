@@ -8,6 +8,7 @@
 #include "scene/DirectionalLight.h"
 #include "resource/ResourceManager.h"
 #include "graphics/GLForwardRenderer.h"
+#include "graphics/GLDeferredRenderer.h"
 #include "graphics/GLFWRenderTarget.h"
 #include "input/GLFWInputController.h"
 #include "math/Mathf.h"
@@ -23,7 +24,7 @@ int main (int argc, char* argv[])
     ResourceManager resourceManager;
     GameScene gameScene;
     GLFWRenderTarget renderTarget ("Test 3", 800, 600, false, true, true);
-    GLForwardRenderer renderer (800, 600);
+    GLDeferredRenderer renderer (800, 600);
     GLFWInputController inputController;
     Timer timer;
     Game game;

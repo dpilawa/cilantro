@@ -28,9 +28,9 @@ void GLFramebuffer::Initialize ()
     for (unsigned int i = 0; i < rgbTextureCount + rgbaTextureCount; i++)
     {
         glBindTexture (GL_TEXTURE_2D, framebuffers.textureBuffer[i]);
-        glTexImage2D (GL_TEXTURE_2D, 0, (i < rgbTextureCount) ? GL_RGB : GL_RGBA, bufferWidth, bufferHeight, 0, (i < rgbTextureCount) ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-        glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexImage2D (GL_TEXTURE_2D, 0, (i < rgbTextureCount) ? GL_RGB16F : GL_RGBA16F, bufferWidth, bufferHeight, 0, (i < rgbTextureCount) ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glBindTexture (GL_TEXTURE_2D, 0);
         
         glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, framebuffers.textureBuffer[i], 0);

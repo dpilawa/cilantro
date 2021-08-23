@@ -31,25 +31,24 @@ uniform sampler2D tAO;
 uniform vec3 eyePosition;
 
 /* output g-buffer */
-layout (location=0) out vec3 gPosition;
-layout (location=1) out vec3 gNormal;
-layout (location=2) out vec3 gMetallic;
-layout (location=3) out vec3 gRoughness;
-layout (location=4) out vec4 gAlbedoAO;
+layout (location=0) out vec4 gPosition;
+layout (location=1) out vec4 gNormal;
+layout (location=2) out vec4 gAlbedo;
+layout (location=3) out vec4 gMetallicRoughnessAO;
 
 void main()
 {
     /* fragment position */
-    gPosition = fPosition;
+    gPosition.xyz = fPosition;
 
     /* fragment normal */
-    gNormal = normalize (TBN * (texture (tNormal, fUV).rgb * 2.0 - 1.0));
+    gNormal.xyz = normalize (TBN * (texture (tNormal, fUV).rgb * 2.0 - 1.0));
 
     /* pbr material properties */
-    gMetallic.rgb = texture (tMetallic, fUV).rgb;
-    gRoughness.rgb = texture (tRoughness, fUV).rgb;
-    gAlbedoAO.rgb = texture (tAlbedo, fUV).rgb;
-    gAlbedoAO.a = texture (tAO, fUV).a;
+    gAlbedo.rgb = texture (tAlbedo, fUV).rgb;
+    gMetallicRoughnessAO.r = texture (tMetallic, fUV).r;
+    gMetallicRoughnessAO.g = texture (tRoughness, fUV).r;
+    gMetallicRoughnessAO.b = texture (tAO, fUV).r;
 
 } 
 

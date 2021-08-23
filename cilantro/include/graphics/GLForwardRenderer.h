@@ -18,7 +18,8 @@ public:
 
 private:
 
-    ShaderProgram& GetMeshObjectShaderProgram (const MeshObject& meshObject);
+    virtual ShaderProgram& GetMeshObjectGeometryShaderProgram (const MeshObject& meshObject);
+    virtual ShaderProgram& GetMeshObjectLightingShaderProgram (const MeshObject& meshObject);
 
 };
 

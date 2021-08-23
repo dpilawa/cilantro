@@ -7,7 +7,7 @@
 GLDeferredRenderer::GLDeferredRenderer (unsigned int width, unsigned int height) : GLRenderer (width, height)
 {
     // g-buffer
-    framebuffer = new GLFramebuffer (width, height, 4, 1);
+    framebuffer = new GLFramebuffer (width, height, 0, 5);
 
     // lighting pass postprocess
     lightingPass = new GLPostprocess ();
@@ -92,7 +92,7 @@ void GLDeferredRenderer::RenderFrame ()
 
         // render
         lightingPass->OnFrame ();
-        
+
         // do not clear frame on next draw
         lightingPass->SetClearOnFrameEnabled (false);
     }
@@ -121,7 +121,12 @@ Framebuffer* GLDeferredRenderer::GetCurrentFramebuffer () const
     }
 }
 
-ShaderProgram& GLDeferredRenderer::GetMeshObjectShaderProgram (const MeshObject& meshObject) 
+ShaderProgram& GLDeferredRenderer::GetMeshObjectGeometryShaderProgram (const MeshObject& meshObject) 
 {
     return meshObject.GetMaterial ().GetDeferredGeometryPassShaderProgram ();
+}
+
+ShaderProgram& GLDeferredRenderer::GetMeshObjectLightingShaderProgram (const MeshObject& meshObject) 
+{
+    return meshObject.GetMaterial ().GetDeferredLightingPassShaderProgram ();
 }

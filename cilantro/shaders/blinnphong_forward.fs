@@ -33,7 +33,6 @@ vec3 fNormal;
 vec3 fDiffuseColor;
 vec3 fSpecularColor;
 vec3 fEmissiveColor;
-
 uniform float fSpecularShininess;
 
 /* eye position in world space */
@@ -179,7 +178,7 @@ void main()
     
     color = vec4 (fEmissiveColor, 1.0);
     
-    /* calculate viewing direction in tangent space */
+    /* calculate viewing direction */
     viewDirection = normalize (eyePosition - fPosition);
 
     for (int i=0; i < pointLightCount; i++)

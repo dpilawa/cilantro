@@ -31,21 +31,22 @@ uniform float fSpecularShininess;
 uniform vec3 eyePosition;
 
 /* output g-buffer */
-layout (location=0) out vec3 gPosition;
-layout (location=1) out vec3 gNormal;
-layout (location=2) out vec3 gEmissive;
-layout (location=3) out vec3 gUnused;
+layout (location=0) out vec4 gPosition;
+layout (location=1) out vec4 gNormal;
+layout (location=2) out vec4 gDiffuse;
+layout (location=3) out vec4 gEmissive;
 layout (location=4) out vec4 gSpecular;
 
 void main()
 {
     /* fragment position */
-    gPosition = fPosition;
+    gPosition.xyz = fPosition;
 
     /* fragment normal */
-    gNormal = normalize (TBN * (texture (tNormal, fUV).rgb * 2.0 - 1.0));
+    gNormal.xyz = normalize (TBN * (texture (tNormal, fUV).rgb * 2.0 - 1.0));
 
     /* pbr material properties */
+    gDiffuse.rgb = texture (tDiffuse, fUV).rgb;
     gEmissive.rgb = texture (tEmissive, fUV).rgb;
     gSpecular.rgb = texture (tSpecular, fUV).rgb;
     gSpecular.a = fSpecularShininess;

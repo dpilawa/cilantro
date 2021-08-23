@@ -14,38 +14,38 @@ Material::~Material ()
 
 Material& Material::SetForwardShaderProgram (const std::string& name)
 {
-    forwardShaderProgram = &EngineContext::GetRenderer ().GetShaderProgramManager ().GetByName<ShaderProgram> (name);
+    forwardShaderProgram = EngineContext::GetRenderer ().GetShaderProgramManager ().GetByName<ShaderProgram> (name).GetHandle ();
 
     return *this;
 }
 
 Material& Material::SetDeferredGeometryPassShaderProgram (const std::string& name)
 {
-    deferredGeometryPassShaderProgram = &EngineContext::GetRenderer ().GetShaderProgramManager ().GetByName<ShaderProgram> (name);
+    deferredGeometryPassShaderProgram = EngineContext::GetRenderer ().GetShaderProgramManager ().GetByName<ShaderProgram> (name).GetHandle ();
 
     return *this;
 }
 
 Material& Material::SetDeferredLightingPassShaderProgram (const std::string& name)
 {
-    deferredLightingPassShaderProgram = &EngineContext::GetRenderer ().GetShaderProgramManager ().GetByName<ShaderProgram> (name);
+    deferredLightingPassShaderProgram = EngineContext::GetRenderer ().GetShaderProgramManager ().GetByName<ShaderProgram> (name).GetHandle ();
 
     return *this;
 }
 
 ShaderProgram& Material::GetForwardShaderProgram () const
 {
-    return *forwardShaderProgram;
+    return EngineContext::GetRenderer ().GetShaderProgramManager ().GetByHandle<ShaderProgram> (forwardShaderProgram);
 }
 
 ShaderProgram& Material::GetDeferredGeometryPassShaderProgram () const
 {
-    return *deferredGeometryPassShaderProgram;
+    return EngineContext::GetRenderer ().GetShaderProgramManager ().GetByHandle<ShaderProgram> (deferredGeometryPassShaderProgram);
 }
 
 ShaderProgram& Material::GetDeferredLightingPassShaderProgram () const
 {
-    return *deferredLightingPassShaderProgram;
+    return EngineContext::GetRenderer ().GetShaderProgramManager ().GetByHandle<ShaderProgram> (deferredLightingPassShaderProgram);
 }
 
 texture_map_t& Material::GetTexturesMap()

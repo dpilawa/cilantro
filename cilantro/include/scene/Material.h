@@ -48,9 +48,9 @@ protected:
 private:
 
     // shader programs defined in renderer
-    ShaderProgram* forwardShaderProgram;
-    ShaderProgram* deferredGeometryPassShaderProgram;
-    ShaderProgram* deferredLightingPassShaderProgram;
+    handle_t forwardShaderProgram;
+    handle_t deferredGeometryPassShaderProgram;
+    handle_t deferredLightingPassShaderProgram;
 
 };
 

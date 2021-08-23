@@ -5,9 +5,9 @@
 GLForwardRenderer::GLForwardRenderer (unsigned int width, unsigned int height) : GLRenderer (width, height)
 {
 #if (CILANTRO_GL_VERSION <= 140)
-    framebuffer = new GLFramebuffer (width, height, 1, 0);
+    framebuffer = new GLFramebuffer (width, height, 0, 1);
 #else
-    framebuffer = new GLMultisampleFramebuffer (width, height, 1, 0);
+    framebuffer = new GLMultisampleFramebuffer (width, height, 0, 1);
 #endif
 }
 
@@ -75,7 +75,12 @@ Framebuffer* GLForwardRenderer::GetCurrentFramebuffer () const
     }
 }
 
-ShaderProgram& GLForwardRenderer::GetMeshObjectShaderProgram (const MeshObject& meshObject) 
+ShaderProgram& GLForwardRenderer::GetMeshObjectGeometryShaderProgram (const MeshObject& meshObject) 
+{
+    return meshObject.GetMaterial ().GetForwardShaderProgram ();
+}
+
+ShaderProgram& GLForwardRenderer::GetMeshObjectLightingShaderProgram (const MeshObject& meshObject) 
 {
     return meshObject.GetMaterial ().GetForwardShaderProgram ();
 }
