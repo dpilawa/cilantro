@@ -3,14 +3,19 @@
 /* texture coords */
 in vec2 fTextureCoordinates;
 
-/* output color */
-out vec4 color;
-
 /* texture */
 uniform sampler2D fScreenTexture;
+
+/* output color */
+out vec4 color;
 
 void main()
 {
     color = texture (fScreenTexture, fTextureCoordinates);
-    color = color / (color + vec4 (1.0));
+
+    /* reinhard tone mapping */
+    color.rgb = color.rgb / (color.rgb + vec3 (1.0));
+
+    /* luma */
+    color.a = sqrt (dot (color.rgb, vec3 (0.299, 0.587, 0.114)));
 } 

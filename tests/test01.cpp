@@ -42,6 +42,7 @@ int main (int argc, char* argv [])
     EngineContext::Initialize ();
 
     renderer.AddPostprocess<GLPostprocess> ("hdr_postprocess").SetShaderProgram ("post_hdr_shader");
+    renderer.AddPostprocess<GLPostprocess> ("fxaa_postprocess").SetShaderProgram ("post_fxaa_shader").SetPostprocessParameterVector2f ("fInvResolution", Vector2f (1.0f / EngineContext::GetRenderer ().GetFramebuffer ()->GetWidth (), 1.0f / EngineContext::GetRenderer ().GetFramebuffer ()->GetHeight ()));
     renderer.AddPostprocess<GLPostprocess> ("gamma_postprocess").SetShaderProgram ("post_gamma_shader").SetPostprocessParameterFloat ("fGamma", 2.1f);
 
     inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});

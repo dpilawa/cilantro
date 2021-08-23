@@ -11,6 +11,45 @@ GLPostprocess::~GLPostprocess ()
 
 }
 
+void GLPostprocess::Initialize ()
+
+{
+    // initialize framebuffers
+    framebuffer = new GLFramebuffer (EngineContext::GetRenderer ().GetFramebuffer ()->GetWidth (), EngineContext::GetRenderer ().GetFramebuffer ()->GetHeight (), 0, 1);
+    framebuffer->Initialize ();
+
+    // set up VBO and VAO
+    float quadVertices[] = {
+        -1.0f,  1.0f,  0.0f, 1.0f,
+        -1.0f, -1.0f,  0.0f, 0.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
+
+        -1.0f,  1.0f,  0.0f, 1.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
+         1.0f,  1.0f,  1.0f, 1.0f
+    };
+
+    glGenVertexArrays (1, &VAO);
+    glGenBuffers (1, &VBO);
+    glBindVertexArray (VAO);
+    glBindBuffer (GL_ARRAY_BUFFER, VBO);
+    glBufferData (GL_ARRAY_BUFFER, sizeof (quadVertices), &quadVertices, GL_STATIC_DRAW);
+    glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);    
+    glVertexAttribPointer (1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof (float)));
+    glEnableVertexAttribArray (0);
+    glEnableVertexAttribArray (1);
+    glBindVertexArray (0);    
+    glBindBuffer (GL_ARRAY_BUFFER, 0);
+
+    LogMessage (MSG_LOCATION) << "GLPostprocess initialized" << this->GetName ();
+}
+
+void GLPostprocess::Deinitialize ()
+{
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+}
+
 void GLPostprocess::OnFrame ()
 {
     GLuint glStencilFunction;
@@ -74,6 +113,30 @@ void GLPostprocess::OnFrame ()
 
 void GLPostprocess::SetPostprocessParameterFloat (const std::string& parameterName, float parameterValue)
 {
+    GLuint location = GetUniformLocation (parameterName);
+    glUniform1f (location, parameterValue);
+}
+
+void GLPostprocess::SetPostprocessParameterVector2f (const std::string& parameterName, const Vector2f& parameterValue)
+{
+    GLuint location = GetUniformLocation (parameterName);
+    glUniform2fv (location, 1, &parameterValue[0]);
+}
+
+void GLPostprocess::SetPostprocessParameterVector3f (const std::string& parameterName, const Vector3f& parameterValue)
+{    
+    GLuint location = GetUniformLocation (parameterName);
+    glUniform3fv (location, 1, &parameterValue[0]);
+}
+
+void GLPostprocess::SetPostprocessParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue)
+{
+    GLuint location = GetUniformLocation (parameterName);
+    glUniform4fv (location, 1, &parameterValue[0]);
+}
+
+GLuint GLPostprocess::GetUniformLocation (const std::string& parameterName)
+{
     GLShaderProgram* glShaderProgam = dynamic_cast<GLShaderProgram*> (shaderProgram);
 
     glShaderProgam->Use ();
@@ -84,43 +147,6 @@ void GLPostprocess::SetPostprocessParameterFloat (const std::string& parameterNa
         LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Uniform not found in postprocessor shader:" << parameterName;
     }
 
-    glUniform1f (paramUniformLocation, parameterValue);
+    return paramUniformLocation;
 }
 
-void GLPostprocess::Initialize ()
-{
-    // initialize framebuffers
-    framebuffer = new GLFramebuffer (EngineContext::GetRenderer ().GetFramebuffer ()->GetWidth (), EngineContext::GetRenderer ().GetFramebuffer ()->GetHeight (), 0, 1);
-    framebuffer->Initialize ();
-
-    // set up VBO and VAO
-    float quadVertices[] = {
-        -1.0f,  1.0f,  0.0f, 1.0f,
-        -1.0f, -1.0f,  0.0f, 0.0f,
-         1.0f, -1.0f,  1.0f, 0.0f,
-
-        -1.0f,  1.0f,  0.0f, 1.0f,
-         1.0f, -1.0f,  1.0f, 0.0f,
-         1.0f,  1.0f,  1.0f, 1.0f
-    };
-
-    glGenVertexArrays (1, &VAO);
-    glGenBuffers (1, &VBO);
-    glBindVertexArray (VAO);
-    glBindBuffer (GL_ARRAY_BUFFER, VBO);
-    glBufferData (GL_ARRAY_BUFFER, sizeof (quadVertices), &quadVertices, GL_STATIC_DRAW);
-    glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);    
-    glVertexAttribPointer (1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof (float)));
-    glEnableVertexAttribArray (0);
-    glEnableVertexAttribArray (1);
-    glBindVertexArray (0);    
-    glBindBuffer (GL_ARRAY_BUFFER, 0);
-
-    LogMessage (MSG_LOCATION) << "GLPostprocess initialized" << this->GetName ();
-}
-
-void GLPostprocess::Deinitialize ()
-{
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-}

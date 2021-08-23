@@ -15,8 +15,8 @@ public:
     virtual void BindFramebuffer () const = 0;
     virtual void UnbindFramebuffer () const = 0;
 
-    unsigned int GetWidth () const;
-    unsigned int GetHeight () const;
+    __EAPI unsigned int GetWidth () const;
+    __EAPI unsigned int GetHeight () const;
 
     virtual void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight);
 

@@ -24,7 +24,7 @@ void GLMultisampleFramebuffer::Initialize ()
     for (unsigned int i = 0; i < rgbTextureCount + rgbaTextureCount; i++)
     {
         glBindTexture (GL_TEXTURE_2D_MULTISAMPLE, multisampleFramebuffers.textureBuffer[i]);
-        glTexImage2DMultisample (GL_TEXTURE_2D_MULTISAMPLE, 4, (i < rgbTextureCount) ? GL_RGB : GL_RGBA, bufferWidth, bufferHeight, GL_TRUE);
+        glTexImage2DMultisample (GL_TEXTURE_2D_MULTISAMPLE, 4, (i < rgbTextureCount) ? GL_RGB16F : GL_RGBA16F, bufferWidth, bufferHeight, GL_TRUE);
         glBindTexture (GL_TEXTURE_2D_MULTISAMPLE, 0);
 
         glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D_MULTISAMPLE, multisampleFramebuffers.textureBuffer[i], 0);

@@ -3,14 +3,14 @@
 /* texture coords */
 in vec2 fTextureCoordinates;
 
+/* texture */
+uniform sampler2D fScreenTexture;
+
 /* gamma value */
 uniform float fGamma;
 
 /* output color */
 out vec4 color;
-
-/* texture */
-uniform sampler2D fScreenTexture;
 
 void main()
 {
