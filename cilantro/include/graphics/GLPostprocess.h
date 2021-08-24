@@ -23,10 +23,10 @@ public:
 
     virtual void OnFrame ();
 
-    __EAPI virtual void SetPostprocessParameterFloat (const std::string& parameterName, float parameterValue);
-    __EAPI virtual void SetPostprocessParameterVector2f (const std::string& parameterName, const Vector2f& parameterValue);
-    __EAPI virtual void SetPostprocessParameterVector3f (const std::string& parameterName, const Vector3f& parameterValue);
-    __EAPI virtual void SetPostprocessParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue);
+    __EAPI virtual Postprocess& SetPostprocessParameterFloat (const std::string& parameterName, float parameterValue);
+    __EAPI virtual Postprocess& SetPostprocessParameterVector2f (const std::string& parameterName, const Vector2f& parameterValue);
+    __EAPI virtual Postprocess& SetPostprocessParameterVector3f (const std::string& parameterName, const Vector3f& parameterValue);
+    __EAPI virtual Postprocess& SetPostprocessParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue);
 
 private:
 

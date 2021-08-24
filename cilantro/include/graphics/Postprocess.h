@@ -31,10 +31,10 @@ public:
     virtual void OnFrame () = 0;
 
     Framebuffer* GetFramebuffer () const;
-    virtual void SetPostprocessParameterFloat (const std::string& parameterName, float parameterValue) = 0;
-    virtual void SetPostprocessParameterVector2f (const std::string& parameterName, const Vector2f& parameterValue) = 0;
-    virtual void SetPostprocessParameterVector3f (const std::string& parameterName, const Vector3f& parameterValue) = 0;
-    virtual void SetPostprocessParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue) = 0;
+    virtual Postprocess& SetPostprocessParameterFloat (const std::string& parameterName, float parameterValue) = 0;
+    virtual Postprocess& SetPostprocessParameterVector2f (const std::string& parameterName, const Vector2f& parameterValue) = 0;
+    virtual Postprocess& SetPostprocessParameterVector3f (const std::string& parameterName, const Vector3f& parameterValue) = 0;
+    virtual Postprocess& SetPostprocessParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue) = 0;
 
 protected:
 

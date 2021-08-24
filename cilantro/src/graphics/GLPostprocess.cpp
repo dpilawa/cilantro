@@ -111,28 +111,36 @@ void GLPostprocess::OnFrame ()
     glBindFramebuffer (GL_FRAMEBUFFER, 0);
 }
 
-void GLPostprocess::SetPostprocessParameterFloat (const std::string& parameterName, float parameterValue)
+Postprocess& GLPostprocess::SetPostprocessParameterFloat (const std::string& parameterName, float parameterValue)
 {
     GLuint location = GetUniformLocation (parameterName);
     glUniform1f (location, parameterValue);
+
+    return *this;
 }
 
-void GLPostprocess::SetPostprocessParameterVector2f (const std::string& parameterName, const Vector2f& parameterValue)
+Postprocess& GLPostprocess::SetPostprocessParameterVector2f (const std::string& parameterName, const Vector2f& parameterValue)
 {
     GLuint location = GetUniformLocation (parameterName);
     glUniform2fv (location, 1, &parameterValue[0]);
+    
+    return *this;
 }
 
-void GLPostprocess::SetPostprocessParameterVector3f (const std::string& parameterName, const Vector3f& parameterValue)
+Postprocess& GLPostprocess::SetPostprocessParameterVector3f (const std::string& parameterName, const Vector3f& parameterValue)
 {    
     GLuint location = GetUniformLocation (parameterName);
     glUniform3fv (location, 1, &parameterValue[0]);
+    
+    return *this;
 }
 
-void GLPostprocess::SetPostprocessParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue)
+Postprocess& GLPostprocess::SetPostprocessParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue)
 {
     GLuint location = GetUniformLocation (parameterName);
     glUniform4fv (location, 1, &parameterValue[0]);
+    
+    return *this;
 }
 
 GLuint GLPostprocess::GetUniformLocation (const std::string& parameterName)
