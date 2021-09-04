@@ -8,14 +8,36 @@ GLPostprocess::GLPostprocess () : Postprocess ()
 
 GLPostprocess::~GLPostprocess ()
 {
+}
 
+Postprocess& GLPostprocess::SetMultisampleFramebufferEnabled (bool value)
+{
+    if (framebuffer != nullptr)
+    {
+        framebuffer->Deinitialize ();
+        multisampleFramebufferEnabled = value;
+        framebuffer->Initialize ();
+    }
+
+    return Postprocess::SetMultisampleFramebufferEnabled (value);
 }
 
 void GLPostprocess::Initialize ()
-
 {
     // initialize framebuffers
-    framebuffer = new GLFramebuffer (EngineContext::GetRenderer ().GetFramebuffer ()->GetWidth (), EngineContext::GetRenderer ().GetFramebuffer ()->GetHeight (), 0, 1);
+    if (multisampleFramebufferEnabled)
+    {
+#if (CILANTRO_GL_VERSION <= 140)
+        framebuffer = new GLFramebuffer (EngineContext::GetRenderer ().GetFramebuffer ()->GetWidth (), EngineContext::GetRenderer ().GetFramebuffer ()->GetHeight (), 0, 1);
+#else
+        framebuffer = new GLMultisampleFramebuffer (EngineContext::GetRenderer ().GetFramebuffer ()->GetWidth (), EngineContext::GetRenderer ().GetFramebuffer ()->GetHeight (), 0, 1);
+#endif
+    }
+    else
+    {
+        framebuffer = new GLFramebuffer (EngineContext::GetRenderer ().GetFramebuffer ()->GetWidth (), EngineContext::GetRenderer ().GetFramebuffer ()->GetHeight (), 0, 1);
+    }
+    
     framebuffer->Initialize ();
 
     // set up VBO and VAO
@@ -48,6 +70,8 @@ void GLPostprocess::Deinitialize ()
 {
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
+
+    framebuffer->Deinitialize ();
 }
 
 void GLPostprocess::OnFrame ()

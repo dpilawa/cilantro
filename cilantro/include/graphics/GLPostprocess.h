@@ -18,6 +18,8 @@ public:
     __EAPI GLPostprocess ();
     __EAPI virtual ~GLPostprocess ();
 
+    __EAPI virtual Postprocess& SetMultisampleFramebufferEnabled (bool value);
+
     virtual void Initialize ();
     virtual void Deinitialize ();
 

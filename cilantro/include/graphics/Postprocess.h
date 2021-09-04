@@ -23,9 +23,10 @@ public:
     __EAPI Postprocess& SetShaderProgram (const std::string& shaderProgramName);
     __EAPI Postprocess& SetStencilTest (StencilTestFunction stencilTestFunction, int stencilTestValue);
 
-    __EAPI Postprocess& SetStencilTestEnabled (bool value);
-    __EAPI Postprocess& SetDepthTestEnabled (bool value);
-    __EAPI Postprocess& SetClearOnFrameEnabled (bool value);
+    __EAPI virtual Postprocess& SetMultisampleFramebufferEnabled (bool value);
+    __EAPI virtual Postprocess& SetStencilTestEnabled (bool value);
+    __EAPI virtual Postprocess& SetDepthTestEnabled (bool value);
+    __EAPI virtual Postprocess& SetClearOnFrameEnabled (bool value);
 
     __EAPI Postprocess& SetPipelineFramebufferInputLink (PipelineLink link);
     __EAPI Postprocess& SetPipelineRenderbufferLink (PipelineLink link);
@@ -45,6 +46,7 @@ public:
 protected:
 
     // flags
+    bool multisampleFramebufferEnabled;
     bool stencilTestEnabled;
     bool depthTestEnabled;
     bool clearOnFrameEnabled;

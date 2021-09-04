@@ -4,6 +4,10 @@
 
 Postprocess::Postprocess ()
 {
+    framebuffer = nullptr;
+    shaderProgram = nullptr;
+
+    multisampleFramebufferEnabled = false;
     stencilTestEnabled = false;
     depthTestEnabled = false;
     clearOnFrameEnabled = true;
@@ -31,6 +35,13 @@ Postprocess& Postprocess::SetStencilTest (StencilTestFunction stencilTestFunctio
 {
     this->stencilTestFunction = stencilTestFunction;
     this->stencilTestValue = stencilTestValue;
+
+    return *this;
+}
+
+Postprocess& Postprocess::SetMultisampleFramebufferEnabled (bool value)
+{
+    multisampleFramebufferEnabled = value;
 
     return *this;
 }
