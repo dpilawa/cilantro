@@ -1,6 +1,6 @@
 #include "system/EngineContext.h"
 #include "graphics/GLDeferredRenderer.h"
-#include "graphics/GLPostprocess.h"
+#include "graphics/GLRenderStage.h"
 #include "scene/MeshObject.h"
 #include <set>
 
@@ -67,7 +67,7 @@ void GLDeferredRenderer::RenderFrame ()
     // unbind framebuffer
     framebuffer->UnbindFramebuffer ();
 
-    // base class function - will include also added postprocess(es) for lightning pass(es)
+    // base class function - will include also added stage(s) for lightning pass(es)
     Renderer::RenderFrame ();
 
     // check for errors
@@ -80,12 +80,12 @@ void GLDeferredRenderer::Update (Material& material)
     std::string shaderProgramName = this->GetShaderProgramManager ().GetByHandle<ShaderProgram> (shaderProgramHandle).GetName ();
 
     // add material's shader program to set of used shader programs handles
-    // add lighting deferred pass postprocesses for each program
+    // add lighting deferred pass renderStages for each program
     if (lightingShaders.find (shaderProgramHandle) == lightingShaders.end ())
     {
         lightingShaderStagesCount++;
         lightingShaders.insert (shaderProgramHandle);
-        GLPostprocess& p = this->AddPostprocess <GLPostprocess> ("deferredLightingStage_" + shaderProgramName);
+        GLRenderStage& p = this->AddRenderStage <GLRenderStage> ("deferredLightingStage_" + shaderProgramName);
         p.SetShaderProgram (shaderProgramName);
         p.SetStencilTestEnabled (true).SetStencilTest (StencilTestFunction::FUNCTION_EQUAL, shaderProgramHandle);
         p.SetClearOnFrameEnabled (true);
@@ -93,25 +93,25 @@ void GLDeferredRenderer::Update (Material& material)
         p.SetPipelineRenderbufferLink (PipelineLink::LINK_BASE);
         p.SetPipelineFramebufferOutputLink (PipelineLink::LINK_FIRST);
 
-        // cycle postprocess sequence so that newly addded postprocess is in front
+        // cycle pipeline stage sequence so that newly addded stage is in front
         // simple vector rotation to the right
-        std::rotate (postprocessPipeline.rbegin (), postprocessPipeline.rbegin () + 1, postprocessPipeline.rend ());
+        std::rotate (renderPipeline.rbegin (), renderPipeline.rbegin () + 1, renderPipeline.rend ());
 
         // update flags of other deferred lighting stages (if present)
         if (lightingShaderStagesCount > 1)
         {
-            handle_t stageHandle = postprocessPipeline[1];
+            handle_t stageHandle = renderPipeline[1];
 
-            GLPostprocess& stage = GetPostprocessManager ().GetByHandle<GLPostprocess> (stageHandle);
+            GLRenderStage& stage = GetRenderStageManager ().GetByHandle<GLRenderStage> (stageHandle);
             stage.SetClearOnFrameEnabled (false);
         }
 
         // update pipeline links of 1st stage following deferred lighting stages
-        if (postprocessPipeline.size () > lightingShaderStagesCount)
+        if (renderPipeline.size () > lightingShaderStagesCount)
         {
-            handle_t stageHandle = postprocessPipeline[lightingShaderStagesCount];
+            handle_t stageHandle = renderPipeline[lightingShaderStagesCount];
 
-            GLPostprocess& stage = GetPostprocessManager ().GetByHandle<GLPostprocess> (stageHandle);
+            GLRenderStage& stage = GetRenderStageManager ().GetByHandle<GLRenderStage> (stageHandle);
             stage.SetClearOnFrameEnabled (true);
             stage.SetPipelineFramebufferInputLink (PipelineLink::LINK_FIRST);
             stage.SetPipelineRenderbufferLink (PipelineLink::LINK_CURRENT);

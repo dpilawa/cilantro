@@ -5,7 +5,7 @@
 #include "resource/ResourceManager.h"
 #include "graphics/Framebuffer.h"
 #include "graphics/ShaderProgram.h"
-#include "graphics/Postprocess.h"
+#include "graphics/RenderStage.h"
 #include <string>
 #include <vector>
 
@@ -33,10 +33,10 @@ public:
     __EAPI virtual Framebuffer* GetPipelineFramebuffer (PipelineLink link) = 0;
 
     // post-processing
-    __EAPI virtual ResourceManager<Postprocess>& GetPostprocessManager ();
+    __EAPI virtual ResourceManager<RenderStage>& GetRenderStageManager ();
     
     template <typename T, typename ...Params>
-    T& AddPostprocess (const std::string& name, Params&&... params);
+    T& AddRenderStage (const std::string& name, Params&&... params);
 
     // shader library manipulation
     __EAPI virtual ResourceManager<ShaderProgram>& GetShaderProgramManager ();
@@ -57,9 +57,9 @@ protected:
 
     Framebuffer* framebuffer;
 
-    unsigned int pipelineStage;
-    ResourceManager<Postprocess> postprocesses;
-    std::vector<handle_t> postprocessPipeline;
+    unsigned int renderStage;
+    ResourceManager<RenderStage> renderStages;
+    std::vector<handle_t> renderPipeline;
 
     ResourceManager<ShaderProgram> shaderPrograms;
 
@@ -71,16 +71,16 @@ private:
 };
 
 template <typename T, typename ...Params>
-T& Renderer::AddPostprocess (const std::string& name, Params&&... params)
+T& Renderer::AddRenderStage (const std::string& name, Params&&... params)
 {
-    T& postprocess = postprocesses.Create<T> (name, params...);
+    T& renderStage = renderStages.Create<T> (name, params...);
 
     // initialize
-    postprocess.Initialize ();
-    postprocessPipeline.push_back (postprocess.GetHandle ());
+    renderStage.Initialize ();
+    renderPipeline.push_back (renderStage.GetHandle ());
 
-    // return postprocess
-    return postprocess;
+    // return stage
+    return renderStage;
 }
 
 template <typename T, typename ...Params>

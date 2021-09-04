@@ -5,7 +5,7 @@
 #include "graphics/GLRenderer.h"
 #include <set>
 
-class GLPostprocess;
+class GLRenderStage;
 
 class GLDeferredRenderer : public GLRenderer
 {

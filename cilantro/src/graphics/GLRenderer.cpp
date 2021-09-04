@@ -3,7 +3,7 @@
 #include "graphics/GLRenderer.h"
 #include "graphics/GLShader.h"
 #include "graphics/GLShaderProgram.h"
-#include "graphics/GLPostprocess.h"
+#include "graphics/GLRenderStage.h"
 #include "scene/GameScene.h"
 #include "scene/GameObject.h"
 #include "scene/MeshObject.h"
@@ -38,7 +38,7 @@ GLRenderer::~GLRenderer ()
 void GLRenderer::Initialize ()
 {
     // set variable defaults
-    pipelineStage = 0;
+    renderStage = 0;
 
     // display GL version information
     LogMessage (MSG_LOCATION) << "Version:" << (char*) glGetString (GL_VERSION);
@@ -111,9 +111,9 @@ Framebuffer* GLRenderer::GetFramebuffer ()
 
 Framebuffer* GLRenderer::GetPipelineFramebuffer (PipelineLink link)
 {
-    int postprocessIndex = pipelineStage - 1;
+    int stageIndex = renderStage - 1;
 
-    if (pipelineStage == 0 && link == PipelineLink::LINK_PREVIOUS)
+    if (renderStage == 0 && link == PipelineLink::LINK_PREVIOUS)
     {
         LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Pipeline index out of bounds";
     }
@@ -124,13 +124,13 @@ Framebuffer* GLRenderer::GetPipelineFramebuffer (PipelineLink link)
     }
     else if (link == PipelineLink::LINK_FIRST)
     {
-        return GetPostprocessManager ().GetByHandle<GLPostprocess> (postprocessPipeline.front ()).GetFramebuffer ();
+        return GetRenderStageManager ().GetByHandle<GLRenderStage> (renderPipeline.front ()).GetFramebuffer ();
     }
     else if (link == PipelineLink::LINK_PREVIOUS)
     {
-        if (postprocessIndex > 0)
+        if (stageIndex > 0)
         {
-            return GetPostprocessManager ().GetByHandle<GLPostprocess> (postprocessPipeline[postprocessIndex - 1]).GetFramebuffer ();
+            return GetRenderStageManager ().GetByHandle<GLRenderStage> (renderPipeline[stageIndex - 1]).GetFramebuffer ();
         }
         else /* equivalent to LINK_BASE */
         {
@@ -139,11 +139,11 @@ Framebuffer* GLRenderer::GetPipelineFramebuffer (PipelineLink link)
     }
     else if (link == PipelineLink::LINK_LAST)
     {
-        return GetPostprocessManager ().GetByHandle<GLPostprocess> (postprocessPipeline.back ()).GetFramebuffer ();
+        return GetRenderStageManager ().GetByHandle<GLRenderStage> (renderPipeline.back ()).GetFramebuffer ();
     }
     else /* LINK_CURRENT */
     {
-        return GetPostprocessManager ().GetByHandle<GLPostprocess> (postprocessPipeline[postprocessIndex]).GetFramebuffer ();
+        return GetRenderStageManager ().GetByHandle<GLRenderStage> (renderPipeline[stageIndex]).GetFramebuffer ();
     }
 }
 

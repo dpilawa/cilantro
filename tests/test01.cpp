@@ -17,7 +17,7 @@
 #include "graphics/GLForwardRenderer.h"
 #include "graphics/GLDeferredRenderer.h"
 #include "graphics/GLFWRenderTarget.h"
-#include "graphics/GLPostprocess.h"
+#include "graphics/GLRenderStage.h"
 #include "input/GLFWInputController.h"
 #include "math/Mathf.h"
 #include "system/LogMessage.h"
@@ -41,9 +41,9 @@ int main (int argc, char* argv [])
     EngineContext::Set (game, resourceManager, timer, gameScene, renderer, renderTarget, inputController);
     EngineContext::Initialize ();
 
-    renderer.AddPostprocess<GLPostprocess> ("hdr_postprocess").SetShaderProgram ("post_hdr_shader");
-    renderer.AddPostprocess<GLPostprocess> ("fxaa_postprocess").SetShaderProgram ("post_fxaa_shader").SetPostprocessParameterFloat ("fMaxSpan", 4.0f).SetPostprocessParameterVector2f ("vInvResolution", Vector2f (1.0f / EngineContext::GetRenderer ().GetFramebuffer ()->GetWidth (), 1.0f / EngineContext::GetRenderer ().GetFramebuffer ()->GetHeight ()));
-    renderer.AddPostprocess<GLPostprocess> ("gamma_postprocess").SetShaderProgram ("post_gamma_shader").SetPostprocessParameterFloat ("fGamma", 2.1f);
+    renderer.AddRenderStage<GLRenderStage> ("hdr_postprocess").SetShaderProgram ("post_hdr_shader");
+    renderer.AddRenderStage<GLRenderStage> ("fxaa_postprocess").SetShaderProgram ("post_fxaa_shader").SetRenderStageParameterFloat ("fMaxSpan", 4.0f).SetRenderStageParameterVector2f ("vInvResolution", Vector2f (1.0f / EngineContext::GetRenderer ().GetFramebuffer ()->GetWidth (), 1.0f / EngineContext::GetRenderer ().GetFramebuffer ()->GetHeight ()));
+    renderer.AddRenderStage<GLRenderStage> ("gamma_postprocess").SetShaderProgram ("post_gamma_shader").SetRenderStageParameterFloat ("fGamma", 2.1f);
 
     inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
     inputController.BindInputEvent ("exit", [ & ]() { game.Stop (); });

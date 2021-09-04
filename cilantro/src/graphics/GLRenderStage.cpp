@@ -1,16 +1,16 @@
-#include "graphics/GLPostprocess.h"
+#include "graphics/GLRenderStage.h"
 #include "system/LogMessage.h"
 #include "system/EngineContext.h"
 
-GLPostprocess::GLPostprocess () : Postprocess ()
+GLRenderStage::GLRenderStage () : RenderStage ()
 {
 }
 
-GLPostprocess::~GLPostprocess ()
+GLRenderStage::~GLRenderStage ()
 {
 }
 
-Postprocess& GLPostprocess::SetMultisampleFramebufferEnabled (bool value)
+RenderStage& GLRenderStage::SetMultisampleFramebufferEnabled (bool value)
 {
     if (framebuffer != nullptr)
     {
@@ -19,10 +19,10 @@ Postprocess& GLPostprocess::SetMultisampleFramebufferEnabled (bool value)
         framebuffer->Initialize ();
     }
 
-    return Postprocess::SetMultisampleFramebufferEnabled (value);
+    return RenderStage::SetMultisampleFramebufferEnabled (value);
 }
 
-void GLPostprocess::Initialize ()
+void GLRenderStage::Initialize ()
 {
     // initialize framebuffers
     if (multisampleFramebufferEnabled)
@@ -63,10 +63,10 @@ void GLPostprocess::Initialize ()
     glBindVertexArray (0);    
     glBindBuffer (GL_ARRAY_BUFFER, 0);
 
-    LogMessage (MSG_LOCATION) << "GLPostprocess initialized" << this->GetName ();
+    LogMessage (MSG_LOCATION) << "GLRenderStage initialized" << this->GetName ();
 }
 
-void GLPostprocess::Deinitialize ()
+void GLRenderStage::Deinitialize ()
 {
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
@@ -74,7 +74,7 @@ void GLPostprocess::Deinitialize ()
     framebuffer->Deinitialize ();
 }
 
-void GLPostprocess::OnFrame ()
+void GLRenderStage::OnFrame ()
 {
     GLuint glStencilFunction;
     GLFramebuffer* inputFramebuffer = dynamic_cast<GLFramebuffer*>(EngineContext::GetRenderer ().GetPipelineFramebuffer (pipelineFramebufferInputLink));
@@ -137,7 +137,7 @@ void GLPostprocess::OnFrame ()
     glBindFramebuffer (GL_FRAMEBUFFER, 0);
 }
 
-Postprocess& GLPostprocess::SetPostprocessParameterFloat (const std::string& parameterName, float parameterValue)
+RenderStage& GLRenderStage::SetRenderStageParameterFloat (const std::string& parameterName, float parameterValue)
 {
     GLuint location = GetUniformLocation (parameterName);
     glUniform1f (location, parameterValue);
@@ -145,7 +145,7 @@ Postprocess& GLPostprocess::SetPostprocessParameterFloat (const std::string& par
     return *this;
 }
 
-Postprocess& GLPostprocess::SetPostprocessParameterVector2f (const std::string& parameterName, const Vector2f& parameterValue)
+RenderStage& GLRenderStage::SetRenderStageParameterVector2f (const std::string& parameterName, const Vector2f& parameterValue)
 {
     GLuint location = GetUniformLocation (parameterName);
     glUniform2fv (location, 1, &parameterValue[0]);
@@ -153,7 +153,7 @@ Postprocess& GLPostprocess::SetPostprocessParameterVector2f (const std::string& 
     return *this;
 }
 
-Postprocess& GLPostprocess::SetPostprocessParameterVector3f (const std::string& parameterName, const Vector3f& parameterValue)
+RenderStage& GLRenderStage::SetRenderStageParameterVector3f (const std::string& parameterName, const Vector3f& parameterValue)
 {    
     GLuint location = GetUniformLocation (parameterName);
     glUniform3fv (location, 1, &parameterValue[0]);
@@ -161,7 +161,7 @@ Postprocess& GLPostprocess::SetPostprocessParameterVector3f (const std::string& 
     return *this;
 }
 
-Postprocess& GLPostprocess::SetPostprocessParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue)
+RenderStage& GLRenderStage::SetRenderStageParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue)
 {
     GLuint location = GetUniformLocation (parameterName);
     glUniform4fv (location, 1, &parameterValue[0]);
@@ -169,7 +169,7 @@ Postprocess& GLPostprocess::SetPostprocessParameterVector4f (const std::string& 
     return *this;
 }
 
-GLuint GLPostprocess::GetUniformLocation (const std::string& parameterName)
+GLuint GLRenderStage::GetUniformLocation (const std::string& parameterName)
 {
     GLShaderProgram* glShaderProgam = dynamic_cast<GLShaderProgram*> (shaderProgram);
 
@@ -178,7 +178,7 @@ GLuint GLPostprocess::GetUniformLocation (const std::string& parameterName)
 
     if (paramUniformLocation == GL_INVALID_INDEX)
     {
-        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Uniform not found in postprocessor shader:" << parameterName;
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Uniform not found in stage shader:" << parameterName;
     }
 
     return paramUniformLocation;

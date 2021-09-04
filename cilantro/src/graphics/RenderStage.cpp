@@ -1,8 +1,8 @@
-#include "graphics/Postprocess.h"
+#include "graphics/RenderStage.h"
 #include "system/EngineContext.h"
 #include "graphics/ShaderProgram.h"
 
-Postprocess::Postprocess ()
+RenderStage::RenderStage ()
 {
     framebuffer = nullptr;
     shaderProgram = nullptr;
@@ -20,18 +20,18 @@ Postprocess::Postprocess ()
     pipelineFramebufferOutputLink = PipelineLink::LINK_CURRENT;
 }
 
-Postprocess::~Postprocess ()
+RenderStage::~RenderStage ()
 {
 }
 
-Postprocess& Postprocess::SetShaderProgram (const std::string& shaderProgramName)
+RenderStage& RenderStage::SetShaderProgram (const std::string& shaderProgramName)
 {
     shaderProgram = &(EngineContext::GetRenderer ().GetShaderProgramManager ().GetByName<ShaderProgram> (shaderProgramName));
 
     return *this;
 }
 
-Postprocess& Postprocess::SetStencilTest (StencilTestFunction stencilTestFunction, int stencilTestValue)
+RenderStage& RenderStage::SetStencilTest (StencilTestFunction stencilTestFunction, int stencilTestValue)
 {
     this->stencilTestFunction = stencilTestFunction;
     this->stencilTestValue = stencilTestValue;
@@ -39,56 +39,56 @@ Postprocess& Postprocess::SetStencilTest (StencilTestFunction stencilTestFunctio
     return *this;
 }
 
-Postprocess& Postprocess::SetMultisampleFramebufferEnabled (bool value)
+RenderStage& RenderStage::SetMultisampleFramebufferEnabled (bool value)
 {
     multisampleFramebufferEnabled = value;
 
     return *this;
 }
 
-Postprocess& Postprocess::SetStencilTestEnabled (bool value)
+RenderStage& RenderStage::SetStencilTestEnabled (bool value)
 {
     stencilTestEnabled = value;
 
     return *this;
 }
 
-Postprocess& Postprocess::SetDepthTestEnabled (bool value)
+RenderStage& RenderStage::SetDepthTestEnabled (bool value)
 {
     depthTestEnabled = value;
 
     return *this;
 }
 
-Postprocess& Postprocess::SetClearOnFrameEnabled (bool value)
+RenderStage& RenderStage::SetClearOnFrameEnabled (bool value)
 {
     clearOnFrameEnabled = value;
 
     return *this;
 }
 
-Postprocess& Postprocess::SetPipelineFramebufferInputLink (PipelineLink link)
+RenderStage& RenderStage::SetPipelineFramebufferInputLink (PipelineLink link)
 {
     pipelineFramebufferInputLink = link;
 
     return *this;
 }
 
-Postprocess& Postprocess::SetPipelineRenderbufferLink (PipelineLink link)
+RenderStage& RenderStage::SetPipelineRenderbufferLink (PipelineLink link)
 {
     pipelineRenderbufferLink = link;
 
     return *this;
 }
 
-Postprocess& Postprocess::SetPipelineFramebufferOutputLink (PipelineLink link)
+RenderStage& RenderStage::SetPipelineFramebufferOutputLink (PipelineLink link)
 {
     pipelineFramebufferOutputLink = link;
 
     return *this;
 }
 
-Framebuffer* Postprocess::GetFramebuffer () const
+Framebuffer* RenderStage::GetFramebuffer () const
 {
     return framebuffer;
 }

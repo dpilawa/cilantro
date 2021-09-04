@@ -8,7 +8,7 @@
 #include "resource/AssimpModelLoader.h"
 #include "graphics/GLDeferredRenderer.h"
 #include "graphics/GLFWRenderTarget.h"
-#include "graphics/GLPostprocess.h"
+#include "graphics/GLRenderStage.h"
 #include "input/GLFWInputController.h"
 #include "math/Mathf.h"
 #include "system/LogMessage.h"
@@ -37,8 +37,8 @@ int main (int argc, char* argv [])
     resourceManager.Load<Texture> ("tMetalness", "assets/Textures/Cerberus_M.tga");
     resourceManager.Load<Texture> ("tRoughness", "assets/Textures/Cerberus_R.tga");
 
-    renderer.AddPostprocess<GLPostprocess> ("hdr_postprocess").SetShaderProgram ("post_hdr_shader");
-    renderer.AddPostprocess<GLPostprocess> ("gamma_postprocess").SetShaderProgram ("post_gamma_shader").SetPostprocessParameterFloat ("fGamma", 1.7f);
+    renderer.AddRenderStage<GLRenderStage> ("hdr_postprocess").SetShaderProgram ("post_hdr_shader");
+    renderer.AddRenderStage<GLRenderStage> ("gamma_postprocess").SetShaderProgram ("post_gamma_shader").SetRenderStageParameterFloat ("fGamma", 1.7f);
 
     inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
     inputController.BindInputEvent ("exit", [ & ]() { game.Stop (); });

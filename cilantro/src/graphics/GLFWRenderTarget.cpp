@@ -153,9 +153,9 @@ void GLFWRenderTarget::FramebufferResizeCallback (int width, int height)
     this->width = width;
     this->height = height;
 
-    for (auto& postprocess : EngineContext::GetRenderer ().GetPostprocessManager())
+    for (auto& stage : EngineContext::GetRenderer ().GetRenderStageManager())
     {
-        dynamic_cast<GLFramebuffer*> (postprocess->GetFramebuffer ())->SetFramebufferResolution (width, height);
+        dynamic_cast<GLFramebuffer*> (stage->GetFramebuffer ())->SetFramebufferResolution (width, height);
     }
 }
 

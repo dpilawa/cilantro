@@ -23,9 +23,9 @@ void Renderer::Initialize ()
 
 void Renderer::Deinitialize ()
 {
-    for (auto&& postprocess : postprocesses)
+    for (auto&& stage : renderStages)
     {
-        postprocess->Deinitialize ();
+        stage->Deinitialize ();
     }
 
     framebuffer->Deinitialize ();    
@@ -36,7 +36,7 @@ void Renderer::Deinitialize ()
 void Renderer::RenderFrame ()
 {
 
-    pipelineStage = 0;
+    renderStage = 0;
 
     // reset global rendering timer
     if (totalRenderTime == 0L)
@@ -45,10 +45,10 @@ void Renderer::RenderFrame ()
     }
 
     // run post-processing
-    for (handle_t postprocessHandle : postprocessPipeline)
+    for (handle_t stageHandle : renderPipeline)
     {
-        pipelineStage++;
-        postprocesses.GetByHandle<Postprocess> (postprocessHandle).OnFrame ();
+        renderStage++;
+        renderStages.GetByHandle<RenderStage> (stageHandle).OnFrame ();
     }
 
     // update game clocks (Tock)
@@ -60,9 +60,9 @@ void Renderer::RenderFrame ()
     totalFrameRenderTime += EngineContext::GetTimer ().GetFrameRenderTime ();
 }
 
-ResourceManager<Postprocess>& Renderer::GetPostprocessManager ()
+ResourceManager<RenderStage>& Renderer::GetRenderStageManager ()
 {
-    return postprocesses;
+    return renderStages;
 }
 
 ResourceManager<ShaderProgram>& Renderer::GetShaderProgramManager ()

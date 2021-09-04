@@ -3,7 +3,7 @@
 #include "scene/Material.h"
 #include "scene/GameObject.h"
 #include "graphics/ShaderProgram.h"
-#include "graphics/Postprocess.h"
+#include "graphics/RenderStage.h"
 
 template <typename Base>
 ResourceManager<Base>::ResourceManager ()
@@ -116,12 +116,12 @@ template __EAPI ResourceManager<ShaderProgram>::const_iterator ResourceManager<S
 template __EAPI ResourceManager<ShaderProgram>::const_iterator ResourceManager<ShaderProgram>::cend () const;
 template __EAPI std::shared_ptr<ShaderProgram> ResourceManager<ShaderProgram>::Push (const std::string& name, std::shared_ptr<ShaderProgram> resource);
 
-template __EAPI ResourceManager<Postprocess>::ResourceManager ();
-template __EAPI ResourceManager<Postprocess>::~ResourceManager ();
-template __EAPI ResourceManager<Postprocess>::iterator ResourceManager<Postprocess>::begin ();
-template __EAPI ResourceManager<Postprocess>::iterator ResourceManager<Postprocess>::end ();
-template __EAPI ResourceManager<Postprocess>::const_iterator ResourceManager<Postprocess>::begin () const;
-template __EAPI ResourceManager<Postprocess>::const_iterator ResourceManager<Postprocess>::end () const;
-template __EAPI ResourceManager<Postprocess>::const_iterator ResourceManager<Postprocess>::cbegin () const;
-template __EAPI ResourceManager<Postprocess>::const_iterator ResourceManager<Postprocess>::cend () const;
-template __EAPI std::shared_ptr<Postprocess> ResourceManager<Postprocess>::Push (const std::string& name, std::shared_ptr<Postprocess> resource);
+template __EAPI ResourceManager<RenderStage>::ResourceManager ();
+template __EAPI ResourceManager<RenderStage>::~ResourceManager ();
+template __EAPI ResourceManager<RenderStage>::iterator ResourceManager<RenderStage>::begin ();
+template __EAPI ResourceManager<RenderStage>::iterator ResourceManager<RenderStage>::end ();
+template __EAPI ResourceManager<RenderStage>::const_iterator ResourceManager<RenderStage>::begin () const;
+template __EAPI ResourceManager<RenderStage>::const_iterator ResourceManager<RenderStage>::end () const;
+template __EAPI ResourceManager<RenderStage>::const_iterator ResourceManager<RenderStage>::cbegin () const;
+template __EAPI ResourceManager<RenderStage>::const_iterator ResourceManager<RenderStage>::cend () const;
+template __EAPI std::shared_ptr<RenderStage> ResourceManager<RenderStage>::Push (const std::string& name, std::shared_ptr<RenderStage> resource);
