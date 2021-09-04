@@ -5,10 +5,15 @@
 Postprocess::Postprocess ()
 {
     stencilTestEnabled = false;
+    depthTestEnabled = false;
     clearOnFrameEnabled = true;
 
     stencilTestFunction = StencilTestFunction::FUNCTION_ALWAYS;
     stencilTestValue = 0;
+
+    pipelineFramebufferInputLink = PipelineLink::LINK_PREVIOUS;
+    pipelineRenderbufferLink = PipelineLink::LINK_CURRENT;
+    pipelineFramebufferOutputLink = PipelineLink::LINK_CURRENT;
 }
 
 Postprocess::~Postprocess ()
@@ -37,9 +42,37 @@ Postprocess& Postprocess::SetStencilTestEnabled (bool value)
     return *this;
 }
 
+Postprocess& Postprocess::SetDepthTestEnabled (bool value)
+{
+    depthTestEnabled = value;
+
+    return *this;
+}
+
 Postprocess& Postprocess::SetClearOnFrameEnabled (bool value)
 {
     clearOnFrameEnabled = value;
+
+    return *this;
+}
+
+Postprocess& Postprocess::SetPipelineFramebufferInputLink (PipelineLink link)
+{
+    pipelineFramebufferInputLink = link;
+
+    return *this;
+}
+
+Postprocess& Postprocess::SetPipelineRenderbufferLink (PipelineLink link)
+{
+    pipelineRenderbufferLink = link;
+
+    return *this;
+}
+
+Postprocess& Postprocess::SetPipelineFramebufferOutputLink (PipelineLink link)
+{
+    pipelineFramebufferOutputLink = link;
 
     return *this;
 }

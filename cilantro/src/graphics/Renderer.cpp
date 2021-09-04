@@ -9,8 +9,6 @@ Renderer::Renderer (unsigned int width, unsigned int height)
     totalRenderFrames = 0L;
     totalRenderTime = 0.0f;
     totalFrameRenderTime = 0.0f;
-
-
 }
 
 Renderer::~Renderer ()
@@ -37,6 +35,9 @@ void Renderer::Deinitialize ()
 
 void Renderer::RenderFrame ()
 {
+
+    pipelineStage = 0;
+
     // reset global rendering timer
     if (totalRenderTime == 0L)
     {
@@ -44,10 +45,10 @@ void Renderer::RenderFrame ()
     }
 
     // run post-processing
-    for (auto&& postprocess : postprocesses)
+    for (handle_t postprocessHandle : postprocessPipeline)
     {
-        postprocess->OnFrame ();
-        postprocessStage++;
+        pipelineStage++;
+        postprocesses.GetByHandle<Postprocess> (postprocessHandle).OnFrame ();
     }
 
     // update game clocks (Tock)

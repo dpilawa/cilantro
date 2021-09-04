@@ -6,7 +6,7 @@
 #include "scene/PBRMaterial.h"
 #include "resource/ResourceManager.h"
 #include "resource/AssimpModelLoader.h"
-#include "graphics/GLForwardRenderer.h"
+#include "graphics/GLDeferredRenderer.h"
 #include "graphics/GLFWRenderTarget.h"
 #include "graphics/GLPostprocess.h"
 #include "input/GLFWInputController.h"
@@ -21,7 +21,7 @@ int main (int argc, char* argv [])
     ResourceManager resourceManager;
     GameScene gameScene;
     GLFWRenderTarget renderTarget ("Test 4", 800, 600, false, true, true);
-    GLForwardRenderer renderer (800, 600);
+    GLDeferredRenderer renderer (800, 600);
     GLFWInputController inputController;
     Timer timer;
     Game game;

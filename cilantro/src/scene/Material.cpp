@@ -15,6 +15,7 @@ Material::~Material ()
 Material& Material::SetForwardShaderProgram (const std::string& name)
 {
     forwardShaderProgram = EngineContext::GetRenderer ().GetShaderProgramManager ().GetByName<ShaderProgram> (name).GetHandle ();
+    InvokeCallbacks ("OnUpdateMaterial", this->GetHandle (), 0);
 
     return *this;
 }
@@ -22,6 +23,7 @@ Material& Material::SetForwardShaderProgram (const std::string& name)
 Material& Material::SetDeferredGeometryPassShaderProgram (const std::string& name)
 {
     deferredGeometryPassShaderProgram = EngineContext::GetRenderer ().GetShaderProgramManager ().GetByName<ShaderProgram> (name).GetHandle ();
+    InvokeCallbacks ("OnUpdateMaterial", this->GetHandle (), 0);
 
     return *this;
 }
@@ -29,6 +31,7 @@ Material& Material::SetDeferredGeometryPassShaderProgram (const std::string& nam
 Material& Material::SetDeferredLightingPassShaderProgram (const std::string& name)
 {
     deferredLightingPassShaderProgram = EngineContext::GetRenderer ().GetShaderProgramManager ().GetByName<ShaderProgram> (name).GetHandle ();
+    InvokeCallbacks ("OnUpdateMaterial", this->GetHandle (), 0);
 
     return *this;
 }
@@ -61,7 +64,7 @@ property_map_t& Material::GetPropertiesMap ()
 Material& Material::SetTexture (unsigned int textureUnit, const std::string& label, Texture& texture)
 {
     textures[textureUnit] = std::pair (label, &texture);
-    InvokeCallbacks ("OnUpdateMaterial", this->GetHandle (), textureUnit);
+    InvokeCallbacks ("OnUpdateMaterialTexture", this->GetHandle (), textureUnit);
 
     return *this;
 }

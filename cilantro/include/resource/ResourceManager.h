@@ -30,10 +30,10 @@ public:
     T& Create(const std::string& name, Params&&... params);
 
     template <typename T>
-    T& GetByHandle(unsigned int handle);
+    T& GetByHandle(unsigned int handle) const;
 
     template <typename T>
-    T& GetByName(const std::string& name);
+    T& GetByName(const std::string& name) const;
 
     __EAPI iterator begin();
     __EAPI iterator end();
@@ -84,7 +84,7 @@ T& ResourceManager<Base>::Create (const std::string& name, Params&&... params)
 
 template <typename Base>
 template <typename T>
-T& ResourceManager<Base>::GetByHandle(handle_t handle)
+T& ResourceManager<Base>::GetByHandle(handle_t handle) const
 {
     if (handle >= this->handle)
     {
@@ -104,7 +104,7 @@ T& ResourceManager<Base>::GetByHandle(handle_t handle)
 
 template <typename Base>
 template <typename T>
-T& ResourceManager<Base>::GetByName(const std::string& name)
+T& ResourceManager<Base>::GetByName(const std::string& name) const
 {
     auto resourceName = resourceNames.find (name);
 

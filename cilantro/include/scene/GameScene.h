@@ -85,9 +85,14 @@ template <typename T, typename ...Params>
 T& GameScene::AddMaterial (const std::string& name, Params&&... params)
 {
     T& material = materials.Create<T> (name, params...);
+    handle_t handle = material.GetHandle ();
 
     // register callbacks
-    material.RegisterCallback ("OnUpdateMaterial", [ & ](unsigned int materialHandle, unsigned int textureUnit) { InvokeCallbacks ("OnUpdateMaterial", materialHandle, textureUnit); });
+    material.RegisterCallback ("OnUpdateMaterialTexture", [ & ](unsigned int materialHandle, unsigned int textureUnit) { InvokeCallbacks ("OnUpdateMaterialTexture", materialHandle, textureUnit); });
+    material.RegisterCallback ("OnUpdateMaterial", [ & ](unsigned int materialHandle, unsigned int) { InvokeCallbacks ("OnUpdateMaterial", materialHandle, 0); });
+
+    // update renderer data
+    InvokeCallbacks("OnUpdateMaterial", handle, 0);
 
     // return material reference
     return material;

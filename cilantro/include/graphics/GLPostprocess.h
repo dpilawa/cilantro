@@ -34,6 +34,7 @@ private:
 
     GLuint VAO;
     GLuint VBO;
+
 };
 
 #endif

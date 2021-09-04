@@ -12,9 +12,7 @@ public:
 
     __EAPI virtual void Initialize ();
 
-    __EAPI virtual void RenderFrame ();
-
-    __EAPI virtual Framebuffer* GetCurrentFramebuffer () const;
+    virtual void RenderFrame ();
 
 private:
 

@@ -9,10 +9,7 @@ GLDeferredRenderer::GLDeferredRenderer (unsigned int width, unsigned int height)
     // g-buffer
     framebuffer = new GLFramebuffer (width, height, 0, 5);
 
-    // lighting pass postprocess
-    lightingPass = new GLPostprocess ();
-    lightingPass->SetClearOnFrameEnabled (false);
-    lightingPass->SetStencilTestEnabled (true);
+    lightingShaderStagesCount = 0;
 }
 
 GLDeferredRenderer::~GLDeferredRenderer ()
@@ -26,14 +23,10 @@ void GLDeferredRenderer::Initialize ()
     
     // initialize framebuffers
     framebuffer->Initialize ();
-    lightingPass->Initialize ();
 }
 
 void GLDeferredRenderer::RenderFrame ()
 {
-    // set of distinct lighting pass shaders used in the frame
-    std::set<unsigned int> lightingShaders;
-
     // bind g-buffer
     framebuffer->BindFramebuffer ();
 
@@ -62,7 +55,6 @@ void GLDeferredRenderer::RenderFrame ()
         // overwrite stencil value with material Id
         if (MeshObject* meshObject = dynamic_cast<MeshObject*>(gameObject.get ()))
         {
-            lightingShaders.insert (meshObject->GetMaterial ().GetDeferredLightingPassShaderProgram ().GetHandle ());
             glStencilFunc (GL_ALWAYS, meshObject->GetMaterial ().GetDeferredLightingPassShaderProgram ().GetHandle (), 0xff);
             glStencilMask (0xff);
         }
@@ -75,50 +67,59 @@ void GLDeferredRenderer::RenderFrame ()
     // unbind framebuffer
     framebuffer->UnbindFramebuffer ();
 
-    // LIGHTING PASS
-    // for each relevant lighting shader, execute lightning fragment shader using stencil test
-    // each stage us using a post-process
-    
-    postprocessStage = 0;    
-    lightingPass->SetClearOnFrameEnabled (true);
-    
-    for (unsigned int lightingShaderHandle : lightingShaders)
-    {
-        // use shader
-        lightingPass->SetShaderProgram (shaderPrograms.GetByHandle<GLShaderProgram> (lightingShaderHandle).GetName ());
-
-        // set stencil test parameters
-        lightingPass->SetStencilTest (StencilTestFunction::FUNCTION_EQUAL, lightingShaderHandle);
-
-        // render
-        lightingPass->OnFrame ();
-
-        // do not clear frame on next draw
-        lightingPass->SetClearOnFrameEnabled (false);
-    }
-
-    // base class function
-    postprocessStage = 1;
+    // base class function - will include also added postprocess(es) for lightning pass(es)
     Renderer::RenderFrame ();
 
     // check for errors
     CheckGLError (MSG_LOCATION);    
 }
 
-Framebuffer* GLDeferredRenderer::GetCurrentFramebuffer () const
+void GLDeferredRenderer::Update (Material& material)
 {
-    if (postprocessStage == 0) 
+    handle_t shaderProgramHandle = material.GetDeferredLightingPassShaderProgram ().GetHandle ();
+    std::string shaderProgramName = this->GetShaderProgramManager ().GetByHandle<ShaderProgram> (shaderProgramHandle).GetName ();
+
+    // add material's shader program to set of used shader programs handles
+    // add lighting deferred pass postprocesses for each program
+    if (lightingShaders.find (shaderProgramHandle) == lightingShaders.end ())
     {
-        return GetFramebuffer ();
+        lightingShaderStagesCount++;
+        lightingShaders.insert (shaderProgramHandle);
+        GLPostprocess& p = this->AddPostprocess <GLPostprocess> ("deferredLightingStage_" + shaderProgramName);
+        p.SetShaderProgram (shaderProgramName);
+        p.SetStencilTestEnabled (true).SetStencilTest (StencilTestFunction::FUNCTION_EQUAL, shaderProgramHandle);
+        p.SetClearOnFrameEnabled (true);
+        p.SetPipelineFramebufferInputLink (PipelineLink::LINK_BASE);
+        p.SetPipelineRenderbufferLink (PipelineLink::LINK_BASE);
+        p.SetPipelineFramebufferOutputLink (PipelineLink::LINK_FIRST);
+
+        // cycle postprocess sequence so that newly addded postprocess is in front
+        // simple vector rotation to the right
+        std::rotate (postprocessPipeline.rbegin (), postprocessPipeline.rbegin () + 1, postprocessPipeline.rend ());
+
+        // update flags of other deferred lighting stages (if present)
+        if (lightingShaderStagesCount > 1)
+        {
+            handle_t stageHandle = postprocessPipeline[1];
+
+            GLPostprocess& stage = GetPostprocessManager ().GetByHandle<GLPostprocess> (stageHandle);
+            stage.SetClearOnFrameEnabled (false);
+        }
+
+        // update pipeline links of 1st stage following deferred lighting stages
+        if (postprocessPipeline.size () > lightingShaderStagesCount)
+        {
+            handle_t stageHandle = postprocessPipeline[lightingShaderStagesCount];
+
+            GLPostprocess& stage = GetPostprocessManager ().GetByHandle<GLPostprocess> (stageHandle);
+            stage.SetClearOnFrameEnabled (true);
+            stage.SetPipelineFramebufferInputLink (PipelineLink::LINK_FIRST);
+            stage.SetPipelineRenderbufferLink (PipelineLink::LINK_CURRENT);
+            stage.SetPipelineFramebufferOutputLink (PipelineLink::LINK_CURRENT);
+        }
     }
-    else if (postprocessStage == 1) 
-    {
-        return lightingPass->GetFramebuffer ();
-    }
-    else 
-    {
-        return (*(postprocesses.begin() + (postprocessStage - 2))).get()->GetFramebuffer ();
-    }
+
+    GLRenderer::Update (material);
 }
 
 ShaderProgram& GLDeferredRenderer::GetMeshObjectGeometryShaderProgram (const MeshObject& meshObject) 

@@ -127,27 +127,28 @@ public:
 class GLRenderer : public Renderer
 {
 public:
-    __EAPI GLRenderer (unsigned int width, unsigned int height);
-    __EAPI ~GLRenderer ();
+    GLRenderer (unsigned int width, unsigned int height);
+    ~GLRenderer ();
 
     // (de)initializers
-    __EAPI virtual void Initialize ();
-    __EAPI virtual void Deinitialize ();
+    virtual void Initialize ();
+    virtual void Deinitialize ();
 
     // render
-    __EAPI virtual void RenderFrame () = 0;
+    virtual void RenderFrame () = 0;
 
     // renderbuffer
-    __EAPI virtual Framebuffer* GetFramebuffer () const;
-    __EAPI virtual Framebuffer* GetCurrentFramebuffer () const = 0;
+    virtual Framebuffer* GetFramebuffer ();
+    virtual Framebuffer* GetPipelineFramebuffer (PipelineLink link);
 
     // object drawing and updating
-    __EAPI void Draw (MeshObject& meshObject);
-    __EAPI void Update (MeshObject& meshObject);
-    __EAPI void Update (PointLight& pointLight);
-    __EAPI void Update (DirectionalLight& directionalLight);	
-    __EAPI void Update (SpotLight& spotLight);
-    __EAPI void Update (Material& material, unsigned int textureUnit = 0);
+    virtual void Draw (MeshObject& meshObject);
+    virtual void Update (MeshObject& meshObject);
+    virtual void Update (PointLight& pointLight);
+    virtual void Update (DirectionalLight& directionalLight);	
+    virtual void Update (SpotLight& spotLight);
+    virtual void Update (Material& material, unsigned int textureUnit);
+    virtual void Update (Material& material);
 
 protected:
 

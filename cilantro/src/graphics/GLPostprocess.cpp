@@ -53,14 +53,13 @@ void GLPostprocess::Deinitialize ()
 void GLPostprocess::OnFrame ()
 {
     GLuint glStencilFunction;
-
-    // draw quad on screen
-    GLRenderer& renderer = dynamic_cast<GLRenderer&>(EngineContext::GetRenderer ());
-    GLFramebuffer* inputFramebuffer = dynamic_cast<GLFramebuffer*>(renderer.GetCurrentFramebuffer ());
-    
+    GLFramebuffer* inputFramebuffer = dynamic_cast<GLFramebuffer*>(EngineContext::GetRenderer ().GetPipelineFramebuffer (pipelineFramebufferInputLink));
+    GLFramebuffer* inputFramebufferRenderbuffer = dynamic_cast<GLFramebuffer*>(EngineContext::GetRenderer ().GetPipelineFramebuffer (pipelineRenderbufferLink));
+    GLFramebuffer* outputFramebuffer = dynamic_cast<GLFramebuffer*>(EngineContext::GetRenderer ().GetPipelineFramebuffer (pipelineFramebufferOutputLink));
+  
     // attach input renderbuffer's stencil to output
-    glBindFramebuffer (GL_FRAMEBUFFER, dynamic_cast<GLFramebuffer*>(framebuffer)->GetFramebufferGLId ());
-    glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, dynamic_cast<GLFramebuffer*>(inputFramebuffer)->GetFramebufferRenderbufferGLId ());
+    glBindFramebuffer (GL_FRAMEBUFFER, outputFramebuffer->GetFramebufferGLId ());
+    glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, inputFramebufferRenderbuffer->GetFramebufferRenderbufferGLId ());
 
     // optionally clear
     if (clearOnFrameEnabled)
@@ -71,6 +70,10 @@ void GLPostprocess::OnFrame ()
     
     // disable depth test
     glDisable (GL_DEPTH_TEST);
+    if (depthTestEnabled)
+    {
+        glEnable (GL_DEPTH_TEST);
+    }
 
     // optionally enable stencil test
     glDisable (GL_STENCIL_TEST);
@@ -91,10 +94,9 @@ void GLPostprocess::OnFrame ()
             default: glStencilFunction = GL_ALWAYS; break;
         }
         glStencilFunc (glStencilFunction, stencilTestValue, 0xff);
-        glStencilMask (0xff);
     }
 
-    // bind textures and draw
+    // bind previous (input) framebuffer textures and draw
     shaderProgram->Use ();
 
     glBindVertexArray (VAO);
@@ -104,7 +106,7 @@ void GLPostprocess::OnFrame ()
         glBindTexture (GL_TEXTURE_2D, inputFramebuffer->GetFramebufferTextureGLId (i));
     }
     
-    glViewport (0, 0, framebuffer->GetWidth (), framebuffer->GetHeight ());
+    glViewport (0, 0, outputFramebuffer->GetWidth (), outputFramebuffer->GetHeight ());
     glDrawArrays (GL_TRIANGLES, 0, 6);
     glBindTexture (GL_TEXTURE_2D, 0);
     glBindVertexArray (0);

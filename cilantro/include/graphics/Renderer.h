@@ -7,6 +7,7 @@
 #include "graphics/ShaderProgram.h"
 #include "graphics/Postprocess.h"
 #include <string>
+#include <vector>
 
 class MeshObject;
 class PointLight;
@@ -28,8 +29,8 @@ public:
     __EAPI virtual void RenderFrame ();
 
     // renderbuffer accessor
-    __EAPI virtual Framebuffer* GetFramebuffer () const = 0;
-    __EAPI virtual Framebuffer* GetCurrentFramebuffer () const = 0;
+    __EAPI virtual Framebuffer* GetFramebuffer () = 0;
+    __EAPI virtual Framebuffer* GetPipelineFramebuffer (PipelineLink link) = 0;
 
     // post-processing
     __EAPI virtual ResourceManager<Postprocess>& GetPostprocessManager ();
@@ -50,15 +51,17 @@ public:
     virtual void Update (DirectionalLight& directionalLight) = 0;
     virtual void Update (SpotLight& spotLight) = 0;
     virtual void Update (Material& material, unsigned int textureUnit) = 0;
+    virtual void Update (Material& material) = 0;
 
 protected:
 
     Framebuffer* framebuffer;
 
-    unsigned int postprocessStage;
+    unsigned int pipelineStage;
+    ResourceManager<Postprocess> postprocesses;
+    std::vector<handle_t> postprocessPipeline;
 
     ResourceManager<ShaderProgram> shaderPrograms;
-    ResourceManager<Postprocess> postprocesses;
 
 private:
 
@@ -74,6 +77,7 @@ T& Renderer::AddPostprocess (const std::string& name, Params&&... params)
 
     // initialize
     postprocess.Initialize ();
+    postprocessPipeline.push_back (postprocess.GetHandle ());
 
     // return postprocess
     return postprocess;

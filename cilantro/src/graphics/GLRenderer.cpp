@@ -38,7 +38,7 @@ GLRenderer::~GLRenderer ()
 void GLRenderer::Initialize ()
 {
     // set variable defaults
-    postprocessStage = 0;
+    pipelineStage = 0;
 
     // display GL version information
     LogMessage (MSG_LOCATION) << "Version:" << (char*) glGetString (GL_VERSION);
@@ -74,7 +74,8 @@ void GLRenderer::Initialize ()
     EngineContext::GetGameScene ().RegisterCallback ("OnUpdateLight", [&](unsigned int objectHandle, unsigned int) { EngineContext::GetGameScene ().GetGameObjectManager ().GetByHandle<GameObject> (objectHandle).OnUpdate (*this); });
 
     // set callback for new or modified materials
-    EngineContext::GetGameScene ().RegisterCallback ("OnUpdateMaterial", [&](unsigned int materialHandle, unsigned int textureUnit) { this->Update (EngineContext::GetGameScene ().GetMaterialManager ().GetByHandle<Material> (materialHandle), textureUnit); });
+    EngineContext::GetGameScene ().RegisterCallback ("OnUpdateMaterialTexture", [&](unsigned int materialHandle, unsigned int textureUnit) { Update (EngineContext::GetGameScene ().GetMaterialManager ().GetByHandle<Material> (materialHandle), textureUnit); });
+    EngineContext::GetGameScene ().RegisterCallback ("OnUpdateMaterial", [&](unsigned int materialHandle, unsigned int) { Update (EngineContext::GetGameScene ().GetMaterialManager ().GetByHandle<Material> (materialHandle)); });
 
     // set callback for modified scene graph (currently this only requires to reload light buffers)
     EngineContext::GetGameScene ().RegisterCallback ("OnUpdateSceneGraph", [&](unsigned int objectHandle, unsigned int) { UpdateLightBufferRecursive (objectHandle); });
@@ -103,9 +104,47 @@ void GLRenderer::Deinitialize ()
     Renderer::Deinitialize ();
 }
 
-Framebuffer* GLRenderer::GetFramebuffer () const
+Framebuffer* GLRenderer::GetFramebuffer ()
 {
     return framebuffer;
+}
+
+Framebuffer* GLRenderer::GetPipelineFramebuffer (PipelineLink link)
+{
+    int postprocessIndex = pipelineStage - 1;
+
+    if (pipelineStage == 0 && link == PipelineLink::LINK_PREVIOUS)
+    {
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Pipeline index out of bounds";
+    }
+
+    if (link == PipelineLink::LINK_BASE) 
+    {
+        return GetFramebuffer ();
+    }
+    else if (link == PipelineLink::LINK_FIRST)
+    {
+        return GetPostprocessManager ().GetByHandle<GLPostprocess> (postprocessPipeline.front ()).GetFramebuffer ();
+    }
+    else if (link == PipelineLink::LINK_PREVIOUS)
+    {
+        if (postprocessIndex > 0)
+        {
+            return GetPostprocessManager ().GetByHandle<GLPostprocess> (postprocessPipeline[postprocessIndex - 1]).GetFramebuffer ();
+        }
+        else /* equivalent to LINK_BASE */
+        {
+            return GetFramebuffer ();
+        }
+    }
+    else if (link == PipelineLink::LINK_LAST)
+    {
+        return GetPostprocessManager ().GetByHandle<GLPostprocess> (postprocessPipeline.back ()).GetFramebuffer ();
+    }
+    else /* LINK_CURRENT */
+    {
+        return GetPostprocessManager ().GetByHandle<GLPostprocess> (postprocessPipeline[postprocessIndex]).GetFramebuffer ();
+    }
 }
 
 void GLRenderer::Draw (MeshObject& meshObject)
@@ -518,6 +557,10 @@ void GLRenderer::Update (Material& material, unsigned int textureUnit)
         glBindTexture (GL_TEXTURE_2D, 0);
     }
 
+}
+
+void GLRenderer::Update (Material& material)
+{
 }
 
 void GLRenderer::CheckGLError (const std::string& functionName)

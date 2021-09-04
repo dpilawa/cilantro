@@ -5,7 +5,6 @@
 #include "system/EngineContext.h"
 #include "math/Vector3f.h"
 
-
 PBRMaterial::PBRMaterial () : Material ()
 {
     SetForwardShaderProgram ("pbr_forward_shader");

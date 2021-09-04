@@ -53,7 +53,6 @@ void GLForwardRenderer::RenderFrame ()
 #endif
 
     // base class function
-    postprocessStage = 0;
     Renderer::RenderFrame ();
 
     // unbind framebuffer
@@ -61,18 +60,6 @@ void GLForwardRenderer::RenderFrame ()
 
     // check for errors
     CheckGLError (MSG_LOCATION);
-}
-
-Framebuffer* GLForwardRenderer::GetCurrentFramebuffer () const
-{
-    if (postprocessStage == 0) 
-    {
-        return GetFramebuffer ();
-    }
-    else 
-    {
-        return (*(postprocesses.begin() + (postprocessStage - 1))).get()->GetFramebuffer ();
-    }
 }
 
 ShaderProgram& GLForwardRenderer::GetMeshObjectGeometryShaderProgram (const MeshObject& meshObject) 

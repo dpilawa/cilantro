@@ -124,7 +124,7 @@ void GLFWRenderTarget::OnFrame ()
     renderer.GetShaderProgramManager ().GetByName<GLShaderProgram> ("flatquad_shader").Use ();
     glBindVertexArray (targetVAO);
     glActiveTexture (GL_TEXTURE0);
-    glBindTexture (GL_TEXTURE_2D, dynamic_cast<GLFramebuffer*>(renderer.GetCurrentFramebuffer ())->GetFramebufferTextureGLId (0));
+    glBindTexture (GL_TEXTURE_2D, dynamic_cast<GLFramebuffer*>(renderer.GetPipelineFramebuffer (PipelineLink::LINK_LAST))->GetFramebufferTextureGLId (0));
     glViewport (0, 0, this->width, this->height);
     glDrawArrays (GL_TRIANGLES, 0, 6);
     glBindVertexArray (0);

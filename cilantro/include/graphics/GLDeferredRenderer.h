@@ -3,6 +3,7 @@
 
 #include "cilantroengine.h"
 #include "graphics/GLRenderer.h"
+#include <set>
 
 class GLPostprocess;
 
@@ -14,13 +15,15 @@ public:
 
     __EAPI virtual void Initialize ();
 
-    __EAPI virtual void RenderFrame ();
-
-    __EAPI virtual Framebuffer* GetCurrentFramebuffer () const;
+    virtual void RenderFrame ();
+    virtual void Update (Material& material);
 
 private:
 
-    GLPostprocess* lightingPass;
+    // set of handles of distinct lighting pass shader programs used in the scene
+    std::set <handle_t> lightingShaders;
+
+    unsigned int lightingShaderStagesCount;
 
     virtual ShaderProgram& GetMeshObjectGeometryShaderProgram (const MeshObject& meshObject);
     virtual ShaderProgram& GetMeshObjectLightingShaderProgram (const MeshObject& meshObject);

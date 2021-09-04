@@ -7,6 +7,7 @@
 #include "graphics/ShaderProgram.h"
 #include <string>
 
+enum PipelineLink {LINK_BASE, LINK_FIRST, LINK_PREVIOUS, LINK_CURRENT, LINK_LAST};
 enum StencilTestFunction { FUNCTION_NEVER, FUNCTION_LESS, FUNCTION_LEQUAL, FUNCTION_GREATER, FUNCTION_GEQUAL, FUNCTION_EQUAL, FUNCTION_NOTEQUAL, FUNCTION_ALWAYS };
 
 class Vector2f;
@@ -23,7 +24,12 @@ public:
     __EAPI Postprocess& SetStencilTest (StencilTestFunction stencilTestFunction, int stencilTestValue);
 
     __EAPI Postprocess& SetStencilTestEnabled (bool value);
+    __EAPI Postprocess& SetDepthTestEnabled (bool value);
     __EAPI Postprocess& SetClearOnFrameEnabled (bool value);
+
+    __EAPI Postprocess& SetPipelineFramebufferInputLink (PipelineLink link);
+    __EAPI Postprocess& SetPipelineRenderbufferLink (PipelineLink link);
+    __EAPI Postprocess& SetPipelineFramebufferOutputLink (PipelineLink link);
 
     virtual void Initialize () = 0;
     virtual void Deinitialize () = 0;
@@ -40,10 +46,17 @@ protected:
 
     // flags
     bool stencilTestEnabled;
+    bool depthTestEnabled;
     bool clearOnFrameEnabled;
 
     // output framebuffer
     Framebuffer* framebuffer;
+
+    // these indicate which framebuffer and which render buffer should be current postprocesses' input
+    // and where to write to
+    PipelineLink pipelineFramebufferInputLink;
+    PipelineLink pipelineRenderbufferLink;
+    PipelineLink pipelineFramebufferOutputLink;
 
     // postprocess shader
     ShaderProgram* shaderProgram;
