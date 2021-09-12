@@ -5,6 +5,8 @@
 #include "scene/Light.h"
 #include "math/Vector3f.h"
 
+class GeometryRenderStage;
+
 class PointLight : public Light
 {
 public:
@@ -22,7 +24,7 @@ public:
     __EAPI float GetQuadraticAttenuationFactor () const;
 
     // invoked by game loop on update
-    void OnUpdate (Renderer &renderer);
+    void OnUpdate (GeometryRenderStage& renderStage);
 
 private:
 

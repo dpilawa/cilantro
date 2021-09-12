@@ -54,11 +54,11 @@ void GameObject::OnFrame ()
 {
 }
 
-void GameObject::OnDraw (Renderer& renreder)
+void GameObject::OnDraw (GeometryRenderStage& renderStage)
 {
 }
 
-void GameObject::OnUpdate (Renderer& renreder)
+void GameObject::OnUpdate (GeometryRenderStage& renderStage)
 {
 }
 

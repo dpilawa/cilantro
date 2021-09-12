@@ -4,7 +4,7 @@
 #include "scene/Material.h"
 #include "math/Vector3f.h"
 #include "math/Mathf.h"
-#include "graphics/Renderer.h"
+#include "graphics/GeometryRenderStage.h"
 #include "system/EngineContext.h"
 #include "system/CallbackProvider.h"
 #include "system/LogMessage.h"
@@ -45,15 +45,15 @@ void MeshObject::OnFrame ()
     GameObject::OnFrame ();
 }
 
-void MeshObject::OnDraw (Renderer& renderer)
+void MeshObject::OnDraw (GeometryRenderStage& renderStage)
 {
-    GameObject::OnDraw (renderer);
-    renderer.Draw (*this);
+    GameObject::OnDraw (renderStage);
+    renderStage.Draw (*this);
 }
 
 
-void MeshObject::OnUpdate (Renderer& renderer)
+void MeshObject::OnUpdate (GeometryRenderStage& renderStage)
 {
-    GameObject::OnUpdate (renderer);
-    renderer.Update (*this);
+    GameObject::OnUpdate (renderStage);
+    renderStage.Update (*this);
 }

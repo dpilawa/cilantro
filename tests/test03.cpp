@@ -7,9 +7,10 @@
 #include "scene/MeshObject.h"
 #include "scene/DirectionalLight.h"
 #include "resource/ResourceManager.h"
-#include "graphics/GLForwardRenderer.h"
-#include "graphics/GLDeferredRenderer.h"
+#include "graphics/GLDeferredGeometryRenderStage.h"
+#include "graphics/GLForwardGeometryRenderStage.h"
 #include "graphics/GLFWRenderTarget.h"
+#include "graphics/Renderer.h"
 #include "input/GLFWInputController.h"
 #include "math/Mathf.h"
 #include "system/EngineContext.h"
@@ -24,13 +25,15 @@ int main (int argc, char* argv[])
     ResourceManager resourceManager;
     GameScene gameScene;
     GLFWRenderTarget renderTarget ("Test 3", 800, 600, false, true, true);
-    GLDeferredRenderer renderer (800, 600);
+    Renderer renderer (800, 600);
     GLFWInputController inputController;
     Timer timer;
     Game game;
 
     EngineContext::Set (game, resourceManager, timer, gameScene, renderer, renderTarget, inputController);
     EngineContext::Initialize ();
+
+    renderer.AddRenderStage<GLForwardGeometryRenderStage> ("base");
 
     inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
     inputController.BindInputEvent ("exit", [ & ]() { game.Stop (); });

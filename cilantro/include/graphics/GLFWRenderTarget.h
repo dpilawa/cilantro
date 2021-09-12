@@ -6,7 +6,6 @@
 #include "GLFW/glfw3.h"
 #include "game/Game.h"
 #include "graphics/RenderTarget.h"
-#include "graphics/GLRenderer.h"
 #include <string>
 
 class GLFWRenderTarget : public RenderTarget

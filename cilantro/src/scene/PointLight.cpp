@@ -2,7 +2,7 @@
 #include "scene/PointLight.h"
 #include "scene/Light.h"
 #include "math/Vector3f.h"
-#include "graphics/Renderer.h"
+#include "graphics/GeometryRenderStage.h"
 #include "system/CallbackProvider.h"
 
 PointLight::PointLight () : Light()
@@ -52,8 +52,8 @@ float PointLight::GetQuadraticAttenuationFactor () const
     return attenuationQuadratic;
 }
 
-void PointLight::OnUpdate (Renderer& renderer)
+void PointLight::OnUpdate (GeometryRenderStage& renderStage)
 {
-    Light::OnUpdate (renderer);
-    renderer.Update (*this);
+    Light::OnUpdate (renderStage);
+    renderStage.Update (*this);
 }

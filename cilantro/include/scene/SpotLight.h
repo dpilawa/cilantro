@@ -5,6 +5,8 @@
 #include "scene/PointLight.h"
 #include "math/Vector3f.h"
 
+class GeometryRenderStage;
+
 class SpotLight : public PointLight
 {
 public:
@@ -20,7 +22,7 @@ public:
     __EAPI float GetOuterCutoff () const;
 
     // invoked by game loop on update
-    void OnUpdate (Renderer &renderer);
+    void OnUpdate (GeometryRenderStage& renderStage);
 
 private:
 

@@ -5,17 +5,17 @@
 RenderStage::RenderStage ()
 {
     framebuffer = nullptr;
-    shaderProgram = nullptr;
 
-    multisampleFramebufferEnabled = false;
+    multisampleEnabled = false;
     stencilTestEnabled = false;
-    depthTestEnabled = false;
+    depthTestEnabled = true;
     clearOnFrameEnabled = true;
+    faceCullingEnabled = true;
 
     stencilTestFunction = StencilTestFunction::FUNCTION_ALWAYS;
     stencilTestValue = 0;
 
-    pipelineFramebufferInputLink = PipelineLink::LINK_PREVIOUS;
+    pipelineFramebufferInputLink = PipelineLink::LINK_CURRENT;
     pipelineRenderbufferLink = PipelineLink::LINK_CURRENT;
     pipelineFramebufferOutputLink = PipelineLink::LINK_CURRENT;
 }
@@ -24,12 +24,6 @@ RenderStage::~RenderStage ()
 {
 }
 
-RenderStage& RenderStage::SetShaderProgram (const std::string& shaderProgramName)
-{
-    shaderProgram = &(EngineContext::GetRenderer ().GetShaderProgramManager ().GetByName<ShaderProgram> (shaderProgramName));
-
-    return *this;
-}
 
 RenderStage& RenderStage::SetStencilTest (StencilTestFunction stencilTestFunction, int stencilTestValue)
 {
@@ -39,9 +33,9 @@ RenderStage& RenderStage::SetStencilTest (StencilTestFunction stencilTestFunctio
     return *this;
 }
 
-RenderStage& RenderStage::SetMultisampleFramebufferEnabled (bool value)
+RenderStage& RenderStage::SetMultisampleEnabled (bool value)
 {
-    multisampleFramebufferEnabled = value;
+    multisampleEnabled = value;
 
     return *this;
 }
@@ -67,6 +61,38 @@ RenderStage& RenderStage::SetClearOnFrameEnabled (bool value)
     return *this;
 }
 
+RenderStage& RenderStage::SetFaceCullingEnabled (bool value)
+{
+    faceCullingEnabled = value;
+
+    return *this;
+}
+
+bool RenderStage::IsMultisampleEnabled () const
+{
+    return multisampleEnabled;
+}
+
+bool RenderStage::IsStencilTestEnabled () const
+{
+    return stencilTestEnabled;
+}
+
+bool RenderStage::IsDepthTestEnabled () const
+{
+    return depthTestEnabled;
+}
+
+bool RenderStage::IsClearOnFrameEnabled () const
+{
+    return clearOnFrameEnabled;
+}
+
+bool RenderStage::IsFaceCullingEnabled () const
+{
+    return faceCullingEnabled;
+}
+
 RenderStage& RenderStage::SetPipelineFramebufferInputLink (PipelineLink link)
 {
     pipelineFramebufferInputLink = link;
@@ -81,7 +107,7 @@ RenderStage& RenderStage::SetPipelineRenderbufferLink (PipelineLink link)
     return *this;
 }
 
-RenderStage& RenderStage::SetPipelineFramebufferOutputLink (PipelineLink link)
+RenderStage& RenderStage::SetPipelineFramebufferDrawLink (PipelineLink link)
 {
     pipelineFramebufferOutputLink = link;
 

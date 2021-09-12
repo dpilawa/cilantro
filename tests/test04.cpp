@@ -6,9 +6,11 @@
 #include "scene/PBRMaterial.h"
 #include "resource/ResourceManager.h"
 #include "resource/AssimpModelLoader.h"
-#include "graphics/GLDeferredRenderer.h"
+#include "graphics/GLDeferredGeometryRenderStage.h"
+#include "graphics/GLForwardGeometryRenderStage.h"
+#include "graphics/GLQuadRenderStage.h"
+#include "graphics/Renderer.h"
 #include "graphics/GLFWRenderTarget.h"
-#include "graphics/GLRenderStage.h"
 #include "input/GLFWInputController.h"
 #include "math/Mathf.h"
 #include "system/LogMessage.h"
@@ -21,7 +23,7 @@ int main (int argc, char* argv [])
     ResourceManager resourceManager;
     GameScene gameScene;
     GLFWRenderTarget renderTarget ("Test 4", 800, 600, false, true, true);
-    GLDeferredRenderer renderer (800, 600);
+    Renderer renderer (800, 600);
     GLFWInputController inputController;
     Timer timer;
     Game game;
@@ -31,15 +33,17 @@ int main (int argc, char* argv [])
     EngineContext::Set (game, resourceManager, timer, gameScene, renderer, renderTarget, inputController);
     EngineContext::Initialize ();
 
+    renderer.AddRenderStage<GLDeferredGeometryRenderStage> ("base");
+    renderer.AddRenderStage<GLQuadRenderStage> ("hdr_postprocess").SetShaderProgram ("post_hdr_shader").SetPipelineFramebufferInputLink (PipelineLink::LINK_PREVIOUS);
+    renderer.AddRenderStage<GLQuadRenderStage> ("fxaa_postprocess").SetShaderProgram ("post_fxaa_shader").SetRenderStageParameterFloat ("fMaxSpan", 4.0f).SetRenderStageParameterVector2f ("vInvResolution", Vector2f (1.0f / EngineContext::GetRenderer ().GetWidth (), 1.0f / EngineContext::GetRenderer ().GetHeight ())).SetPipelineFramebufferInputLink (PipelineLink::LINK_PREVIOUS);   
+    renderer.AddRenderStage<GLQuadRenderStage> ("gamma_postprocess").SetShaderProgram ("post_gamma_shader").SetRenderStageParameterFloat ("fGamma", 1.7f).SetPipelineFramebufferInputLink (PipelineLink::LINK_PREVIOUS);
+
     modelLoader.Load ("assets/Cerberus_LP.FBX");
     resourceManager.Load<Texture> ("tAlbedo", "assets/Textures/Cerberus_A.tga");
     resourceManager.Load<Texture> ("tNormal", "assets/Textures/Cerberus_N.tga");
     resourceManager.Load<Texture> ("tMetalness", "assets/Textures/Cerberus_M.tga");
     resourceManager.Load<Texture> ("tRoughness", "assets/Textures/Cerberus_R.tga");
-
-    renderer.AddRenderStage<GLRenderStage> ("hdr_postprocess").SetShaderProgram ("post_hdr_shader");
-    renderer.AddRenderStage<GLRenderStage> ("gamma_postprocess").SetShaderProgram ("post_gamma_shader").SetRenderStageParameterFloat ("fGamma", 1.7f);
-
+  
     inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
     inputController.BindInputEvent ("exit", [ & ]() { game.Stop (); });
 

@@ -17,13 +17,13 @@ public:
     virtual void BindFramebuffer () const;
     virtual void BlitFramebuffer ();
 
-    GLuint GetMultisampleFramebufferRenderbufferGLId () const;
-    GLuint GetMultisampleFramebufferTextureGLId (unsigned int textureNumber) const;
-    GLuint GetMultisampleFramebufferGLId () const;
+    GLuint virtual GetDrawFramebufferRenderbufferGLId () const;
+    GLuint virtual GetDrawFramebufferTextureGLId (unsigned int textureNumber) const;
+    GLuint virtual GetDrawFramebufferGLId () const;
 
 protected:
 
-    Framebuffers multisampleFramebuffers;
+    GLBuffers glMultisampleFramebuffers;
 
 };
 

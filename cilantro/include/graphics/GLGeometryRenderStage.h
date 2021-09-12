@@ -1,15 +1,12 @@
-#ifndef _GLRENDERER_H_
-#define _GLRENDERER_H_
+#ifndef _GLGEOMETRYRENDERSTAGE_H_
+#define _GLGEOMETRYRENDERSTAGE_H_
 
 #include "cilantroengine.h"
 #include "glad/glad.h"
-#include "graphics/GLFramebuffer.h"
-#if (CILANTRO_GL_VERSION > 140)
-#include "graphics/GLMultisampleFramebuffer.h"
-#endif
 #include "graphics/GLShader.h"
 #include "graphics/GLShaderProgram.h"
-#include "graphics/Renderer.h"
+#include "graphics/GLRenderStage.h"
+#include "graphics/GeometryRenderStage.h"
 #include "graphics/RenderTarget.h"
 #include <cstring>
 
@@ -124,22 +121,18 @@ public:
     SpotLightStruct spotLights[MAX_SPOT_LIGHTS];
 };
 
-class GLRenderer : public Renderer
+class GLGeometryRenderStage : public GeometryRenderStage, public GLRenderStage
 {
 public:
-    GLRenderer (unsigned int width, unsigned int height);
-    ~GLRenderer ();
+    GLGeometryRenderStage ();
+    ~GLGeometryRenderStage ();
 
     // (de)initializers
     virtual void Initialize ();
     virtual void Deinitialize ();
 
     // render
-    virtual void RenderFrame () = 0;
-
-    // renderbuffer
-    virtual Framebuffer* GetFramebuffer ();
-    virtual Framebuffer* GetPipelineFramebuffer (PipelineLink link);
+    virtual void OnFrame () = 0;
 
     // object drawing and updating
     virtual void Draw (MeshObject& meshObject);

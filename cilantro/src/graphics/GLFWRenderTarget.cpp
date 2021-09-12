@@ -1,7 +1,9 @@
 #include "cilantroengine.h"
-#include "graphics/GLFWRenderTarget.h"
-#include "system/LogMessage.h"
 #include "system/EngineContext.h"
+#include "graphics/GLFWRenderTarget.h"
+#include "graphics/GLShaderProgram.h"
+#include "graphics/GLFramebuffer.h"
+#include "system/LogMessage.h"
 #include "math/Vector3f.h"
 
 GLFWRenderTarget::GLFWRenderTarget (std::string windowCaption, unsigned int width, unsigned int height, bool isFullscreen, bool isResizable, bool isVSync) : RenderTarget (width, height)
@@ -112,7 +114,7 @@ void GLFWRenderTarget::Deinitialize ()
 
 void GLFWRenderTarget::OnFrame ()
 {
-    GLRenderer& renderer = dynamic_cast<GLRenderer&>(EngineContext::GetRenderer ());
+    Renderer& renderer = EngineContext::GetRenderer ();
 
     // draw quad on screen
     glBindFramebuffer (GL_FRAMEBUFFER, 0);
@@ -124,7 +126,7 @@ void GLFWRenderTarget::OnFrame ()
     renderer.GetShaderProgramManager ().GetByName<GLShaderProgram> ("flatquad_shader").Use ();
     glBindVertexArray (targetVAO);
     glActiveTexture (GL_TEXTURE0);
-    glBindTexture (GL_TEXTURE_2D, dynamic_cast<GLFramebuffer*>(renderer.GetPipelineFramebuffer (PipelineLink::LINK_LAST))->GetFramebufferTextureGLId (0));
+    glBindTexture (GL_TEXTURE_2D, dynamic_cast<GLFramebuffer*>(renderer.GetPipelineFramebuffer (PipelineLink::LINK_LAST))->GetReadFramebufferTextureGLId (0));
     glViewport (0, 0, this->width, this->height);
     glDrawArrays (GL_TRIANGLES, 0, 6);
     glBindVertexArray (0);
@@ -148,7 +150,7 @@ GLFWwindow* GLFWRenderTarget::GetWindow ()
 void GLFWRenderTarget::FramebufferResizeCallback (int width, int height)
 {
     // update renderer framebuffer size
-    EngineContext::GetRenderer().GetFramebuffer ()->SetFramebufferResolution (width, height);
+    EngineContext::GetRenderer().SetResolution (width, height);
 
     this->width = width;
     this->height = height;

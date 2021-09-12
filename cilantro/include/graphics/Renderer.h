@@ -3,7 +3,6 @@
 
 #include "cilantroengine.h"
 #include "resource/ResourceManager.h"
-#include "graphics/Framebuffer.h"
 #include "graphics/ShaderProgram.h"
 #include "graphics/RenderStage.h"
 #include <string>
@@ -25,14 +24,19 @@ public:
     virtual void Initialize ();
     virtual void Deinitialize ();
 
+    // dimensions
+    __EAPI unsigned int GetWidth () const;
+    __EAPI unsigned int GetHeight () const;
+    __EAPI Renderer& SetResolution (unsigned int width, unsigned int height);
+
     // render
     __EAPI virtual void RenderFrame ();
 
-    // renderbuffer accessor
-    __EAPI virtual Framebuffer* GetFramebuffer () = 0;
-    __EAPI virtual Framebuffer* GetPipelineFramebuffer (PipelineLink link) = 0;
-
-    // post-processing
+    // pipeline manipulation
+    __EAPI Renderer& RotateRenderPipelineLeft ();
+    __EAPI Renderer& RotateRenderPipelineRight ();
+    __EAPI std::vector<handle_t>& GetRenderPipeline ();
+    __EAPI virtual Framebuffer* GetPipelineFramebuffer (PipelineLink link);
     __EAPI virtual ResourceManager<RenderStage>& GetRenderStageManager ();
     
     template <typename T, typename ...Params>
@@ -44,18 +48,7 @@ public:
     template <typename T, typename ...Params>
     T& AddShaderProgram (const std::string& name, Params&&... params);        
 
-    // object drawing and updating
-    virtual void Draw (MeshObject& meshObject) = 0;
-    virtual void Update (MeshObject& meshObject) = 0;
-    virtual void Update (PointLight& pointLight) = 0;
-    virtual void Update (DirectionalLight& directionalLight) = 0;
-    virtual void Update (SpotLight& spotLight) = 0;
-    virtual void Update (Material& material, unsigned int textureUnit) = 0;
-    virtual void Update (Material& material) = 0;
-
 protected:
-
-    Framebuffer* framebuffer;
 
     unsigned int renderStage;
     ResourceManager<RenderStage> renderStages;
@@ -64,6 +57,9 @@ protected:
     ResourceManager<ShaderProgram> shaderPrograms;
 
 private:
+
+    unsigned int width;
+    unsigned int height;
 
     long int totalRenderFrames;
     float totalRenderTime;

@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-class Renderer;
+class GeometryRenderStage;
 
 class GameObject : public Resource, public CallbackProvider<std::string, handle_t, unsigned int>
 {
@@ -29,8 +29,8 @@ public:
 
     // invoked by game loop on each frame or on update (e.g. transform change)
     __EAPI virtual void OnFrame ();
-    __EAPI virtual void OnDraw (Renderer& renderer);
-    __EAPI virtual void OnUpdate (Renderer &renderer);
+    __EAPI virtual void OnDraw (GeometryRenderStage& renderStage);
+    __EAPI virtual void OnUpdate (GeometryRenderStage& renderStage);
 
     // invoked by game loop during deinitialization
     __EAPI virtual void OnEnd ();

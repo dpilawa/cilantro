@@ -2,7 +2,7 @@
 #include "scene/SpotLight.h"
 #include "math/Vector3f.h"
 #include "math/Mathf.h"
-#include "graphics/Renderer.h"
+#include "graphics/GeometryRenderStage.h"
 #include "system/CallbackProvider.h"
 
 SpotLight::SpotLight () : PointLight ()
@@ -41,8 +41,8 @@ float SpotLight::GetOuterCutoff () const
     return outerCutoff;
 }
 
-void SpotLight::OnUpdate (Renderer& renderer)
+void SpotLight::OnUpdate (GeometryRenderStage& renderStage)
 {
-    Light::OnUpdate (renderer);
-    renderer.Update (*this);
+    Light::OnUpdate (renderStage);
+    renderStage.Update (*this);
 }

@@ -8,7 +8,7 @@
 
 #define MAX_FRAMEBUFFER_TEXTURES 8
 
-struct Framebuffers
+struct GLBuffers
 {
 public:
     GLuint FBO;
@@ -33,15 +33,19 @@ public:
 
     int GetTextureCount() const;
 
-    GLuint GetFramebufferRenderbufferGLId () const;
-    GLuint GetFramebufferTextureGLId (unsigned int textureNumber) const;
-    GLuint GetFramebufferGLId () const;
+    GLuint virtual GetDrawFramebufferRenderbufferGLId () const;
+    GLuint virtual GetDrawFramebufferTextureGLId (unsigned int textureNumber) const;
+    GLuint virtual GetDrawFramebufferGLId () const;
+
+    GLuint virtual GetReadFramebufferRenderbufferGLId () const;
+    GLuint virtual GetReadFramebufferTextureGLId (unsigned int textureNumber) const;
+    GLuint virtual GetReadFramebufferGLId () const;
 
 protected:
 
     unsigned int rgbTextureCount;
     unsigned int rgbaTextureCount;
-    Framebuffers framebuffers;
+    GLBuffers glBuffers;
 
 };
 

@@ -5,6 +5,8 @@
 #include "scene/Light.h"
 #include "math/Vector3f.h"
 
+class GeometryRenderStage;
+
 class DirectionalLight : public Light
 {
 public:
@@ -12,7 +14,7 @@ public:
     __EAPI virtual ~DirectionalLight ();
 
     // invoked by game loop on update	
-    void OnUpdate (Renderer& renderer);
+    void OnUpdate (GeometryRenderStage& renderStage);
 
 private:
 

@@ -3,87 +3,60 @@
 #include "system/EngineContext.h"
 
 GLRenderStage::GLRenderStage () : RenderStage ()
-{
+{glEnable (GL_MULTISAMPLE);
 }
 
 GLRenderStage::~GLRenderStage ()
 {
 }
 
-RenderStage& GLRenderStage::SetMultisampleFramebufferEnabled (bool value)
+RenderStage& GLRenderStage::SetMultisampleEnabled (bool value)
 {
     if (framebuffer != nullptr)
     {
         framebuffer->Deinitialize ();
-        multisampleFramebufferEnabled = value;
-        framebuffer->Initialize ();
+        delete framebuffer;
+    }    
+    
+    multisampleEnabled = value;
+
+    if (multisampleEnabled)
+    {
+#if (CILANTRO_GL_VERSION <= 140)
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "OpenGL 3.2 required for multisample framebuffers";
+#else
+        framebuffer = new GLMultisampleFramebuffer (EngineContext::GetRenderer ().GetWidth (), EngineContext::GetRenderer ().GetHeight (), 0, 1);
+#endif  
+    }
+    else 
+    {
+        framebuffer = new GLFramebuffer (EngineContext::GetRenderer ().GetWidth (), EngineContext::GetRenderer ().GetHeight (), 0, 1);
     }
 
-    return RenderStage::SetMultisampleFramebufferEnabled (value);
+    framebuffer->Initialize ();
+
+    return RenderStage::SetMultisampleEnabled (value);
 }
 
 void GLRenderStage::Initialize ()
 {
-    // initialize framebuffers
-    if (multisampleFramebufferEnabled)
-    {
-#if (CILANTRO_GL_VERSION <= 140)
-        framebuffer = new GLFramebuffer (EngineContext::GetRenderer ().GetFramebuffer ()->GetWidth (), EngineContext::GetRenderer ().GetFramebuffer ()->GetHeight (), 0, 1);
-#else
-        framebuffer = new GLMultisampleFramebuffer (EngineContext::GetRenderer ().GetFramebuffer ()->GetWidth (), EngineContext::GetRenderer ().GetFramebuffer ()->GetHeight (), 0, 1);
-#endif
-    }
-    else
-    {
-        framebuffer = new GLFramebuffer (EngineContext::GetRenderer ().GetFramebuffer ()->GetWidth (), EngineContext::GetRenderer ().GetFramebuffer ()->GetHeight (), 0, 1);
-    }
-    
-    framebuffer->Initialize ();
-
-    // set up VBO and VAO
-    float quadVertices[] = {
-        -1.0f,  1.0f,  0.0f, 1.0f,
-        -1.0f, -1.0f,  0.0f, 0.0f,
-         1.0f, -1.0f,  1.0f, 0.0f,
-
-        -1.0f,  1.0f,  0.0f, 1.0f,
-         1.0f, -1.0f,  1.0f, 0.0f,
-         1.0f,  1.0f,  1.0f, 1.0f
-    };
-
-    glGenVertexArrays (1, &VAO);
-    glGenBuffers (1, &VBO);
-    glBindVertexArray (VAO);
-    glBindBuffer (GL_ARRAY_BUFFER, VBO);
-    glBufferData (GL_ARRAY_BUFFER, sizeof (quadVertices), &quadVertices, GL_STATIC_DRAW);
-    glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);    
-    glVertexAttribPointer (1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof (float)));
-    glEnableVertexAttribArray (0);
-    glEnableVertexAttribArray (1);
-    glBindVertexArray (0);    
-    glBindBuffer (GL_ARRAY_BUFFER, 0);
-
     LogMessage (MSG_LOCATION) << "GLRenderStage initialized" << this->GetName ();
 }
 
 void GLRenderStage::Deinitialize ()
 {
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-
-    framebuffer->Deinitialize ();
 }
 
 void GLRenderStage::OnFrame ()
 {
     GLuint glStencilFunction;
-    GLFramebuffer* inputFramebuffer = dynamic_cast<GLFramebuffer*>(EngineContext::GetRenderer ().GetPipelineFramebuffer (pipelineFramebufferInputLink));
-    GLFramebuffer* inputFramebufferRenderbuffer = dynamic_cast<GLFramebuffer*>(EngineContext::GetRenderer ().GetPipelineFramebuffer (pipelineRenderbufferLink));
-    GLFramebuffer* outputFramebuffer = dynamic_cast<GLFramebuffer*>(EngineContext::GetRenderer ().GetPipelineFramebuffer (pipelineFramebufferOutputLink));
+    Framebuffer* inputFramebuffer = EngineContext::GetRenderer ().GetPipelineFramebuffer (pipelineFramebufferInputLink);
+    Framebuffer* inputFramebufferRenderbuffer = EngineContext::GetRenderer ().GetPipelineFramebuffer (pipelineRenderbufferLink);
+    Framebuffer* outputFramebuffer = EngineContext::GetRenderer ().GetPipelineFramebuffer (pipelineFramebufferOutputLink);
   
     // attach input renderbuffer's stencil to output
-    glBindFramebuffer (GL_FRAMEBUFFER, outputFramebuffer->GetFramebufferGLId ());
-    glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, inputFramebufferRenderbuffer->GetFramebufferRenderbufferGLId ());
+    glBindFramebuffer (GL_FRAMEBUFFER, dynamic_cast<GLFramebuffer*>(outputFramebuffer)->GetDrawFramebufferGLId ());
+    glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, dynamic_cast<GLFramebuffer*>(inputFramebufferRenderbuffer)->GetDrawFramebufferRenderbufferGLId ());
 
     // optionally clear
     if (clearOnFrameEnabled)
@@ -92,11 +65,27 @@ void GLRenderStage::OnFrame ()
         glClear (GL_COLOR_BUFFER_BIT);
     }
     
-    // disable depth test
+    // optionally enable depth test
     glDisable (GL_DEPTH_TEST);
     if (depthTestEnabled)
     {
         glEnable (GL_DEPTH_TEST);
+        glClear (GL_DEPTH_BUFFER_BIT);
+    }
+
+    // optionally enable face culling
+    glDisable (GL_CULL_FACE);
+    if (faceCullingEnabled)
+    {
+        glFrontFace (GL_CCW);
+        glEnable (GL_CULL_FACE);
+    }
+
+    // optionally enable multisampling
+    glDisable (GL_MULTISAMPLE);
+    if (multisampleEnabled)
+    {
+        glEnable (GL_MULTISAMPLE);
     }
 
     // optionally enable stencil test
@@ -120,67 +109,6 @@ void GLRenderStage::OnFrame ()
         glStencilFunc (glStencilFunction, stencilTestValue, 0xff);
     }
 
-    // bind previous (input) framebuffer textures and draw
-    shaderProgram->Use ();
-
-    glBindVertexArray (VAO);
-    for (int i = 0; i < inputFramebuffer->GetTextureCount (); i++)
-    {
-        glActiveTexture (GL_TEXTURE0 + i);
-        glBindTexture (GL_TEXTURE_2D, inputFramebuffer->GetFramebufferTextureGLId (i));
-    }
-    
-    glViewport (0, 0, outputFramebuffer->GetWidth (), outputFramebuffer->GetHeight ());
-    glDrawArrays (GL_TRIANGLES, 0, 6);
-    glBindTexture (GL_TEXTURE_2D, 0);
-    glBindVertexArray (0);
-    glBindFramebuffer (GL_FRAMEBUFFER, 0);
 }
 
-RenderStage& GLRenderStage::SetRenderStageParameterFloat (const std::string& parameterName, float parameterValue)
-{
-    GLuint location = GetUniformLocation (parameterName);
-    glUniform1f (location, parameterValue);
-
-    return *this;
-}
-
-RenderStage& GLRenderStage::SetRenderStageParameterVector2f (const std::string& parameterName, const Vector2f& parameterValue)
-{
-    GLuint location = GetUniformLocation (parameterName);
-    glUniform2fv (location, 1, &parameterValue[0]);
-    
-    return *this;
-}
-
-RenderStage& GLRenderStage::SetRenderStageParameterVector3f (const std::string& parameterName, const Vector3f& parameterValue)
-{    
-    GLuint location = GetUniformLocation (parameterName);
-    glUniform3fv (location, 1, &parameterValue[0]);
-    
-    return *this;
-}
-
-RenderStage& GLRenderStage::SetRenderStageParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue)
-{
-    GLuint location = GetUniformLocation (parameterName);
-    glUniform4fv (location, 1, &parameterValue[0]);
-    
-    return *this;
-}
-
-GLuint GLRenderStage::GetUniformLocation (const std::string& parameterName)
-{
-    GLShaderProgram* glShaderProgam = dynamic_cast<GLShaderProgram*> (shaderProgram);
-
-    glShaderProgam->Use ();
-    GLuint paramUniformLocation = glGetUniformLocation (glShaderProgam->GetProgramId (), parameterName.c_str ());
-
-    if (paramUniformLocation == GL_INVALID_INDEX)
-    {
-        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Uniform not found in stage shader:" << parameterName;
-    }
-
-    return paramUniformLocation;
-}
 

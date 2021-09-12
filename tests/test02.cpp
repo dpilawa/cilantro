@@ -9,7 +9,9 @@
 #include "scene/PointLight.h"
 #include "scene/SplinePath.h"
 #include "resource/ResourceManager.h"
-#include "graphics/GLForwardRenderer.h"
+#include "graphics/Renderer.h"
+#include "graphics/GLDeferredGeometryRenderStage.h"
+#include "graphics/GLForwardGeometryRenderStage.h"
 #include "graphics/GLFWRenderTarget.h"
 #include "input/GLFWInputController.h"
 #include "math/Mathf.h"
@@ -23,13 +25,15 @@ int main (int argc, char* argv [])
     ResourceManager resourceManager;
     GameScene gameScene;
     GLFWRenderTarget renderTarget ("Test 2", 960, 600, false, true, true);
-    GLForwardRenderer renderer (960, 600);
+    Renderer renderer (960, 600);
     GLFWInputController inputController;
     Timer timer;
     Game game;
 
     EngineContext::Set (game, resourceManager, timer, gameScene, renderer, renderTarget, inputController);
     EngineContext::Initialize ();
+
+    renderer.AddRenderStage<GLForwardGeometryRenderStage> ("base").SetMultisampleEnabled (true);
 
     inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
     inputController.BindInputEvent ("exit", [ & ]() { game.Stop (); });

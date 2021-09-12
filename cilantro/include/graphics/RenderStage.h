@@ -4,10 +4,11 @@
 #include "cilantroengine.h"
 #include "resource/Resource.h"
 #include "graphics/Framebuffer.h"
+#include "graphics/Framebuffer.h"
 #include "graphics/ShaderProgram.h"
 #include <string>
 
-enum PipelineLink {LINK_BASE, LINK_FIRST, LINK_PREVIOUS, LINK_CURRENT, LINK_LAST};
+enum PipelineLink {LINK_FIRST, LINK_SECOND, LINK_PREVIOUS, LINK_CURRENT, LINK_LAST};
 enum StencilTestFunction { FUNCTION_NEVER, FUNCTION_LESS, FUNCTION_LEQUAL, FUNCTION_GREATER, FUNCTION_GEQUAL, FUNCTION_EQUAL, FUNCTION_NOTEQUAL, FUNCTION_ALWAYS };
 
 class Vector2f;
@@ -20,17 +21,23 @@ public:
     __EAPI RenderStage ();
     __EAPI virtual ~RenderStage ();
 
-    __EAPI RenderStage& SetShaderProgram (const std::string& shaderProgramName);
     __EAPI RenderStage& SetStencilTest (StencilTestFunction stencilTestFunction, int stencilTestValue);
 
-    __EAPI virtual RenderStage& SetMultisampleFramebufferEnabled (bool value);
+    __EAPI virtual RenderStage& SetMultisampleEnabled (bool value);
     __EAPI virtual RenderStage& SetStencilTestEnabled (bool value);
     __EAPI virtual RenderStage& SetDepthTestEnabled (bool value);
     __EAPI virtual RenderStage& SetClearOnFrameEnabled (bool value);
+    __EAPI virtual RenderStage& SetFaceCullingEnabled (bool value);
 
-    __EAPI RenderStage& SetPipelineFramebufferInputLink (PipelineLink link);
-    __EAPI RenderStage& SetPipelineRenderbufferLink (PipelineLink link);
-    __EAPI RenderStage& SetPipelineFramebufferOutputLink (PipelineLink link);
+    __EAPI bool IsMultisampleEnabled () const;
+    __EAPI bool IsStencilTestEnabled () const;
+    __EAPI bool IsDepthTestEnabled () const;
+    __EAPI bool IsClearOnFrameEnabled () const;
+    __EAPI bool IsFaceCullingEnabled () const;
+
+    __EAPI virtual RenderStage& SetPipelineFramebufferInputLink (PipelineLink link);
+    __EAPI virtual RenderStage& SetPipelineRenderbufferLink (PipelineLink link);
+    __EAPI virtual RenderStage& SetPipelineFramebufferDrawLink (PipelineLink link);
 
     virtual void Initialize () = 0;
     virtual void Deinitialize () = 0;
@@ -38,18 +45,15 @@ public:
     virtual void OnFrame () = 0;
 
     Framebuffer* GetFramebuffer () const;
-    virtual RenderStage& SetRenderStageParameterFloat (const std::string& parameterName, float parameterValue) = 0;
-    virtual RenderStage& SetRenderStageParameterVector2f (const std::string& parameterName, const Vector2f& parameterValue) = 0;
-    virtual RenderStage& SetRenderStageParameterVector3f (const std::string& parameterName, const Vector3f& parameterValue) = 0;
-    virtual RenderStage& SetRenderStageParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue) = 0;
 
 protected:
 
     // flags
-    bool multisampleFramebufferEnabled;
+    bool multisampleEnabled;
     bool stencilTestEnabled;
     bool depthTestEnabled;
     bool clearOnFrameEnabled;
+    bool faceCullingEnabled;
 
     // output framebuffer
     Framebuffer* framebuffer;
@@ -59,9 +63,6 @@ protected:
     PipelineLink pipelineFramebufferInputLink;
     PipelineLink pipelineRenderbufferLink;
     PipelineLink pipelineFramebufferOutputLink;
-
-    // stage shader
-    ShaderProgram* shaderProgram;
 
     // stencil testing parameters
     StencilTestFunction stencilTestFunction;

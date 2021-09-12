@@ -1,21 +1,22 @@
-#ifndef _GLDEFERREDRENDERER_H_
-#define _GLDEFERREDRENDERER_H_
+#ifndef _GLDEFERREDBASERENDERSTAGE_H_
+#define _GLDEFERREDBASERENDERSTAGE_H_
 
 #include "cilantroengine.h"
-#include "graphics/GLRenderer.h"
+#include "graphics/GLGeometryRenderStage.h"
 #include <set>
 
 class GLRenderStage;
 
-class GLDeferredRenderer : public GLRenderer
+class GLDeferredGeometryRenderStage : public GLGeometryRenderStage
 {
 public:
-    __EAPI GLDeferredRenderer (unsigned int width, unsigned int height);
-    __EAPI virtual ~GLDeferredRenderer ();
+    __EAPI GLDeferredGeometryRenderStage ();
+    __EAPI virtual ~GLDeferredGeometryRenderStage ();
 
     __EAPI virtual void Initialize ();
+    __EAPI virtual void Deinitialize ();
 
-    virtual void RenderFrame ();
+    virtual void OnFrame ();
     virtual void Update (Material& material);
 
 private:

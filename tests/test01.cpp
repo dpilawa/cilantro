@@ -14,10 +14,10 @@
 #include "resource/Mesh.h"
 #include "resource/ResourceManager.h"
 #include "resource/Texture.h"
-#include "graphics/GLForwardRenderer.h"
-#include "graphics/GLDeferredRenderer.h"
+#include "graphics/GLQuadRenderStage.h"
+#include "graphics/GLDeferredGeometryRenderStage.h"
+#include "graphics/GLForwardGeometryRenderStage.h"
 #include "graphics/GLFWRenderTarget.h"
-#include "graphics/GLRenderStage.h"
 #include "input/GLFWInputController.h"
 #include "math/Mathf.h"
 #include "system/LogMessage.h"
@@ -33,7 +33,7 @@ int main (int argc, char* argv [])
     ResourceManager resourceManager;
     GameScene gameScene;
     GLFWRenderTarget renderTarget ("Test 1", 800, 600, false, true, true);
-    GLDeferredRenderer renderer (800, 600);
+    Renderer renderer (800, 600);
     GLFWInputController inputController;
     Timer timer;
     Game game;
@@ -41,9 +41,10 @@ int main (int argc, char* argv [])
     EngineContext::Set (game, resourceManager, timer, gameScene, renderer, renderTarget, inputController);
     EngineContext::Initialize ();
 
-    renderer.AddRenderStage<GLRenderStage> ("hdr_postprocess").SetShaderProgram ("post_hdr_shader");
-    renderer.AddRenderStage<GLRenderStage> ("fxaa_postprocess").SetShaderProgram ("post_fxaa_shader").SetRenderStageParameterFloat ("fMaxSpan", 4.0f).SetRenderStageParameterVector2f ("vInvResolution", Vector2f (1.0f / EngineContext::GetRenderer ().GetFramebuffer ()->GetWidth (), 1.0f / EngineContext::GetRenderer ().GetFramebuffer ()->GetHeight ()));
-    renderer.AddRenderStage<GLRenderStage> ("gamma_postprocess").SetShaderProgram ("post_gamma_shader").SetRenderStageParameterFloat ("fGamma", 2.1f);
+    renderer.AddRenderStage<GLForwardGeometryRenderStage> ("base");
+    renderer.AddRenderStage<GLQuadRenderStage> ("hdr_postprocess").SetShaderProgram ("post_hdr_shader").SetPipelineFramebufferInputLink (PipelineLink::LINK_PREVIOUS);
+    renderer.AddRenderStage<GLQuadRenderStage> ("fxaa_postprocess").SetShaderProgram ("post_fxaa_shader").SetRenderStageParameterFloat ("fMaxSpan", 4.0f).SetRenderStageParameterVector2f ("vInvResolution", Vector2f (1.0f / EngineContext::GetRenderer ().GetWidth (), 1.0f / EngineContext::GetRenderer ().GetHeight ())).SetPipelineFramebufferInputLink (PipelineLink::LINK_PREVIOUS);
+    renderer.AddRenderStage<GLQuadRenderStage> ("gamma_postprocess").SetShaderProgram ("post_gamma_shader").SetRenderStageParameterFloat ("fGamma", 2.1f).SetPipelineFramebufferInputLink (PipelineLink::LINK_PREVIOUS);
 
     inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
     inputController.BindInputEvent ("exit", [ & ]() { game.Stop (); });
