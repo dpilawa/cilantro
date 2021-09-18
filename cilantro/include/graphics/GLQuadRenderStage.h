@@ -25,9 +25,11 @@ public:
     __EAPI virtual QuadRenderStage& SetRenderStageParameterVector3f (const std::string& parameterName, const Vector3f& parameterValue);
     __EAPI virtual QuadRenderStage& SetRenderStageParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue);
 
-private:
+protected:
 
-    ShaderProgram* ShaderProgram;
+    virtual void InitializeFramebuffer ();
+
+private:
 
     GLuint GetUniformLocation (const std::string& parameterName);
 

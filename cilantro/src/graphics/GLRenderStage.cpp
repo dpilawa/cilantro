@@ -3,7 +3,7 @@
 #include "system/EngineContext.h"
 
 GLRenderStage::GLRenderStage () : RenderStage ()
-{glEnable (GL_MULTISAMPLE);
+{
 }
 
 GLRenderStage::~GLRenderStage ()
@@ -45,6 +45,10 @@ void GLRenderStage::Initialize ()
 
 void GLRenderStage::Deinitialize ()
 {
+    if (framebuffer != nullptr)
+    {
+        framebuffer->Deinitialize ();
+    }
 }
 
 void GLRenderStage::OnFrame ()
@@ -55,8 +59,20 @@ void GLRenderStage::OnFrame ()
     Framebuffer* outputFramebuffer = EngineContext::GetRenderer ().GetPipelineFramebuffer (pipelineFramebufferOutputLink);
   
     // attach input renderbuffer's stencil to output
-    glBindFramebuffer (GL_FRAMEBUFFER, dynamic_cast<GLFramebuffer*>(outputFramebuffer)->GetDrawFramebufferGLId ());
-    glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, dynamic_cast<GLFramebuffer*>(inputFramebufferRenderbuffer)->GetDrawFramebufferRenderbufferGLId ());
+    if (outputFramebuffer != nullptr)
+    {
+        glBindFramebuffer (GL_FRAMEBUFFER, dynamic_cast<GLFramebuffer*>(outputFramebuffer)->GetDrawFramebufferGLId ());
+    }
+    else
+    {
+        // bind default framebuffer
+        glBindFramebuffer (GL_FRAMEBUFFER, (GLint)0);
+    }
+    
+    if (inputFramebufferRenderbuffer)
+    {
+        glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, dynamic_cast<GLFramebuffer*>(inputFramebufferRenderbuffer)->GetDrawFramebufferRenderbufferGLId ());
+    }
 
     // optionally clear
     if (clearOnFrameEnabled)
@@ -111,4 +127,24 @@ void GLRenderStage::OnFrame ()
 
 }
 
-
+void GLRenderStage::InitializeFramebuffer (unsigned int rgbTextures, unsigned int rgbaTextures)
+{
+    // initialize framebuffers
+    if (framebufferEnabled)
+    {
+        if (multisampleEnabled)
+        {
+#if (CILANTRO_GL_VERSION <= 140)
+            LogMessage (MSG_LOCATION, EXIT_FAILURE) << "OpenGL 3.2 required for multisample framebuffers";
+#else
+            framebuffer = new GLMultisampleFramebuffer (EngineContext::GetRenderer ().GetWidth (), EngineContext::GetRenderer ().GetHeight (), rgbTextures, rgbaTextures);
+#endif
+        }
+        else
+        {
+            framebuffer = new GLFramebuffer (EngineContext::GetRenderer ().GetWidth (), EngineContext::GetRenderer ().GetHeight (), rgbTextures, rgbaTextures);
+        }
+        
+        framebuffer->Initialize ();
+    }
+}

@@ -72,9 +72,6 @@ void Game::Step ()
     // render frame
     EngineContext::GetRenderer ().RenderFrame ();
 
-    // process rendertarget
-    EngineContext::GetRenderTarget ().OnFrame ();
-
     // process controller events
     EngineContext::GetInputController ().OnFrame ();
 

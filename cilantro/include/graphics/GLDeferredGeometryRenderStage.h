@@ -1,5 +1,5 @@
-#ifndef _GLDEFERREDBASERENDERSTAGE_H_
-#define _GLDEFERREDBASERENDERSTAGE_H_
+#ifndef _GLDEFERREDGEOMETRYRENDERSTAGE_H_
+#define _GLDEFERREDGEOMETRYRENDERSTAGE_H_
 
 #include "cilantroengine.h"
 #include "graphics/GLGeometryRenderStage.h"
@@ -18,6 +18,10 @@ public:
 
     virtual void OnFrame ();
     virtual void Update (Material& material);
+
+protected:
+
+    virtual void InitializeFramebuffer ();
 
 private:
 

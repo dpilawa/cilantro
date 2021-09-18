@@ -2,7 +2,7 @@
 #include "system/EngineContext.h"
 #include "graphics/ShaderProgram.h"
 
-QuadRenderStage::QuadRenderStage ()
+QuadRenderStage::QuadRenderStage () : RenderStage ()
 {
     shaderProgram = nullptr;
 }

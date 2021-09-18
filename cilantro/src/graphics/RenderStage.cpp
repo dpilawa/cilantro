@@ -11,6 +11,7 @@ RenderStage::RenderStage ()
     depthTestEnabled = true;
     clearOnFrameEnabled = true;
     faceCullingEnabled = true;
+    framebufferEnabled = true;
 
     stencilTestFunction = StencilTestFunction::FUNCTION_ALWAYS;
     stencilTestValue = 0;
@@ -22,8 +23,11 @@ RenderStage::RenderStage ()
 
 RenderStage::~RenderStage ()
 {
+    if (framebuffer != nullptr)
+    {
+        delete framebuffer;
+    }
 }
-
 
 RenderStage& RenderStage::SetStencilTest (StencilTestFunction stencilTestFunction, int stencilTestValue)
 {
@@ -68,6 +72,30 @@ RenderStage& RenderStage::SetFaceCullingEnabled (bool value)
     return *this;
 }
 
+RenderStage& RenderStage::SetFramebufferEnabled (bool value)
+{
+    if (framebufferEnabled != value)
+    {
+        if (value == false) // disabling
+        {
+            if (framebuffer != nullptr)
+            {
+                framebuffer->Deinitialize ();
+                
+                delete framebuffer;
+                framebuffer = nullptr;
+            }
+        }
+        else // enabling 
+        {
+            InitializeFramebuffer ();
+        }
+    }    
+
+    framebufferEnabled = value;
+    return *this;
+}
+
 bool RenderStage::IsMultisampleEnabled () const
 {
     return multisampleEnabled;
@@ -91,6 +119,11 @@ bool RenderStage::IsClearOnFrameEnabled () const
 bool RenderStage::IsFaceCullingEnabled () const
 {
     return faceCullingEnabled;
+}
+
+bool RenderStage::IsFramebufferEnabled () const
+{
+    return framebufferEnabled;
 }
 
 RenderStage& RenderStage::SetPipelineFramebufferInputLink (PipelineLink link)

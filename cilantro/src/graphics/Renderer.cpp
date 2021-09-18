@@ -49,8 +49,18 @@ unsigned int Renderer::GetHeight () const
 
 Renderer& Renderer::SetResolution (unsigned int width, unsigned int height)
 {
+    Framebuffer* fb;
     this->width = width;
     this->height = height;
+
+    for (auto& stage : renderStages)
+    {
+        fb = stage->GetFramebuffer ();
+        if (fb != nullptr)
+        {
+            fb->SetFramebufferResolution (width, height);
+        }
+    }
 
     return *this;
 }

@@ -56,10 +56,10 @@ protected:
 
     ResourceManager<ShaderProgram> shaderPrograms;
 
-private:
-
     unsigned int width;
     unsigned int height;
+
+private:
 
     long int totalRenderFrames;
     float totalRenderTime;

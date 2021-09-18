@@ -16,29 +16,11 @@ void GLForwardGeometryRenderStage::Initialize ()
 {    
     GLGeometryRenderStage::Initialize ();
     
-    // initialize framebuffer
-    if (multisampleEnabled)
-    {
-#if (CILANTRO_GL_VERSION <= 140)
-        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "OpenGL 3.2 required for multisample framebuffers";
-#else
-        framebuffer = new GLMultisampleFramebuffer (EngineContext::GetRenderer ().GetWidth (), EngineContext::GetRenderer ().GetHeight (), 0, 1);
-#endif
-    }
-    else
-    {
-        framebuffer = new GLFramebuffer (EngineContext::GetRenderer ().GetWidth (), EngineContext::GetRenderer ().GetHeight (), 0, 1);
-    }    
-
-    framebuffer->Initialize ();
-
+    InitializeFramebuffer ();
 }
 
 void GLForwardGeometryRenderStage::Deinitialize ()
 {
-    framebuffer->Deinitialize ();
-    delete framebuffer;
-
     GLGeometryRenderStage::Deinitialize ();
 }
 
@@ -46,14 +28,11 @@ void GLForwardGeometryRenderStage::OnFrame ()
 {
     GLRenderStage::OnFrame ();
 
-    // bind framebuffer
-    framebuffer->BindFramebuffer ();
-
     // load uniform buffers
     LoadMatrixUniformBuffers ();
 
     // set viewport
-    glViewport (0, 0, this->GetFramebuffer ()->GetWidth (), this->GetFramebuffer ()->GetHeight ());
+    glViewport (0, 0, EngineContext::GetRenderer ().GetWidth (), EngineContext::GetRenderer ().GetHeight ());
 
     // draw all objects in scene
     for (auto gameObject : EngineContext::GetGameScene ().GetGameObjectManager ())
@@ -69,11 +48,13 @@ void GLForwardGeometryRenderStage::OnFrame ()
     }
 #endif
 
-    // unbind framebuffer
-    framebuffer->UnbindFramebuffer ();
-
     // check for errors
     CheckGLError (MSG_LOCATION);
+}
+
+void GLForwardGeometryRenderStage::InitializeFramebuffer ()
+{
+    GLRenderStage::InitializeFramebuffer (0, 1);
 }
 
 ShaderProgram& GLForwardGeometryRenderStage::GetMeshObjectGeometryShaderProgram (const MeshObject& meshObject) 

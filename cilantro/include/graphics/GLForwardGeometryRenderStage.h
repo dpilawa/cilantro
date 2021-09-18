@@ -1,5 +1,5 @@
-#ifndef _GLFORWARDBASERENDERSTAGE_H_
-#define _GLFORWARDBASERENDERSTAGE_H_
+#ifndef _GLFORWARDGEOMETRYRENDERSTAGE_H_
+#define _GLFORWARDGEOMETRYRENDERSTAGE_H_
 
 #include "cilantroengine.h"
 #include "graphics/GLGeometryRenderStage.h"
@@ -15,6 +15,10 @@ public:
 
     virtual void OnFrame ();
 
+protected:
+
+    virtual void InitializeFramebuffer ();
+    
 private:
 
     virtual ShaderProgram& GetMeshObjectGeometryShaderProgram (const MeshObject& meshObject);

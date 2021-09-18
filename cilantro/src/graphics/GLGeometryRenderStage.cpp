@@ -40,11 +40,6 @@ void GLGeometryRenderStage::Initialize ()
 {
     GLRenderStage::Initialize ();
 
-    // display GL version information
-    LogMessage (MSG_LOCATION) << "Version:" << (char*) glGetString (GL_VERSION);
-    LogMessage (MSG_LOCATION) << "Shader language version:" << (char*) glGetString (GL_SHADING_LANGUAGE_VERSION);
-    LogMessage (MSG_LOCATION) << "Renderer:" << (char*) glGetString (GL_RENDERER);
-
     // initialize object buffers
     InitializeObjectBuffers ();
 
@@ -826,7 +821,7 @@ void GLGeometryRenderStage::LoadMatrixUniformBuffers ()
     std::memcpy (uniformMatrixBuffer.viewMatrix, Mathf::Transpose (activeCamera->GetViewMatrix ())[0], 16 * sizeof (GLfloat));
 
     // load projection matrix
-    std::memcpy (uniformMatrixBuffer.projectionMatrix, Mathf::Transpose (activeCamera->GetProjectionMatrix (this->GetFramebuffer ()->GetWidth (), this->GetFramebuffer ()->GetHeight ()))[0], 16 * sizeof (GLfloat));
+    std::memcpy (uniformMatrixBuffer.projectionMatrix, Mathf::Transpose (activeCamera->GetProjectionMatrix (EngineContext::GetRenderer ().GetWidth (), EngineContext::GetRenderer ().GetHeight ()))[0], 16 * sizeof (GLfloat));
 
     // load to GPU
     glBindBuffer (GL_UNIFORM_BUFFER, sceneBuffers.UBO[UBO_MATRICES]);

@@ -7,7 +7,6 @@
 #include "graphics/GLShaderProgram.h"
 #include "graphics/GLRenderStage.h"
 #include "graphics/GeometryRenderStage.h"
-#include "graphics/RenderTarget.h"
 #include <cstring>
 
 #define MAX_POINT_LIGHTS 64

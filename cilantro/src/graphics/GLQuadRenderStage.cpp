@@ -13,21 +13,8 @@ GLQuadRenderStage::~GLQuadRenderStage ()
 
 void GLQuadRenderStage::Initialize ()
 {
-    // initialize framebuffers
-    if (multisampleEnabled)
-    {
-#if (CILANTRO_GL_VERSION <= 140)
-        framebuffer = new GLFramebuffer (EngineContext::GetRenderer ().GetWidth (), EngineContext::GetRenderer ().GetHeight (), 0, 1);
-#else
-        framebuffer = new GLMultisampleFramebuffer (EngineContext::GetRenderer ().GetWidth (), EngineContext::GetRenderer ().GetHeight (), 0, 1);
-#endif
-    }
-    else
-    {
-        framebuffer = new GLFramebuffer (EngineContext::GetRenderer ().GetWidth (), EngineContext::GetRenderer ().GetHeight (), 0, 1);
-    }
-    
-    framebuffer->Initialize ();
+    GLRenderStage::Initialize ();
+    InitializeFramebuffer ();
 
     // set up VBO and VAO
     float quadVertices[] = {
@@ -54,15 +41,12 @@ void GLQuadRenderStage::Initialize ()
 
     LogMessage (MSG_LOCATION) << "GLQuadRenderStage initialized" << this->GetName ();
 
-    GLRenderStage::Initialize ();
 }
 
 void GLQuadRenderStage::Deinitialize ()
 {
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-
-    framebuffer->Deinitialize ();
 
     GLRenderStage::Deinitialize ();
 }
@@ -74,19 +58,18 @@ void GLQuadRenderStage::OnFrame ()
 
     GLRenderStage::OnFrame ();
  
-    // bind previous (input) framebuffer textures and draw
+    // bind previous (input) framebuffer textures and draw    
+
     shaderProgram->Use ();
-
-    outputFramebuffer->BindFramebuffer ();
-
-    glBindVertexArray (VAO);
+    
     for (int i = 0; i < inputFramebuffer->GetTextureCount (); i++)
     {
         glActiveTexture (GL_TEXTURE0 + i);
         glBindTexture (GL_TEXTURE_2D, inputFramebuffer->GetReadFramebufferTextureGLId (i));
     }
-    
-    glViewport (0, 0, outputFramebuffer->GetWidth (), outputFramebuffer->GetHeight ());
+
+    glBindVertexArray (VAO);    
+    glViewport (0, 0, EngineContext::GetRenderer ().GetWidth(), EngineContext::GetRenderer ().GetHeight ());
     glDrawArrays (GL_TRIANGLES, 0, 6);
     glBindTexture (GL_TEXTURE_2D, 0);
     glBindVertexArray (0);
@@ -99,8 +82,6 @@ void GLQuadRenderStage::OnFrame ()
         static_cast<GLMultisampleFramebuffer*>(framebuffer)->BlitFramebuffer ();
     }
 #endif
-
-    framebuffer->UnbindFramebuffer ();
 
 }
 
@@ -134,6 +115,11 @@ QuadRenderStage& GLQuadRenderStage::SetRenderStageParameterVector4f (const std::
     glUniform4fv (location, 1, &parameterValue[0]);
     
     return *this;
+}
+
+void GLQuadRenderStage::InitializeFramebuffer ()
+{
+    GLRenderStage::InitializeFramebuffer (0, 1);
 }
 
 GLuint GLQuadRenderStage::GetUniformLocation (const std::string& parameterName)

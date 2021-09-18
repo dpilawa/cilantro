@@ -15,9 +15,9 @@ endif()
 
 if(CILANTRO_WITH_GLFW)
     set(CILANTRO_FILES ${CILANTRO_FILES}
-        include/graphics/GLFWRenderTarget.h
+        include/graphics/GLFWRenderer.h
         include/input/GLFWInputController.h
-        src/graphics/GLFWRenderTarget.cpp
+        src/graphics/GLFWRenderer.cpp
         src/input/GLFWInputController.cpp
     )
 endif()
@@ -46,7 +46,6 @@ include/graphics/GLShaderProgram.h
 include/graphics/Renderer.h
 include/graphics/QuadRenderStage.h
 include/graphics/RenderStage.h
-include/graphics/RenderTarget.h
 include/graphics/Shader.h
 include/graphics/ShaderProgram.h
 include/input/InputController.h
@@ -109,7 +108,6 @@ src/graphics/GLShaderProgram.cpp
 src/graphics/Renderer.cpp
 src/graphics/RenderStage.cpp
 src/graphics/QuadRenderStage.cpp
-src/graphics/RenderTarget.cpp
 src/graphics/Shader.cpp
 src/graphics/ShaderProgram.cpp
 src/input/InputController.cpp

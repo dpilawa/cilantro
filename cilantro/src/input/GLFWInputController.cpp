@@ -164,7 +164,11 @@ void GLFWInputController::SetMouseGameMode(bool value)
 
 void GLFWInputController::Initialize () 
 {
-    this->window = dynamic_cast<GLFWRenderTarget&> (EngineContext::GetRenderTarget ()).GetWindow ();
+    window = glfwGetCurrentContext ();
+    if (window == NULL)
+    {
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "GL context/window not present";
+    }
 
     auto keyCallback = [](GLFWwindow* _window, int _key, int _scancode, int _action, int _mods)
     {

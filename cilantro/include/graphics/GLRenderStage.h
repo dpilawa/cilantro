@@ -28,6 +28,9 @@ public:
 
     virtual void OnFrame ();
 
+protected:
+
+    virtual void InitializeFramebuffer (unsigned int rgbTextures, unsigned int rgbaTextures);
 };
 
 #endif

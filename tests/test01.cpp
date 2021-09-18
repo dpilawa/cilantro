@@ -17,7 +17,7 @@
 #include "graphics/GLQuadRenderStage.h"
 #include "graphics/GLDeferredGeometryRenderStage.h"
 #include "graphics/GLForwardGeometryRenderStage.h"
-#include "graphics/GLFWRenderTarget.h"
+#include "graphics/GLFWRenderer.h"
 #include "input/GLFWInputController.h"
 #include "math/Mathf.h"
 #include "system/LogMessage.h"
@@ -32,19 +32,18 @@ int main (int argc, char* argv [])
 {
     ResourceManager resourceManager;
     GameScene gameScene;
-    GLFWRenderTarget renderTarget ("Test 1", 800, 600, false, true, true);
-    Renderer renderer (800, 600);
+    GLFWRenderer renderer (800, 600, "Test 01", false, true, true);
     GLFWInputController inputController;
     Timer timer;
     Game game;
 
-    EngineContext::Set (game, resourceManager, timer, gameScene, renderer, renderTarget, inputController);
+    EngineContext::Set (game, resourceManager, timer, gameScene, renderer, inputController);
     EngineContext::Initialize ();
 
-    renderer.AddRenderStage<GLForwardGeometryRenderStage> ("base");
+    renderer.AddRenderStage<GLDeferredGeometryRenderStage> ("base");
     renderer.AddRenderStage<GLQuadRenderStage> ("hdr_postprocess").SetShaderProgram ("post_hdr_shader").SetPipelineFramebufferInputLink (PipelineLink::LINK_PREVIOUS);
     renderer.AddRenderStage<GLQuadRenderStage> ("fxaa_postprocess").SetShaderProgram ("post_fxaa_shader").SetRenderStageParameterFloat ("fMaxSpan", 4.0f).SetRenderStageParameterVector2f ("vInvResolution", Vector2f (1.0f / EngineContext::GetRenderer ().GetWidth (), 1.0f / EngineContext::GetRenderer ().GetHeight ())).SetPipelineFramebufferInputLink (PipelineLink::LINK_PREVIOUS);
-    renderer.AddRenderStage<GLQuadRenderStage> ("gamma_postprocess").SetShaderProgram ("post_gamma_shader").SetRenderStageParameterFloat ("fGamma", 2.1f).SetPipelineFramebufferInputLink (PipelineLink::LINK_PREVIOUS);
+    renderer.AddRenderStage<GLQuadRenderStage> ("gamma_postprocess+screen").SetShaderProgram ("post_gamma_shader").SetRenderStageParameterFloat ("fGamma", 2.1f).SetPipelineFramebufferInputLink (PipelineLink::LINK_PREVIOUS).SetFramebufferEnabled (false);
 
     inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
     inputController.BindInputEvent ("exit", [ & ]() { game.Stop (); });

@@ -12,7 +12,8 @@
 #include "graphics/Renderer.h"
 #include "graphics/GLDeferredGeometryRenderStage.h"
 #include "graphics/GLForwardGeometryRenderStage.h"
-#include "graphics/GLFWRenderTarget.h"
+#include "graphics/GLQuadRenderStage.h"
+#include "graphics/GLFWRenderer.h"
 #include "input/GLFWInputController.h"
 #include "math/Mathf.h"
 #include "system/EngineContext.h"
@@ -24,16 +25,16 @@ int main (int argc, char* argv [])
 {
     ResourceManager resourceManager;
     GameScene gameScene;
-    GLFWRenderTarget renderTarget ("Test 2", 960, 600, false, true, true);
-    Renderer renderer (960, 600);
+    GLFWRenderer renderer (960, 600, "Test 02", false, true, true);
     GLFWInputController inputController;
     Timer timer;
     Game game;
 
-    EngineContext::Set (game, resourceManager, timer, gameScene, renderer, renderTarget, inputController);
+    EngineContext::Set (game, resourceManager, timer, gameScene, renderer, inputController);
     EngineContext::Initialize ();
 
     renderer.AddRenderStage<GLForwardGeometryRenderStage> ("base").SetMultisampleEnabled (true);
+    renderer.AddRenderStage<GLQuadRenderStage> ("screen").SetShaderProgram ("flatquad_shader").SetFramebufferEnabled (false).SetPipelineFramebufferInputLink (PipelineLink::LINK_PREVIOUS);
 
     inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
     inputController.BindInputEvent ("exit", [ & ]() { game.Stop (); });

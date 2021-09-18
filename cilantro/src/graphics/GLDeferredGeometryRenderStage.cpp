@@ -19,18 +19,11 @@ void GLDeferredGeometryRenderStage::Initialize ()
 {
     GLGeometryRenderStage::Initialize ();  
 
-    // initialize framebuffers (g-buffer)
-    // any multisample flags ignored here
-    framebuffer = new GLFramebuffer (EngineContext::GetRenderer ().GetWidth (), EngineContext::GetRenderer ().GetHeight (), 0, 5);
-    framebuffer->Initialize ();
+    InitializeFramebuffer ();
 }
 
 void GLDeferredGeometryRenderStage::Deinitialize ()
 {    
-    // deinitialize framebuffers
-    framebuffer->Deinitialize ();
-    delete framebuffer;
-
     GLGeometryRenderStage::Deinitialize ();  
 }
 
@@ -38,15 +31,12 @@ void GLDeferredGeometryRenderStage::OnFrame ()
 {
     GLRenderStage::OnFrame ();
 
-    // bind g-buffer
-    framebuffer->BindFramebuffer ();
-
     // clear frame, depth and stencil buffers
     glClearColor (0.0f, 0.0f, 0.0f, 1.0f);   
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     // set viewport
-    glViewport (0, 0, this->GetFramebuffer ()->GetWidth (), this->GetFramebuffer ()->GetHeight ());
+    glViewport (0, 0, EngineContext::GetRenderer ().GetWidth (), EngineContext::GetRenderer ().GetHeight ());
 
     // enable depth and stencil buffer testing
     glEnable (GL_DEPTH_TEST);
@@ -75,9 +65,6 @@ void GLDeferredGeometryRenderStage::OnFrame ()
 
     }
 
-    // unbind framebuffer
-    framebuffer->UnbindFramebuffer ();
-
     // check for errors
     CheckGLError (MSG_LOCATION);    
 }
@@ -104,6 +91,7 @@ void GLDeferredGeometryRenderStage::Update (Material& material)
         p.SetPipelineFramebufferInputLink (PipelineLink::LINK_FIRST);
         p.SetPipelineRenderbufferLink (PipelineLink::LINK_FIRST);
         p.SetPipelineFramebufferDrawLink (PipelineLink::LINK_SECOND);
+        p.SetFramebufferEnabled (true);
 
         // rotate pipeline twice to the right, so that ultimately geometry stage is first and newly added stage is second
         EngineContext::GetRenderer ().RotateRenderPipelineRight ();
@@ -116,6 +104,7 @@ void GLDeferredGeometryRenderStage::Update (Material& material)
 
             GLQuadRenderStage& stage = EngineContext::GetRenderer ().GetRenderStageManager ().GetByHandle<GLQuadRenderStage> (stageHandle);
             stage.SetClearOnFrameEnabled (false);
+            stage.SetFramebufferEnabled (false);
         }
 
         // update pipeline links of 1st stage following deferred lighting stages
@@ -131,6 +120,11 @@ void GLDeferredGeometryRenderStage::Update (Material& material)
     }
 
     GLGeometryRenderStage::Update (material);
+}
+
+void GLDeferredGeometryRenderStage::InitializeFramebuffer ()
+{
+    GLRenderStage::InitializeFramebuffer (0, 5);
 }
 
 ShaderProgram& GLDeferredGeometryRenderStage::GetMeshObjectGeometryShaderProgram (const MeshObject& meshObject) 
