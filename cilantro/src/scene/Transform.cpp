@@ -36,7 +36,7 @@ Matrix4f& Transform::GetModelMatrix ()
 
 Transform& Transform::SetModelMatrix (const Matrix4f& m)
 {
-    isValid == true; // OK because model matrix is calculated
+    isValid = true; // OK because model matrix is calculated
 
     modelMatrix = m;
 
