@@ -10,6 +10,7 @@
 class Mesh;
 class MeshObject;
 class Texture;
+class Matrix4f;
 
 class AssimpModelLoader : public ModelLoader
 {
@@ -28,12 +29,15 @@ private:
 
     void ImportMeshPositions (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh);
     void ImportMeshFaces (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh);
+    void ImportMeshBones (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh);
     void ImportMeshMaterial (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh);
 
     MeshObject& CreateMeshObject (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh, const aiMesh* parent);
 
     bool HasTexture (aiMaterial* material, aiTextureType type);
     Texture& ImportMeshMaterialTexture (aiMaterial* material, aiTextureType type);
+
+    Matrix4f ConvertMatrix (const aiMatrix4x4& m);
 };
 
 #endif
