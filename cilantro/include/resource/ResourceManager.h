@@ -24,23 +24,26 @@ public:
     __EAPI virtual ~ResourceManager();
 
     template <typename T, typename ...Params>
-    T& Load(const std::string& name, const std::string& path, Params&&... params);
+    T& Load (const std::string& name, const std::string& path, Params&&... params);
 
     template <typename T, typename ...Params>
-    T& Create(const std::string& name, Params&&... params);
+    T& Create (const std::string& name, Params&&... params);
 
     template <typename T>
-    T& GetByHandle(unsigned int handle) const;
+    T& GetByHandle (unsigned int handle) const;
 
     template <typename T>
-    T& GetByName(const std::string& name) const;
+    T& GetByName (const std::string& name) const;
 
-    __EAPI iterator begin();
-    __EAPI iterator end();
-    __EAPI const_iterator begin() const;
-    __EAPI const_iterator end() const;
-    __EAPI const_iterator cbegin() const;
-    __EAPI const_iterator cend() const;
+    template <typename T>
+    bool HasName (const std::string& name) const;
+
+    __EAPI iterator begin ();
+    __EAPI iterator end ();
+    __EAPI const_iterator begin () const;
+    __EAPI const_iterator end () const;
+    __EAPI const_iterator cbegin () const;
+    __EAPI const_iterator cend () const;
 
 private:
 
@@ -84,7 +87,7 @@ T& ResourceManager<Base>::Create (const std::string& name, Params&&... params)
 
 template <typename Base>
 template <typename T>
-T& ResourceManager<Base>::GetByHandle(handle_t handle) const
+T& ResourceManager<Base>::GetByHandle (handle_t handle) const
 {
     if (handle >= this->handle)
     {
@@ -104,7 +107,7 @@ T& ResourceManager<Base>::GetByHandle(handle_t handle) const
 
 template <typename Base>
 template <typename T>
-T& ResourceManager<Base>::GetByName(const std::string& name) const
+T& ResourceManager<Base>::GetByName (const std::string& name) const
 {
     auto resourceName = resourceNames.find (name);
 
@@ -116,7 +119,29 @@ T& ResourceManager<Base>::GetByName(const std::string& name) const
     return GetByHandle<T> (resourceName->second);
 }
 
+template <typename Base>
+template <typename T>
+bool ResourceManager<Base>::HasName (const std::string& name) const
+{
+    auto resourceName = resourceNames.find (name);
+
+    if (resourceName == resourceNames.end ()) 
+    {
+        return false;
+    }
+
+    auto resource = resources[resourceName->second];
+    auto resourcePtr = std::dynamic_pointer_cast<T> (resource);
+        
+    if (resourcePtr == nullptr)
+    {
+        return false;
+    }
+
+    return true;
+}
+
 // deduction guide for clang (c++17)
-ResourceManager() -> ResourceManager<Resource>;
+ResourceManager () -> ResourceManager<Resource>;
 
 #endif

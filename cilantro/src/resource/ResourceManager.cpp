@@ -10,49 +10,49 @@ ResourceManager<Base>::ResourceManager ()
 {
     static_assert (std::is_base_of<Resource, Base>::value, "Resource base object must inherit from Resource");
     this->handle = 0;
-    LogMessage(MSG_LOCATION) << "ResourceManager started";
+    LogMessage (MSG_LOCATION) << "ResourceManager started";
 }
 
 template <typename Base>
 ResourceManager<Base>::~ResourceManager ()
 {
-    LogMessage(MSG_LOCATION) << "ResourceManager stopped";
+    LogMessage (MSG_LOCATION) << "ResourceManager stopped";
 }
 
 template <typename Base>
 typename ResourceManager<Base>::iterator ResourceManager<Base>::begin ()
 { 
-    return resources.begin(); 
+    return resources.begin (); 
 }
 
 template <typename Base>
 typename ResourceManager<Base>::iterator ResourceManager<Base>::end () 
 { 
-    return resources.end(); 
+    return resources.end (); 
 }
 
 template <typename Base>
 typename ResourceManager<Base>::const_iterator ResourceManager<Base>::begin () const 
 { 
-    return resources.begin(); 
+    return resources.begin (); 
 }
 
 template <typename Base>
 typename ResourceManager<Base>::const_iterator ResourceManager<Base>::end () const 
 { 
-    return resources.end(); 
+    return resources.end (); 
 }
 
 template <typename Base>
 typename ResourceManager<Base>::const_iterator ResourceManager<Base>::cbegin () const 
 { 
-    return resources.cbegin(); 
+    return resources.cbegin (); 
 }
 
 template <typename Base>
 typename ResourceManager<Base>::const_iterator ResourceManager<Base>::cend () const 
 { 
-    return resources.cend(); 
+    return resources.cend (); 
 }
 
 template <typename Base>

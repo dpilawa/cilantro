@@ -3,7 +3,7 @@
 #include "input/GLFWInputController.h"
 #include "system/EngineContext.h"
 
-ControlledCamera::ControlledCamera (float fov, float near, float far, float sensitivity) : PerspectiveCamera (fov, near, far), sensitivity (sensitivity)
+ControlledCamera::ControlledCamera (float fov, float near, float far, float speed, float sensitivity) : PerspectiveCamera (fov, near, far), speed (speed), sensitivity (sensitivity)
 {
 }
 
@@ -32,12 +32,12 @@ void ControlledCamera::Initialize ()
 
 void ControlledCamera::MoveRight (float offset)
 {
-    GetModelTransform ().TranslateBy (GetRight () * offset * sensitivity);
+    GetModelTransform ().TranslateBy (GetRight () * offset * speed);
 }
 
 void ControlledCamera::MoveForward (float offset)
 {
-    GetModelTransform ().TranslateBy (-GetForward () * offset * sensitivity);
+    GetModelTransform ().TranslateBy (-GetForward () * offset * speed);
 }
 
 void ControlledCamera::YawBy (float angle)

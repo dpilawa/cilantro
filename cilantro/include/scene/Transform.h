@@ -18,6 +18,9 @@ public:
     // returns models matrix (multiplication of scaling, rotation, translation)
     __EAPI Matrix4f& GetModelMatrix ();
 
+    // sets transformation based on tranformation (model) matrix as input
+    __EAPI Transform& SetModelMatrix (const Matrix4f& m);
+
     // returns transformation matrices
     __EAPI Matrix4f& GetTranslationMatrix ();
     __EAPI Matrix4f& GetScalingMatrix ();

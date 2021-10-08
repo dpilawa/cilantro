@@ -6,7 +6,7 @@
 class ControlledCamera : public PerspectiveCamera
 {
 public:
-    ControlledCamera (float fov, float near, float far, float sensitivity);
+    ControlledCamera (float fov, float near, float far, float speed, float sensitivity);
     virtual ~ControlledCamera ();
 
     void Initialize ();
@@ -17,6 +17,7 @@ public:
     void PitchBy (float angle);
 
 private:
+    float speed;
     float sensitivity;
 };
 

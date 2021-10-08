@@ -16,7 +16,6 @@ class GeometryRenderStage;
 class MeshObject : public GameObject
 {
 public:
-    MeshObject () = delete;
     __EAPI MeshObject (const std::string& meshName, const std::string materialName);
     __EAPI virtual ~MeshObject ();
 

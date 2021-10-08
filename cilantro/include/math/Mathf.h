@@ -110,6 +110,11 @@ public:
     __EAPI static Matrix4f GenScalingMatrix (float x, float y, float z);
     __EAPI static Matrix4f GenScalingMatrix (const Vector3f& s);
 
+    // decompose matrix to transformations
+    __EAPI static Vector3f GetScalingFromTransformationMatrix (const Matrix4f& m);
+    __EAPI static Vector3f GetTranslationFromTransformationMatrix (const Matrix4f& m);
+    __EAPI static Quaternion GetRotationFromTransformationMatrix (const Matrix4f& m);
+
     // generate camera (view) matrix or orientation quaternion
     __EAPI static Matrix4f GenCameraViewMatrix (const Vector3f& position, const Vector3f& lookAt, const Vector3f& up);
     __EAPI static Quaternion GenCameraOrientationQuaternion (const Vector3f& position, const Vector3f& lookAt, const Vector3f& up);
