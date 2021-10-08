@@ -3,6 +3,7 @@
 #include "system/EngineContext.h"
 #include "resource/Mesh.h"
 #include "resource/Texture.h"
+#include "scene/Material.h"
 #include "scene/PhongMaterial.h"
 #include "scene/PBRMaterial.h"
 #include "math/Vector2f.h"
@@ -30,32 +31,53 @@ void AssimpModelLoader::Load (std::string path)
     }
     else
     {
-        ImportNode (scene, scene->mRootNode);
+        ImportNode (scene, scene->mRootNode, nullptr);
         LogMessage(MSG_LOCATION) << "Loaded model" << path << "meshes" << scene->mNumMeshes << "materials" << scene->mNumMaterials << "textures" << scene->mNumTextures << "lights" << scene->mNumLights;
     }
 }
 
-void AssimpModelLoader::ImportNode (const aiScene* scene, const aiNode* node)
+void AssimpModelLoader::ImportNode (const aiScene* scene, const aiNode* node, const aiNode* parent)
 {
     for (unsigned int i = 0; i < node->mNumMeshes; i++)
     {
-        ImportMesh (scene, scene->mMeshes[node->mMeshes[i]]);
+        if (parent == nullptr)
+        {
+            ImportMesh (scene, scene->mMeshes[node->mMeshes[i]], nullptr, node->mTransformation);
+        }
+        else
+        {
+            if (parent->mNumMeshes > 1)
+            {
+                LogMessage(MSG_LOCATION, EXIT_FAILURE) << "Parent nodes with multiple meshes are not supported";
+            }
+            else if (parent->mNumMeshes == 1)
+            {
+                ImportMesh (scene, scene->mMeshes[node->mMeshes[i]], scene->mMeshes[parent->mMeshes[0]], node->mTransformation);
+            }
+            else
+            {
+                ImportMesh (scene, scene->mMeshes[node->mMeshes[i]], nullptr, node->mTransformation);
+            }
+        }
     }
 
     for (unsigned int i = 0; i < node->mNumChildren; i++)
     {
-        ImportNode (scene, node->mChildren[i]);
+        ImportNode (scene, node->mChildren[i], node->mParent);
     }
 
 }
 
-void AssimpModelLoader::ImportMesh (const aiScene* scene, const aiMesh* mesh)
+void AssimpModelLoader::ImportMesh (const aiScene* scene, const aiMesh* mesh, const aiMesh* parent, const aiMatrix4x4& t)
 {
     Mesh& myMesh = EngineContext::GetResourceManager ().Create<Mesh> (mesh->mName.C_Str ());
 
     ImportMeshPositions (myMesh, scene, mesh);
     ImportMeshFaces (myMesh, scene, mesh);
     ImportMeshMaterial (myMesh, scene, mesh);
+
+    MeshObject& meshObject = CreateMeshObject (myMesh, scene, mesh, parent);
+    meshObject.GetModelTransform ().SetModelMatrix (Matrix4f (Vector4f (t.a1, t.a2, t.a3, t.a4), Vector4f (t.b1, t.b2, t.b3, t.b4), Vector4f (t.c1, t.c2, t.c3, t.c4), Vector4f (t.d1, t.d2, t.d3, t.d4)));
 }
 
 void AssimpModelLoader::ImportMeshPositions (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh)
@@ -114,6 +136,12 @@ void AssimpModelLoader::ImportMeshMaterial (Mesh& myMesh, const aiScene* scene, 
     if (mesh->mMaterialIndex >= 0)
     {
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+
+        // skip if material already loaded
+        if (EngineContext::GetGameScene ().GetMaterialManager ().HasName<Material> (material->GetName ().C_Str ()))
+        {
+            return;
+        }
 
         for (unsigned int t = static_cast<unsigned int>(aiTextureType_NONE); t < AI_TEXTURE_TYPE_MAX; t++)
         {
@@ -185,6 +213,19 @@ void AssimpModelLoader::ImportMeshMaterial (Mesh& myMesh, const aiScene* scene, 
     }
 }
 
+MeshObject& AssimpModelLoader::CreateMeshObject (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh, const aiMesh* parent)
+{
+    aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+    MeshObject& m = EngineContext::GetGameScene ().AddGameObject<MeshObject> (myMesh.GetName (), myMesh.GetName (), material->GetName ().C_Str ());
+        
+    if (parent != nullptr)
+    {
+        m.SetParentObject (parent->mName.C_Str ());
+    }
+    
+    return m;
+}
+
 bool AssimpModelLoader::HasTexture (aiMaterial* material, aiTextureType type)
 {
     return (material->GetTextureCount (type) > 0);
@@ -193,28 +234,30 @@ bool AssimpModelLoader::HasTexture (aiMaterial* material, aiTextureType type)
 Texture& AssimpModelLoader::ImportMeshMaterialTexture (aiMaterial* material, aiTextureType type)
 {
     aiString path;
-    std::string textureName;
     std::string sysPath;
 
-    textureName = std::string (material->GetName ().C_Str ());
-    textureName += std::to_string (type);
-
-    if (material->GetTextureCount (type) > 1)
-    {
-        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Stacked textures not supported" << textureName;
-    }
-    else
-    {
-        material->GetTexture (type, 0, &path);
-        sysPath = sysPath = std::string (path.C_Str ());
+    material->GetTexture (type, 0, &path);
+    sysPath = std::string (path.C_Str ());
 
 #if defined _WIN32 || defined __CYGWIN__
-        std::replace(sysPath.begin(), sysPath.end(), '/', '\\');
+    std::replace(sysPath.begin(), sysPath.end(), '/', '\\');
 #else
-        std::replace(sysPath.begin(), sysPath.end(), '\\', '/');
+    std::replace(sysPath.begin(), sysPath.end(), '\\', '/');
 #endif
 
+    // if texture already exists, return it
+    if (EngineContext::GetResourceManager ().HasName<Texture> (sysPath))
+    {
+        return EngineContext::GetResourceManager ().GetByName<Texture> (sysPath);
     }
+    else 
+    {
+        if (material->GetTextureCount (type) > 1)
+        {
+            LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Stacked textures not supported" << sysPath;
+        }
 
-    return EngineContext::GetResourceManager ().Load<Texture> (textureName, sysPath);
+        return EngineContext::GetResourceManager ().Load<Texture> (sysPath, sysPath);
+
+    }
 }

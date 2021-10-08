@@ -34,6 +34,26 @@ Matrix4f& Transform::GetModelMatrix ()
     return modelMatrix;
 }
 
+Transform& Transform::SetModelMatrix (const Matrix4f& m)
+{
+    isValid == true; // OK because model matrix is calculated
+
+    modelMatrix = m;
+
+    translate = Mathf::GetTranslationFromTransformationMatrix (m);
+    translationMatrix = Mathf::GenTranslationMatrix (translate);
+
+    scale = Mathf::GetScalingFromTransformationMatrix (m);
+    scalingMatrix = Mathf::GenScalingMatrix (scale);
+
+    rotate = Mathf::GetRotationFromTransformationMatrix (m);
+    rotationMatrix = Mathf::GenRotationMatrix (rotate);
+
+    InvokeCallbacks ("OnUpdateTransform", 0u);
+
+    return *this;
+}
+
 Matrix4f& Transform::GetTranslationMatrix ()
 {
     return translationMatrix;

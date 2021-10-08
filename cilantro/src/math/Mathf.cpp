@@ -650,6 +650,50 @@ Matrix4f Mathf::GenScalingMatrix (const Vector3f & s)
     return GenScalingMatrix (s[0], s[1], s[2]);
 }
 
+Vector3f Mathf::GetScalingFromTransformationMatrix (const Matrix4f& m)
+{
+    Vector3f v;
+
+    v[0] = Length (Vector3f (m[0][0], m[1][0], m[2][0]));
+    v[1] = Length (Vector3f (m[0][1], m[1][1], m[2][1]));
+    v[2] = Length (Vector3f (m[0][2], m[1][2], m[2][2]));
+
+    return v;
+}
+
+Vector3f Mathf::GetTranslationFromTransformationMatrix (const Matrix4f& m)
+{
+    Vector3f v;
+
+    v[0] = m[0][3];
+    v[1] = m[1][3];
+    v[2] = m[2][3];
+
+    return v;
+}
+
+Quaternion Mathf::GetRotationFromTransformationMatrix (const Matrix4f& m)
+{
+    Matrix4f pureRotation;
+    Vector3f v = GetScalingFromTransformationMatrix (m);
+
+    pureRotation.InitIdentity ();
+
+    pureRotation[0][0] = m[0][0] * v[0];
+    pureRotation[1][0] = m[1][0] * v[0];
+    pureRotation[2][0] = m[2][0] * v[0];
+
+    pureRotation[0][1] = m[0][1] * v[1];
+    pureRotation[1][1] = m[1][1] * v[1];
+    pureRotation[2][1] = m[2][1] * v[1];
+
+    pureRotation[0][2] = m[0][1] * v[2];
+    pureRotation[1][2] = m[1][1] * v[2];
+    pureRotation[2][2] = m[2][1] * v[2];
+
+    return GenQuaternion (pureRotation);
+}
+
 Matrix4f Mathf::GenCameraViewMatrix (const Vector3f& position, const Vector3f& lookAt, const Vector3f& up)
 {
     Vector3f u, v, n;

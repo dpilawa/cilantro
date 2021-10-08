@@ -5,8 +5,9 @@
 #include "scene/GameScene.h"
 #include "scene/PhongMaterial.h"
 #include "scene/MeshObject.h"
-#include "scene/DirectionalLight.h"
+#include "scene/PointLight.h"
 #include "resource/ResourceManager.h"
+#include "resource/AssimpModelLoader.h"
 #include "graphics/GLDeferredGeometryRenderStage.h"
 #include "graphics/GLForwardGeometryRenderStage.h"
 #include "graphics/GLQuadRenderStage.h"
@@ -30,11 +31,15 @@ int main (int argc, char* argv[])
     Timer timer;
     Game game;
 
+    AssimpModelLoader modelLoader;
+
     EngineContext::Set (game, resourceManager, timer, gameScene, renderer, inputController);
     EngineContext::Initialize ();
 
     renderer.AddRenderStage<GLForwardGeometryRenderStage> ("base");
-    renderer.AddRenderStage<GLQuadRenderStage> ("screen").SetShaderProgram ("flatquad_shader").SetFramebufferEnabled (false).SetPipelineFramebufferInputLink (PipelineLink::LINK_PREVIOUS);
+    renderer.AddRenderStage<GLQuadRenderStage> ("hdr_postprocess").SetShaderProgram ("post_hdr_shader").SetPipelineFramebufferInputLink (PipelineLink::LINK_PREVIOUS);
+    renderer.AddRenderStage<GLQuadRenderStage> ("fxaa_postprocess").SetShaderProgram ("post_fxaa_shader").SetRenderStageParameterFloat ("fMaxSpan", 4.0f).SetRenderStageParameterVector2f ("vInvResolution", Vector2f (1.0f / EngineContext::GetRenderer ().GetWidth (), 1.0f / EngineContext::GetRenderer ().GetHeight ())).SetPipelineFramebufferInputLink (PipelineLink::LINK_PREVIOUS);
+    renderer.AddRenderStage<GLQuadRenderStage> ("gamma_postprocess+screen").SetShaderProgram ("post_gamma_shader").SetRenderStageParameterFloat ("fGamma", 2.1f).SetPipelineFramebufferInputLink (PipelineLink::LINK_PREVIOUS).SetFramebufferEnabled (false);    
 
     inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
     inputController.BindInputEvent ("exit", [ & ]() { game.Stop (); });
@@ -42,53 +47,17 @@ int main (int argc, char* argv[])
     inputController.CreateInputEvent ("mousemode", InputKey::KeySpace, InputTrigger::Release, {});
     inputController.BindInputEvent ("mousemode", [ & ]() { inputController.SetMouseGameMode (!inputController.IsGameMode ()); });
 
-    PhongMaterial& m = gameScene.AddMaterial<PhongMaterial> ("material");
-    m.SetDiffuse (Vector3f (0.4f, 0.4f, 0.4f)).SetSpecular (Vector3f (1.0f, 1.0f, 1.0f)).SetSpecularShininess (64.0f);
+    modelLoader.Load ("assets/Drunk Idle.fbx");
 
-    ControlledCamera& cam = gameScene.AddGameObject<ControlledCamera> ("camera", 60.0f, 0.1f, 100.0f, 0.1f);
+    ControlledCamera& cam = gameScene.AddGameObject<ControlledCamera> ("camera", 60.0f, 0.1f, 100.0f, 5.0f, 0.1f);
     cam.Initialize ();
-    cam.GetModelTransform ().Translate (15.0f, 15.0f, 15.0f).Rotate (-35.0f, 45.0f, 0.0f);
+    cam.GetModelTransform ().Translate (0.0f, 100.0f, 250.0f);
     gameScene.SetActiveCamera ("camera");
 
-    GameObject& plane = gameScene.AddGameObject<GameObject> ("plane");
-
-    Mesh& fuselageMesh = resourceManager.Create<Mesh> ("fuselageMesh");
-    MeshObject& fuselage = gameScene.AddGameObject<MeshObject> ("fuselage", "fuselageMesh", "material");
-    Primitives::GenerateCube (fuselageMesh);
-    fuselage.GetModelTransform ().Scale (1.0f, 1.0f, 10.0f);
-    fuselage.SetParentObject ("plane");
-
-    Mesh& wingsMesh = resourceManager.Create<Mesh> ("wingsMesh");
-    MeshObject& wings = gameScene.AddGameObject<MeshObject> ("wings", "wingsMesh", "material");
-    Primitives::GenerateCube (wingsMesh);
-    wings.GetModelTransform ().Scale (12.0f, 0.2f, 1.0f).Translate (0.0f, 0.0f, 2.0f);
-    wings.SetParentObject ("plane");
-
-    Mesh& rudderMesh = resourceManager.Create<Mesh> ("rudderMesh");
-    MeshObject& rudder = gameScene.AddGameObject<MeshObject> ("rudder", "rudderMesh", "material");
-    Primitives::GenerateCube (rudderMesh);
-    rudder.GetModelTransform ().Scale (0.2f, 2.0f, 1.0f).Translate (0.0f, 1.5f, -5.0f).Rotate (-10.0f, 0.0f, 0.0f);
-    rudder.SetParentObject ("plane");
-
-    Mesh& tailMesh = resourceManager.Create<Mesh> ("tailMesh");
-    MeshObject& tail = gameScene.AddGameObject<MeshObject> ("tail", "tailMesh", "material");
-    Primitives::GenerateCube (tailMesh);
-    tail.GetModelTransform ().Scale (4.0f, 0.2f, 1.0f).Translate (0.0f, 0.2f, -5.0f);
-    tail.SetParentObject ("plane");
-
-    DirectionalLight& light = gameScene.AddGameObject<DirectionalLight> ("light");
-    light.GetModelTransform ().Rotate (90.0f, 10.0f, 10.0f);
+    PointLight& light = gameScene.AddGameObject<PointLight> ("light");
+    light.GetModelTransform ().Translate (100.0f, 100.0f, 100.0f);
     light.SetColor (Vector3f (1.0f, 1.0f, 1.0f));
     light.SetEnabled (true);
-
-    AnimationObject& anim1 = gameScene.AddGameObject<AnimationObject> ("anim1");
-    anim1.AddAnimationProperty<Quaternion> ("rotation", Mathf::EulerToQuaterion (Mathf::Deg2Rad (Vector3f (0.0f, 0.0f, 0.0f))), [&](Quaternion q) { plane.GetModelTransform ().Rotate (q); }, [](Quaternion q0, Quaternion q1, float t) { return Mathf::Slerp (q0, q1, Mathf::Smoothstep(0.0f, 1.0f, t)); });
-    anim1.AddKeyframe<Quaternion> ("rotation", 2.0f, Mathf::EulerToQuaterion (Mathf::Deg2Rad (Vector3f (-35.0f, 0.0f, 0.0f))));
-    anim1.AddKeyframe<Quaternion> ("rotation", 5.0f, Mathf::EulerToQuaterion (Mathf::Deg2Rad (Vector3f (-35.0f, 20.0f, -45.0f))));
-    anim1.AddKeyframe<Quaternion> ("rotation", 11.0f, Mathf::EulerToQuaterion (Mathf::Deg2Rad (Vector3f (-35.0f, -20.0f, 45.0f))));
-    anim1.AddKeyframe<Quaternion> ("rotation", 14.0f, Mathf::EulerToQuaterion (Mathf::Deg2Rad (Vector3f (-0.0f, 0.0f, 0.0f))));
-    anim1.SetLooping (true);
-    anim1.Play ();
 
     game.Run ();
 

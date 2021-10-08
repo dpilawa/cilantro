@@ -1,0 +1,2 @@
+#include "scene\AnimatedMeshObject.h"
+
