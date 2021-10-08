@@ -3,6 +3,7 @@
 #include "system/EngineContext.h"
 #include "resource/Mesh.h"
 #include "resource/Texture.h"
+#include "scene/Bone.h"
 #include "scene/Material.h"
 #include "scene/PhongMaterial.h"
 #include "scene/PBRMaterial.h"
@@ -23,7 +24,7 @@ AssimpModelLoader::~AssimpModelLoader ()
 
 void AssimpModelLoader::Load (std::string path)
 {
-    const aiScene* scene = importer.ReadFile (path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace);
+    const aiScene* scene = importer.ReadFile (path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_PopulateArmatureData);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) 
     {
@@ -74,10 +75,11 @@ void AssimpModelLoader::ImportMesh (const aiScene* scene, const aiMesh* mesh, co
 
     ImportMeshPositions (myMesh, scene, mesh);
     ImportMeshFaces (myMesh, scene, mesh);
+    ImportMeshBones (myMesh, scene, mesh);
     ImportMeshMaterial (myMesh, scene, mesh);
 
     MeshObject& meshObject = CreateMeshObject (myMesh, scene, mesh, parent);
-    meshObject.GetModelTransform ().SetModelMatrix (Matrix4f (Vector4f (t.a1, t.a2, t.a3, t.a4), Vector4f (t.b1, t.b2, t.b3, t.b4), Vector4f (t.c1, t.c2, t.c3, t.c4), Vector4f (t.d1, t.d2, t.d3, t.d4)));
+    meshObject.GetModelTransform ().SetModelMatrix (ConvertMatrix (t));
 }
 
 void AssimpModelLoader::ImportMeshPositions (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh)
@@ -125,6 +127,27 @@ void AssimpModelLoader::ImportMeshFaces (Mesh& myMesh, const aiScene* scene, con
             else {
                 myMesh.AddFace (mesh->mFaces[i].mIndices[0], mesh->mFaces[i].mIndices[1], mesh->mFaces[i].mIndices[2]);
             }
+        }
+    }
+}
+
+void AssimpModelLoader::ImportMeshBones (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh)
+{
+    if (mesh->HasBones ())
+    {
+        for (unsigned int i = 0; i < mesh->mNumBones; i++)
+        {
+            aiBone* bone = mesh->mBones[i];
+
+            // skip if bone already loaded
+            if (EngineContext::GetGameScene ().GetGameObjectManager ().HasName<Bone> (bone->mName.C_Str ()))
+            {
+                return;
+            }
+
+            Bone& b = EngineContext::GetGameScene ().GetGameObjectManager ().Create<Bone> (bone->mName.C_Str ());
+            b.SetOffsetMatrix (ConvertMatrix (bone->mOffsetMatrix));
+            b.SetParentObject (bone->mNode->mName.C_Str ());
         }
     }
 }
@@ -260,4 +283,9 @@ Texture& AssimpModelLoader::ImportMeshMaterialTexture (aiMaterial* material, aiT
         return EngineContext::GetResourceManager ().Load<Texture> (sysPath, sysPath);
 
     }
+}
+
+Matrix4f AssimpModelLoader::ConvertMatrix (const aiMatrix4x4& m)
+{
+    return Matrix4f (Vector4f (m.a1, m.a2, m.a3, m.a4), Vector4f (m.b1, m.b2, m.b3, m.b4), Vector4f (m.c1, m.c2, m.c3, m.c4), Vector4f (m.d1, m.d2, m.d3, m.d4));
 }
