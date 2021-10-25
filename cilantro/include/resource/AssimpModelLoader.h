@@ -6,9 +6,12 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <string>
+#include <set>
 
+class GameObject;
 class Mesh;
 class MeshObject;
+class Bone;
 class Texture;
 class Matrix4f;
 
@@ -23,16 +26,24 @@ public:
 private:
 
     Assimp::Importer importer;
+    std::set<std::string> boneNodes;
+
+    void ScanNode (const aiScene* scene, const aiNode* node);
+    void ScanMesh (const aiMesh* mesh);
 
     void ImportNode (const aiScene* scene, const aiNode* node, const aiNode* parent);
-    void ImportMesh (const aiScene* scene, const aiMesh* mesh, const aiMesh* parent, const aiMatrix4x4& t);
+    void ImportGameObject (const aiNode* node, const aiNode* parent, const aiMatrix4x4& transform);
+    void ImportBone (const aiNode* node, const aiNode* parent, const aiMatrix4x4& transform);
+    void ImportMesh (const aiScene* scene, const aiMesh* mesh, const aiNode* parent, const aiMatrix4x4& transform);
 
     void ImportMeshPositions (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh);
     void ImportMeshFaces (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh);
     void ImportMeshBones (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh);
     void ImportMeshMaterial (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh);
 
-    MeshObject& CreateMeshObject (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh, const aiMesh* parent);
+    GameObject& CreateGameObject (const aiNode* node, const aiNode* parent);
+    Bone& CreateBone (const aiNode* node, const aiNode* parent);
+    MeshObject& CreateMeshObject (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh, const aiNode* parent);
 
     bool HasTexture (aiMaterial* material, aiTextureType type);
     Texture& ImportMeshMaterialTexture (aiMaterial* material, aiTextureType type);

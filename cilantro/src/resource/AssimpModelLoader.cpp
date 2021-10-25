@@ -32,44 +32,86 @@ void AssimpModelLoader::Load (std::string path)
     }
     else
     {
+        ScanNode (scene, scene->mRootNode);
         ImportNode (scene, scene->mRootNode, nullptr);
         LogMessage(MSG_LOCATION) << "Loaded model" << path << "meshes" << scene->mNumMeshes << "materials" << scene->mNumMaterials << "textures" << scene->mNumTextures << "lights" << scene->mNumLights;
     }
 }
 
-void AssimpModelLoader::ImportNode (const aiScene* scene, const aiNode* node, const aiNode* parent)
+void AssimpModelLoader::ScanNode (const aiScene* scene, const aiNode* node)
 {
     for (unsigned int i = 0; i < node->mNumMeshes; i++)
     {
-        if (parent == nullptr)
-        {
-            ImportMesh (scene, scene->mMeshes[node->mMeshes[i]], nullptr, node->mTransformation);
-        }
-        else
-        {
-            if (parent->mNumMeshes > 1)
-            {
-                LogMessage(MSG_LOCATION, EXIT_FAILURE) << "Parent nodes with multiple meshes are not supported";
-            }
-            else if (parent->mNumMeshes == 1)
-            {
-                ImportMesh (scene, scene->mMeshes[node->mMeshes[i]], scene->mMeshes[parent->mMeshes[0]], node->mTransformation);
-            }
-            else
-            {
-                ImportMesh (scene, scene->mMeshes[node->mMeshes[i]], nullptr, node->mTransformation);
-            }
-        }
+        ScanMesh (scene->mMeshes[node->mMeshes[i]]);
     }
 
     for (unsigned int i = 0; i < node->mNumChildren; i++)
     {
-        ImportNode (scene, node->mChildren[i], node->mParent);
+        ScanNode (scene, node->mChildren[i]);
+    }
+}
+
+void AssimpModelLoader::ScanMesh (const aiMesh* mesh)
+{
+    for (unsigned int i = 0; i < mesh->mNumBones; i++)
+    {
+        boneNodes.insert (mesh->mBones[i]->mName.C_Str());
+    }
+}
+
+void AssimpModelLoader::ImportNode (const aiScene* scene, const aiNode* node, const aiNode* parent)
+{
+    
+    if (node->mNumMeshes == 0)
+    {
+        if (boneNodes.find (node->mName.C_Str()) != boneNodes.end ())
+        {
+            // create a simple Bone with transformation
+            ImportBone (node, parent, node->mTransformation);
+        }
+        else
+        {
+            // create a simple hierarchy GameObject with transformation
+            ImportGameObject (node, parent, node->mTransformation);
+        }
+    }
+    else if (node->mNumMeshes == 1)
+    {
+        // create a MeshObject with node's transformation
+        ImportMesh (scene, scene->mMeshes[node->mMeshes[0]], parent, node->mTransformation);
+    }
+    else 
+    {
+        // create a parent GameObject with transformation and import all child MeshObjects with identity transform
+        ImportGameObject (node, parent, node->mTransformation);
+
+        for (unsigned int i = 0; i < node->mNumMeshes; i++)
+        {
+            ImportMesh (scene, scene->mMeshes[node->mMeshes[i]], node, aiMatrix4x4 ());            
+        }
+    }
+
+    // recursively import children
+    for (unsigned int i = 0; i < node->mNumChildren; i++)
+    {
+        ImportNode (scene, node->mChildren[i], node);
     }
 
 }
 
-void AssimpModelLoader::ImportMesh (const aiScene* scene, const aiMesh* mesh, const aiMesh* parent, const aiMatrix4x4& t)
+void AssimpModelLoader::ImportGameObject (const aiNode* node, const aiNode* parent, const aiMatrix4x4& transform)
+{
+    GameObject& gameObject = CreateGameObject (node, parent);
+    gameObject.GetModelTransform ().SetModelMatrix (ConvertMatrix (transform));
+}
+
+void AssimpModelLoader::ImportBone (const aiNode* node, const aiNode* parent, const aiMatrix4x4& transform)
+{
+    Bone& bone = CreateBone (node, parent);
+    bone.GetModelTransform ().SetModelMatrix (ConvertMatrix (transform));
+}
+
+void AssimpModelLoader::ImportMesh (const aiScene* scene, const aiMesh* mesh, const aiNode* parent, const aiMatrix4x4& transform)
 {
     Mesh& myMesh = EngineContext::GetResourceManager ().Create<Mesh> (mesh->mName.C_Str ());
 
@@ -79,7 +121,7 @@ void AssimpModelLoader::ImportMesh (const aiScene* scene, const aiMesh* mesh, co
     ImportMeshMaterial (myMesh, scene, mesh);
 
     MeshObject& meshObject = CreateMeshObject (myMesh, scene, mesh, parent);
-    meshObject.GetModelTransform ().SetModelMatrix (ConvertMatrix (t));
+    meshObject.GetModelTransform ().SetModelMatrix (ConvertMatrix (transform));
 }
 
 void AssimpModelLoader::ImportMeshPositions (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh)
@@ -139,15 +181,8 @@ void AssimpModelLoader::ImportMeshBones (Mesh& myMesh, const aiScene* scene, con
         {
             aiBone* bone = mesh->mBones[i];
 
-            // skip if bone already loaded
-            if (EngineContext::GetGameScene ().GetGameObjectManager ().HasName<Bone> (bone->mName.C_Str ()))
-            {
-                return;
-            }
-
-            Bone& b = EngineContext::GetGameScene ().GetGameObjectManager ().Create<Bone> (bone->mName.C_Str ());
+            Bone& b = EngineContext::GetGameScene ().GetGameObjectManager ().GetByName<Bone> (bone->mName.C_Str ());
             b.SetOffsetMatrix (ConvertMatrix (bone->mOffsetMatrix));
-            b.SetParentObject (bone->mNode->mName.C_Str ());
         }
     }
 }
@@ -236,7 +271,31 @@ void AssimpModelLoader::ImportMeshMaterial (Mesh& myMesh, const aiScene* scene, 
     }
 }
 
-MeshObject& AssimpModelLoader::CreateMeshObject (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh, const aiMesh* parent)
+GameObject& AssimpModelLoader::CreateGameObject (const aiNode* node, const aiNode* parent)
+{
+    GameObject& gameObject = EngineContext::GetGameScene ().AddGameObject<GameObject> (node->mName.C_Str ());
+        
+    if (parent != nullptr)
+    {
+        gameObject.SetParentObject (parent->mName.C_Str ());
+    }
+    
+    return gameObject;
+}
+
+Bone& AssimpModelLoader::CreateBone (const aiNode* node, const aiNode* parent)
+{
+    Bone& bone = EngineContext::GetGameScene ().AddGameObject<Bone> (node->mName.C_Str ());
+        
+    if (parent != nullptr)
+    {
+        bone.SetParentObject (parent->mName.C_Str ());
+    }
+    
+    return bone;
+}
+
+MeshObject& AssimpModelLoader::CreateMeshObject (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh, const aiNode* parent)
 {
     aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
     MeshObject& m = EngineContext::GetGameScene ().AddGameObject<MeshObject> (myMesh.GetName (), myMesh.GetName (), material->GetName ().C_Str ());
