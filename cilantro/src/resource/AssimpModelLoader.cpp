@@ -346,5 +346,5 @@ Texture& AssimpModelLoader::ImportMeshMaterialTexture (aiMaterial* material, aiT
 
 Matrix4f AssimpModelLoader::ConvertMatrix (const aiMatrix4x4& m)
 {
-    return Matrix4f (Vector4f (m.a1, m.a2, m.a3, m.a4), Vector4f (m.b1, m.b2, m.b3, m.b4), Vector4f (m.c1, m.c2, m.c3, m.c4), Vector4f (m.d1, m.d2, m.d3, m.d4));
+    return Matrix4f (Vector4f (m.a1, m.b1, m.c1, m.d1), Vector4f (m.a2, m.b2, m.c2, m.d2), Vector4f (m.a3, m.b3, m.c3, m.d3), Vector4f (m.a4, m.b4, m.c4, m.d4));
 }
