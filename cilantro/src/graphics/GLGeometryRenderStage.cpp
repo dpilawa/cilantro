@@ -93,6 +93,7 @@ void GLGeometryRenderStage::Draw (MeshObject& meshObject)
     GLuint eyePositionId;
     GLuint modelMatrixId;
     GLuint normalMatrixId;
+    GLuint boneTransformationArrayId;
     GLuint shaderProgramId;
     GLuint uniformId;
 
@@ -161,6 +162,13 @@ void GLGeometryRenderStage::Draw (MeshObject& meshObject)
     if (eyePositionId != GL_INVALID_INDEX)
     {
         glUniform3fv (eyePositionId, 1, &EngineContext::GetGameScene ().GetActiveCamera ()->GetPosition ()[0]);
+    }
+
+    // set bone transformation matrix array uniform
+    boneTransformationArrayId = glGetUniformLocation (shaderProgramId, "mBoneTransformations");
+    if (boneTransformationArrayId != GL_INVALID_INDEX)
+    {
+        glUniformMatrix4fv (boneTransformationArrayId, CILANTRO_MAX_BONES, GL_TRUE, meshObject.GetMesh ().GetBoneTransformationsMatrixArray ());
     }
 
     // get shader program for rendered meshobject (lighting pass)
@@ -239,6 +247,20 @@ void GLGeometryRenderStage::Update (MeshObject& meshObject)
         // location = 4 (vertex bitangent)
         glVertexAttribPointer (VBOType::VBO_BITANGENTS, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (GLvoid*)0);
 
+        // generate bone index buffer and copy to GPU
+        glGenBuffers (1, &objectBuffers[objectHandle].VBO[VBOType::VBO_BONES]);
+        glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_BONES]);
+        glBufferData (GL_ARRAY_BUFFER, meshObject.GetMesh ().GetVertexCount () * sizeof (int) * CILANTRO_MAX_BONE_INFLUENCES, meshObject.GetMesh ().GetBoneIndicesData (), GL_STATIC_DRAW);
+        // location = 5 (bone indices)
+        glVertexAttribIPointer (VBOType::VBO_BONES, CILANTRO_MAX_BONE_INFLUENCES, GL_INT, CILANTRO_MAX_BONE_INFLUENCES * sizeof (int), (GLvoid*)0);
+
+        // generate bone weight buffer and copy to GPU
+        glGenBuffers (1, &objectBuffers[objectHandle].VBO[VBOType::VBO_BONEWEIGHTS]);
+        glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_BONEWEIGHTS]);
+        glBufferData (GL_ARRAY_BUFFER, meshObject.GetMesh ().GetVertexCount () * sizeof (float) * CILANTRO_MAX_BONE_INFLUENCES, meshObject.GetMesh ().GetBoneWeightsData (), GL_STATIC_DRAW);
+        // location = 6 (bone weights)
+        glVertexAttribPointer (VBOType::VBO_BONEWEIGHTS, CILANTRO_MAX_BONE_INFLUENCES, GL_FLOAT, GL_FALSE, CILANTRO_MAX_BONE_INFLUENCES * sizeof (int), (GLvoid*)0);
+
         // generate index buffer and copy face indices to GPU
         glGenBuffers (1, &objectBuffers[objectHandle].EBO);
         glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, objectBuffers[objectHandle].EBO);
@@ -250,6 +272,8 @@ void GLGeometryRenderStage::Update (MeshObject& meshObject)
         glEnableVertexAttribArray (VBOType::VBO_UVS);
         glEnableVertexAttribArray (VBOType::VBO_TANGENTS);
         glEnableVertexAttribArray (VBOType::VBO_BITANGENTS);
+        glEnableVertexAttribArray (VBOType::VBO_BONES);
+        glEnableVertexAttribArray (VBOType::VBO_BONEWEIGHTS);
 
         // unbind VAO
         glBindVertexArray (0);
@@ -280,6 +304,14 @@ void GLGeometryRenderStage::Update (MeshObject& meshObject)
         // load bitangents buffer
         glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_BITANGENTS]);
         glBufferData (GL_ARRAY_BUFFER, meshObject.GetMesh ().GetVertexCount () * sizeof (float) * 3, meshObject.GetMesh ().GetBitangentData (), GL_STATIC_DRAW);
+
+        // load bone indices buffer
+        glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_BONES]);
+        glBufferData (GL_ARRAY_BUFFER, meshObject.GetMesh ().GetVertexCount () * sizeof (int) * CILANTRO_MAX_BONE_INFLUENCES, meshObject.GetMesh ().GetBoneIndicesData (), GL_STATIC_DRAW);
+
+        // load bone weights buffer
+        glBindBuffer (GL_ARRAY_BUFFER, objectBuffers[objectHandle].VBO[VBOType::VBO_BONEWEIGHTS]);
+        glBufferData (GL_ARRAY_BUFFER, meshObject.GetMesh ().GetVertexCount () * sizeof (float) * CILANTRO_MAX_BONE_INFLUENCES, meshObject.GetMesh ().GetBoneWeightsData (), GL_STATIC_DRAW);
 
         // load index buffer
         glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, objectBuffers[objectHandle].EBO);

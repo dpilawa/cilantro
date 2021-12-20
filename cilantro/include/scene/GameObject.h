@@ -36,8 +36,6 @@ public:
     __EAPI virtual void OnEnd ();
 
     // get transformation object's reference
-    // this function is recursive and concatenates world-space
-    // transformation matrices of parent objects
     __EAPI Transform& GetModelTransform ();
 
     // get transformation matrices

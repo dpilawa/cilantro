@@ -14,14 +14,14 @@
 #define MAX_SPOT_LIGHTS 64
 #define MAX_TEXTURE_UNITS (GL_TEXTURE15 - GL_TEXTURE0)
 
-enum VBOType { VBO_VERTICES = 0, VBO_NORMALS, VBO_UVS, VBO_TANGENTS, VBO_BITANGENTS };
+enum VBOType { VBO_VERTICES = 0, VBO_NORMALS, VBO_UVS, VBO_TANGENTS, VBO_BITANGENTS, VBO_BONES, VBO_BONEWEIGHTS };
 enum UBOType { UBO_MATRICES = 0, UBO_POINTLIGHTS, UBO_DIRECTIONALLIGHTS, UBO_SPOTLIGHTS };
 
 struct ObjectBuffers
 {
 public:
-    // Vertex Buffer Objects (vertices, normals, uvs, tangents, bitangents)
-    GLuint VBO[5];
+    // Vertex Buffer Objects (vertices, normals, uvs, tangents, bitangents, bone indices, bone weights)
+    GLuint VBO[7];
     // Element Buffer Object (face indices)
     GLuint EBO;
     // Vertex Array Object

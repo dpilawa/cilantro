@@ -7,17 +7,24 @@ layout (location = 1) in vec3 vNormal;
 layout (location = 2) in vec2 vUV;
 layout (location = 3) in vec3 vTangent;
 layout (location = 4) in vec3 vBitangent;
+layout (location = 5) in ivec4 vBoneIndices;
+layout (location = 6) in vec4 vBoneWeights;
 #else
 in vec3 vPosition;
 in vec3 vNormal;
 in vec2 vUV;
 in vec3 vTangent;
 in vec3 vBitangent;
+in ivec4 vBoneIndices;
+in vec4 vBoneWeights;
 #endif
 
 /* transformation matrices */
 uniform mat4 mModel;
 uniform mat3 mNormal;
+
+/* array of bone transformation matrices */
+uniform mat4 mBoneTransformations[%%CILANTRO_MAX_BONES%%];
 
 layout(std140) uniform UniformMatricesBlock
 {
@@ -32,11 +39,25 @@ out mat3 TBN;
 
 void main ()
 {
-    gl_Position = mProjection * mView * mModel * vec4 (vPosition.xyz, 1.0);
+    vec4 transformedPosition = vec4 (0.0);
+    vec4 transformedNormal = vec4 (0.0);
+    vec4 transformedTangent = vec4 (0.0);
+    vec4 transformedBitangent = vec4 (0.0);
+
+    for (int i = 0; i < %%CILANTRO_MAX_BONE_INFLUENCES%%; i++)
+    {
+        mat4 boneTransform = mBoneTransformations[vBoneIndices[i]];
+        transformedPosition += boneTransform * vec4 (vPosition, 1.0) * vBoneWeights[i];
+        transformedNormal += boneTransform * vec4 (vNormal, 0.0) * vBoneWeights[i];
+        transformedTangent += boneTransform * vec4 (vTangent, 0.0) * vBoneWeights[i];
+        transformedBitangent += boneTransform * vec4 (vBitangent, 0.0) * vBoneWeights[i];
+    }
+
+    gl_Position = mProjection * mView * mModel * transformedPosition;
     
     /* calculate TBN matrix */
-    vec3 T = normalize (mNormal * vTangent);
-    vec3 N = normalize (mNormal * vNormal);
+    vec3 T = normalize (mNormal * vec3 (transformedTangent));
+    vec3 N = normalize (mNormal * vec3 (transformedNormal));
     T = normalize (T - dot (T, N) * N);
     vec3 B = cross (N, T);
 
@@ -48,7 +69,7 @@ void main ()
     TBN = mat3 (T, B, N);
 
     /* world space vertex position */
-    fPosition = vec3 (mModel * vec4 (vPosition.xyz, 1.0));
+    fPosition = vec3 (mModel * transformedPosition);
 
     fUV = vUV;
 }

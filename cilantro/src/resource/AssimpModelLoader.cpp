@@ -24,7 +24,7 @@ AssimpModelLoader::~AssimpModelLoader ()
 
 void AssimpModelLoader::Load (std::string path)
 {
-    const aiScene* scene = importer.ReadFile (path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_PopulateArmatureData);
+    const aiScene* scene = importer.ReadFile (path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_LimitBoneWeights);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) 
     {
@@ -177,12 +177,26 @@ void AssimpModelLoader::ImportMeshBones (Mesh& myMesh, const aiScene* scene, con
 {
     if (mesh->HasBones ())
     {
+        // check max number of bones (index 0 reserved for dummy identity "bone")
+        if (mesh->mNumBones > CILANTRO_MAX_BONES - 1)
+        {
+            LogMessage(MSG_LOCATION, EXIT_FAILURE) << "Too many bones in mesh" << mesh->mName.C_Str ();
+        }
+
         for (unsigned int i = 0; i < mesh->mNumBones; i++)
         {
             aiBone* bone = mesh->mBones[i];
 
             Bone& b = EngineContext::GetGameScene ().GetGameObjectManager ().GetByName<Bone> (bone->mName.C_Str ());
             b.SetOffsetMatrix (ConvertMatrix (bone->mOffsetMatrix));
+
+            for (unsigned j = 0; j < bone->mNumWeights; j++)
+            {
+                aiVertexWeight w = bone->mWeights[j];
+
+                myMesh.AddVertexBoneInfluence (w.mVertexId, w.mWeight, b.GetHandle ());
+            }
+
         }
     }
 }

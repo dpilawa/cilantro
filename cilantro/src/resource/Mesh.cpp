@@ -1,12 +1,15 @@
 #include "cilantroengine.h"
 #include "resource/Mesh.h"
 #include "scene/Material.h"
+#include "scene/Bone.h"
 #include "math/Vector3f.h"
 #include "math/Mathf.h"
 #include "system/CallbackProvider.h"
 #include "system/LogMessage.h"
+#include "system/EngineContext.h"
 
 #include <vector>
+#include <algorithm>
 #include <unordered_map>
 
 Mesh::Mesh () : Resource ()
@@ -23,6 +26,16 @@ Mesh& Mesh::Clear ()
     vertices.clear ();
     normals.clear ();
     indices.clear ();
+    uvs.clear ();
+    tangents.clear ();
+    bitangents.clear ();
+
+    // clear and allocate index 0 for identity matrix
+    meshBones.clear ();
+
+    boneInfluenceCounts.clear ();
+    boneInfluenceIndices.clear ();
+    boneInfluenceWeights.clear ();
 
     InvokeCallbacks ("OnUpdateMesh", this->GetHandle ());
 
@@ -220,6 +233,38 @@ float* Mesh::GetBitangentData ()
     return bitangents.data ();
 }
 
+unsigned int* Mesh::GetBoneIndicesData ()
+{
+    return boneInfluenceIndices.data ();
+}
+
+float* Mesh::GetBoneWeightsData ()
+{
+    return boneInfluenceWeights.data ();
+}
+
+float* Mesh::GetBoneTransformationsMatrixArray ()
+{
+    unsigned int index = 16;
+    Matrix4f boneTransformation;
+    Matrix4f identity;
+    identity.InitIdentity ();
+
+    // copy identity matrix in index 0
+    std::memcpy (boneTransformationMatrixArray, identity[0], 16 * sizeof (float));
+
+    // copy remaining bones
+    for (handle_t boneHandle : meshBones)
+    {
+        Bone& b = EngineContext::GetGameScene ().GetGameObjectManager ().GetByHandle<Bone> (boneHandle);
+
+        std::memcpy (boneTransformationMatrixArray + index, b.GetModelTransformMatrix ()[0], 16 * sizeof (float));
+        index += 16;
+    }
+
+    return boneTransformationMatrixArray;
+}
+
 unsigned int* Mesh::GetFacesData ()
 {
     return indices.data ();
@@ -233,6 +278,13 @@ Mesh& Mesh::AddVertex (const Vector3f& vertex, const Vector2f& uv)
 
     uvs.push_back (uv[0]);
     uvs.push_back (uv[1]);
+
+    boneInfluenceCounts.push_back (0);
+
+    // placeholders only
+    boneInfluenceWeights.resize (GetVertexCount () * CILANTRO_MAX_BONE_INFLUENCES, 0.0f);
+    boneInfluenceWeights[boneInfluenceWeights.size () - CILANTRO_MAX_BONE_INFLUENCES] = 1.0f;
+    boneInfluenceIndices.resize (GetVertexCount () * CILANTRO_MAX_BONE_INFLUENCES, 0);
 
     return *this;
 }
@@ -267,6 +319,39 @@ Mesh& Mesh::AddTangentBitangent (const Vector3f& tangent, const Vector3f& bitang
 
     return *this;
 }
+
+Mesh& Mesh::AddVertexBoneInfluence (unsigned int v, float weight, handle_t boneHandle)
+{
+    unsigned int offset = boneInfluenceCounts[v];
+    unsigned int index;
+
+    auto it = std::find (meshBones.begin (), meshBones.end (), boneHandle);
+
+    // find bone index in array
+    // zero index reserved for identity transformation
+    if (it == meshBones.end ())
+    {
+        meshBones.push_back (boneHandle);
+        index = meshBones.size ();
+    }
+    else
+    {
+        index = it - meshBones.begin () + 1;
+    }
+
+    boneInfluenceIndices[v * CILANTRO_MAX_BONE_INFLUENCES + offset] = index;
+    boneInfluenceWeights[v * CILANTRO_MAX_BONE_INFLUENCES + offset] = weight;
+
+    boneInfluenceCounts[v] = boneInfluenceCounts[v] + 1;
+
+    if (boneInfluenceCounts[v] > CILANTRO_MAX_BONE_INFLUENCES)
+    {
+        LogMessage(MSG_LOCATION, EXIT_FAILURE) << "Too many bone influences in mesh" << this->GetName () << "vertex" << v;
+    }
+
+    return *this;
+}
+
 
 unsigned int Mesh::GetFaceVertexIndex (unsigned int face, unsigned int faceVertex) const
 {

@@ -1,6 +1,9 @@
 #ifndef _MESH_H_
 #define _MESH_H_
 
+#define CILANTRO_MAX_BONES 128
+#define CILANTRO_MAX_BONE_INFLUENCES 4
+
 #include "cilantroengine.h"
 #include "resource/Resource.h"
 #include "system/CallbackProvider.h"
@@ -46,6 +49,10 @@ public:
     __EAPI float* GetUVData ();
     __EAPI float* GetTangentData ();
     __EAPI float* GetBitangentData ();
+    __EAPI unsigned int* GetBoneIndicesData ();
+    __EAPI float* GetBoneWeightsData ();
+
+    __EAPI float* GetBoneTransformationsMatrixArray ();
 
     // get faces raw data
     __EAPI unsigned int* GetFacesData ();
@@ -55,6 +62,8 @@ public:
     __EAPI Mesh& AddFace (unsigned int v1, unsigned int v2, unsigned int v3);
     __EAPI Mesh& AddNormal (const Vector3f& normal);
     __EAPI Mesh& AddTangentBitangent (const Vector3f& tangent, const Vector3f& bitangent);
+    __EAPI Mesh& AddVertexBoneInfluence (unsigned int v, float weight, handle_t boneHandle);
+
 
 private:
     unsigned int GetFaceVertexIndex (unsigned int face, unsigned int faceVertex) const;
@@ -72,12 +81,21 @@ private:
     std::string materialName;
     bool smoothNormals;
 
+    // index in this vector is bone index, element is bone handle in resource manager
+    std::vector<handle_t> meshBones;
+    
+    float boneTransformationMatrixArray[CILANTRO_MAX_BONES * 16];
+
     std::vector<float> vertices;
     std::vector<unsigned int> indices;
     std::vector<float> normals;
     std::vector<float> uvs;
     std::vector<float> tangents;
     std::vector<float> bitangents;
+
+    std::vector<unsigned int> boneInfluenceCounts;
+    std::vector<unsigned int> boneInfluenceIndices;
+    std::vector<float> boneInfluenceWeights;
 
 };
 
