@@ -32,20 +32,20 @@ void ControlledCamera::Initialize ()
 
 void ControlledCamera::MoveRight (float offset)
 {
-    GetModelTransform ().TranslateBy (GetRight () * offset * speed);
+    GetLocalTransform ().TranslateBy (GetRight () * offset * speed);
 }
 
 void ControlledCamera::MoveForward (float offset)
 {
-    GetModelTransform ().TranslateBy (-GetForward () * offset * speed);
+    GetLocalTransform ().TranslateBy (-GetForward () * offset * speed);
 }
 
 void ControlledCamera::YawBy (float angle)
 {
-    GetModelTransform ().RotateBy (0.0f, angle * sensitivity, 0.0f);
+    GetLocalTransform ().RotateBy (0.0f, angle * sensitivity, 0.0f);
 }
 
 void ControlledCamera::PitchBy (float angle)
 {
-    GetModelTransform ().RotateBy (angle * sensitivity, 0.0f, 0.0f);
+    GetLocalTransform ().RotateBy (angle * sensitivity, 0.0f, 0.0f);
 }

@@ -51,13 +51,17 @@ int main (int argc, char* argv[])
 
     ControlledCamera& cam = gameScene.AddGameObject<ControlledCamera> ("camera", 60.0f, 0.1f, 100.0f, 5.0f, 0.1f);
     cam.Initialize ();
-    cam.GetModelTransform ().Translate (0.0f, 100.0f, 250.0f);
+    cam.GetLocalTransform ().Translate (0.0f, 100.0f, 250.0f);
     gameScene.SetActiveCamera ("camera");
 
     PointLight& light = gameScene.AddGameObject<PointLight> ("light");
-    light.GetModelTransform ().Translate (100.0f, 100.0f, 100.0f);
+    light.GetLocalTransform ().Translate (100.0f, 100.0f, 100.0f);
     light.SetColor (Vector3f (1.0f, 1.0f, 1.0f));
     light.SetEnabled (true);
+
+    AnimationObject& anim = gameScene.GetGameObjectManager ().GetByName<AnimationObject> ("mixamo.com");
+    anim.SetLooping (true);
+    anim.Play();
 
     game.Run ();
 

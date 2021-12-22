@@ -18,7 +18,7 @@ GameObject::GameObject ()
 
     // set callbacks on transform modification
     // this is just a passthrough of callbacks to subscribers (Scene)
-    modelTransform.RegisterCallback ("OnUpdateTransform", [&](handle_t objectHandle) { InvokeCallbacks ("OnUpdateTransform", this->GetHandle (), 0); });
+    localTransform.RegisterCallback ("OnUpdateTransform", [&](handle_t objectHandle) { InvokeCallbacks ("OnUpdateTransform", this->GetHandle (), 0); });
 }
 
 GameObject::~GameObject ()
@@ -66,9 +66,9 @@ void GameObject::OnEnd ()
 {
 }
 
-Transform& GameObject::GetModelTransform ()
+Transform& GameObject::GetLocalTransform ()
 {
-    return modelTransform;
+    return localTransform;
 }
 
 Matrix4f GameObject::GetModelTransformMatrix () const
@@ -80,11 +80,11 @@ void GameObject::CalculateModelTransformMatrix ()
 {
     if (parentObject != nullptr)
     {
-        modelTransformMatrix = parentObject->GetModelTransformMatrix () * modelTransform.GetModelMatrix ();
+        modelTransformMatrix = parentObject->GetModelTransformMatrix () * localTransform.GetTransformMatrix ();
     }
     else
     {
-        modelTransformMatrix = modelTransform.GetModelMatrix ();
+        modelTransformMatrix = localTransform.GetTransformMatrix ();
     }
 
     for (auto&& childObject : childObjects)

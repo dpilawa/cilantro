@@ -9,11 +9,14 @@
 #include <set>
 
 class GameObject;
+class AnimationObject;
 class Mesh;
 class MeshObject;
 class Bone;
 class Texture;
+class Vector3f;
 class Matrix4f;
+class Quaternion;
 
 class AssimpModelLoader : public ModelLoader
 {
@@ -41,14 +44,20 @@ private:
     void ImportMeshBones (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh);
     void ImportMeshMaterial (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh);
 
+    void ImportAnimation (const aiAnimation* animation);
+    void ImportNodeAnimation (AnimationObject& animationObject, const aiAnimation* animation, const aiNodeAnim* nodeAnimation);
+
     GameObject& CreateGameObject (const aiNode* node, const aiNode* parent);
     Bone& CreateBone (const aiNode* node, const aiNode* parent);
     MeshObject& CreateMeshObject (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh, const aiNode* parent);
+    AnimationObject& CreateAnimationObject (const aiAnimation* animation);
 
     bool HasTexture (aiMaterial* material, aiTextureType type);
     Texture& ImportMeshMaterialTexture (aiMaterial* material, aiTextureType type);
 
     Matrix4f ConvertMatrix (const aiMatrix4x4& m);
+    Vector3f ConvertVector3f (const aiVector3D& v);
+    Quaternion ConvertQuaterion (const aiQuaternion& q);
 };
 
 #endif

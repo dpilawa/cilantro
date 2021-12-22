@@ -50,26 +50,26 @@ int main (int argc, char* argv [])
     gameScene.AddMaterial<PhongMaterial> ("mMoon").SetDiffuse ("tMoon").SetSpecularShininess (1.0f).SetSpecular (Vector3f(0.2f, 0.2f, 0.2f));
 
     PerspectiveCamera& cam = gameScene.AddGameObject<PerspectiveCamera> ("camera", 25.0f, 1.0f, 500.0f);
-    cam.GetModelTransform ().Translate (0.0f, 0.0f, 160.0f);
+    cam.GetLocalTransform ().Translate (0.0f, 0.0f, 160.0f);
     gameScene.SetActiveCamera ("camera");
 
     Mesh& sunMesh = resourceManager.Create<Mesh> ("sunMesh");
     MeshObject& sun = gameScene.AddGameObject<MeshObject> ("sun", "sunMesh", "mSun");
     Primitives::GenerateSphere (sunMesh, 8);
-    sun.GetModelTransform ().Scale (10.0f);
+    sun.GetLocalTransform ().Scale (10.0f);
 
     Orbiter& earthOrbit = gameScene.AddGameObject<Orbiter> ("earthOrbit", gameScene.GetGameObjectManager ().GetByName<GameObject> ("sun"), 1.0f, 23.5f, 365.256f, 50.0f, 0.0f);
     Mesh& earthMesh = resourceManager.Create<Mesh> ("earthMesh").SetSmoothNormals (true);
     MeshObject& earth = gameScene.AddGameObject<MeshObject> ("earth", "earthMesh", "mEarth");
     Primitives::GenerateSphere (earthMesh, 8);
     earth.SetParentObject ("earthOrbit");
-    earth.GetModelTransform ().Scale (3.0f);
+    earth.GetLocalTransform ().Scale (3.0f);
 
     Orbiter& moonOrbit = gameScene.AddGameObject<Orbiter> ("moonOrbit", gameScene.GetGameObjectManager ().GetByName<GameObject> ("earth"), 27.321f, -6.68f, 27.321f, 20.0f, -5.14f);
     Mesh& moonMesh = resourceManager.Create<Mesh> ("moonMesh").SetSmoothNormals (true);
     MeshObject& moon = gameScene.AddGameObject<MeshObject> ("moon", "moonMesh", "mMoon");
     Primitives::GenerateSphere (moonMesh, 8);
-    moon.GetModelTransform ().Scale (0.273f * 5.0f);
+    moon.GetLocalTransform ().Scale (0.273f * 5.0f);
     moon.SetParentObject ("moonOrbit");
 
     PointLight& sunLight = gameScene.AddGameObject<PointLight> ("sunLight");
@@ -86,8 +86,8 @@ int main (int argc, char* argv [])
     animation.AddAnimationProperty<float> ("u", 0.0f, 
         [&](float u) 
         {
-            cam.GetModelTransform ().Translate (path.GetPositionAtDistance (u * path.GetPathLength ()));
-            cam.GetModelTransform ().Rotate (path.GetRotationAtDistance (u * path.GetPathLength ()));
+            cam.GetLocalTransform ().Translate (path.GetPositionAtDistance (u * path.GetPathLength ()));
+            cam.GetLocalTransform ().Rotate (path.GetRotationAtDistance (u * path.GetPathLength ()));
         },
         [](float t0, float t1, float u)
         {

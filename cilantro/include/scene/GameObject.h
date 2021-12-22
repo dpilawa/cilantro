@@ -36,7 +36,7 @@ public:
     __EAPI virtual void OnEnd ();
 
     // get transformation object's reference
-    __EAPI Transform& GetModelTransform ();
+    __EAPI Transform& GetLocalTransform ();
 
     // get transformation matrices
     __EAPI Matrix4f GetModelTransformMatrix () const;
@@ -60,10 +60,10 @@ private:
     // vector of child objects
     std::vector<GameObject*> childObjects;
 
-    // object's transformation from local space to world space
-    Transform modelTransform;
+    // object's transformation in relation to parent
+    Transform localTransform;
 
-    // transform matrix starting from object's scene root
+    // transform matrix in model space
     Matrix4f modelTransformMatrix;
 };
 

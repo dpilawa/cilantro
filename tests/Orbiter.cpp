@@ -41,7 +41,7 @@ void Orbiter::OnFrame ()
 
     Vector3f parentPosition = parent.GetPosition ();
 
-    GetModelTransform ().Rotate (q).Translate (positionInOrbit + parentPosition);
+    GetLocalTransform ().Rotate (q).Translate (positionInOrbit + parentPosition);
 }
 
 

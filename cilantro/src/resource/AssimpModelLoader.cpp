@@ -1,14 +1,18 @@
 #include "resource/AssimpModelLoader.h"
 #include "system/LogMessage.h"
 #include "system/EngineContext.h"
+#include "math/Mathf.h"
 #include "resource/Mesh.h"
 #include "resource/Texture.h"
+#include "scene/AnimationObject.h"
+#include "scene/GameObject.h"
 #include "scene/Bone.h"
 #include "scene/Material.h"
 #include "scene/PhongMaterial.h"
 #include "scene/PBRMaterial.h"
 #include "math/Vector2f.h"
 #include "math/Vector3f.h"
+#include "math/Quaternion.h"
 #include <assimp/postprocess.h>
 #include <string>
 
@@ -34,7 +38,16 @@ void AssimpModelLoader::Load (std::string path)
     {
         ScanNode (scene, scene->mRootNode);
         ImportNode (scene, scene->mRootNode, nullptr);
-        LogMessage(MSG_LOCATION) << "Loaded model" << path << "meshes" << scene->mNumMeshes << "materials" << scene->mNumMaterials << "textures" << scene->mNumTextures << "lights" << scene->mNumLights;
+        
+        if (scene->HasAnimations ()) 
+        {
+            for (unsigned int i = 0; i < scene->mNumAnimations; i++)
+            {
+                ImportAnimation (scene->mAnimations[i]);
+            }
+        }
+
+        LogMessage(MSG_LOCATION) << "Loaded model" << path << "meshes" << scene->mNumMeshes << "animations" << scene->mNumAnimations << "materials" << scene->mNumMaterials << "textures" << scene->mNumTextures << "lights" << scene->mNumLights;
     }
 }
 
@@ -102,13 +115,14 @@ void AssimpModelLoader::ImportNode (const aiScene* scene, const aiNode* node, co
 void AssimpModelLoader::ImportGameObject (const aiNode* node, const aiNode* parent, const aiMatrix4x4& transform)
 {
     GameObject& gameObject = CreateGameObject (node, parent);
-    gameObject.GetModelTransform ().SetModelMatrix (ConvertMatrix (transform));
+    gameObject.GetLocalTransform ().SetTransformMatrix (ConvertMatrix (transform));
 }
 
 void AssimpModelLoader::ImportBone (const aiNode* node, const aiNode* parent, const aiMatrix4x4& transform)
 {
     Bone& bone = CreateBone (node, parent);
-    bone.GetModelTransform ().SetModelMatrix (ConvertMatrix (transform));
+    bone.GetLocalTransform ().SetTransformMatrix (ConvertMatrix (transform));
+    bone.SetOffsetMatrix (Mathf::Invert (bone.GetModelTransformMatrix ()));
 }
 
 void AssimpModelLoader::ImportMesh (const aiScene* scene, const aiMesh* mesh, const aiNode* parent, const aiMatrix4x4& transform)
@@ -121,7 +135,7 @@ void AssimpModelLoader::ImportMesh (const aiScene* scene, const aiMesh* mesh, co
     ImportMeshMaterial (myMesh, scene, mesh);
 
     MeshObject& meshObject = CreateMeshObject (myMesh, scene, mesh, parent);
-    meshObject.GetModelTransform ().SetModelMatrix (ConvertMatrix (transform));
+    meshObject.GetLocalTransform ().SetTransformMatrix (ConvertMatrix (transform));
 }
 
 void AssimpModelLoader::ImportMeshPositions (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh)
@@ -188,7 +202,6 @@ void AssimpModelLoader::ImportMeshBones (Mesh& myMesh, const aiScene* scene, con
             aiBone* bone = mesh->mBones[i];
 
             Bone& b = EngineContext::GetGameScene ().GetGameObjectManager ().GetByName<Bone> (bone->mName.C_Str ());
-            b.SetOffsetMatrix (ConvertMatrix (bone->mOffsetMatrix));
 
             for (unsigned j = 0; j < bone->mNumWeights; j++)
             {
@@ -198,6 +211,8 @@ void AssimpModelLoader::ImportMeshBones (Mesh& myMesh, const aiScene* scene, con
             }
 
         }
+
+
     }
 }
 
@@ -285,6 +300,95 @@ void AssimpModelLoader::ImportMeshMaterial (Mesh& myMesh, const aiScene* scene, 
     }
 }
 
+void AssimpModelLoader::ImportAnimation (const aiAnimation* animation)
+{
+    AnimationObject& animationObject = CreateAnimationObject (animation);
+
+    for (unsigned int i = 0; i < animation->mNumChannels; i++)
+    {
+        ImportNodeAnimation (animationObject, animation, animation->mChannels[i]);
+    }
+}
+
+void AssimpModelLoader::ImportNodeAnimation (AnimationObject& animationObject, const aiAnimation* animation, const aiNodeAnim* nodeAnimation)
+{
+    std::string nodeName = nodeAnimation->mNodeName.C_Str ();
+    GameObject& node = EngineContext::GetGameScene ().GetGameObjectManager ().GetByName <GameObject> (nodeName);
+    std::string propertyNameT = nodeName + "_T";
+    std::string propertyNameR = nodeName + "_R";
+    std::string propertyNameS = nodeName + "_S";
+    
+    for (unsigned int i = 0; i < nodeAnimation->mNumPositionKeys; i++)
+    {
+        if (i == 0)
+        {
+            // create animation property
+            animationObject.AddAnimationProperty<Vector3f> (
+                propertyNameT, 
+                ConvertVector3f (nodeAnimation->mPositionKeys[i].mValue), 
+                [&] (Vector3f v) {
+                    node.GetLocalTransform ().Translate (v);
+                },
+                [] (Vector3f v0, Vector3f v1, float u) { 
+                    return Mathf::Lerp (v0, v1, u); 
+                }
+            );
+        }
+        else 
+        {
+            // create keyframe
+            animationObject.AddKeyframe<Vector3f> (propertyNameT, (float)(nodeAnimation->mPositionKeys[i].mTime / animation->mTicksPerSecond), ConvertVector3f (nodeAnimation->mPositionKeys[i].mValue));
+        }
+    }
+
+    for (unsigned int i = 0; i < nodeAnimation->mNumRotationKeys; i++)
+    {
+        if (i == 0)
+        {
+            // create animation property
+            animationObject.AddAnimationProperty<Quaternion> (
+                propertyNameR, 
+                ConvertQuaterion (nodeAnimation->mRotationKeys[i].mValue), 
+                [&] (Quaternion q) {
+                    node.GetLocalTransform ().Rotate (q);
+                },
+                [] (Quaternion q0, Quaternion q1, float u) { 
+                    return Mathf::Slerp (q0, q1, u); 
+                }
+            );
+        }
+        else 
+        {
+            // create keyframe
+            animationObject.AddKeyframe<Quaternion> (propertyNameR, (float)(nodeAnimation->mRotationKeys[i].mTime / animation->mTicksPerSecond), ConvertQuaterion (nodeAnimation->mRotationKeys[i].mValue));
+        }
+    }
+
+    for (unsigned int i = 0; i < nodeAnimation->mNumScalingKeys; i++)
+    {
+        if (i == 0)
+        {
+            // create animation property
+            animationObject.AddAnimationProperty<Vector3f> (
+                propertyNameS, 
+                ConvertVector3f (nodeAnimation->mScalingKeys[i].mValue), 
+                [&] (Vector3f v) {
+                    node.GetLocalTransform ().Scale (v);
+                },
+                [] (Vector3f v0, Vector3f v1, float u) { 
+                    return Mathf::Lerp (v0, v1, u); 
+                }
+            );
+        }
+        else 
+        {
+            // create keyframe
+            animationObject.AddKeyframe<Vector3f> (propertyNameS, (float)(nodeAnimation->mScalingKeys[i].mTime / animation->mTicksPerSecond), ConvertVector3f (nodeAnimation->mScalingKeys[i].mValue));
+        }
+    }
+
+}
+
 GameObject& AssimpModelLoader::CreateGameObject (const aiNode* node, const aiNode* parent)
 {
     GameObject& gameObject = EngineContext::GetGameScene ().AddGameObject<GameObject> (node->mName.C_Str ());
@@ -320,6 +424,13 @@ MeshObject& AssimpModelLoader::CreateMeshObject (Mesh& myMesh, const aiScene* sc
     }
     
     return m;
+}
+
+AnimationObject& AssimpModelLoader::CreateAnimationObject (const aiAnimation* animation)
+{
+    AnimationObject& animationObject = EngineContext::GetGameScene ().AddGameObject<AnimationObject> (animation->mName.C_Str ());
+
+    return animationObject;
 }
 
 bool AssimpModelLoader::HasTexture (aiMaterial* material, aiTextureType type)
@@ -361,4 +472,14 @@ Texture& AssimpModelLoader::ImportMeshMaterialTexture (aiMaterial* material, aiT
 Matrix4f AssimpModelLoader::ConvertMatrix (const aiMatrix4x4& m)
 {
     return Matrix4f (Vector4f (m.a1, m.b1, m.c1, m.d1), Vector4f (m.a2, m.b2, m.c2, m.d2), Vector4f (m.a3, m.b3, m.c3, m.d3), Vector4f (m.a4, m.b4, m.c4, m.d4));
+}
+
+Vector3f AssimpModelLoader::ConvertVector3f (const aiVector3D& v)
+{
+    return Vector3f (v.x, v.y, v.z);
+}
+
+Quaternion AssimpModelLoader::ConvertQuaterion (const aiQuaternion& q)
+{
+    return Quaternion (q.w, q.x, q.y, q.z);
 }

@@ -257,8 +257,9 @@ float* Mesh::GetBoneTransformationsMatrixArray ()
     for (handle_t boneHandle : meshBones)
     {
         Bone& b = EngineContext::GetGameScene ().GetGameObjectManager ().GetByHandle<Bone> (boneHandle);
+        boneTransformation = b.GetModelTransformMatrix () * b.GetOffsetMatrix ();
 
-        std::memcpy (boneTransformationMatrixArray + index, b.GetModelTransformMatrix ()[0], 16 * sizeof (float));
+        std::memcpy (boneTransformationMatrixArray + index, boneTransformation[0], 16 * sizeof (float));
         index += 16;
     }
 

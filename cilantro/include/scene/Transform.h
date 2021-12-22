@@ -16,10 +16,10 @@ public:
     __EAPI ~Transform ();
 
     // returns models matrix (multiplication of scaling, rotation, translation)
-    __EAPI Matrix4f& GetModelMatrix ();
+    __EAPI Matrix4f& GetTransformMatrix ();
 
     // sets transformation based on tranformation (model) matrix as input
-    __EAPI Transform& SetModelMatrix (const Matrix4f& m);
+    __EAPI Transform& SetTransformMatrix (const Matrix4f& m);
 
     // returns transformation matrices
     __EAPI Matrix4f& GetTranslationMatrix ();
@@ -63,7 +63,7 @@ private:
     Vector3f scale;
     Quaternion rotate;
 
-    Matrix4f modelMatrix;
+    Matrix4f transformMatrix;
 
     Matrix4f scalingMatrix;
     Matrix4f translationMatrix;

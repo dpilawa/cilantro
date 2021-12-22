@@ -54,15 +54,15 @@ int main (int argc, char* argv [])
 
     MeshObject& gun = EngineContext::GetGameScene ().GetGameObjectManager ().GetByName<MeshObject> ("Cerberus00_Fixed");
     gun.SetMaterial ("gunMaterial");
-    gun.GetModelTransform ().Scale (0.8f).Rotate (0.0f, 15.0f, 0.0f);
+    gun.GetLocalTransform ().Scale (0.8f).Rotate (0.0f, 15.0f, 0.0f);
 
     ControlledCamera& cam = gameScene.AddGameObject<ControlledCamera> ("camera", 60.0f, 0.01f, 100.0f, 0.1f, 0.1f);
     cam.Initialize ();
-    cam.GetModelTransform ().Translate (0.0f, 0.0f, 20.0f);
+    cam.GetLocalTransform ().Translate (0.0f, 0.0f, 20.0f);
     gameScene.SetActiveCamera ("camera");
 
     DirectionalLight& light = gameScene.AddGameObject<DirectionalLight> ("light");
-    light.GetModelTransform ().Rotate (45.0f, -135.0f, 0.0f);
+    light.GetLocalTransform ().Rotate (45.0f, -135.0f, 0.0f);
     light.SetColor (Vector3f (2.5f, 2.1f, 1.7f));
     light.SetEnabled (true);
 

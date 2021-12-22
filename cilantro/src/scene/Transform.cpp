@@ -22,23 +22,23 @@ Transform::~Transform ()
 {
 }
 
-Matrix4f& Transform::GetModelMatrix ()
+Matrix4f& Transform::GetTransformMatrix ()
 {
     // multiply transformation matrices (first scale, then rotate, then translate)
     if (isValid == false) 
     {
-        modelMatrix = translationMatrix * rotationMatrix * scalingMatrix;
+        transformMatrix = translationMatrix * rotationMatrix * scalingMatrix;
         isValid = true;
     }
 
-    return modelMatrix;
+    return transformMatrix;
 }
 
-Transform& Transform::SetModelMatrix (const Matrix4f& m)
+Transform& Transform::SetTransformMatrix (const Matrix4f& m)
 {
     isValid = true; // OK because model matrix is calculated
 
-    modelMatrix = m;
+    transformMatrix = m;
 
     translate = Mathf::GetTranslationFromTransformationMatrix (m);
     translationMatrix = Mathf::GenTranslationMatrix (translate);

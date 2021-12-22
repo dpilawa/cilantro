@@ -70,33 +70,33 @@ int main (int argc, char* argv [])
 
     ControlledCamera& cam = gameScene.AddGameObject<ControlledCamera> ("camera", 60.0f, 0.01f, 100.0f, 0.1f, 0.1f);
     cam.Initialize ();
-    cam.GetModelTransform ().Translate (5.0f, 2.5f, 5.0f).Rotate (-20.0f, 45.0f, 0.0f);
+    cam.GetLocalTransform ().Translate (5.0f, 2.5f, 5.0f).Rotate (-20.0f, 45.0f, 0.0f);
     gameScene.SetActiveCamera ("camera");
 
     Mesh& cubeMesh = resourceManager.Create<Mesh> ("cubeMesh");
     Primitives::GenerateCube (cubeMesh);
     MeshObject& cube = gameScene.AddGameObject<MeshObject> ("cube", "cubeMesh", "redMaterial");
-    cube.GetModelTransform ().Scale (0.5f).Translate (0.0f, 1.1f, 0.0f);
+    cube.GetLocalTransform ().Scale (0.5f).Translate (0.0f, 1.1f, 0.0f);
 
     Mesh& coneMesh = resourceManager.Create<Mesh> ("coneMesh").SetSmoothNormals (false);
     Primitives::GenerateCone (coneMesh, 32);
     MeshObject& cone = gameScene.AddGameObject<MeshObject> ("cone", "coneMesh", "goldMaterial");
-    cone.GetModelTransform ().Translate (-1.5f, 0.5f, 1.0f).Scale (0.5f);
+    cone.GetLocalTransform ().Translate (-1.5f, 0.5f, 1.0f).Scale (0.5f);
 
     Mesh& cylinderMesh = resourceManager.Create<Mesh> ("cylinderMesh").SetSmoothNormals (false);
     Primitives::GenerateCylinder (cylinderMesh, 32);
     MeshObject& cylinder = gameScene.AddGameObject<MeshObject> ("cylinder", "cylinderMesh", "blueMaterial");
-    cylinder.GetModelTransform ().Rotate (90.0f, 12.5f, 0.0f).Translate (1.7f, 0.5f, 0.7f).Scale (0.5f);
+    cylinder.GetLocalTransform ().Rotate (90.0f, 12.5f, 0.0f).Translate (1.7f, 0.5f, 0.7f).Scale (0.5f);
 
     Mesh& lampMesh = resourceManager.Create<Mesh> ("lampMesh");
     Primitives::GenerateSphere (lampMesh, 3);
     MeshObject& lamp = gameScene.AddGameObject<MeshObject> ("lamp", "lampMesh", "lampMaterial");
-    lamp.GetModelTransform ().Scale (0.1f, 0.1f, 0.1f).Translate (1.0f, 0.75f, 1.0f);
+    lamp.GetLocalTransform ().Scale (0.1f, 0.1f, 0.1f).Translate (1.0f, 0.75f, 1.0f);
 
     Mesh& floorMesh = resourceManager.Create<Mesh> ("floorMesh");
     Primitives::GenerateCube (floorMesh);
     MeshObject& floor = gameScene.AddGameObject<MeshObject> ("floor", "floorMesh", "greenMaterial");
-    floor.GetModelTransform ().Scale (2.5f, 0.05f, 2.5f).Translate (0.0f, -0.05f, 0.0f);
+    floor.GetLocalTransform ().Scale (2.5f, 0.05f, 2.5f).Translate (0.0f, -0.05f, 0.0f);
 
     PointLight& light1 = gameScene.AddGameObject<PointLight> ("light1");
     light1.SetParentObject ("lamp");
@@ -105,12 +105,12 @@ int main (int argc, char* argv [])
     light1.SetEnabled (true);
 
     DirectionalLight& light2 = gameScene.AddGameObject<DirectionalLight> ("light2");
-    light2.GetModelTransform ().Rotate (45.0f, -135.0f, 0.0f);
+    light2.GetLocalTransform ().Rotate (45.0f, -135.0f, 0.0f);
     light2.SetColor (Vector3f (2.7f, 2.7f, 2.7f));
     light2.SetEnabled (true);
 
     SpotLight& light3 = gameScene.AddGameObject<SpotLight> ("light3");
-    light3.GetModelTransform ().Translate (2.0f, 10.0f, 0.0f).Rotate (90.0f, 0.0f, 0.0f);
+    light3.GetLocalTransform ().Translate (2.0f, 10.0f, 0.0f).Rotate (90.0f, 0.0f, 0.0f);
     light3.SetColor (Vector3f (2.7f, 2.7f, 2.7f));
     light3.SetInnerCutoff (5.0f);
     light3.SetOuterCutoff (12.0f);
@@ -126,15 +126,15 @@ int main (int argc, char* argv [])
     lp.SetStartTangent ({-2.0f, 0.0f, 2.0f});
     lp.SetEndTangent ({-2.0f, 0.0f, 2.0f});
 
-    lp.GetModelTransform ().Rotate ({0.0f, 0.0f, -15.0f}).Translate ({0.0f, 1.0f, 0.0f});
+    lp.GetLocalTransform ().Rotate ({0.0f, 0.0f, -15.0f}).Translate ({0.0f, 1.0f, 0.0f});
 
     AnimationObject& lightAnimation = gameScene.AddGameObject<AnimationObject> ("lightAnimation");
 
     lightAnimation.AddAnimationProperty<float> (
         "t", 0.0f,
         [&] (float t) {
-            lamp.GetModelTransform ().Translate (lp.GetPositionAtDistance (lp.GetPathLength () * t));
-            lamp.GetModelTransform ().Rotate (lp.GetRotationAtDistance (lp.GetPathLength () * t));
+            lamp.GetLocalTransform ().Translate (lp.GetPositionAtDistance (lp.GetPathLength () * t));
+            lamp.GetLocalTransform ().Rotate (lp.GetRotationAtDistance (lp.GetPathLength () * t));
         },
         [] (float t0, float t1, float u) { return Mathf::Lerp (t0, t1, u); });
 
