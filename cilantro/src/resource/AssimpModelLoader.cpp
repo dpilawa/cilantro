@@ -122,7 +122,7 @@ void AssimpModelLoader::ImportBone (const aiNode* node, const aiNode* parent, co
 {
     Bone& bone = CreateBone (node, parent);
     bone.GetLocalTransform ().SetTransformMatrix (ConvertMatrix (transform));
-    bone.SetOffsetMatrix (Mathf::Invert (bone.GetModelTransformMatrix ()));
+    //bone.SetOffsetMatrix (Mathf::Invert (bone.GetModelTransformMatrix ()));
 }
 
 void AssimpModelLoader::ImportMesh (const aiScene* scene, const aiMesh* mesh, const aiNode* parent, const aiMatrix4x4& transform)
@@ -202,6 +202,7 @@ void AssimpModelLoader::ImportMeshBones (Mesh& myMesh, const aiScene* scene, con
             aiBone* bone = mesh->mBones[i];
 
             Bone& b = EngineContext::GetGameScene ().GetGameObjectManager ().GetByName<Bone> (bone->mName.C_Str ());
+            b.SetOffsetMatrix (ConvertMatrix (bone->mOffsetMatrix));
 
             for (unsigned j = 0; j < bone->mNumWeights; j++)
             {
