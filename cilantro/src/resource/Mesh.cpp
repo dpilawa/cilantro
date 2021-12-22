@@ -8,6 +8,7 @@
 #include "system/LogMessage.h"
 #include "system/EngineContext.h"
 
+#include <cstring>
 #include <vector>
 #include <algorithm>
 #include <unordered_map>
