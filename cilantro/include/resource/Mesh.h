@@ -1,9 +1,6 @@
 #ifndef _MESH_H_
 #define _MESH_H_
 
-#define CILANTRO_MAX_BONES 128
-#define CILANTRO_MAX_BONE_INFLUENCES 4
-
 #include "cilantroengine.h"
 #include "resource/Resource.h"
 #include "system/CallbackProvider.h"

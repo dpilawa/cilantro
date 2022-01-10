@@ -26,7 +26,7 @@ int main (int argc, char* argv[])
 {
     ResourceManager resourceManager;
     GameScene gameScene;
-    GLFWRenderer renderer (800, 600, "Test 03", false, true, true);
+    GLFWRenderer renderer (1920, 1080, "Test 03", false, true, true);
     GLFWInputController inputController;
     Timer timer;
     Game game;

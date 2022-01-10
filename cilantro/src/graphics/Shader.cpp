@@ -15,9 +15,19 @@ Shader::~Shader ()
 {
 }
 
-void Shader::Load (const std::string& path)
+void Shader::SetParameter (std::string parameter, std::string value)
 {
     std::size_t pos;
+
+    pos = shaderSourceCode.find (parameter);
+    if (pos != std::string::npos)
+    {
+        shaderSourceCode.replace (pos, parameter.length (), value);
+    }
+}
+
+void Shader::Load (const std::string& path)
+{
     std::ifstream f (path, std::ios::binary);
     std::ostringstream ss;
     std::string versionTag ("%%CILANTRO_GL_VERSION%%");
@@ -32,28 +42,17 @@ void Shader::Load (const std::string& path)
     ss << f.rdbuf ();
     shaderSourceCode = ss.str ();
 
-    // replace tags in shader source
-    pos = shaderSourceCode.find (versionTag);
-    if (pos != std::string::npos)
-    {
-        shaderSourceCode.replace (pos, versionTag.length (), std::to_string (CILANTRO_GL_VERSION));
-    }
-    else
-    {
-        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Version tag not found in shader" << path;    
-    }
-
-    pos = shaderSourceCode.find (boneMaxTag);
-    if (pos != std::string::npos)
-    {
-        shaderSourceCode.replace (pos, boneMaxTag.length (), std::to_string (CILANTRO_MAX_BONES));
-    }  
-
-    pos = shaderSourceCode.find (boneMaxInfluenceTag);
-    if (pos != std::string::npos)
-    {
-        shaderSourceCode.replace (pos, boneMaxInfluenceTag.length (), std::to_string (CILANTRO_MAX_BONE_INFLUENCES));
-    }
+    this->SetDefaultParameters ();
 
     LogMessage (MSG_LOCATION) << "Loaded shader" << path << shaderSourceCode.length () << "bytes";
+}
+
+void Shader::SetDefaultParameters ()
+{
+    SetParameter ("%%CILANTRO_GL_VERSION%%", std::to_string (CILANTRO_GL_VERSION));
+    SetParameter ("%%CILANTRO_MAX_BONES%%", std::to_string (CILANTRO_MAX_BONES));
+    SetParameter ("%%CILANTRO_MAX_BONE_INFLUENCES%%", std::to_string (CILANTRO_MAX_BONE_INFLUENCES));
+    SetParameter ("%%CILANTRO_MAX_POINT_LIGHTS%%", std::to_string (MAX_POINT_LIGHTS));
+    SetParameter ("%%CILANTRO_MAX_SPOT_LIGHTS%%", std::to_string (CILANTRO_MAX_BONE_INFLUENCES));
+    SetParameter ("%%CILANTRO_MAX_DIRECTIONAL_LIGHTS%%", std::to_string (CILANTRO_MAX_BONE_INFLUENCES));
 }

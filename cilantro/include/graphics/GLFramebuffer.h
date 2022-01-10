@@ -6,8 +6,6 @@
 #include "glad/glad.h"
 #include <vector>
 
-#define MAX_FRAMEBUFFER_TEXTURES 8
-
 struct GLBuffers
 {
 public:

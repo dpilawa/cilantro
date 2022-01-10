@@ -1,6 +1,15 @@
 // typedefs
 typedef unsigned int handle_t;
 
+// defines
+#define MAX_POINT_LIGHTS 64
+#define MAX_DIRECTIONAL_LIGHTS 64
+#define MAX_SPOT_LIGHTS 64
+#define MAX_FRAMEBUFFER_TEXTURES 8
+#define CILANTRO_MAX_BONES 128
+#define CILANTRO_MAX_BONE_INFLUENCES 4
+
+// linking
 #if defined _WIN32 || defined __CYGWIN__
   #ifdef CILANTRO_BUILDING_DLL
     #ifdef __GNUC__

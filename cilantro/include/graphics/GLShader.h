@@ -16,8 +16,11 @@ public:
     GLuint GetShaderId () const;
 
 private:
+
     // ID of a shader
     GLuint shaderId;
+
+    virtual void Compile();
 };
 
 #endif

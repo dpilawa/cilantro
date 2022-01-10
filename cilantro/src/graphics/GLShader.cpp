@@ -9,21 +9,21 @@ GLShader::GLShader (const std::string& path, ShaderType shaderType) : Shader (pa
 {
     GLint success;
     char errorLog[512];
-    const char* src;
 
     switch (shaderType)
     {
         case ShaderType::VERTEX_SHADER:
             shaderId = glCreateShader (GL_VERTEX_SHADER);
             break;
+        case ShaderType::GEOMETRY_SHADER:
+            shaderId = glCreateShader (GL_GEOMETRY_SHADER);
+            break;
         case ShaderType::FRAGMENT_SHADER:
             shaderId = glCreateShader (GL_FRAGMENT_SHADER);
             break;
     }
 
-    src = shaderSourceCode.c_str ();
-    glShaderSource (shaderId, 1, &src, NULL);
-    glCompileShader (shaderId);
+    Compile ();
 
     glGetShaderiv (shaderId, GL_COMPILE_STATUS, &success);
 
@@ -43,4 +43,13 @@ GLShader::~GLShader ()
 GLuint GLShader::GetShaderId () const
 {
     return shaderId;
+}
+
+void GLShader::Compile ()
+{
+    const char* src;
+
+    src = shaderSourceCode.c_str ();
+    glShaderSource (shaderId, 1, &src, NULL);
+    glCompileShader (shaderId); 
 }
