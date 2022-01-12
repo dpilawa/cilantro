@@ -1,7 +1,7 @@
 #include "cilantroengine.h"
 #include "graphics/Renderer.h"
 #include "graphics/RenderStage.h"
-#include "system/EngineContext.h"
+#include "system/Game.h"
 #include "system/LogMessage.h"
 #include <cmath>
 
@@ -73,7 +73,7 @@ void Renderer::RenderFrame ()
     // reset global rendering timer
     if (totalRenderTime == 0L)
     {
-        EngineContext::GetTimer ().ResetSplitTime ();
+        Game::GetTimer ().ResetSplitTime ();
     }
 
     // run post-processing
@@ -84,12 +84,12 @@ void Renderer::RenderFrame ()
     }
 
     // update game clocks (Tock)
-    EngineContext::GetTimer ().Tock ();
+    Game::GetTimer ().Tock ();
 
     // update frame counters
     totalRenderFrames++;
-    totalRenderTime = EngineContext::GetTimer ().GetTimeSinceSplitTime ();
-    totalFrameRenderTime += EngineContext::GetTimer ().GetFrameRenderTime ();
+    totalRenderTime = Game::GetTimer ().GetTimeSinceSplitTime ();
+    totalFrameRenderTime += Game::GetTimer ().GetFrameRenderTime ();
 }
 
 Renderer& Renderer::RotateRenderPipelineLeft ()

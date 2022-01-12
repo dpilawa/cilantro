@@ -1,7 +1,7 @@
 #include "cilantroengine.h"
 #include "graphics/Renderer.h"
 #include "graphics/GLFWRenderer.h"
-#include "system/EngineContext.h"
+#include "system/Game.h"
 #include "system/LogMessage.h"
 
 GLFWRenderer::GLFWRenderer (unsigned int width, unsigned int height, std::string windowCaption, bool isFullscreen, bool isResizable, bool isVSync) : Renderer (width, height)
@@ -64,7 +64,7 @@ void GLFWRenderer::Initialize ()
     // set resize callback
     auto framebufferResizeCallback = [](GLFWwindow* window, int width, int height)
     {
-        EngineContext::GetRenderer().SetResolution (width, height);
+        Game::GetRenderer().SetResolution (width, height);
     };
 
     glfwSetFramebufferSizeCallback (window, framebufferResizeCallback);
@@ -109,6 +109,6 @@ void GLFWRenderer::RenderFrame ()
     // check window closing
     if (glfwWindowShouldClose (window))
     {
-        EngineContext::GetGame ().Stop ();
+        Game::Stop ();
     }
 }

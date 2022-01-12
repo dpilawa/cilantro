@@ -1,7 +1,7 @@
 #include "graphics/GLQuadRenderStage.h"
 #include "graphics/GLShaderProgram.h"
 #include "system/LogMessage.h"
-#include "system/EngineContext.h"
+#include "system/Game.h"
 
 GLQuadRenderStage::GLQuadRenderStage () : GLRenderStage (), QuadRenderStage ()
 {
@@ -53,8 +53,7 @@ void GLQuadRenderStage::Deinitialize ()
 
 void GLQuadRenderStage::OnFrame ()
 {
-    GLFramebuffer* inputFramebuffer = dynamic_cast<GLFramebuffer*>(EngineContext::GetRenderer ().GetPipelineFramebuffer (pipelineFramebufferInputLink));
-    GLFramebuffer* outputFramebuffer = dynamic_cast<GLFramebuffer*>(EngineContext::GetRenderer ().GetPipelineFramebuffer (pipelineFramebufferOutputLink));
+    GLFramebuffer* inputFramebuffer = dynamic_cast<GLFramebuffer*>(Game::GetRenderer ().GetPipelineFramebuffer (pipelineFramebufferInputLink));
 
     GLRenderStage::OnFrame ();
  
@@ -69,7 +68,7 @@ void GLQuadRenderStage::OnFrame ()
     }
 
     glBindVertexArray (VAO);    
-    glViewport (0, 0, EngineContext::GetRenderer ().GetWidth(), EngineContext::GetRenderer ().GetHeight ());
+    glViewport (0, 0, Game::GetRenderer ().GetWidth(), Game::GetRenderer ().GetHeight ());
     glDrawArrays (GL_TRIANGLES, 0, 6);
     glBindTexture (GL_TEXTURE_2D, 0);
     glBindVertexArray (0);

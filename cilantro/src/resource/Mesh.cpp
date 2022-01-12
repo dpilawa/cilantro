@@ -6,7 +6,7 @@
 #include "math/Mathf.h"
 #include "system/CallbackProvider.h"
 #include "system/LogMessage.h"
-#include "system/EngineContext.h"
+#include "system/Game.h"
 
 #include <cstring>
 #include <vector>
@@ -257,7 +257,7 @@ float* Mesh::GetBoneTransformationsMatrixArray ()
     // copy remaining bones
     for (handle_t boneHandle : meshBones)
     {
-        Bone& b = EngineContext::GetGameScene ().GetGameObjectManager ().GetByHandle<Bone> (boneHandle);
+        Bone& b = Game::GetGameScene ().GetGameObjectManager ().GetByHandle<Bone> (boneHandle);
         boneTransformation = b.GetModelTransformMatrix () * b.GetOffsetMatrix ();
 
         std::memcpy (boneTransformationMatrixArray + index, boneTransformation[0], 16 * sizeof (float));

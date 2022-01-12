@@ -1,4 +1,4 @@
-#include "system/EngineContext.h"
+#include "system/Game.h"
 #include "graphics/GLDeferredGeometryRenderStage.h"
 #include "graphics/GLQuadRenderStage.h"
 #include "graphics/GLRenderStage.h"
@@ -36,7 +36,7 @@ void GLDeferredGeometryRenderStage::OnFrame ()
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     // set viewport
-    glViewport (0, 0, EngineContext::GetRenderer ().GetWidth (), EngineContext::GetRenderer ().GetHeight ());
+    glViewport (0, 0, Game::GetRenderer ().GetWidth (), Game::GetRenderer ().GetHeight ());
 
     // enable depth and stencil buffer testing
     glEnable (GL_DEPTH_TEST);
@@ -51,7 +51,7 @@ void GLDeferredGeometryRenderStage::OnFrame ()
 
     glStencilOp (GL_KEEP, GL_KEEP, GL_REPLACE);
 
-    for (auto gameObject : EngineContext::GetGameScene ().GetGameObjectManager ())
+    for (auto gameObject : Game::GetGameScene ().GetGameObjectManager ())
     {
         // overwrite stencil value with material Id
         if (MeshObject* meshObject = dynamic_cast<MeshObject*>(gameObject.get ()))
@@ -72,18 +72,18 @@ void GLDeferredGeometryRenderStage::OnFrame ()
 void GLDeferredGeometryRenderStage::Update (Material& material)
 {
     handle_t shaderProgramHandle = material.GetDeferredLightingPassShaderProgram ().GetHandle ();
-    std::string shaderProgramName = EngineContext::GetRenderer().GetShaderProgramManager ().GetByHandle<ShaderProgram> (shaderProgramHandle).GetName ();
+    std::string shaderProgramName = Game::GetRenderer().GetShaderProgramManager ().GetByHandle<ShaderProgram> (shaderProgramHandle).GetName ();
 
     // add material's shader program to set of used shader programs handles
     // add lighting deferred pass renderStages for each program
     if (lightingShaders.find (shaderProgramHandle) == lightingShaders.end ())
     {
         // first rotate the pipeline to the left so that geometry stage is last
-        EngineContext::GetRenderer ().RotateRenderPipelineLeft ();
+        Game::GetRenderer ().RotateRenderPipelineLeft ();
 
         lightingShaderStagesCount++;
         lightingShaders.insert (shaderProgramHandle);
-        GLQuadRenderStage& p = EngineContext::GetRenderer ().AddRenderStage <GLQuadRenderStage> ("deferredLightingStage_" + shaderProgramName);
+        GLQuadRenderStage& p = Game::GetRenderer ().AddRenderStage <GLQuadRenderStage> ("deferredLightingStage_" + shaderProgramName);
         p.SetShaderProgram (shaderProgramName);
         p.SetStencilTestEnabled (true).SetStencilTest (StencilTestFunction::FUNCTION_EQUAL, shaderProgramHandle);
         p.SetClearOnFrameEnabled (true);
@@ -94,25 +94,25 @@ void GLDeferredGeometryRenderStage::Update (Material& material)
         p.SetFramebufferEnabled (true);
 
         // rotate pipeline twice to the right, so that ultimately geometry stage is first and newly added stage is second
-        EngineContext::GetRenderer ().RotateRenderPipelineRight ();
-        EngineContext::GetRenderer ().RotateRenderPipelineRight ();
+        Game::GetRenderer ().RotateRenderPipelineRight ();
+        Game::GetRenderer ().RotateRenderPipelineRight ();
         
         // update flags of other deferred lighting stages (if present)
         if (lightingShaderStagesCount > 1)
         {
-            handle_t stageHandle = EngineContext::GetRenderer ().GetRenderPipeline ()[2];
+            handle_t stageHandle = Game::GetRenderer ().GetRenderPipeline ()[2];
 
-            GLQuadRenderStage& stage = EngineContext::GetRenderer ().GetRenderStageManager ().GetByHandle<GLQuadRenderStage> (stageHandle);
+            GLQuadRenderStage& stage = Game::GetRenderer ().GetRenderStageManager ().GetByHandle<GLQuadRenderStage> (stageHandle);
             stage.SetClearOnFrameEnabled (false);
             stage.SetFramebufferEnabled (false);
         }
 
         // update pipeline links of 1st stage following deferred lighting stages
-        if (EngineContext::GetRenderer ().GetRenderPipeline ().size () > lightingShaderStagesCount + 1)
+        if (Game::GetRenderer ().GetRenderPipeline ().size () > lightingShaderStagesCount + 1)
         {
-            handle_t stageHandle = EngineContext::GetRenderer ().GetRenderPipeline ()[lightingShaderStagesCount + 1];
+            handle_t stageHandle = Game::GetRenderer ().GetRenderPipeline ()[lightingShaderStagesCount + 1];
 
-            GLRenderStage& stage = EngineContext::GetRenderer ().GetRenderStageManager ().GetByHandle<GLRenderStage> (stageHandle);
+            GLRenderStage& stage = Game::GetRenderer ().GetRenderStageManager ().GetByHandle<GLRenderStage> (stageHandle);
             stage.SetPipelineFramebufferInputLink (PipelineLink::LINK_SECOND);
             stage.SetPipelineRenderbufferLink (PipelineLink::LINK_CURRENT);
             stage.SetPipelineFramebufferDrawLink (PipelineLink::LINK_CURRENT);

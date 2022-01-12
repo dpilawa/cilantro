@@ -1,5 +1,5 @@
 #include "graphics/QuadRenderStage.h"
-#include "system/EngineContext.h"
+#include "system/Game.h"
 #include "graphics/ShaderProgram.h"
 
 QuadRenderStage::QuadRenderStage () : RenderStage ()
@@ -14,7 +14,7 @@ QuadRenderStage::~QuadRenderStage ()
 
 QuadRenderStage& QuadRenderStage::SetShaderProgram (const std::string& shaderProgramName)
 {
-    shaderProgram = &(EngineContext::GetRenderer ().GetShaderProgramManager ().GetByName<ShaderProgram> (shaderProgramName));
+    shaderProgram = &(Game::GetRenderer ().GetShaderProgramManager ().GetByName<ShaderProgram> (shaderProgramName));
 
     return *this;
 }

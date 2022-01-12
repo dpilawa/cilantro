@@ -1,6 +1,6 @@
 #include "resource/AssimpModelLoader.h"
 #include "system/LogMessage.h"
-#include "system/EngineContext.h"
+#include "system/Game.h"
 #include "math/Mathf.h"
 #include "resource/Mesh.h"
 #include "resource/Texture.h"
@@ -127,7 +127,7 @@ void AssimpModelLoader::ImportBone (const aiNode* node, const aiNode* parent, co
 
 void AssimpModelLoader::ImportMesh (const aiScene* scene, const aiMesh* mesh, const aiNode* parent, const aiMatrix4x4& transform)
 {
-    Mesh& myMesh = EngineContext::GetResourceManager ().Create<Mesh> (mesh->mName.C_Str ());
+    Mesh& myMesh = Game::GetResourceManager ().Create<Mesh> (mesh->mName.C_Str ());
 
     ImportMeshPositions (myMesh, scene, mesh);
     ImportMeshFaces (myMesh, scene, mesh);
@@ -201,7 +201,7 @@ void AssimpModelLoader::ImportMeshBones (Mesh& myMesh, const aiScene* scene, con
         {
             aiBone* bone = mesh->mBones[i];
 
-            Bone& b = EngineContext::GetGameScene ().GetGameObjectManager ().GetByName<Bone> (bone->mName.C_Str ());
+            Bone& b = Game::GetGameScene ().GetGameObjectManager ().GetByName<Bone> (bone->mName.C_Str ());
             b.SetOffsetMatrix (ConvertMatrix (bone->mOffsetMatrix));
 
             for (unsigned j = 0; j < bone->mNumWeights; j++)
@@ -226,7 +226,7 @@ void AssimpModelLoader::ImportMeshMaterial (Mesh& myMesh, const aiScene* scene, 
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
         // skip if material already loaded
-        if (EngineContext::GetGameScene ().GetMaterialManager ().HasName<Material> (material->GetName ().C_Str ()))
+        if (Game::GetGameScene ().GetMaterialManager ().HasName<Material> (material->GetName ().C_Str ()))
         {
             return;
         }
@@ -244,7 +244,7 @@ void AssimpModelLoader::ImportMeshMaterial (Mesh& myMesh, const aiScene* scene, 
         if (HasTexture (material, aiTextureType_DIFFUSE))
         {
             // phong material
-            PhongMaterial& myMaterial = EngineContext::GetGameScene ().AddMaterial<PhongMaterial> (material->GetName ().C_Str ());
+            PhongMaterial& myMaterial = Game::GetGameScene ().AddMaterial<PhongMaterial> (material->GetName ().C_Str ());
 
             if (HasTexture (material, aiTextureType_DIFFUSE))
             {
@@ -270,7 +270,7 @@ void AssimpModelLoader::ImportMeshMaterial (Mesh& myMesh, const aiScene* scene, 
         else if (HasTexture (material, aiTextureType_BASE_COLOR))
         {
             // PBR material
-            PBRMaterial& myMaterial = EngineContext::GetGameScene ().AddMaterial<PBRMaterial> (material->GetName ().C_Str ());
+            PBRMaterial& myMaterial = Game::GetGameScene ().AddMaterial<PBRMaterial> (material->GetName ().C_Str ());
 
             if (HasTexture (material, aiTextureType_BASE_COLOR))
             {
@@ -314,7 +314,7 @@ void AssimpModelLoader::ImportAnimation (const aiAnimation* animation)
 void AssimpModelLoader::ImportNodeAnimation (AnimationObject& animationObject, const aiAnimation* animation, const aiNodeAnim* nodeAnimation)
 {
     std::string nodeName = nodeAnimation->mNodeName.C_Str ();
-    GameObject& node = EngineContext::GetGameScene ().GetGameObjectManager ().GetByName <GameObject> (nodeName);
+    GameObject& node = Game::GetGameScene ().GetGameObjectManager ().GetByName <GameObject> (nodeName);
     std::string propertyNameT = nodeName + "_T";
     std::string propertyNameR = nodeName + "_R";
     std::string propertyNameS = nodeName + "_S";
@@ -392,7 +392,7 @@ void AssimpModelLoader::ImportNodeAnimation (AnimationObject& animationObject, c
 
 GameObject& AssimpModelLoader::CreateGameObject (const aiNode* node, const aiNode* parent)
 {
-    GameObject& gameObject = EngineContext::GetGameScene ().AddGameObject<GameObject> (node->mName.C_Str ());
+    GameObject& gameObject = Game::GetGameScene ().AddGameObject<GameObject> (node->mName.C_Str ());
         
     if (parent != nullptr)
     {
@@ -404,7 +404,7 @@ GameObject& AssimpModelLoader::CreateGameObject (const aiNode* node, const aiNod
 
 Bone& AssimpModelLoader::CreateBone (const aiNode* node, const aiNode* parent)
 {
-    Bone& bone = EngineContext::GetGameScene ().AddGameObject<Bone> (node->mName.C_Str ());
+    Bone& bone = Game::GetGameScene ().AddGameObject<Bone> (node->mName.C_Str ());
         
     if (parent != nullptr)
     {
@@ -417,7 +417,7 @@ Bone& AssimpModelLoader::CreateBone (const aiNode* node, const aiNode* parent)
 MeshObject& AssimpModelLoader::CreateMeshObject (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh, const aiNode* parent)
 {
     aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-    MeshObject& m = EngineContext::GetGameScene ().AddGameObject<MeshObject> (myMesh.GetName (), myMesh.GetName (), material->GetName ().C_Str ());
+    MeshObject& m = Game::GetGameScene ().AddGameObject<MeshObject> (myMesh.GetName (), myMesh.GetName (), material->GetName ().C_Str ());
         
     if (parent != nullptr)
     {
@@ -429,7 +429,7 @@ MeshObject& AssimpModelLoader::CreateMeshObject (Mesh& myMesh, const aiScene* sc
 
 AnimationObject& AssimpModelLoader::CreateAnimationObject (const aiAnimation* animation)
 {
-    AnimationObject& animationObject = EngineContext::GetGameScene ().AddGameObject<AnimationObject> (animation->mName.C_Str ());
+    AnimationObject& animationObject = Game::GetGameScene ().AddGameObject<AnimationObject> (animation->mName.C_Str ());
 
     return animationObject;
 }
@@ -454,9 +454,9 @@ Texture& AssimpModelLoader::ImportMeshMaterialTexture (aiMaterial* material, aiT
 #endif
 
     // if texture already exists, return it
-    if (EngineContext::GetResourceManager ().HasName<Texture> (sysPath))
+    if (Game::GetResourceManager ().HasName<Texture> (sysPath))
     {
-        return EngineContext::GetResourceManager ().GetByName<Texture> (sysPath);
+        return Game::GetResourceManager ().GetByName<Texture> (sysPath);
     }
     else 
     {
@@ -465,7 +465,7 @@ Texture& AssimpModelLoader::ImportMeshMaterialTexture (aiMaterial* material, aiT
             LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Stacked textures not supported" << sysPath;
         }
 
-        return EngineContext::GetResourceManager ().Load<Texture> (sysPath, sysPath);
+        return Game::GetResourceManager ().Load<Texture> (sysPath, sysPath);
 
     }
 }

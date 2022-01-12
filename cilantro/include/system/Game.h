@@ -1,5 +1,5 @@
-#ifndef _ENGINECONTEXT_H_
-#define _ENGINECONTEXT_H_
+#ifndef _GAME_H_
+#define _GAME_H_
 
 #include "cilantroengine.h"
 #include "system/Timer.h"
@@ -8,21 +8,21 @@
 #include "scene/GameScene.h"
 #include "graphics/Renderer.h"
 #include "input/InputController.h"
-#include "game/Game.h"
 
-class EngineContext
+class Game
 {
 public:
 
-    // initialize engine context
-    static __EAPI void Set (Game& game, ResourceManager<Resource>& resourceManager, Timer& timer, GameScene& gameScene, Renderer& renderer, InputController& inputController);
-
     // initialize and deinitialize
-    static __EAPI void Initialize ();
+    static __EAPI void Initialize (ResourceManager<Resource>& resourceManager, Timer& timer, GameScene& gameScene, Renderer& renderer, InputController& inputController);
     static __EAPI void Deinitialize ();
 
+    // run a game loop
+    static __EAPI void Run ();
+    static __EAPI void Stop ();	
+    static __EAPI void Step ();
+
     // accessors
-    static __EAPI Game& GetGame();
     static __EAPI ResourceManager<Resource>& GetResourceManager ();
     static __EAPI Timer& GetTimer ();
     static __EAPI GameScene& GetGameScene ();
@@ -31,13 +31,17 @@ public:
 
 private:
     
-    static Game* contextGame;
     static ResourceManager<Resource>* contextResourceManager;
     static Timer* contextTimer;
     static GameScene* contextGameScene;
     static Renderer* contextRenderer;
     static InputController* contextInputController;
-    
+
+    // game state
+    static bool shouldStop;
+    static bool isRunning;
+
 };
 
 #endif
+

@@ -1,5 +1,5 @@
 #include "graphics/RenderStage.h"
-#include "system/EngineContext.h"
+#include "system/Game.h"
 #include "graphics/ShaderProgram.h"
 
 RenderStage::RenderStage ()

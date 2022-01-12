@@ -1,7 +1,7 @@
 #include "ControlledCamera.h"
 #include "input/Input.h"
 #include "input/GLFWInputController.h"
-#include "system/EngineContext.h"
+#include "system/Game.h"
 
 ControlledCamera::ControlledCamera (float fov, float near, float far, float speed, float sensitivity) : PerspectiveCamera (fov, near, far), speed (speed), sensitivity (sensitivity)
 {
@@ -13,7 +13,7 @@ ControlledCamera::~ControlledCamera()
 
 void ControlledCamera::Initialize ()
 {
-    GLFWInputController& c = dynamic_cast<GLFWInputController&> (EngineContext::GetInputController ());
+    GLFWInputController& c = dynamic_cast<GLFWInputController&> (Game::GetInputController ());
 
     c.CreateInputAxis ("moveforward", InputKey::KeyW, {}, 1.0f);
     c.CreateInputAxis ("moveforward", InputKey::KeyS, {}, -1.0f);	

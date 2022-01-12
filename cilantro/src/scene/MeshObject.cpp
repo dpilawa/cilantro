@@ -5,7 +5,7 @@
 #include "math/Vector3f.h"
 #include "math/Mathf.h"
 #include "graphics/GeometryRenderStage.h"
-#include "system/EngineContext.h"
+#include "system/Game.h"
 #include "system/CallbackProvider.h"
 #include "system/LogMessage.h"
 
@@ -13,8 +13,8 @@
 #include <unordered_map>
 
 MeshObject::MeshObject (const std::string& meshName, const std::string materialName) :
-mesh (EngineContext::GetResourceManager ().GetByName<Mesh> (meshName)),
-material (EngineContext::GetGameScene ().GetMaterialManager ().GetByName<Material> (materialName))
+mesh (Game::GetResourceManager ().GetByName<Mesh> (meshName)),
+material (Game::GetGameScene ().GetMaterialManager ().GetByName<Material> (materialName))
 {
     mesh.RegisterCallback ("OnUpdateMesh", [&] (handle_t objectHandle) { InvokeCallbacks ("OnUpdateMeshObject", this->GetHandle (), 0); });
 }
@@ -30,7 +30,7 @@ Mesh& MeshObject::GetMesh ()
 
 MeshObject& MeshObject::SetMaterial (const std::string& materialName)
 {
-    material = EngineContext::GetGameScene ().GetMaterialManager ().GetByName<Material> (materialName);
+    material = Game::GetGameScene ().GetMaterialManager ().GetByName<Material> (materialName);
 
     return *this;
 }

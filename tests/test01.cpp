@@ -1,5 +1,4 @@
 #include "cilantroengine.h"
-#include "game/Game.h"
 #include "scene/Primitives.h"
 #include "scene/AnimationObject.h"
 #include "scene/GameScene.h"
@@ -21,7 +20,7 @@
 #include "input/GLFWInputController.h"
 #include "math/Mathf.h"
 #include "system/LogMessage.h"
-#include "system/EngineContext.h"
+#include "system/Game.h"
 #include "system/Timer.h"
 
 #include "ControlledCamera.h"
@@ -35,18 +34,16 @@ int main (int argc, char* argv [])
     GLFWRenderer renderer (800, 600, "Test 01", false, true, true);
     GLFWInputController inputController;
     Timer timer;
-    Game game;
 
-    EngineContext::Set (game, resourceManager, timer, gameScene, renderer, inputController);
-    EngineContext::Initialize ();
+    Game::Initialize (resourceManager, timer, gameScene, renderer, inputController);
 
     renderer.AddRenderStage<GLDeferredGeometryRenderStage> ("base");
     renderer.AddRenderStage<GLQuadRenderStage> ("hdr_postprocess").SetShaderProgram ("post_hdr_shader").SetPipelineFramebufferInputLink (PipelineLink::LINK_PREVIOUS);
-    renderer.AddRenderStage<GLQuadRenderStage> ("fxaa_postprocess").SetShaderProgram ("post_fxaa_shader").SetRenderStageParameterFloat ("fMaxSpan", 4.0f).SetRenderStageParameterVector2f ("vInvResolution", Vector2f (1.0f / EngineContext::GetRenderer ().GetWidth (), 1.0f / EngineContext::GetRenderer ().GetHeight ())).SetPipelineFramebufferInputLink (PipelineLink::LINK_PREVIOUS);
+    renderer.AddRenderStage<GLQuadRenderStage> ("fxaa_postprocess").SetShaderProgram ("post_fxaa_shader").SetRenderStageParameterFloat ("fMaxSpan", 4.0f).SetRenderStageParameterVector2f ("vInvResolution", Vector2f (1.0f / Game::GetRenderer ().GetWidth (), 1.0f / Game::GetRenderer ().GetHeight ())).SetPipelineFramebufferInputLink (PipelineLink::LINK_PREVIOUS);
     renderer.AddRenderStage<GLQuadRenderStage> ("gamma_postprocess+screen").SetShaderProgram ("post_gamma_shader").SetRenderStageParameterFloat ("fGamma", 2.1f).SetPipelineFramebufferInputLink (PipelineLink::LINK_PREVIOUS).SetFramebufferEnabled (false);
 
     inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
-    inputController.BindInputEvent ("exit", [ & ]() { game.Stop (); });
+    inputController.BindInputEvent ("exit", [ & ]() { Game::Stop (); });
 
     inputController.CreateInputEvent ("mousemode", InputKey::KeySpace, InputTrigger::Release, {});
     inputController.BindInputEvent ("mousemode", [ & ]() { inputController.SetMouseGameMode (!inputController.IsGameMode ()); });
@@ -142,9 +139,9 @@ int main (int argc, char* argv [])
     lightAnimation.SetLooping (true);
     lightAnimation.Play ();
 
-    game.Run ();
+    Game::Run ();
 
-    EngineContext::Deinitialize ();
+    Game::Deinitialize ();
 
     return 0;
 }

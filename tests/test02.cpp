@@ -1,5 +1,4 @@
 #include "cilantroengine.h"
-#include "game/Game.h"
 #include "scene/AnimationObject.h"
 #include "scene/Primitives.h"
 #include "scene/GameScene.h"
@@ -16,7 +15,7 @@
 #include "graphics/GLFWRenderer.h"
 #include "input/GLFWInputController.h"
 #include "math/Mathf.h"
-#include "system/EngineContext.h"
+#include "system/Game.h"
 #include "system/Timer.h"
 
 #include "Orbiter.h"
@@ -28,16 +27,14 @@ int main (int argc, char* argv [])
     GLFWRenderer renderer (960, 600, "Test 02", false, true, true);
     GLFWInputController inputController;
     Timer timer;
-    Game game;
 
-    EngineContext::Set (game, resourceManager, timer, gameScene, renderer, inputController);
-    EngineContext::Initialize ();
+    Game::Initialize (resourceManager, timer, gameScene, renderer, inputController);
 
     renderer.AddRenderStage<GLForwardGeometryRenderStage> ("base").SetMultisampleEnabled (true);
     renderer.AddRenderStage<GLQuadRenderStage> ("screen").SetShaderProgram ("flatquad_shader").SetFramebufferEnabled (false).SetPipelineFramebufferInputLink (PipelineLink::LINK_PREVIOUS);
 
     inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
-    inputController.BindInputEvent ("exit", [ & ]() { game.Stop (); });
+    inputController.BindInputEvent ("exit", [ & ]() { Game::Stop (); });
 
     resourceManager.Load<Texture> ("tEarthDiffuse", "textures/2k_earth_daymap.jpg");
     resourceManager.Load<Texture> ("tEarthSpec", "textures/2k_earth_specular_map.png");
@@ -98,9 +95,9 @@ int main (int argc, char* argv [])
     animation.SetLooping (false);
     animation.Play ();
 
-    game.Run ();
+    Game::Run ();
 
-    EngineContext::Deinitialize ();
+    Game::Deinitialize ();
 
     return 0;
 }

@@ -2,6 +2,7 @@
 #define _GEOMETRYRENDERSTAGE_H_
 
 #include "cilantroengine.h"
+#include "graphics/RenderStage.h"
 
 class MeshObject;
 class PointLight;
@@ -9,7 +10,7 @@ class DirectionalLight;
 class SpotLight;
 class Material;
 
-class GeometryRenderStage
+class GeometryRenderStage : public virtual RenderStage
 {
 public:
     __EAPI GeometryRenderStage ();

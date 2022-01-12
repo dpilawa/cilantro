@@ -1,4 +1,4 @@
-#include "system/EngineContext.h"
+#include "system/Game.h"
 #include "graphics/GLGeometryRenderStage.h"
 #include "graphics/GLForwardGeometryRenderStage.h"
 #include "scene/MeshObject.h"
@@ -32,10 +32,10 @@ void GLForwardGeometryRenderStage::OnFrame ()
     LoadMatrixUniformBuffers ();
 
     // set viewport
-    glViewport (0, 0, EngineContext::GetRenderer ().GetWidth (), EngineContext::GetRenderer ().GetHeight ());
+    glViewport (0, 0, Game::GetRenderer ().GetWidth (), Game::GetRenderer ().GetHeight ());
 
     // draw all objects in scene
-    for (auto gameObject : EngineContext::GetGameScene ().GetGameObjectManager ())
+    for (auto gameObject : Game::GetGameScene ().GetGameObjectManager ())
     {
         gameObject->OnDraw (*this);
     }
