@@ -2,7 +2,7 @@
 #include "scene/GameObject.h"
 #include "scene/Light.h"
 
-Light::Light ()
+Light::Light (GameScene* gameScene) : GameObject (gameScene)
 {
     isEnabled = false;
     

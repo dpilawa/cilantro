@@ -32,10 +32,10 @@ void GLForwardGeometryRenderStage::OnFrame ()
     LoadMatrixUniformBuffers ();
 
     // set viewport
-    glViewport (0, 0, Game::GetRenderer ().GetWidth (), Game::GetRenderer ().GetHeight ());
+    glViewport (0, 0, renderer->GetWidth (), renderer->GetHeight ());
 
     // draw all objects in scene
-    for (auto gameObject : Game::GetGameScene ().GetGameObjectManager ())
+    for (auto gameObject : renderer->GetGameScene ()->GetGameObjectManager ())
     {
         gameObject->OnDraw (*this);
     }
@@ -57,12 +57,12 @@ void GLForwardGeometryRenderStage::InitializeFramebuffer ()
     GLRenderStage::InitializeFramebuffer (0, 1);
 }
 
-ShaderProgram& GLForwardGeometryRenderStage::GetMeshObjectGeometryShaderProgram (const MeshObject& meshObject) 
+std::string GLForwardGeometryRenderStage::GetMeshObjectGeometryShaderProgram (const MeshObject& meshObject) 
 {
     return meshObject.GetMaterial ().GetForwardShaderProgram ();
 }
 
-ShaderProgram& GLForwardGeometryRenderStage::GetMeshObjectLightingShaderProgram (const MeshObject& meshObject) 
+std::string GLForwardGeometryRenderStage::GetMeshObjectLightingShaderProgram (const MeshObject& meshObject) 
 {
     return meshObject.GetMaterial ().GetForwardShaderProgram ();
 }

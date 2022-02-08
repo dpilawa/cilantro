@@ -16,16 +16,18 @@ class GeometryRenderStage;
 class MeshObject : public GameObject
 {
 public:
-    __EAPI MeshObject (const std::string& meshName, const std::string materialName);
+    __EAPI MeshObject (GameScene* gameScene, const std::string& meshName, const std::string& materialName);
     __EAPI virtual ~MeshObject ();
 
     // access mesh
     __EAPI Mesh& GetMesh ();
 
-    // set mesh material
+    // material 
     __EAPI MeshObject& SetMaterial (const std::string& materialName);
-    // get mesh material
     __EAPI Material& GetMaterial () const;
+
+    // generate array of bone transformations to be loaded to shader
+    float* GetBoneTransformationsMatrixArray ();
 
     // invoked by game loop on each frame or on update (e.g. transform)
     virtual void OnFrame ();
@@ -35,6 +37,8 @@ public:
 private:
     Mesh& mesh;
     Material& material;
+
+    float boneTransformationMatrixArray[CILANTRO_MAX_BONES * 16];
 };
 
 #endif

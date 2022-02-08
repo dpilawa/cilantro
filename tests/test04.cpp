@@ -19,26 +19,24 @@
 
 int main (int argc, char* argv [])
 {
-    ResourceManager resourceManager;
-    GameScene gameScene;
-    GLFWRenderer renderer (800, 600, "Test 04", false, true, true);
-    GLFWInputController inputController;
-    Timer timer;
+    Game::Initialize ();
+
+    GameScene& gameScene = Game::CreateGameScene<GameScene> ("scene");
+    GLFWRenderer& renderer = gameScene.CreateRenderer<GLFWRenderer> (800, 600, "Test 01", false, true, true);
+    InputController& inputController = Game::CreateInputController<GLFWInputController> ();
 
     AssimpModelLoader modelLoader;
 
-    Game::Initialize (resourceManager, timer, gameScene, renderer, inputController);
-
     renderer.AddRenderStage<GLDeferredGeometryRenderStage> ("base");
     renderer.AddRenderStage<GLQuadRenderStage> ("hdr_postprocess").SetShaderProgram ("post_hdr_shader").SetPipelineFramebufferInputLink (PipelineLink::LINK_PREVIOUS);
-    renderer.AddRenderStage<GLQuadRenderStage> ("fxaa_postprocess").SetShaderProgram ("post_fxaa_shader").SetRenderStageParameterFloat ("fMaxSpan", 4.0f).SetRenderStageParameterVector2f ("vInvResolution", Vector2f (1.0f / Game::GetRenderer ().GetWidth (), 1.0f / Game::GetRenderer ().GetHeight ())).SetPipelineFramebufferInputLink (PipelineLink::LINK_PREVIOUS);   
+    renderer.AddRenderStage<GLQuadRenderStage> ("fxaa_postprocess").SetShaderProgram ("post_fxaa_shader").SetRenderStageParameterFloat ("fMaxSpan", 4.0f).SetRenderStageParameterVector2f ("vInvResolution", Vector2f (1.0f / renderer.GetWidth (), 1.0f / renderer.GetHeight ())).SetPipelineFramebufferInputLink (PipelineLink::LINK_PREVIOUS);   
     renderer.AddRenderStage<GLQuadRenderStage> ("gamma_postprocess+screen").SetShaderProgram ("post_gamma_shader").SetRenderStageParameterFloat ("fGamma", 2.1f).SetPipelineFramebufferInputLink (PipelineLink::LINK_PREVIOUS).SetFramebufferEnabled (false);
 
-    modelLoader.Load ("assets/Cerberus_LP.FBX");
-    resourceManager.Load<Texture> ("tAlbedo", "assets/Textures/Cerberus_A.tga");
-    resourceManager.Load<Texture> ("tNormal", "assets/Textures/Cerberus_N.tga");
-    resourceManager.Load<Texture> ("tMetalness", "assets/Textures/Cerberus_M.tga");
-    resourceManager.Load<Texture> ("tRoughness", "assets/Textures/Cerberus_R.tga");
+    modelLoader.Load ("scene", "assets/Cerberus_LP.FBX");
+    Game::GetResourceManager ().Load<Texture> ("tAlbedo", "assets/Textures/Cerberus_A.tga");
+    Game::GetResourceManager ().Load<Texture> ("tNormal", "assets/Textures/Cerberus_N.tga");
+    Game::GetResourceManager ().Load<Texture> ("tMetalness", "assets/Textures/Cerberus_M.tga");
+    Game::GetResourceManager ().Load<Texture> ("tRoughness", "assets/Textures/Cerberus_R.tga");
   
     inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
     inputController.BindInputEvent ("exit", [ & ]() { Game::Stop (); });
@@ -49,7 +47,7 @@ int main (int argc, char* argv [])
     PBRMaterial& m = gameScene.AddMaterial<PBRMaterial> ("gunMaterial");
     m.SetAlbedo ("tAlbedo").SetNormal ("tNormal").SetMetallic ("tMetalness").SetRoughness ("tRoughness");
 
-    MeshObject& gun = Game::GetGameScene ().GetGameObjectManager ().GetByName<MeshObject> ("Cerberus00_Fixed");
+    MeshObject& gun = gameScene.GetGameObjectManager ().GetByName<MeshObject> ("Cerberus00_Fixed");
     gun.SetMaterial ("gunMaterial");
     gun.GetLocalTransform ().Scale (0.8f).Rotate (0.0f, 15.0f, 0.0f);
 

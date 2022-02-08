@@ -14,7 +14,7 @@
 class AnimationObject : public GameObject
 {
 public:
-    __EAPI AnimationObject ();
+    __EAPI AnimationObject (GameScene* gameScene);
     __EAPI virtual ~AnimationObject ();
 
     template <typename P>

@@ -2,11 +2,9 @@
 #define _GAME_H_
 
 #include "cilantroengine.h"
-#include "system/Timer.h"
 #include "resource/Resource.h"
 #include "resource/ResourceManager.h"
 #include "scene/GameScene.h"
-#include "graphics/Renderer.h"
 #include "input/InputController.h"
 
 class Game
@@ -14,7 +12,7 @@ class Game
 public:
 
     // initialize and deinitialize
-    static __EAPI void Initialize (ResourceManager<Resource>& resourceManager, Timer& timer, GameScene& gameScene, Renderer& renderer, InputController& inputController);
+    static __EAPI void Initialize ();
     static __EAPI void Deinitialize ();
 
     // run a game loop
@@ -22,26 +20,60 @@ public:
     static __EAPI void Stop ();	
     static __EAPI void Step ();
 
-    // accessors
+    // managers
     static __EAPI ResourceManager<Resource>& GetResourceManager ();
-    static __EAPI Timer& GetTimer ();
-    static __EAPI GameScene& GetGameScene ();
-    static __EAPI Renderer& GetRenderer ();
+    static __EAPI ResourceManager<GameScene>& GetGameSceneManager ();
+
+    // scene control
+    template <typename T, typename ...Params> 
+    static T& CreateGameScene (Params&&... params);
+    static __EAPI GameScene& GetCurrentGameScene ();
+    static __EAPI void SetCurrentGameScene (const std::string sceneName);
+
+    // input control
+    template <typename T, typename ...Params>
+    static T& CreateInputController (Params&&... params);
     static __EAPI InputController& GetInputController ();
 
 private:
     
-    static ResourceManager<Resource>* contextResourceManager;
-    static Timer* contextTimer;
-    static GameScene* contextGameScene;
-    static Renderer* contextRenderer;
-    static InputController* contextInputController;
+    static __EAPI ResourceManager<Resource>& resourceManager;
+    static __EAPI ResourceManager<GameScene>& gameSceneManager;
+    static __EAPI GameScene* currentGameScene;
+    static __EAPI InputController* inputController;
 
     // game state
     static bool shouldStop;
     static bool isRunning;
 
 };
+
+template <typename T, typename ...Params> 
+T& Game::CreateGameScene (Params&&... params)
+{
+    static_assert (std::is_base_of<GameScene, T>::value, "Game scene object must inherit from GameScene");
+    T& gameScene = gameSceneManager.Create<T> (params...);
+
+    if (currentGameScene == nullptr)
+    {
+        currentGameScene = &gameScene;
+    }
+
+    return gameScene;
+}
+
+
+template <typename T, typename ...Params> 
+T& Game::CreateInputController (Params&&... params)
+{
+    static_assert (std::is_base_of<InputController, T>::value, "Input controller object must inherit from InputController");
+    T* newInputController = new T (params...);
+
+    Game::inputController = static_cast<InputController*> (newInputController);
+    Game::inputController->Initialize ();
+
+    return *newInputController;
+}
 
 #endif
 

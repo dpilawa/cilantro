@@ -5,7 +5,7 @@
 #include "graphics/GeometryRenderStage.h"
 #include "system/CallbackProvider.h"
 
-SpotLight::SpotLight () : PointLight ()
+SpotLight::SpotLight (GameScene* gameScene) : PointLight (gameScene)
 {
     innerCutoff = 45.0f;
     outerCutoff = innerCutoff;

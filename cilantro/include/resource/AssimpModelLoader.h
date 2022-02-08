@@ -8,6 +8,7 @@
 #include <string>
 #include <set>
 
+class GameScene;
 class GameObject;
 class AnimationObject;
 class Mesh;
@@ -24,9 +25,11 @@ public:
     __EAPI AssimpModelLoader ();
     __EAPI virtual ~AssimpModelLoader ();
 
-    __EAPI void Load (std::string path);
+    __EAPI void Load (std::string sceneName, std::string path);
 
 private:
+
+    GameScene* gameScene;
 
     Assimp::Importer importer;
     std::set<std::string> boneNodes;

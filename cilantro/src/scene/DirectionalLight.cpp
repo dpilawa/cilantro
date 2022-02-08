@@ -5,7 +5,7 @@
 #include "graphics/GeometryRenderStage.h"
 #include "system/CallbackProvider.h"
 
-DirectionalLight::DirectionalLight () : Light()
+DirectionalLight::DirectionalLight (GameScene* gameScene) : Light (gameScene)
 {
 }
 

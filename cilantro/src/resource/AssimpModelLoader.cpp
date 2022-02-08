@@ -26,9 +26,10 @@ AssimpModelLoader::~AssimpModelLoader ()
     
 }
 
-void AssimpModelLoader::Load (std::string path)
+void AssimpModelLoader::Load (std::string sceneName, std::string path)
 {
     const aiScene* scene = importer.ReadFile (path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_LimitBoneWeights);
+    gameScene = &Game::GetGameSceneManager ().GetByName<GameScene> (sceneName);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) 
     {
@@ -201,7 +202,7 @@ void AssimpModelLoader::ImportMeshBones (Mesh& myMesh, const aiScene* scene, con
         {
             aiBone* bone = mesh->mBones[i];
 
-            Bone& b = Game::GetGameScene ().GetGameObjectManager ().GetByName<Bone> (bone->mName.C_Str ());
+            Bone& b = gameScene->GetGameObjectManager ().GetByName<Bone> (bone->mName.C_Str ());
             b.SetOffsetMatrix (ConvertMatrix (bone->mOffsetMatrix));
 
             for (unsigned j = 0; j < bone->mNumWeights; j++)
@@ -226,7 +227,7 @@ void AssimpModelLoader::ImportMeshMaterial (Mesh& myMesh, const aiScene* scene, 
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
         // skip if material already loaded
-        if (Game::GetGameScene ().GetMaterialManager ().HasName<Material> (material->GetName ().C_Str ()))
+        if (gameScene->GetMaterialManager ().HasName<Material> (material->GetName ().C_Str ()))
         {
             return;
         }
@@ -244,7 +245,7 @@ void AssimpModelLoader::ImportMeshMaterial (Mesh& myMesh, const aiScene* scene, 
         if (HasTexture (material, aiTextureType_DIFFUSE))
         {
             // phong material
-            PhongMaterial& myMaterial = Game::GetGameScene ().AddMaterial<PhongMaterial> (material->GetName ().C_Str ());
+            PhongMaterial& myMaterial = gameScene->AddMaterial<PhongMaterial> (material->GetName ().C_Str ());
 
             if (HasTexture (material, aiTextureType_DIFFUSE))
             {
@@ -270,7 +271,7 @@ void AssimpModelLoader::ImportMeshMaterial (Mesh& myMesh, const aiScene* scene, 
         else if (HasTexture (material, aiTextureType_BASE_COLOR))
         {
             // PBR material
-            PBRMaterial& myMaterial = Game::GetGameScene ().AddMaterial<PBRMaterial> (material->GetName ().C_Str ());
+            PBRMaterial& myMaterial = gameScene->AddMaterial<PBRMaterial> (material->GetName ().C_Str ());
 
             if (HasTexture (material, aiTextureType_BASE_COLOR))
             {
@@ -314,7 +315,7 @@ void AssimpModelLoader::ImportAnimation (const aiAnimation* animation)
 void AssimpModelLoader::ImportNodeAnimation (AnimationObject& animationObject, const aiAnimation* animation, const aiNodeAnim* nodeAnimation)
 {
     std::string nodeName = nodeAnimation->mNodeName.C_Str ();
-    GameObject& node = Game::GetGameScene ().GetGameObjectManager ().GetByName <GameObject> (nodeName);
+    GameObject& node = gameScene->GetGameObjectManager ().GetByName <GameObject> (nodeName);
     std::string propertyNameT = nodeName + "_T";
     std::string propertyNameR = nodeName + "_R";
     std::string propertyNameS = nodeName + "_S";
@@ -392,7 +393,7 @@ void AssimpModelLoader::ImportNodeAnimation (AnimationObject& animationObject, c
 
 GameObject& AssimpModelLoader::CreateGameObject (const aiNode* node, const aiNode* parent)
 {
-    GameObject& gameObject = Game::GetGameScene ().AddGameObject<GameObject> (node->mName.C_Str ());
+    GameObject& gameObject = gameScene->AddGameObject<GameObject> (node->mName.C_Str ());
         
     if (parent != nullptr)
     {
@@ -404,7 +405,7 @@ GameObject& AssimpModelLoader::CreateGameObject (const aiNode* node, const aiNod
 
 Bone& AssimpModelLoader::CreateBone (const aiNode* node, const aiNode* parent)
 {
-    Bone& bone = Game::GetGameScene ().AddGameObject<Bone> (node->mName.C_Str ());
+    Bone& bone = gameScene->AddGameObject<Bone> (node->mName.C_Str ());
         
     if (parent != nullptr)
     {
@@ -417,7 +418,7 @@ Bone& AssimpModelLoader::CreateBone (const aiNode* node, const aiNode* parent)
 MeshObject& AssimpModelLoader::CreateMeshObject (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh, const aiNode* parent)
 {
     aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-    MeshObject& m = Game::GetGameScene ().AddGameObject<MeshObject> (myMesh.GetName (), myMesh.GetName (), material->GetName ().C_Str ());
+    MeshObject& m = gameScene->AddGameObject<MeshObject> (myMesh.GetName (), myMesh.GetName (), material->GetName ().C_Str ());
         
     if (parent != nullptr)
     {
@@ -429,7 +430,7 @@ MeshObject& AssimpModelLoader::CreateMeshObject (Mesh& myMesh, const aiScene* sc
 
 AnimationObject& AssimpModelLoader::CreateAnimationObject (const aiAnimation* animation)
 {
-    AnimationObject& animationObject = Game::GetGameScene ().AddGameObject<AnimationObject> (animation->mName.C_Str ());
+    AnimationObject& animationObject = gameScene->AddGameObject<AnimationObject> (animation->mName.C_Str ());
 
     return animationObject;
 }

@@ -5,11 +5,13 @@
 #include "system/LogMessage.h"
 #include <cmath>
 
-Renderer::Renderer (unsigned int width, unsigned int height)
+Renderer::Renderer (GameScene* gameScene, unsigned int width, unsigned int height)
 {
     totalRenderFrames = 0L;
     totalRenderTime = 0.0f;
     totalFrameRenderTime = 0.0f;
+
+    this->gameScene = gameScene;
 
     this->width = width;
     this->height = height;
@@ -35,6 +37,11 @@ void Renderer::Deinitialize ()
     }
 
     LogMessage (MSG_LOCATION) << "Rendered" << totalRenderFrames << "frames in" << totalRenderTime << "seconds; avg FPS =" << std::round (totalRenderFrames / totalFrameRenderTime) << "; real FPS = " << std::round (totalRenderFrames / totalRenderTime);
+}
+
+GameScene* Renderer::GetGameScene ()
+{
+    return gameScene;
 }
 
 unsigned int Renderer::GetWidth () const
@@ -73,7 +80,7 @@ void Renderer::RenderFrame ()
     // reset global rendering timer
     if (totalRenderTime == 0L)
     {
-        Game::GetTimer ().ResetSplitTime ();
+        gameScene->GetTimer ().ResetSplitTime ();
     }
 
     // run post-processing
@@ -84,12 +91,12 @@ void Renderer::RenderFrame ()
     }
 
     // update game clocks (Tock)
-    Game::GetTimer ().Tock ();
+    gameScene->GetTimer ().Tock ();
 
     // update frame counters
     totalRenderFrames++;
-    totalRenderTime = Game::GetTimer ().GetTimeSinceSplitTime ();
-    totalFrameRenderTime += Game::GetTimer ().GetFrameRenderTime ();
+    totalRenderTime = gameScene->GetTimer ().GetTimeSinceSplitTime ();
+    totalFrameRenderTime += gameScene->GetTimer ().GetFrameRenderTime ();
 }
 
 Renderer& Renderer::RotateRenderPipelineLeft ()

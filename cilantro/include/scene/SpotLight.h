@@ -10,7 +10,7 @@ class GeometryRenderStage;
 class SpotLight : public PointLight
 {
 public:
-    __EAPI SpotLight ();
+    __EAPI SpotLight (GameScene* gameScene);
     __EAPI virtual ~SpotLight ();
 
     // set attenuation factors

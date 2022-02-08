@@ -2,75 +2,66 @@
 #include "system/Game.h"
 #include "system/LogMessage.h"
 
-ResourceManager<Resource>* Game::contextResourceManager;
-Timer* Game::contextTimer;
-GameScene* Game::contextGameScene;
-Renderer* Game::contextRenderer;
-InputController* Game::contextInputController;
+ResourceManager<Resource>& Game::resourceManager = ResourceManager<Resource>();
+ResourceManager<GameScene>& Game::gameSceneManager = ResourceManager<GameScene>();
+
+GameScene* Game::currentGameScene;
+InputController* Game::inputController;
 
 bool Game::shouldStop;
 bool Game::isRunning;
 
-void Game::Initialize (ResourceManager<Resource>& resourceManager, Timer& timer, GameScene& gameScene, Renderer& renderer, InputController& inputController)
+void Game::Initialize ()
 {
     LogMessage () << "Engine starting";
 
     // set flags
     shouldStop = false;
     isRunning = false;
-
-    contextResourceManager = &resourceManager;
-    contextTimer = &timer;
-    contextGameScene = &gameScene;
-    contextRenderer = &renderer;
-    contextInputController = &inputController;
-
-    contextRenderer->Initialize ();
-    contextInputController->Initialize ();
-
-    // pre-set game clocks
-    contextTimer->Tick ();
 }
 
 void Game::Deinitialize ()
 {
-    contextInputController->Deinitialize ();
-    contextRenderer->Deinitialize ();
-
-    LogMessage () << "Engine stopped";
+    if (inputController != nullptr)
+    {
+        inputController->Deinitialize ();
+        delete inputController;
+    }
+    
+    LogMessage () << "Engine stopping";
 }
 
 ResourceManager<Resource>& Game::GetResourceManager ()
 {
-    return *contextResourceManager;
+    return resourceManager;
 }
 
-Timer& Game::GetTimer ()
+ResourceManager<GameScene>& Game::GetGameSceneManager ()
 {
-    return *contextTimer;
+    return gameSceneManager;
 }
 
-GameScene& Game::GetGameScene ()
+GameScene& Game::GetCurrentGameScene ()
 {
-    return *contextGameScene;
+    return *currentGameScene;
 }
 
-Renderer& Game::GetRenderer ()
+void Game::SetCurrentGameScene (const std::string sceneName)
 {
-    return *contextRenderer;
+    currentGameScene = &gameSceneManager.GetByName<GameScene>(sceneName);
 }
 
 InputController& Game::GetInputController ()
 {
-    return *contextInputController;
+    return *inputController;
 }
 
 void Game::Run ()
 {	
-    // initialize all game objects
-    for (auto gameObject : contextGameScene->GetGameObjectManager ())
+    // initialize all game scenes
+    for (auto gameScene : gameSceneManager)
     {
-        gameObject->OnStart ();
+        gameScene->OnStart ();
     }
 
     isRunning = true;
@@ -83,9 +74,9 @@ void Game::Run ()
     isRunning = false;
 
     // deinitialize all game objects
-    for (auto gameObject : contextGameScene->GetGameObjectManager ())
+    for (auto gameScene : gameSceneManager)
     {
-        gameObject->OnEnd ();
+        gameScene->OnEnd ();
     }
 }
 
@@ -97,21 +88,11 @@ void Game::Stop ()
 
 void Game::Step ()
 {
-    // update game clocks (Tick)
-    contextTimer->Tick ();
+    // step current scene
+    currentGameScene->OnFrame ();
 
-    // process all game objects
-    for (auto gameObject : contextGameScene->GetGameObjectManager ())
-    {
-        gameObject->OnFrame ();
-    }
-
-    // render frame
-    contextRenderer->RenderFrame ();
-
-    // process controller events
-    contextInputController->OnFrame ();
-
+    // process input
+    inputController->OnFrame ();
 }
 
 

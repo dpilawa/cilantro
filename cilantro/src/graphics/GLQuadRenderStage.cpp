@@ -53,7 +53,7 @@ void GLQuadRenderStage::Deinitialize ()
 
 void GLQuadRenderStage::OnFrame ()
 {
-    GLFramebuffer* inputFramebuffer = dynamic_cast<GLFramebuffer*>(Game::GetRenderer ().GetPipelineFramebuffer (pipelineFramebufferInputLink));
+    GLFramebuffer* inputFramebuffer = dynamic_cast<GLFramebuffer*>(renderer->GetPipelineFramebuffer (pipelineFramebufferInputLink));
 
     GLRenderStage::OnFrame ();
  
@@ -68,7 +68,7 @@ void GLQuadRenderStage::OnFrame ()
     }
 
     glBindVertexArray (VAO);    
-    glViewport (0, 0, Game::GetRenderer ().GetWidth(), Game::GetRenderer ().GetHeight ());
+    glViewport (0, 0, renderer->GetWidth(), renderer->GetHeight ());
     glDrawArrays (GL_TRIANGLES, 0, 6);
     glBindTexture (GL_TEXTURE_2D, 0);
     glBindVertexArray (0);

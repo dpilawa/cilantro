@@ -10,7 +10,7 @@ class GeometryRenderStage;
 class Light : public GameObject
 {
 public:
-    Light ();
+    Light (GameScene* gameScene);
     virtual ~Light ();
 
     // enable or disable light

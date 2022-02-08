@@ -2,7 +2,11 @@
 #define _GAMESCENE_H_
 
 #include "cilantroengine.h"
+#include "resource/Resource.h"
 #include "resource/ResourceManager.h"
+#include "graphics/Renderer.h"
+#include "input/InputController.h"
+#include "system/Timer.h"
 #include "scene/GameObject.h"
 #include "scene/MeshObject.h"
 #include "scene/Material.h"
@@ -12,12 +16,16 @@
 
 // This class represents a game world (a.k.a scene or level)
 // It contains all visible and invisible objects in a game
-class GameScene : public CallbackProvider<std::string, handle_t, unsigned int>
+class GameScene : public Resource, public CallbackProvider<std::string, handle_t, unsigned int>
 {
 public:
 
     __EAPI GameScene();
     __EAPI ~GameScene();
+
+    void OnStart ();
+    void OnFrame ();
+    void OnEnd ();
 
     // add GameObject to a scene
     // returns reference to that added object
@@ -33,6 +41,13 @@ public:
     __EAPI ResourceManager<GameObject>& GetGameObjectManager ();
     __EAPI ResourceManager<Material>& GetMaterialManager ();
 
+    // renderer control
+    template <typename T, typename ...Params> 
+    T& CreateRenderer (Params&&... params);
+
+    // other getters
+    __EAPI Timer& GetTimer ();
+
     // active camera manipulation
     __EAPI void SetActiveCamera (const std::string& name);
     __EAPI Camera* GetActiveCamera () const;
@@ -45,6 +60,10 @@ private:
     // map of all Materials in the scene
     ResourceManager<Material> materials;
 
+    // systems
+    Timer* timer;
+    Renderer* renderer;
+
     // reference to active camera
     Camera* activeCamera;
 
@@ -53,7 +72,7 @@ private:
 template <typename T, typename ...Params>
 T& GameScene::AddGameObject (const std::string& name, Params&&... params)
 {
-    T& gameObject = gameObjects.Create<T> (name, params...);
+    T& gameObject = gameObjects.Create<T> (name, this, params...);
     handle_t handle = gameObject.GetHandle ();
 
     // set callbacks on object modification
@@ -96,6 +115,18 @@ T& GameScene::AddMaterial (const std::string& name, Params&&... params)
 
     // return material reference
     return material;
+}
+
+template <typename T, typename ...Params> 
+T& GameScene::CreateRenderer (Params&&... params)
+{
+    static_assert (std::is_base_of<Renderer, T>::value, "Renderer object must inherit from Renderer");
+    T* newRenderer = new T (this, params...);
+
+    this->renderer = static_cast<Renderer*> (newRenderer);
+    this->renderer->Initialize ();
+
+    return *newRenderer;
 }
 
 #endif

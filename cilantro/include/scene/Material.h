@@ -26,9 +26,9 @@ public:
     __EAPI Material& SetForwardShaderProgram (const std::string& name);
     __EAPI Material& SetDeferredGeometryPassShaderProgram (const std::string& name);
     __EAPI Material& SetDeferredLightingPassShaderProgram (const std::string& name);
-    __EAPI ShaderProgram& GetForwardShaderProgram () const;
-    __EAPI ShaderProgram& GetDeferredGeometryPassShaderProgram () const;
-    __EAPI ShaderProgram& GetDeferredLightingPassShaderProgram () const;
+    __EAPI std::string GetForwardShaderProgram () const;
+    __EAPI std::string GetDeferredGeometryPassShaderProgram () const;
+    __EAPI std::string GetDeferredLightingPassShaderProgram () const;
 
     texture_map_t& GetTexturesMap();
     property_map_t& GetPropertiesMap ();
@@ -48,9 +48,9 @@ protected:
 private:
 
     // shader programs defined in renderer
-    handle_t forwardShaderProgram;
-    handle_t deferredGeometryPassShaderProgram;
-    handle_t deferredLightingPassShaderProgram;
+    std::string forwardShaderProgram;
+    std::string deferredGeometryPassShaderProgram;
+    std::string deferredLightingPassShaderProgram;
 
 };
 

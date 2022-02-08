@@ -11,11 +11,11 @@ class GLFWRenderer : public Renderer
 {
 public:
 
-    __EAPI GLFWRenderer (unsigned int width, unsigned int height, std::string windowCaption, bool isFullscreen, bool isResizable, bool isVSync);
+    __EAPI GLFWRenderer (GameScene* gameScene, unsigned int width, unsigned int height, std::string windowCaption, bool isFullscreen, bool isResizable, bool isVSync);
     __EAPI ~GLFWRenderer ();
 
-    virtual void Initialize ();
-    virtual void Deinitialize ();
+    __EAPI virtual void Initialize ();
+    __EAPI virtual void Deinitialize ();
 
     virtual void RenderFrame ();
 

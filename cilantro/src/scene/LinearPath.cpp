@@ -1,7 +1,7 @@
 #include "scene/LinearPath.h"
 #include "math/Mathf.h"
 
-LinearPath::LinearPath ()
+LinearPath::LinearPath (GameScene* gameScene) : Path (gameScene)
 {
 
 }

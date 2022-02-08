@@ -3,6 +3,7 @@
 
 #include "cilantroengine.h"
 #include "system/CallbackProvider.h"
+#include "scene/GameScene.h"
 #include "input/Input.h"
 #include <string>
 #include <functional>

@@ -25,12 +25,12 @@ RenderStage& GLRenderStage::SetMultisampleEnabled (bool value)
 #if (CILANTRO_GL_VERSION <= 140)
         LogMessage (MSG_LOCATION, EXIT_FAILURE) << "OpenGL 3.2 required for multisample framebuffers";
 #else
-        framebuffer = new GLMultisampleFramebuffer (Game::GetRenderer ().GetWidth (), Game::GetRenderer ().GetHeight (), 0, 1);
+        framebuffer = new GLMultisampleFramebuffer (renderer->GetWidth (), renderer->GetHeight (), 0, 1);
 #endif  
     }
     else 
     {
-        framebuffer = new GLFramebuffer (Game::GetRenderer ().GetWidth (), Game::GetRenderer ().GetHeight (), 0, 1);
+        framebuffer = new GLFramebuffer (renderer->GetWidth (), renderer->GetHeight (), 0, 1);
     }
 
     framebuffer->Initialize ();
@@ -54,9 +54,9 @@ void GLRenderStage::Deinitialize ()
 void GLRenderStage::OnFrame ()
 {
     GLuint glStencilFunction;
-    Framebuffer* inputFramebuffer = Game::GetRenderer ().GetPipelineFramebuffer (pipelineFramebufferInputLink);
-    Framebuffer* inputFramebufferRenderbuffer = Game::GetRenderer ().GetPipelineFramebuffer (pipelineRenderbufferLink);
-    Framebuffer* outputFramebuffer = Game::GetRenderer ().GetPipelineFramebuffer (pipelineFramebufferOutputLink);
+    Framebuffer* inputFramebuffer = renderer->GetPipelineFramebuffer (pipelineFramebufferInputLink);
+    Framebuffer* inputFramebufferRenderbuffer = renderer->GetPipelineFramebuffer (pipelineRenderbufferLink);
+    Framebuffer* outputFramebuffer = renderer->GetPipelineFramebuffer (pipelineFramebufferOutputLink);
   
     // attach input renderbuffer's stencil to output
     if (outputFramebuffer != nullptr)
@@ -137,12 +137,12 @@ void GLRenderStage::InitializeFramebuffer (unsigned int rgbTextures, unsigned in
 #if (CILANTRO_GL_VERSION <= 140)
             LogMessage (MSG_LOCATION, EXIT_FAILURE) << "OpenGL 3.2 required for multisample framebuffers";
 #else
-            framebuffer = new GLMultisampleFramebuffer (Game::GetRenderer ().GetWidth (), Game::GetRenderer ().GetHeight (), rgbTextures, rgbaTextures);
+            framebuffer = new GLMultisampleFramebuffer (renderer->GetWidth (), renderer->GetHeight (), rgbTextures, rgbaTextures);
 #endif
         }
         else
         {
-            framebuffer = new GLFramebuffer (Game::GetRenderer ().GetWidth (), Game::GetRenderer ().GetHeight (), rgbTextures, rgbaTextures);
+            framebuffer = new GLFramebuffer (renderer->GetWidth (), renderer->GetHeight (), rgbTextures, rgbaTextures);
         }
         
         framebuffer->Initialize ();

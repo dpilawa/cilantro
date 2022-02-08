@@ -11,12 +11,52 @@
 #include <vector>
 
 GameScene::GameScene()
-{
+{ 
+    this->timer = new Timer();
+    timer->Tick ();
+
     this->activeCamera = nullptr;
 }
 
 GameScene::~GameScene()
 {
+    delete timer;
+
+    if (renderer != nullptr)
+    {
+        renderer->Deinitialize ();
+        delete renderer;
+    }
+}
+
+void GameScene::OnStart ()
+{
+    for (auto gameObject : gameObjects)
+    {
+        gameObject->OnStart ();
+    }
+}
+
+void GameScene::OnFrame ()
+{
+    timer->Tick ();
+
+    for (auto gameObject : gameObjects)
+    {
+        gameObject->OnFrame ();
+    }
+
+    renderer->RenderFrame ();
+
+    timer->Tock ();
+}
+
+void GameScene::OnEnd ()
+{
+    for (auto gameObject : gameObjects)
+    {
+        gameObject->OnEnd ();
+    }
 }
 
 ResourceManager<GameObject>& GameScene::GetGameObjectManager ()
@@ -27,6 +67,11 @@ ResourceManager<GameObject>& GameScene::GetGameObjectManager ()
 ResourceManager<Material>& GameScene::GetMaterialManager ()
 {
     return materials;
+}
+
+Timer& GameScene::GetTimer ()
+{
+    return *timer;
 }
 
 void GameScene::SetActiveCamera (const std::string& name)

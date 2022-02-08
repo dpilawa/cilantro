@@ -14,7 +14,7 @@ QuadRenderStage::~QuadRenderStage ()
 
 QuadRenderStage& QuadRenderStage::SetShaderProgram (const std::string& shaderProgramName)
 {
-    shaderProgram = &(Game::GetRenderer ().GetShaderProgramManager ().GetByName<ShaderProgram> (shaderProgramName));
+    shaderProgram = &(renderer->GetShaderProgramManager ().GetByName<ShaderProgram> (shaderProgramName));
 
     return *this;
 }

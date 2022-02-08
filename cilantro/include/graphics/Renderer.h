@@ -8,21 +8,19 @@
 #include <string>
 #include <vector>
 
-class MeshObject;
-class PointLight;
-class DirectionalLight;
-class SpotLight;
-class Material;
-class Camera;
+class GameScene;
 
 class Renderer
 {
 public:
-    __EAPI Renderer (unsigned int width, unsigned int height);
+    __EAPI Renderer (GameScene* gameScene, unsigned int width, unsigned int height);
     __EAPI virtual ~Renderer ();
 
-    virtual void Initialize ();
-    virtual void Deinitialize ();
+    __EAPI virtual void Initialize ();
+    __EAPI virtual void Deinitialize ();
+    
+    // scene
+    GameScene* GetGameScene ();
 
     // dimensions
     __EAPI unsigned int GetWidth () const;
@@ -50,6 +48,8 @@ public:
 
 protected:
 
+    GameScene* gameScene;
+
     unsigned int renderStage;
     ResourceManager<RenderStage> renderStages;
     std::vector<handle_t> renderPipeline;
@@ -70,6 +70,7 @@ template <typename T, typename ...Params>
 T& Renderer::AddRenderStage (const std::string& name, Params&&... params)
 {
     T& renderStage = renderStages.Create<T> (name, params...);
+    renderStage.renderer = this;
 
     // initialize
     renderStage.Initialize ();

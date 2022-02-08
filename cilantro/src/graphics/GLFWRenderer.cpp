@@ -4,7 +4,8 @@
 #include "system/Game.h"
 #include "system/LogMessage.h"
 
-GLFWRenderer::GLFWRenderer (unsigned int width, unsigned int height, std::string windowCaption, bool isFullscreen, bool isResizable, bool isVSync) : Renderer (width, height)
+GLFWRenderer::GLFWRenderer (GameScene* gameScene, unsigned int width, unsigned int height, std::string windowCaption, bool isFullscreen, bool isResizable, bool isVSync) 
+    : Renderer (gameScene, width, height)
 {
     this->windowCaption = windowCaption;
     this->isFullscreen = isFullscreen;
@@ -62,12 +63,12 @@ void GLFWRenderer::Initialize ()
     glfwMakeContextCurrent (window);
 
     // set resize callback
-    auto framebufferResizeCallback = [](GLFWwindow* window, int width, int height)
+    auto framebufferResizeCallback = [&](GLFWwindow* window, int width, int height)
     {
-        Game::GetRenderer().SetResolution (width, height);
+        SetResolution (width, height);
     };
 
-    glfwSetFramebufferSizeCallback (window, framebufferResizeCallback);
+    //glfwSetFramebufferSizeCallback (window, framebufferResizeCallback);
 
     // set framebuffer size (relevant for high DPI displays)
     glfwGetFramebufferSize (window, (int*)(&width), (int*)(&height));

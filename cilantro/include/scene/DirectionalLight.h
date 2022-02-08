@@ -10,7 +10,7 @@ class GeometryRenderStage;
 class DirectionalLight : public Light
 {
 public:
-    __EAPI DirectionalLight ();
+    __EAPI DirectionalLight (GameScene* gameScene);
     __EAPI virtual ~DirectionalLight ();
 
     // invoked by game loop on update	

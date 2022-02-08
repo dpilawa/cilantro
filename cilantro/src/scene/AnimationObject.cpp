@@ -17,7 +17,7 @@ template __EAPI void AnimationObject::UpdateProperties<float> ();
 template __EAPI void AnimationObject::UpdateProperties<Vector3f> ();
 template __EAPI void AnimationObject::UpdateProperties<Quaternion> ();
 
-AnimationObject::AnimationObject ()
+AnimationObject::AnimationObject (GameScene* gameScene) : GameObject (gameScene)
 {
     isPlaying = false;
     isLooping = true;
@@ -74,7 +74,7 @@ void AnimationObject::OnFrame ()
         UpdateProperties<Vector3f> ();
         UpdateProperties<Quaternion> ();
 
-        playedTime += Game::GetTimer ().GetFrameDeltaTime ();
+        playedTime += gameScene->GetTimer ().GetFrameDeltaTime ();
     }
 }
 

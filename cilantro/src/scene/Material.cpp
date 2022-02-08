@@ -14,7 +14,7 @@ Material::~Material ()
 
 Material& Material::SetForwardShaderProgram (const std::string& name)
 {
-    forwardShaderProgram = Game::GetRenderer ().GetShaderProgramManager ().GetByName<ShaderProgram> (name).GetHandle ();
+    forwardShaderProgram = name;
     InvokeCallbacks ("OnUpdateMaterial", this->GetHandle (), 0);
 
     return *this;
@@ -22,7 +22,7 @@ Material& Material::SetForwardShaderProgram (const std::string& name)
 
 Material& Material::SetDeferredGeometryPassShaderProgram (const std::string& name)
 {
-    deferredGeometryPassShaderProgram = Game::GetRenderer ().GetShaderProgramManager ().GetByName<ShaderProgram> (name).GetHandle ();
+    deferredGeometryPassShaderProgram = name;
     InvokeCallbacks ("OnUpdateMaterial", this->GetHandle (), 0);
 
     return *this;
@@ -30,25 +30,25 @@ Material& Material::SetDeferredGeometryPassShaderProgram (const std::string& nam
 
 Material& Material::SetDeferredLightingPassShaderProgram (const std::string& name)
 {
-    deferredLightingPassShaderProgram = Game::GetRenderer ().GetShaderProgramManager ().GetByName<ShaderProgram> (name).GetHandle ();
+    deferredLightingPassShaderProgram = name;
     InvokeCallbacks ("OnUpdateMaterial", this->GetHandle (), 0);
 
     return *this;
 }
 
-ShaderProgram& Material::GetForwardShaderProgram () const
+std::string Material::GetForwardShaderProgram () const
 {
-    return Game::GetRenderer ().GetShaderProgramManager ().GetByHandle<ShaderProgram> (forwardShaderProgram);
+    return forwardShaderProgram;
 }
 
-ShaderProgram& Material::GetDeferredGeometryPassShaderProgram () const
+std::string Material::GetDeferredGeometryPassShaderProgram () const
 {
-    return Game::GetRenderer ().GetShaderProgramManager ().GetByHandle<ShaderProgram> (deferredGeometryPassShaderProgram);
+    return deferredGeometryPassShaderProgram;
 }
 
-ShaderProgram& Material::GetDeferredLightingPassShaderProgram () const
+std::string Material::GetDeferredLightingPassShaderProgram () const
 {
-    return Game::GetRenderer ().GetShaderProgramManager ().GetByHandle<ShaderProgram> (deferredLightingPassShaderProgram);
+    return deferredLightingPassShaderProgram;
 }
 
 texture_map_t& Material::GetTexturesMap()

@@ -10,9 +10,10 @@
 #include "system/CallbackProvider.h"
 #include <string>
 
-GameObject::GameObject ()
+GameObject::GameObject (GameScene* gameScene)
 {
     parentObject = nullptr;
+    this->gameScene = gameScene;
 
     CalculateModelTransformMatrix ();
 
@@ -27,7 +28,7 @@ GameObject::~GameObject ()
 
 GameObject& GameObject::SetParentObject (const std::string& name)
 {
-    GameObject& parent = Game::GetGameScene ().GetGameObjectManager ().GetByName<GameObject> (name);
+    GameObject& parent = gameScene->GetGameObjectManager ().GetByName<GameObject> (name);
 
     parentObject = &parent;
     parent.childObjects.push_back (this);
@@ -158,3 +159,4 @@ Vector3f GameObject::GetForward () const
 
     return Mathf::Normalize (Vector3f (modelTransforMatrix[0][2], modelTransforMatrix[1][2], modelTransforMatrix[2][2]));
 }
+

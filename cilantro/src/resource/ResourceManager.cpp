@@ -1,5 +1,6 @@
 #include "resource/ResourceManager.h"
 #include "resource/Resource.h"
+#include "scene/GameScene.h"
 #include "scene/Material.h"
 #include "scene/GameObject.h"
 #include "graphics/ShaderProgram.h"
@@ -85,6 +86,16 @@ template __EAPI ResourceManager<Resource>::const_iterator ResourceManager<Resour
 template __EAPI ResourceManager<Resource>::const_iterator ResourceManager<Resource>::cbegin () const;
 template __EAPI ResourceManager<Resource>::const_iterator ResourceManager<Resource>::cend () const;
 template __EAPI std::shared_ptr<Resource> ResourceManager<Resource>::Push (const std::string& name, std::shared_ptr<Resource> resource);
+
+template __EAPI ResourceManager<GameScene>::ResourceManager ();
+template __EAPI ResourceManager<GameScene>::~ResourceManager ();
+template __EAPI ResourceManager<GameScene>::iterator ResourceManager<GameScene>::begin ();
+template __EAPI ResourceManager<GameScene>::iterator ResourceManager<GameScene>::end ();
+template __EAPI ResourceManager<GameScene>::const_iterator ResourceManager<GameScene>::begin () const;
+template __EAPI ResourceManager<GameScene>::const_iterator ResourceManager<GameScene>::end () const;
+template __EAPI ResourceManager<GameScene>::const_iterator ResourceManager<GameScene>::cbegin () const;
+template __EAPI ResourceManager<GameScene>::const_iterator ResourceManager<GameScene>::cend () const;
+template __EAPI std::shared_ptr<GameScene> ResourceManager<GameScene>::Push (const std::string& name, std::shared_ptr<GameScene> resource);
 
 template __EAPI ResourceManager<Material>::ResourceManager ();
 template __EAPI ResourceManager<Material>::~ResourceManager ();

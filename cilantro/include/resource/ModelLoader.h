@@ -10,7 +10,7 @@ public:
     ModelLoader ();
     virtual ~ModelLoader ();
 
-    virtual void Load (std::string path) = 0;
+    virtual void Load (std::string sceneName, std::string path) = 0;
  
 };
 

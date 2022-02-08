@@ -10,7 +10,7 @@
 class SplinePath : public Path 
 {
 public:
-    __EAPI SplinePath ();
+    __EAPI SplinePath (GameScene* gameScene);
     __EAPI virtual ~SplinePath ();
 
     __EAPI Vector3f GetPositionAtDistance (float distance) const;

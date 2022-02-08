@@ -5,7 +5,7 @@
 #include "graphics/GeometryRenderStage.h"
 #include "system/CallbackProvider.h"
 
-PointLight::PointLight () : Light()
+PointLight::PointLight (GameScene* gameScene) : Light (gameScene)
 {
     attenuationConst = 1.0f;
     attenuationLinear = 0.0f;

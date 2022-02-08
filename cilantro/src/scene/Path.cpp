@@ -1,7 +1,7 @@
 #include "scene/Path.h"
 #include "math/Mathf.h"
 
-Path::Path ()
+Path::Path (GameScene* gameScene) : GameObject (gameScene)
 {
 }
 

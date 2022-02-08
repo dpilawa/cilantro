@@ -48,8 +48,7 @@ public:
     __EAPI float* GetBitangentData ();
     __EAPI unsigned int* GetBoneIndicesData ();
     __EAPI float* GetBoneWeightsData ();
-
-    __EAPI float* GetBoneTransformationsMatrixArray ();
+    __EAPI std::vector<handle_t>& GetMeshBones ();
 
     // get faces raw data
     __EAPI unsigned int* GetFacesData ();
@@ -80,8 +79,6 @@ private:
 
     // index in this vector is bone index, element is bone handle in resource manager
     std::vector<handle_t> meshBones;
-    
-    float boneTransformationMatrixArray[CILANTRO_MAX_BONES * 16];
 
     std::vector<float> vertices;
     std::vector<unsigned int> indices;

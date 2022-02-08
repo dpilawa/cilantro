@@ -3,7 +3,7 @@
 #include "input/GLFWInputController.h"
 #include "system/Game.h"
 
-ControlledCamera::ControlledCamera (float fov, float near, float far, float speed, float sensitivity) : PerspectiveCamera (fov, near, far), speed (speed), sensitivity (sensitivity)
+ControlledCamera::ControlledCamera (GameScene* gameScene, float fov, float near, float far, float speed, float sensitivity) : PerspectiveCamera (gameScene, fov, near, far), speed (speed), sensitivity (sensitivity)
 {
 }
 

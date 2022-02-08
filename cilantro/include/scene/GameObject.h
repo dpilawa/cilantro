@@ -8,12 +8,13 @@
 #include <string>
 #include <vector>
 
+class GameScene;
 class GeometryRenderStage;
 
 class GameObject : public Resource, public CallbackProvider<std::string, handle_t, unsigned int>
 {
 public:
-    __EAPI GameObject ();
+    __EAPI GameObject (GameScene* gameScene);
     __EAPI virtual ~GameObject ();
 
     // set pointer to parent object (i.e. put current object inside hierarchy)
@@ -51,11 +52,15 @@ public:
     __EAPI Vector3f GetUp () const;
     __EAPI Vector3f GetForward () const;	
 
-private:
+protected:
+
+    // parent scene
+    GameScene* gameScene;
 
     // pointer to parent object (objects may form a hierarchy)
     GameObject* parentObject;
-    
+
+private:
     // vector of child objects
     std::vector<GameObject*> childObjects;
 

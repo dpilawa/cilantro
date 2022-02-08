@@ -17,6 +17,7 @@ class Vector4f;
 
 class RenderStage : public Resource
 {
+    friend class Renderer;
 public:
     __EAPI RenderStage ();
     __EAPI virtual ~RenderStage ();
@@ -60,6 +61,9 @@ protected:
     bool clearOnFrameEnabled;
     bool faceCullingEnabled;
     bool framebufferEnabled;
+
+    // parent renderer
+    Renderer* renderer;
 
     // output framebuffer
     Framebuffer* framebuffer;

@@ -21,8 +21,8 @@ protected:
     
 private:
 
-    virtual ShaderProgram& GetMeshObjectGeometryShaderProgram (const MeshObject& meshObject);
-    virtual ShaderProgram& GetMeshObjectLightingShaderProgram (const MeshObject& meshObject);
+    virtual std::string GetMeshObjectGeometryShaderProgram (const MeshObject& meshObject);
+    virtual std::string GetMeshObjectLightingShaderProgram (const MeshObject& meshObject);
 
 };
 
