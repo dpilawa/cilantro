@@ -18,10 +18,16 @@ public:
     __EAPI unsigned int GetWidth () const;
     __EAPI unsigned int GetHeight () const;
 
+    unsigned int GetTextureCount() const;
+    unsigned int GetRGBTextureCount () const;
+    unsigned int GetRGBATextureCount () const;
+
     virtual void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight);
 
 protected:
 
+    unsigned int rgbTextureCount;
+    unsigned int rgbaTextureCount;
     unsigned int bufferWidth;
     unsigned int bufferHeight;
 };

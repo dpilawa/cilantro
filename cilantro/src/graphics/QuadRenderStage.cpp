@@ -18,3 +18,11 @@ QuadRenderStage& QuadRenderStage::SetShaderProgram (const std::string& shaderPro
 
     return *this;
 }
+
+void QuadRenderStage::InitializeFramebuffer ()
+{   
+    if (framebufferEnabled)
+    {
+        framebuffer = renderer->CreateFramebuffer (0, 1, multisampleEnabled);
+    }
+}

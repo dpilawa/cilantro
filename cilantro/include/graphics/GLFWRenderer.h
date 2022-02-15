@@ -4,10 +4,9 @@
 #include "cilantroengine.h"
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
+#include "graphics/GLRenderer.h"
 
-class Renderer;
-
-class GLFWRenderer : public Renderer
+class GLFWRenderer : public GLRenderer
 {
 public:
 

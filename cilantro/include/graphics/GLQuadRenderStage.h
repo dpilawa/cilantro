@@ -2,14 +2,15 @@
 #define _GLQUADRENDERSTAGE_H_
 
 #include "cilantroengine.h"
-#include "graphics/GLRenderStage.h"
 #include "graphics/QuadRenderStage.h"
+#include "glad/glad.h"
+#include <string>
 
 class Vector2f;
 class Vector3f;
 class Vector4f;
 
-class GLQuadRenderStage : public GLRenderStage, public QuadRenderStage
+class GLQuadRenderStage : public QuadRenderStage
 {
 public:
     __EAPI GLQuadRenderStage ();
@@ -24,10 +25,6 @@ public:
     __EAPI virtual QuadRenderStage& SetRenderStageParameterVector2f (const std::string& parameterName, const Vector2f& parameterValue);
     __EAPI virtual QuadRenderStage& SetRenderStageParameterVector3f (const std::string& parameterName, const Vector3f& parameterValue);
     __EAPI virtual QuadRenderStage& SetRenderStageParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue);
-
-protected:
-
-    virtual void InitializeFramebuffer ();
 
 private:
 

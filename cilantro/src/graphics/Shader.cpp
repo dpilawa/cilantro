@@ -43,8 +43,6 @@ void Shader::Load (const std::string& path)
     shaderSourceCode = ss.str ();
 
     this->SetDefaultParameters ();
-
-    LogMessage (MSG_LOCATION) << "Loaded shader" << path << shaderSourceCode.length () << "bytes";
 }
 
 void Shader::SetDefaultParameters ()

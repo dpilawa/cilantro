@@ -9,7 +9,7 @@
 #include "math/Vector4f.h"
 #include <string>
 
-class QuadRenderStage : public virtual RenderStage
+class QuadRenderStage : public RenderStage
 {
 public:
     __EAPI QuadRenderStage ();
@@ -21,6 +21,10 @@ public:
     virtual QuadRenderStage& SetRenderStageParameterVector2f (const std::string& parameterName, const Vector2f& parameterValue) = 0;
     virtual QuadRenderStage& SetRenderStageParameterVector3f (const std::string& parameterName, const Vector3f& parameterValue) = 0;
     virtual QuadRenderStage& SetRenderStageParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue) = 0;
+
+protected:
+
+    virtual void InitializeFramebuffer ();
 
 protected:
 

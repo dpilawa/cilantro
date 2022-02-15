@@ -5,6 +5,7 @@
 #include "resource/ResourceManager.h"
 #include "graphics/ShaderProgram.h"
 #include "graphics/RenderStage.h"
+#include "graphics/Framebuffer.h"
 #include <string>
 #include <vector>
 
@@ -30,11 +31,26 @@ public:
     // render
     __EAPI virtual void RenderFrame ();
 
+    // framebuffer control
+    virtual Framebuffer* CreateFramebuffer (unsigned int rgbTextures, unsigned int rgbaTextures, bool multisampleEnabled) = 0;
+    virtual void BindFramebuffer (Framebuffer* framebuffer) = 0;
+    virtual void BindFramebufferRenderbuffer (Framebuffer* framebuffer) = 0;
+
+    virtual void ClearColorBuffer (Vector4f& rgba) = 0;
+    virtual void ClearDepthBuffer () = 0;
+
+    virtual void SetDepthTestEnabled (bool value) = 0;
+    virtual void SetFaceCullingEnabled (bool value) = 0;
+    virtual void SetMultisamplingEnabled (bool value) = 0;
+    
+    virtual void SetStencilTestEnabled (bool value) = 0;
+    virtual void SetStencilTestFunction (StencilTestFunction testFunction, int testValue) = 0;
+
     // pipeline manipulation
-    __EAPI Renderer& RotateRenderPipelineLeft ();
-    __EAPI Renderer& RotateRenderPipelineRight ();
-    __EAPI std::vector<handle_t>& GetRenderPipeline ();
-    __EAPI virtual Framebuffer* GetPipelineFramebuffer (PipelineLink link);
+    Renderer& RotateRenderPipelineLeft ();
+    Renderer& RotateRenderPipelineRight ();
+    std::vector<handle_t>& GetRenderPipeline ();
+    virtual Framebuffer* GetPipelineFramebuffer (PipelineLink link);
     __EAPI virtual ResourceManager<RenderStage>& GetRenderStageManager ();
     
     template <typename T, typename ...Params>

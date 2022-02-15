@@ -10,7 +10,7 @@ class DirectionalLight;
 class SpotLight;
 class Material;
 
-class GeometryRenderStage : public virtual RenderStage
+class GeometryRenderStage : public RenderStage
 {
 public:
     __EAPI GeometryRenderStage ();

@@ -1,10 +1,8 @@
 #include "cilantroengine.h"
 #include "graphics/GeometryRenderStage.h"
 #include "graphics/GLGeometryRenderStage.h"
-#include "graphics/GLRenderStage.h"
 #include "graphics/GLShader.h"
 #include "graphics/GLShaderProgram.h"
-#include "graphics/GLRenderStage.h"
 #include "scene/GameScene.h"
 #include "scene/GameObject.h"
 #include "scene/MeshObject.h"
@@ -27,7 +25,7 @@ std::unordered_map<unsigned int, GLint> GLGeometryRenderStage::textureChannelMap
     {4, GL_RGBA}
 };
 
-GLGeometryRenderStage::GLGeometryRenderStage () : GeometryRenderStage (), GLRenderStage ()
+GLGeometryRenderStage::GLGeometryRenderStage () : GeometryRenderStage ()
 {
 
 }
@@ -38,7 +36,6 @@ GLGeometryRenderStage::~GLGeometryRenderStage ()
 
 void GLGeometryRenderStage::Initialize ()
 {
-    GLRenderStage::Initialize ();
 
     // initialize object buffers
     InitializeObjectBuffers ();
@@ -68,14 +65,14 @@ void GLGeometryRenderStage::Initialize ()
     // set callback for modified transforms (currently this only requires to reload light buffers)
     renderer->GetGameScene ()->RegisterCallback ("OnUpdateTransform", [&](unsigned int objectHandle, unsigned int) { UpdateLightBufferRecursive (objectHandle); });
 
-    // initialize shader library
-    InitializeShaderLibrary ();
-
     // check for any outstanding errors
     CheckGLError (MSG_LOCATION);
 
-    LogMessage (MSG_LOCATION) << "GLGeometryRenderStage started";
+}
 
+void GLGeometryRenderStage::OnFrame ()
+{
+    RenderStage::OnFrame ();
 }
 
 void GLGeometryRenderStage::Deinitialize ()
@@ -84,8 +81,6 @@ void GLGeometryRenderStage::Deinitialize ()
     pointLights.clear ();
     directionalLights.clear ();
     spotLights.clear ();
-
-    GLRenderStage::Deinitialize ();
 }
 
 void GLGeometryRenderStage::Draw (MeshObject& meshObject)
@@ -544,215 +539,6 @@ void GLGeometryRenderStage::CheckGLError (const std::string& functionName)
     {
         LogMessage (functionName, EXIT_FAILURE) << "glError:" << std::hex << std::showbase << errorCode;
     }
-}
-
-void GLGeometryRenderStage::InitializeShaderLibrary ()
-{
-    GLuint p;
-
-    // initialize shader library
-    Game::GetResourceManager ().Load<GLShader> ("default_vertex_shader", "shaders/default.vs", ShaderType::VERTEX_SHADER);
-    Game::GetResourceManager ().Load<GLShader> ("flatquad_vertex_shader", "shaders/flatquad.vs", ShaderType::VERTEX_SHADER);
-    Game::GetResourceManager ().Load<GLShader> ("pbr_forward_fragment_shader", "shaders/pbr_forward.fs", ShaderType::FRAGMENT_SHADER);    
-    Game::GetResourceManager ().Load<GLShader> ("pbr_deferred_geometrypass_fragment_shader", "shaders/pbr_deferred_geometrypass.fs", ShaderType::FRAGMENT_SHADER); 
-    Game::GetResourceManager ().Load<GLShader> ("pbr_deferred_lightingpass_fragment_shader", "shaders/pbr_deferred_lightingpass.fs", ShaderType::FRAGMENT_SHADER); 
-    Game::GetResourceManager ().Load<GLShader> ("blinnphong_forward_fragment_shader", "shaders/blinnphong_forward.fs", ShaderType::FRAGMENT_SHADER);
-    Game::GetResourceManager ().Load<GLShader> ("blinnphong_deferred_geometrypass_fragment_shader", "shaders/blinnphong_deferred_geometrypass.fs", ShaderType::FRAGMENT_SHADER); 
-    Game::GetResourceManager ().Load<GLShader> ("blinnphong_deferred_lightingpass_fragment_shader", "shaders/blinnphong_deferred_lightingpass.fs", ShaderType::FRAGMENT_SHADER); 
-    Game::GetResourceManager ().Load<GLShader> ("flatquad_fragment_shader", "shaders/flatquad.fs", ShaderType::FRAGMENT_SHADER);
-    Game::GetResourceManager ().Load<GLShader> ("post_hdr_fragment_shader", "shaders/post_hdr.fs", ShaderType::FRAGMENT_SHADER);
-    Game::GetResourceManager ().Load<GLShader> ("post_gamma_fragment_shader", "shaders/post_gamma.fs", ShaderType::FRAGMENT_SHADER);
-    Game::GetResourceManager ().Load<GLShader> ("post_fxaa_fragment_shader", "shaders/post_fxaa.fs", ShaderType::FRAGMENT_SHADER);
-
-    // PBR model (forward)
-    p = renderer->AddShaderProgram<GLShaderProgram> ("pbr_forward_shader").GetProgramId ();
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_forward_shader").AddShader ("default_vertex_shader");
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_forward_shader").AddShader ("pbr_forward_fragment_shader");
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_forward_shader").Link ();
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_forward_shader").Use ();
-#if (CILANTRO_GL_VERSION < 330)
-    glBindAttribLocation(p, 0, "vPosition");
-    glBindAttribLocation(p, 1, "vNormal");
-    glBindAttribLocation(p, 2, "vUV");
-    glBindAttribLocation(p, 3, "vTangent");
-    glBindAttribLocation(p, 4, "vBitangent");
-#endif
-#if (CILANTRO_GL_VERSION < 420)
-    glUniform1i (glGetUniformLocation (p, "tAlbedo"), 0);
-    glUniform1i (glGetUniformLocation (p, "tNormal"), 1);
-    glUniform1i (glGetUniformLocation (p, "tMetallic"), 2);
-    glUniform1i (glGetUniformLocation (p, "tRoughness"), 3);
-    glUniform1i (glGetUniformLocation (p, "tAO"), 4);
-#endif
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_forward_shader").BindUniformBlock ("UniformMatricesBlock", BindingPoint::BP_MATRICES);
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_forward_shader").BindUniformBlock ("UniformPointLightsBlock", BindingPoint::BP_POINTLIGHTS);
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_forward_shader").BindUniformBlock ("UniformDirectionalLightsBlock", BindingPoint::BP_DIRECTIONALLIGHTS);
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_forward_shader").BindUniformBlock ("UniformSpotLightsBlock", BindingPoint::BP_SPOTLIGHTS);
-
-    // PBR model (deferred, geometry pass)
-    p = renderer->AddShaderProgram<GLShaderProgram> ("pbr_deferred_geometrypass_shader").GetProgramId ();
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_deferred_geometrypass_shader").AddShader ("default_vertex_shader");
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_deferred_geometrypass_shader").AddShader ("pbr_deferred_geometrypass_fragment_shader");
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_deferred_geometrypass_shader").Link ();
-    renderer-> GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_deferred_geometrypass_shader").Use ();
-#if (CILANTRO_GL_VERSION < 330)
-    glBindAttribLocation (p, 0, "vPosition");
-    glBindAttribLocation (p, 1, "vNormal");
-    glBindAttribLocation (p, 2, "vUV");
-    glBindAttribLocation (p, 3, "vTangent");
-    glBindAttribLocation (p, 4, "vBitangent");
-#endif
-#if (CILANTRO_GL_VERSION < 420)
-    glUniform1i (glGetUniformLocation (p, "tAlbedo"), 0);
-    glUniform1i (glGetUniformLocation (p, "tNormal"), 1);
-    glUniform1i (glGetUniformLocation (p, "tMetallic"), 2);
-    glUniform1i (glGetUniformLocation (p, "tRoughness"), 3);
-    glUniform1i (glGetUniformLocation (p, "tAO"), 4);
-#endif
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_deferred_geometrypass_shader").BindUniformBlock ("UniformMatricesBlock", BindingPoint::BP_MATRICES);
-
-    // PBR model (deferred, lighting pass)
-    p = renderer->AddShaderProgram<GLShaderProgram> ("pbr_deferred_lightingpass_shader").GetProgramId ();
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_deferred_lightingpass_shader").AddShader ("flatquad_vertex_shader");
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_deferred_lightingpass_shader").AddShader ("pbr_deferred_lightingpass_fragment_shader");
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_deferred_lightingpass_shader").Link ();
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_deferred_lightingpass_shader").Use ();
-#if (CILANTRO_GL_VERSION < 330)
-    glBindAttribLocation(p, 0, "vPosition");
-    glBindAttribLocation(p, 1, "vTextureCoordinates");
-#endif
-#if (CILANTRO_GL_VERSION < 420)
-    glUniform1i (glGetUniformLocation (p, "tPosition"), 0);
-    glUniform1i (glGetUniformLocation (p, "tNormal"), 1);
-    glUniform1i (glGetUniformLocation (p, "tAlbedo"), 2);
-    glUniform1i (glGetUniformLocation (p, "tMetallicRoughnessAO"), 3);
-#endif
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_deferred_lightingpass_shader").BindUniformBlock ("UniformPointLightsBlock", BindingPoint::BP_POINTLIGHTS);
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_deferred_lightingpass_shader").BindUniformBlock ("UniformDirectionalLightsBlock", BindingPoint::BP_DIRECTIONALLIGHTS);
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("pbr_deferred_lightingpass_shader").BindUniformBlock ("UniformSpotLightsBlock", BindingPoint::BP_SPOTLIGHTS);
-
-    // Blinn-Phong model (forward)
-    p = renderer->AddShaderProgram<GLShaderProgram> ("blinnphong_forward_shader").GetProgramId ();
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_forward_shader").AddShader ("default_vertex_shader");
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_forward_shader").AddShader ("blinnphong_forward_fragment_shader");
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_forward_shader").Link ();
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_forward_shader").Use ();
-#if (CILANTRO_GL_VERSION < 330)	
-    glBindAttribLocation(p, 0, "vPosition");
-    glBindAttribLocation(p, 1, "vNormal");
-    glBindAttribLocation(p, 2, "vUV");
-    glBindAttribLocation(p, 3, "vTangent");
-    glBindAttribLocation(p, 4, "vBitangent");
-#endif
-#if (CILANTRO_GL_VERSION < 420)
-    glUniform1i (glGetUniformLocation (p, "tDiffuse"), 0);
-    glUniform1i (glGetUniformLocation (p, "tNormal"), 1);
-    glUniform1i (glGetUniformLocation (p, "tSpecular"), 2);
-    glUniform1i (glGetUniformLocation (p, "tEmissive"), 3);
-#endif
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_forward_shader").BindUniformBlock ("UniformMatricesBlock", BindingPoint::BP_MATRICES);
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_forward_shader").BindUniformBlock ("UniformPointLightsBlock", BindingPoint::BP_POINTLIGHTS);
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_forward_shader").BindUniformBlock ("UniformDirectionalLightsBlock", BindingPoint::BP_DIRECTIONALLIGHTS);
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_forward_shader").BindUniformBlock ("UniformSpotLightsBlock", BindingPoint::BP_SPOTLIGHTS); 
-    
-    // Blinn-Phong model (deferred, geometry pass)
-    p = renderer->AddShaderProgram<GLShaderProgram> ("blinnphong_deferred_geometrypass_shader").GetProgramId ();
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_deferred_geometrypass_shader").AddShader ("default_vertex_shader");
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_deferred_geometrypass_shader").AddShader ("blinnphong_deferred_geometrypass_fragment_shader");
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_deferred_geometrypass_shader").Link ();
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_deferred_geometrypass_shader").Use ();
-#if (CILANTRO_GL_VERSION < 330)
-    glBindAttribLocation(p, 0, "vPosition");
-    glBindAttribLocation(p, 1, "vNormal");
-    glBindAttribLocation(p, 2, "vUV");
-    glBindAttribLocation(p, 3, "vTangent");
-    glBindAttribLocation(p, 4, "vBitangent");
-#endif
-#if (CILANTRO_GL_VERSION < 420)
-    glUniform1i (glGetUniformLocation (p, "tDiffuse"), 0);
-    glUniform1i (glGetUniformLocation (p, "tNormal"), 1);
-    glUniform1i (glGetUniformLocation (p, "tSpecular"), 2);
-    glUniform1i (glGetUniformLocation (p, "tEmissive"), 3);
-#endif    
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_deferred_geometrypass_shader").BindUniformBlock ("UniformMatricesBlock", BindingPoint::BP_MATRICES);
-
-    // Blinn-Phong model (deferred, lighting pass)
-    p = renderer->AddShaderProgram<GLShaderProgram> ("blinnphong_deferred_lightingpass_shader").GetProgramId ();
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_deferred_lightingpass_shader").AddShader ("flatquad_vertex_shader");
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_deferred_lightingpass_shader").AddShader ("blinnphong_deferred_lightingpass_fragment_shader");
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_deferred_lightingpass_shader").Link ();
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_deferred_lightingpass_shader").Use ();
-#if (CILANTRO_GL_VERSION < 330)
-    glBindAttribLocation(p, 0, "vPosition");
-    glBindAttribLocation(p, 1, "vTextureCoordinates");
-#endif
-#if (CILANTRO_GL_VERSION < 420)
-    glUniform1i (glGetUniformLocation (p, "tPosition"), 0);
-    glUniform1i (glGetUniformLocation (p, "tNormal"), 1);
-    glUniform1i (glGetUniformLocation (p, "tDiffuse"), 2);
-    glUniform1i (glGetUniformLocation (p, "tEmissive"), 3);
-    glUniform1i (glGetUniformLocation (p, "tSpecular"), 4);
-#endif
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_deferred_lightingpass_shader").BindUniformBlock ("UniformPointLightsBlock", BindingPoint::BP_POINTLIGHTS);
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_deferred_lightingpass_shader").BindUniformBlock ("UniformDirectionalLightsBlock", BindingPoint::BP_DIRECTIONALLIGHTS);
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("blinnphong_deferred_lightingpass_shader").BindUniformBlock ("UniformSpotLightsBlock", BindingPoint::BP_SPOTLIGHTS);    
- 
-    // Screen quad rendering
-    p = renderer->AddShaderProgram<GLShaderProgram> ("flatquad_shader").GetProgramId ();
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("flatquad_shader").AddShader ("flatquad_vertex_shader");
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("flatquad_shader").AddShader ("flatquad_fragment_shader");   
-#if (CILANTRO_GL_VERSION < 330)	
-    glBindAttribLocation (p, 0, "vPosition");
-    glBindAttribLocation (p, 1, "vTextureCoordinates");
-#endif
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("flatquad_shader").Link ();
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("flatquad_shader").Use (); 
-#if (CILANTRO_GL_VERSION < 420)
-    glUniform1i (glGetUniformLocation (p, "fScreenTexture"), 0);
-#endif
-
-    // Post-processing HDR
-    p = renderer->AddShaderProgram<GLShaderProgram> ("post_hdr_shader").GetProgramId ();
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_hdr_shader").AddShader ("flatquad_vertex_shader");
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_hdr_shader").AddShader ("post_hdr_fragment_shader");
-#if (CILANTRO_GL_VERSION < 330)	
-    glBindAttribLocation (p, 0, "vPosition");
-    glBindAttribLocation (p, 1, "vTextureCoordinates");
-#endif
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_hdr_shader").Link ();
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_hdr_shader").Use ();
-#if (CILANTRO_GL_VERSION < 420)
-    glUniform1i (glGetUniformLocation (p, "fScreenTexture"), 0);
-#endif
-
-    // Post-processing gamma
-    p = renderer->AddShaderProgram<GLShaderProgram> ("post_gamma_shader").GetProgramId ();
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_gamma_shader").AddShader ("flatquad_vertex_shader");
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_gamma_shader").AddShader ("post_gamma_fragment_shader");   
-#if (CILANTRO_GL_VERSION < 330)	
-    glBindAttribLocation (p, 0, "vPosition");
-    glBindAttribLocation (p, 1, "vTextureCoordinates");
-#endif
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_gamma_shader").Link ();
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_gamma_shader").Use (); 
-#if (CILANTRO_GL_VERSION < 420)
-    glUniform1i (glGetUniformLocation (p, "fScreenTexture"), 0);
-#endif
-
-    // Post-processing fxaa
-    p = renderer->AddShaderProgram<GLShaderProgram> ("post_fxaa_shader").GetProgramId ();
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_fxaa_shader").AddShader ("flatquad_vertex_shader");
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_fxaa_shader").AddShader ("post_fxaa_fragment_shader");   
-#if (CILANTRO_GL_VERSION < 330)	
-    glBindAttribLocation (p, 0, "vPosition");
-    glBindAttribLocation (p, 1, "vTextureCoordinates");
-#endif
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_fxaa_shader").Link ();
-    renderer->GetShaderProgramManager ().GetByName<GLShaderProgram> ("post_fxaa_shader").Use (); 
-#if (CILANTRO_GL_VERSION < 420)
-    glUniform1i (glGetUniformLocation (p, "fScreenTexture"), 0);
-#endif
-
 }
 
 void GLGeometryRenderStage::InitializeObjectBuffers ()

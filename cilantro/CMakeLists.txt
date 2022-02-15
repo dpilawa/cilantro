@@ -38,11 +38,11 @@ include/graphics/GLGeometryRenderStage.h
 include/graphics/GLFramebuffer.h
 include/graphics/GLDeferredGeometryRenderStage.h
 include/graphics/GLForwardGeometryRenderStage.h
-include/graphics/GLRenderStage.h
 include/graphics/GLQuadRenderStage.h
 include/graphics/GLShader.h
 include/graphics/GLShaderProgram.h
 include/graphics/Renderer.h
+include/graphics/GLRenderer.h
 include/graphics/QuadRenderStage.h
 include/graphics/RenderStage.h
 include/graphics/Shader.h
@@ -101,11 +101,11 @@ src/graphics/GLGeometryRenderStage.cpp
 src/graphics/GLFramebuffer.cpp
 src/graphics/GLDeferredGeometryRenderStage.cpp
 src/graphics/GLForwardGeometryRenderStage.cpp
-src/graphics/GLRenderStage.cpp
 src/graphics/GLQuadRenderStage.cpp
 src/graphics/GLShader.cpp
 src/graphics/GLShaderProgram.cpp
 src/graphics/Renderer.cpp
+src/graphics/GLRenderer.cpp
 src/graphics/RenderStage.cpp
 src/graphics/QuadRenderStage.cpp
 src/graphics/Shader.cpp

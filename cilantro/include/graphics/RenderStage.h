@@ -45,14 +45,12 @@ public:
     virtual void Initialize () = 0;
     virtual void Deinitialize () = 0;
 
-    virtual void OnFrame () = 0;
+    virtual void OnFrame ();
 
+    virtual void InitializeFramebuffer () = 0;
     Framebuffer* GetFramebuffer () const;
 
 protected:
-
-    virtual void InitializeFramebuffer (unsigned int rgbTextures, unsigned int rgbaTextures) = 0;
-    virtual void InitializeFramebuffer () = 0;
 
     // flags
     bool multisampleEnabled;

@@ -51,10 +51,6 @@ void GLFramebuffer::Initialize ()
     {
         LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Framebuffer is not complete";
     }
-    else
-    {
-        LogMessage (MSG_LOCATION) << "Initialized framebuffer" << bufferWidth << bufferHeight;
-    }
 }
 
 void GLFramebuffer::Deinitialize ()
@@ -80,11 +76,6 @@ void GLFramebuffer::SetFramebufferResolution (unsigned int bufferWidth, unsigned
     Deinitialize ();
     Framebuffer::SetFramebufferResolution (bufferWidth, bufferHeight);
     Initialize ();
-}
-
-int GLFramebuffer::GetTextureCount () const
-{
-    return rgbTextureCount + rgbaTextureCount;
 }
 
 GLuint GLFramebuffer::GetReadFramebufferRenderbufferGLId () const

@@ -1,9 +1,14 @@
 #include "graphics/GLQuadRenderStage.h"
 #include "graphics/GLShaderProgram.h"
+#include "graphics/GLFramebuffer.h"
+#include "graphics/GLFramebuffer.h"
+#if (CILANTRO_GL_VERSION > 140)
+#include "graphics/GLMultisampleFramebuffer.h"
+#endif
 #include "system/LogMessage.h"
 #include "system/Game.h"
 
-GLQuadRenderStage::GLQuadRenderStage () : GLRenderStage (), QuadRenderStage ()
+GLQuadRenderStage::GLQuadRenderStage () :  QuadRenderStage ()
 {
 }
 
@@ -13,7 +18,6 @@ GLQuadRenderStage::~GLQuadRenderStage ()
 
 void GLQuadRenderStage::Initialize ()
 {
-    GLRenderStage::Initialize ();
     InitializeFramebuffer ();
 
     // set up VBO and VAO
@@ -39,29 +43,25 @@ void GLQuadRenderStage::Initialize ()
     glBindVertexArray (0);    
     glBindBuffer (GL_ARRAY_BUFFER, 0);
 
-    LogMessage (MSG_LOCATION) << "GLQuadRenderStage initialized" << this->GetName ();
-
 }
 
 void GLQuadRenderStage::Deinitialize ()
 {
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-
-    GLRenderStage::Deinitialize ();
 }
 
 void GLQuadRenderStage::OnFrame ()
 {
     GLFramebuffer* inputFramebuffer = dynamic_cast<GLFramebuffer*>(renderer->GetPipelineFramebuffer (pipelineFramebufferInputLink));
 
-    GLRenderStage::OnFrame ();
+    RenderStage::OnFrame ();
  
     // bind previous (input) framebuffer textures and draw    
 
     shaderProgram->Use ();
     
-    for (int i = 0; i < inputFramebuffer->GetTextureCount (); i++)
+    for (unsigned int i = 0; i < inputFramebuffer->GetTextureCount (); i++)
     {
         glActiveTexture (GL_TEXTURE0 + i);
         glBindTexture (GL_TEXTURE_2D, inputFramebuffer->GetReadFramebufferTextureGLId (i));
@@ -114,11 +114,6 @@ QuadRenderStage& GLQuadRenderStage::SetRenderStageParameterVector4f (const std::
     glUniform4fv (location, 1, &parameterValue[0]);
     
     return *this;
-}
-
-void GLQuadRenderStage::InitializeFramebuffer ()
-{
-    GLRenderStage::InitializeFramebuffer (0, 1);
 }
 
 GLuint GLQuadRenderStage::GetUniformLocation (const std::string& parameterName)

@@ -1,7 +1,6 @@
 #include "system/Game.h"
 #include "graphics/GLDeferredGeometryRenderStage.h"
 #include "graphics/GLQuadRenderStage.h"
-#include "graphics/GLRenderStage.h"
 #include "scene/MeshObject.h"
 #include <set>
 
@@ -29,7 +28,7 @@ void GLDeferredGeometryRenderStage::Deinitialize ()
 
 void GLDeferredGeometryRenderStage::OnFrame ()
 {
-    GLRenderStage::OnFrame ();
+    GLGeometryRenderStage::OnFrame ();
 
     // clear frame, depth and stencil buffers
     glClearColor (0.0f, 0.0f, 0.0f, 1.0f);   
@@ -112,7 +111,7 @@ void GLDeferredGeometryRenderStage::Update (Material& material)
         {
             handle_t stageHandle = renderer->GetRenderPipeline ()[lightingShaderStagesCount + 1];
 
-            GLRenderStage& stage = renderer->GetRenderStageManager ().GetByHandle<GLRenderStage> (stageHandle);
+            RenderStage& stage = renderer->GetRenderStageManager ().GetByHandle<RenderStage> (stageHandle);
             stage.SetPipelineFramebufferInputLink (PipelineLink::LINK_SECOND);
             stage.SetPipelineRenderbufferLink (PipelineLink::LINK_CURRENT);
             stage.SetPipelineFramebufferDrawLink (PipelineLink::LINK_CURRENT);
@@ -124,7 +123,10 @@ void GLDeferredGeometryRenderStage::Update (Material& material)
 
 void GLDeferredGeometryRenderStage::InitializeFramebuffer ()
 {
-    GLRenderStage::InitializeFramebuffer (0, 5);
+    if (framebufferEnabled)
+    {
+        framebuffer = renderer->CreateFramebuffer (0, 5, multisampleEnabled);
+    }
 }
 
 std::string GLDeferredGeometryRenderStage::GetMeshObjectGeometryShaderProgram (const MeshObject& meshObject) 

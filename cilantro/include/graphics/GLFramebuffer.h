@@ -29,8 +29,6 @@ public:
 
     virtual void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight);
 
-    int GetTextureCount() const;
-
     GLuint virtual GetDrawFramebufferRenderbufferGLId () const;
     GLuint virtual GetDrawFramebufferTextureGLId (unsigned int textureNumber) const;
     GLuint virtual GetDrawFramebufferGLId () const;
@@ -41,8 +39,6 @@ public:
 
 protected:
 
-    unsigned int rgbTextureCount;
-    unsigned int rgbaTextureCount;
     GLBuffers glBuffers;
 
 };

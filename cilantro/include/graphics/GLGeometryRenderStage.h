@@ -5,7 +5,7 @@
 #include "glad/glad.h"
 #include "graphics/GLShader.h"
 #include "graphics/GLShaderProgram.h"
-#include "graphics/GLRenderStage.h"
+#include "graphics/RenderStage.h"
 #include "graphics/GeometryRenderStage.h"
 #include <cstring>
 
@@ -117,7 +117,7 @@ public:
     SpotLightStruct spotLights[MAX_SPOT_LIGHTS];
 };
 
-class GLGeometryRenderStage : public GeometryRenderStage, public GLRenderStage
+class GLGeometryRenderStage : public GeometryRenderStage
 {
 public:
     GLGeometryRenderStage ();
@@ -128,7 +128,7 @@ public:
     virtual void Deinitialize ();
 
     // render
-    virtual void OnFrame () = 0;
+    virtual void OnFrame ();
 
     // object drawing and updating
     virtual void Draw (MeshObject& meshObject);
@@ -176,8 +176,6 @@ protected:
     // check for GL errors
     void CheckGLError (const std::string& functionName);
 
-    // initialize shader library
-    void InitializeShaderLibrary ();
     // initialize object buffers
     void InitializeObjectBuffers ();
     // initialize object texture units

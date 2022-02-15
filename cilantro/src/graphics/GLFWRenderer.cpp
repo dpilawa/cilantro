@@ -1,11 +1,11 @@
 #include "cilantroengine.h"
-#include "graphics/Renderer.h"
+#include "graphics/GLRenderer.h"
 #include "graphics/GLFWRenderer.h"
 #include "system/Game.h"
 #include "system/LogMessage.h"
 
 GLFWRenderer::GLFWRenderer (GameScene* gameScene, unsigned int width, unsigned int height, std::string windowCaption, bool isFullscreen, bool isResizable, bool isVSync) 
-    : Renderer (gameScene, width, height)
+    : GLRenderer (gameScene, width, height)
 {
     this->windowCaption = windowCaption;
     this->isFullscreen = isFullscreen;
@@ -89,12 +89,12 @@ void GLFWRenderer::Initialize ()
 
     LogMessage (MSG_LOCATION) << "GLFWRenderer started";
 
-    Renderer::Initialize ();
+    GLRenderer::Initialize ();
 }
 
 void GLFWRenderer::Deinitialize ()
 {    
-    Renderer::Deinitialize ();
+    GLRenderer::Deinitialize ();
     
     glfwDestroyWindow (window);
     glfwTerminate ();
@@ -102,9 +102,10 @@ void GLFWRenderer::Deinitialize ()
 
 void GLFWRenderer::RenderFrame ()
 {
-    Renderer::RenderFrame ();
+    GLRenderer::RenderFrame ();
 
     // swap front and back buffers
+    glfwSwapInterval (1);
     glfwSwapBuffers (window);
 
     // check window closing

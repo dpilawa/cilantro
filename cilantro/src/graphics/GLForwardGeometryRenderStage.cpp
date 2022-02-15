@@ -1,6 +1,10 @@
 #include "system/Game.h"
 #include "graphics/GLGeometryRenderStage.h"
 #include "graphics/GLForwardGeometryRenderStage.h"
+#include "graphics/GLFramebuffer.h"
+#if (CILANTRO_GL_VERSION > 140)
+#include "graphics/GLMultisampleFramebuffer.h"
+#endif
 #include "scene/MeshObject.h"
 
 GLForwardGeometryRenderStage::GLForwardGeometryRenderStage () : GLGeometryRenderStage ()
@@ -26,7 +30,7 @@ void GLForwardGeometryRenderStage::Deinitialize ()
 
 void GLForwardGeometryRenderStage::OnFrame ()
 {
-    GLRenderStage::OnFrame ();
+    GLGeometryRenderStage::OnFrame ();
 
     // load uniform buffers
     LoadMatrixUniformBuffers ();
@@ -54,7 +58,10 @@ void GLForwardGeometryRenderStage::OnFrame ()
 
 void GLForwardGeometryRenderStage::InitializeFramebuffer ()
 {
-    GLRenderStage::InitializeFramebuffer (0, 1);
+    if (framebufferEnabled)
+    {
+        framebuffer = renderer->CreateFramebuffer (0, 1, multisampleEnabled);
+    }
 }
 
 std::string GLForwardGeometryRenderStage::GetMeshObjectGeometryShaderProgram (const MeshObject& meshObject) 

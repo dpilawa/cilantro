@@ -99,9 +99,5 @@ void Texture::Load (const std::string& path)
     {
         LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to load texture" << path << "[" << stbi_failure_reason () << "]";
     }
-    else 
-    {
-        LogMessage (MSG_LOCATION) << "Loaded texture" << path << this->width << this->height << this->numChannels;
-    }
 }
 
