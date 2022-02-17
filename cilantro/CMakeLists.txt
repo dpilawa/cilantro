@@ -38,7 +38,6 @@ include/graphics/GLGeometryRenderStage.h
 include/graphics/GLFramebuffer.h
 include/graphics/GLDeferredGeometryRenderStage.h
 include/graphics/GLForwardGeometryRenderStage.h
-include/graphics/GLQuadRenderStage.h
 include/graphics/GLShader.h
 include/graphics/GLShaderProgram.h
 include/graphics/Renderer.h
@@ -47,6 +46,8 @@ include/graphics/QuadRenderStage.h
 include/graphics/RenderStage.h
 include/graphics/Shader.h
 include/graphics/ShaderProgram.h
+include/graphics/GeometryBuffer.h
+include/graphics/GLGeometryBuffer.h
 include/input/InputController.h
 include/input/Input.h
 include/math/Bezier.h
@@ -101,7 +102,6 @@ src/graphics/GLGeometryRenderStage.cpp
 src/graphics/GLFramebuffer.cpp
 src/graphics/GLDeferredGeometryRenderStage.cpp
 src/graphics/GLForwardGeometryRenderStage.cpp
-src/graphics/GLQuadRenderStage.cpp
 src/graphics/GLShader.cpp
 src/graphics/GLShaderProgram.cpp
 src/graphics/Renderer.cpp

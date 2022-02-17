@@ -11,19 +11,18 @@ public:
     GLMultisampleFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount);
     virtual ~GLMultisampleFramebuffer ();
 
-    void Initialize ();
-    void Deinitialize ();
+    virtual void Initialize ();
+    virtual void Deinitialize ();
 
     virtual void BindFramebuffer () const;
-    virtual void BlitFramebuffer ();
+    virtual void BlitFramebuffer () const;
 
-    GLuint virtual GetDrawFramebufferRenderbufferGLId () const;
-    GLuint virtual GetDrawFramebufferTextureGLId (unsigned int textureNumber) const;
-    GLuint virtual GetDrawFramebufferGLId () const;
+    GLuint virtual GetFramebufferRenderbufferGLId () const;
+    GLuint virtual GetFramebufferGLId () const;
 
 protected:
 
-    GLBuffers glMultisampleFramebuffers;
+    GLBuffers glMultisampleBuffers;
 
 };
 

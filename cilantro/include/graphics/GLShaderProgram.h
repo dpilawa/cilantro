@@ -11,20 +11,27 @@ enum BindingPoint { BP_MATRICES = 1, BP_POINTLIGHTS, BP_DIRECTIONALLIGHTS, BP_SP
 class GLShaderProgram : public ShaderProgram
 {
 public:
-    GLShaderProgram ();
-    ~GLShaderProgram ();
+    __EAPI GLShaderProgram ();
+    __EAPI virtual ~GLShaderProgram ();
 
-    // return program id
+    // return GL ids
     GLuint GetProgramId () const;
+    GLuint GetUniformLocationId (const std::string& uniformName) const;
 
     // bind uniform block
     void BindUniformBlock (const std::string& blockName, BindingPoint bp);
 
+    // uniform manipulation
+    __EAPI virtual ShaderProgram& SetUniformFloat (const std::string& uniformName, float uniformValue);
+    __EAPI virtual ShaderProgram& SetUniformVector2f (const std::string& uniformName, const Vector2f& uniformValue);
+    __EAPI virtual ShaderProgram& SetUniformVector3f (const std::string& uniformName, const Vector3f& uniformValue);
+    __EAPI virtual ShaderProgram& SetUniformVector4f (const std::string& uniformName, const Vector4f& uniformValue);
+    
     // link program
     void Link ();
 
     // use program
-    void Use ();
+    void Use () const;
 
 private:
 

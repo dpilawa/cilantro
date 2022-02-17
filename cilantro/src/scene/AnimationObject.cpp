@@ -74,7 +74,7 @@ void AnimationObject::OnFrame ()
         UpdateProperties<Vector3f> ();
         UpdateProperties<Quaternion> ();
 
-        playedTime += gameScene->GetTimer ().GetFrameDeltaTime ();
+        playedTime += gameScene->GetTimer ()->GetFrameDeltaTime ();
     }
 }
 

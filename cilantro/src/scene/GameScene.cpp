@@ -69,9 +69,14 @@ ResourceManager<Material>& GameScene::GetMaterialManager ()
     return materials;
 }
 
-Timer& GameScene::GetTimer ()
+Renderer* GameScene::GetRenderer () const
 {
-    return *timer;
+    return renderer;
+}
+
+Timer* GameScene::GetTimer () const
+{
+    return timer;
 }
 
 void GameScene::SetActiveCamera (const std::string& name)

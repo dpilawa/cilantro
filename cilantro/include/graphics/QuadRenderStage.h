@@ -15,12 +15,17 @@ public:
     __EAPI QuadRenderStage ();
     __EAPI virtual ~QuadRenderStage ();
 
+    virtual void Initialize ();
+    virtual void Deinitialize ();
+
+    virtual void OnFrame ();
+
     __EAPI virtual QuadRenderStage& SetShaderProgram (const std::string& shaderProgramName);
 
-    virtual QuadRenderStage& SetRenderStageParameterFloat (const std::string& parameterName, float parameterValue) = 0;
-    virtual QuadRenderStage& SetRenderStageParameterVector2f (const std::string& parameterName, const Vector2f& parameterValue) = 0;
-    virtual QuadRenderStage& SetRenderStageParameterVector3f (const std::string& parameterName, const Vector3f& parameterValue) = 0;
-    virtual QuadRenderStage& SetRenderStageParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue) = 0;
+    __EAPI virtual QuadRenderStage& SetRenderStageParameterFloat (const std::string& parameterName, float parameterValue);
+    __EAPI virtual QuadRenderStage& SetRenderStageParameterVector2f (const std::string& parameterName, const Vector2f& parameterValue);
+    __EAPI virtual QuadRenderStage& SetRenderStageParameterVector3f (const std::string& parameterName, const Vector3f& parameterValue);
+    __EAPI virtual QuadRenderStage& SetRenderStageParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue);
 
 protected:
 

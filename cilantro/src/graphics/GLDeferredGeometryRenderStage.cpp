@@ -1,6 +1,6 @@
 #include "system/Game.h"
 #include "graphics/GLDeferredGeometryRenderStage.h"
-#include "graphics/GLQuadRenderStage.h"
+#include "graphics/QuadRenderStage.h"
 #include "scene/MeshObject.h"
 #include <set>
 
@@ -82,7 +82,7 @@ void GLDeferredGeometryRenderStage::Update (Material& material)
 
         lightingShaderStagesCount++;
         lightingShaders.insert (shaderProgramHandle);
-        GLQuadRenderStage& p = renderer->AddRenderStage <GLQuadRenderStage> ("deferredLightingStage_" + shaderProgramName);
+        QuadRenderStage& p = renderer->AddRenderStage <QuadRenderStage> ("deferredLightingStage_" + shaderProgramName);
         p.SetShaderProgram (shaderProgramName);
         p.SetStencilTestEnabled (true).SetStencilTest (StencilTestFunction::FUNCTION_EQUAL, shaderProgramHandle);
         p.SetClearOnFrameEnabled (true);
@@ -101,7 +101,7 @@ void GLDeferredGeometryRenderStage::Update (Material& material)
         {
             handle_t stageHandle = renderer->GetRenderPipeline ()[2];
 
-            GLQuadRenderStage& stage = renderer->GetRenderStageManager ().GetByHandle<GLQuadRenderStage> (stageHandle);
+            QuadRenderStage& stage = renderer->GetRenderStageManager ().GetByHandle<QuadRenderStage> (stageHandle);
             stage.SetClearOnFrameEnabled (false);
             stage.SetFramebufferEnabled (false);
         }

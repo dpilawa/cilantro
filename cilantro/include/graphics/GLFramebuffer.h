@@ -26,16 +26,15 @@ public:
 
     virtual void BindFramebuffer () const;
     virtual void UnbindFramebuffer () const;
+    virtual void BlitFramebuffer () const;
+    void BindFramebufferTextures () const;
+    void BindFramebufferRenderbuffer () const;
 
     virtual void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight);
 
-    GLuint virtual GetDrawFramebufferRenderbufferGLId () const;
-    GLuint virtual GetDrawFramebufferTextureGLId (unsigned int textureNumber) const;
-    GLuint virtual GetDrawFramebufferGLId () const;
-
-    GLuint virtual GetReadFramebufferRenderbufferGLId () const;
-    GLuint virtual GetReadFramebufferTextureGLId (unsigned int textureNumber) const;
-    GLuint virtual GetReadFramebufferGLId () const;
+    GLuint virtual GetFramebufferRenderbufferGLId () const;
+    GLuint virtual GetFramebufferTextureGLId (unsigned int textureNumber) const;
+    GLuint virtual GetFramebufferGLId () const;
 
 protected:
 

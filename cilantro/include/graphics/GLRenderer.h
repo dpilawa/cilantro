@@ -15,11 +15,11 @@ public:
     __EAPI virtual void Initialize ();
     __EAPI virtual void Deinitialize ();
     __EAPI virtual void RenderFrame ();
+    __EAPI virtual void RenderGeometryBuffer (GeometryBuffer* buffer);    
 
     // framebuffer control
     virtual Framebuffer* CreateFramebuffer (unsigned int rgbTextures, unsigned int rgbaTextures, bool multisampleEnabled);
-    virtual void BindFramebuffer (Framebuffer* framebuffer);
-    virtual void BindFramebufferRenderbuffer (Framebuffer* framebuffer);
+    virtual void BindDefaultFramebuffer ();
 
     virtual void ClearColorBuffer (Vector4f& rgba);
     virtual void ClearDepthBuffer ();
@@ -33,8 +33,10 @@ public:
 
 private:
 
-    // initialize shader library
     void InitializeShaderLibrary ();
+
+    void InitializeQuadGeometryBuffer ();
+    void DeinitializeQuadGeometryBuffer ();
 
 };
 

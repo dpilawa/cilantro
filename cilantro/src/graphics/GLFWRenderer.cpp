@@ -63,12 +63,15 @@ void GLFWRenderer::Initialize ()
     glfwMakeContextCurrent (window);
 
     // set resize callback
-    auto framebufferResizeCallback = [&](GLFWwindow* window, int width, int height)
+    auto framebufferResizeCallback = [](GLFWwindow* window, int width, int height)
     {
-        SetResolution (width, height);
+        for (auto&& gameScene : Game::GetGameSceneManager ())
+        {
+            gameScene->GetRenderer ()->SetResolution (width, height);
+        }
     };
 
-    //glfwSetFramebufferSizeCallback (window, framebufferResizeCallback);
+    glfwSetFramebufferSizeCallback (window, framebufferResizeCallback);
 
     // set framebuffer size (relevant for high DPI displays)
     glfwGetFramebufferSize (window, (int*)(&width), (int*)(&height));

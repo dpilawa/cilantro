@@ -6,6 +6,7 @@
 #include "graphics/ShaderProgram.h"
 #include "graphics/RenderStage.h"
 #include "graphics/Framebuffer.h"
+#include "graphics/GeometryBuffer.h"
 #include <string>
 #include <vector>
 
@@ -19,9 +20,6 @@ public:
 
     __EAPI virtual void Initialize ();
     __EAPI virtual void Deinitialize ();
-    
-    // scene
-    GameScene* GetGameScene ();
 
     // dimensions
     __EAPI unsigned int GetWidth () const;
@@ -30,11 +28,18 @@ public:
 
     // render
     __EAPI virtual void RenderFrame ();
+    __EAPI virtual void RenderGeometryBuffer (GeometryBuffer* buffer) = 0;
+
+    // scene
+    GameScene* GetGameScene ();
+
+    // geometry buffer accessors
+    GeometryBuffer* GetSceneGeometryBuffer () const;
+    GeometryBuffer* GetQuadGeometryBuffer () const;
 
     // framebuffer control
     virtual Framebuffer* CreateFramebuffer (unsigned int rgbTextures, unsigned int rgbaTextures, bool multisampleEnabled) = 0;
-    virtual void BindFramebuffer (Framebuffer* framebuffer) = 0;
-    virtual void BindFramebufferRenderbuffer (Framebuffer* framebuffer) = 0;
+    virtual void BindDefaultFramebuffer () = 0;
 
     virtual void ClearColorBuffer (Vector4f& rgba) = 0;
     virtual void ClearDepthBuffer () = 0;
@@ -65,6 +70,8 @@ public:
 protected:
 
     GameScene* gameScene;
+    GeometryBuffer* sceneGeometryBuffer;
+    GeometryBuffer* quadGeometryBuffer;
 
     unsigned int renderStage;
     ResourceManager<RenderStage> renderStages;

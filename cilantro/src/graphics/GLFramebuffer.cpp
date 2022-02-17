@@ -51,6 +51,10 @@ void GLFramebuffer::Initialize ()
     {
         LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Framebuffer is not complete";
     }
+    else
+    {
+        LogMessage (MSG_LOCATION) << "Initialized framebuffer" << bufferWidth << bufferHeight;
+    }
 }
 
 void GLFramebuffer::Deinitialize ()
@@ -70,6 +74,25 @@ void GLFramebuffer::UnbindFramebuffer () const
     glBindFramebuffer (GL_FRAMEBUFFER, (GLint) 0);
 }
 
+void GLFramebuffer::BlitFramebuffer () const
+{
+    // no op
+}
+
+void GLFramebuffer::BindFramebufferTextures () const
+{
+    for (unsigned int i = 0; i < GetTextureCount (); i++)
+    {
+        glActiveTexture (GL_TEXTURE0 + i);
+        glBindTexture (GL_TEXTURE_2D, GetFramebufferTextureGLId (i));
+    }
+}
+
+void GLFramebuffer::BindFramebufferRenderbuffer () const
+{
+    glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, GetFramebufferRenderbufferGLId ());
+}
+
 void GLFramebuffer::SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight)
 {
     // resize framebuffer texture and viewport
@@ -78,32 +101,18 @@ void GLFramebuffer::SetFramebufferResolution (unsigned int bufferWidth, unsigned
     Initialize ();
 }
 
-GLuint GLFramebuffer::GetReadFramebufferRenderbufferGLId () const
+GLuint GLFramebuffer::GetFramebufferRenderbufferGLId () const
 {
     return glBuffers.RBO;
 }
 
-GLuint GLFramebuffer::GetReadFramebufferTextureGLId (unsigned int textureNumber) const
+GLuint GLFramebuffer::GetFramebufferTextureGLId (unsigned int textureNumber) const
 {
     return glBuffers.textureBuffer[textureNumber];
 }
 
-GLuint GLFramebuffer::GetReadFramebufferGLId () const
+GLuint GLFramebuffer::GetFramebufferGLId () const
 {
     return glBuffers.FBO;
 }
 
-GLuint GLFramebuffer::GetDrawFramebufferRenderbufferGLId () const
-{
-    return glBuffers.RBO;
-}
-
-GLuint GLFramebuffer::GetDrawFramebufferTextureGLId (unsigned int textureNumber) const
-{
-    return glBuffers.textureBuffer[textureNumber];
-}
-
-GLuint GLFramebuffer::GetDrawFramebufferGLId () const
-{
-    return glBuffers.FBO;
-}

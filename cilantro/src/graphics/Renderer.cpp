@@ -12,6 +12,8 @@ Renderer::Renderer (GameScene* gameScene, unsigned int width, unsigned int heigh
     totalFrameRenderTime = 0.0f;
 
     this->gameScene = gameScene;
+    this->quadGeometryBuffer = nullptr;
+    this->sceneGeometryBuffer = nullptr;
 
     this->width = width;
     this->height = height;
@@ -37,11 +39,6 @@ void Renderer::Deinitialize ()
     }
 
     LogMessage (MSG_LOCATION) << "Rendered" << totalRenderFrames << "frames in" << totalRenderTime << "seconds; avg FPS =" << std::round (totalRenderFrames / totalFrameRenderTime) << "; real FPS = " << std::round (totalRenderFrames / totalRenderTime);
-}
-
-GameScene* Renderer::GetGameScene ()
-{
-    return gameScene;
 }
 
 unsigned int Renderer::GetWidth () const
@@ -80,7 +77,7 @@ void Renderer::RenderFrame ()
     // reset global rendering timer
     if (totalRenderTime == 0L)
     {
-        gameScene->GetTimer ().ResetSplitTime ();
+        gameScene->GetTimer ()->ResetSplitTime ();
     }
 
     // run post-processing
@@ -91,12 +88,27 @@ void Renderer::RenderFrame ()
     }
 
     // update game clocks (Tock)
-    gameScene->GetTimer ().Tock ();
+    gameScene->GetTimer ()->Tock ();
 
     // update frame counters
     totalRenderFrames++;
-    totalRenderTime = gameScene->GetTimer ().GetTimeSinceSplitTime ();
-    totalFrameRenderTime += gameScene->GetTimer ().GetFrameRenderTime ();
+    totalRenderTime = gameScene->GetTimer ()->GetTimeSinceSplitTime ();
+    totalFrameRenderTime += gameScene->GetTimer ()->GetFrameRenderTime ();
+}
+
+GameScene* Renderer::GetGameScene ()
+{
+    return gameScene;
+}
+
+GeometryBuffer* Renderer::GetSceneGeometryBuffer () const
+{
+    return sceneGeometryBuffer;
+}
+
+GeometryBuffer* Renderer::GetQuadGeometryBuffer () const
+{
+    return quadGeometryBuffer;
 }
 
 Renderer& Renderer::RotateRenderPipelineLeft ()

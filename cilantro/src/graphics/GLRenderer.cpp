@@ -1,6 +1,7 @@
 #include "system/Game.h"
 #include "graphics/GLRenderer.h"
 #include "graphics/GLShaderProgram.h"
+#include "graphics/GLGeometryBuffer.h"
 #include "graphics/GLFramebuffer.h"
 #if (CILANTRO_GL_VERSION > 140)
 #include "graphics/GLMultisampleFramebuffer.h"
@@ -8,17 +9,20 @@
 
 GLRenderer::GLRenderer (GameScene* gameScene, unsigned int width, unsigned int height) : Renderer (gameScene, width, height)
 {
-
+    sceneGeometryBuffer = new GLGeometryBuffer ();
+    quadGeometryBuffer = new GLGeometryBuffer ();
 }
 
 GLRenderer::~GLRenderer ()
 {
-
+    delete sceneGeometryBuffer;
+    delete quadGeometryBuffer;
 }
 
 void GLRenderer::Initialize ()
 {
     InitializeShaderLibrary ();
+    InitializeQuadGeometryBuffer ();
 
     Renderer::Initialize ();
 }
@@ -26,11 +30,30 @@ void GLRenderer::Initialize ()
 void GLRenderer::Deinitialize ()
 {
     Renderer::Deinitialize ();
+
+    DeinitializeQuadGeometryBuffer ();
 }
 
 void GLRenderer::RenderFrame ()
 {
     Renderer::RenderFrame ();
+}
+
+void GLRenderer::RenderGeometryBuffer (GeometryBuffer* buffer)
+{
+    GLGeometryBuffer* glBuffer = static_cast<GLGeometryBuffer*>(buffer);
+
+    // bind
+    glBindVertexArray (glBuffer->VAO);    
+
+    // draw
+    glViewport (0, 0, width, height);
+    glDrawArrays (GL_TRIANGLES, 0, glBuffer->vertexCount);
+
+    // unbind
+    glBindTexture (GL_TEXTURE_2D, 0);
+    glBindVertexArray (0);
+    glBindFramebuffer (GL_FRAMEBUFFER, 0);
 }
 
 Framebuffer* GLRenderer::CreateFramebuffer (unsigned int rgbTextures, unsigned int rgbaTextures, bool multisampleEnabled)
@@ -55,25 +78,9 @@ Framebuffer* GLRenderer::CreateFramebuffer (unsigned int rgbTextures, unsigned i
     return framebuffer;
 }
 
-void GLRenderer::BindFramebuffer (Framebuffer* framebuffer)
+void GLRenderer::BindDefaultFramebuffer ()
 {
-    if (framebuffer != nullptr)
-    {
-        glBindFramebuffer (GL_FRAMEBUFFER, dynamic_cast<GLFramebuffer*>(framebuffer)->GetDrawFramebufferGLId ());
-    }
-    else
-    {
-        // bind default framebuffer
-        glBindFramebuffer (GL_FRAMEBUFFER, (GLint)0);
-    }
-}
-
-void GLRenderer::BindFramebufferRenderbuffer (Framebuffer* framebuffer)
-{
-    if (framebuffer != nullptr)
-    {
-        glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, dynamic_cast<GLFramebuffer*>(framebuffer)->GetDrawFramebufferRenderbufferGLId ());
-    }
+    glBindFramebuffer (GL_FRAMEBUFFER, (GLint) 0);
 }
 
 void GLRenderer::ClearColorBuffer (Vector4f& rgba)
@@ -364,4 +371,60 @@ void GLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "fScreenTexture"), 0);
 #endif
 
+}
+
+void GLRenderer::InitializeQuadGeometryBuffer ()
+{
+    GLGeometryBuffer* buffer = static_cast<GLGeometryBuffer*>(quadGeometryBuffer);
+
+    // set up VBO and VAO
+    float quadVertices[] = {
+        -1.0f,  1.0f, 
+        -1.0f, -1.0f,
+         1.0f, -1.0f,
+
+        -1.0f,  1.0f,
+         1.0f, -1.0f,
+         1.0f,  1.0f
+    };
+
+    float quadUV[] = {
+        0.0f, 1.0f,
+        0.0f, 0.0f,
+        1.0f, 0.0f,
+
+        0.0f, 1.0f,
+        1.0f, 0.0f,
+        1.0f, 1.0f
+    };
+
+    glGenVertexArrays (1, &buffer->VAO);    
+    glBindVertexArray (buffer->VAO);
+
+    glGenBuffers (1, &buffer->VBO[VBOType::VBO_VERTICES]);
+    glGenBuffers (1, &buffer->VBO[VBOType::VBO_UVS]);
+
+    glBindBuffer (GL_ARRAY_BUFFER, buffer->VBO[VBOType::VBO_VERTICES]);
+    glBufferData (GL_ARRAY_BUFFER, sizeof (quadVertices), &quadVertices, GL_STATIC_DRAW);
+    glVertexAttribPointer (VBOType::VBO_VERTICES, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+
+    glBindBuffer (GL_ARRAY_BUFFER, buffer->VBO[VBOType::VBO_UVS]);
+    glBufferData (GL_ARRAY_BUFFER, sizeof (quadUV), &quadUV, GL_STATIC_DRAW);
+    glVertexAttribPointer (VBOType::VBO_UVS, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+
+    glEnableVertexAttribArray (VBOType::VBO_VERTICES);
+    glEnableVertexAttribArray (VBOType::VBO_UVS);
+
+    glBindBuffer (GL_ARRAY_BUFFER, 0);
+    glBindVertexArray (0);    
+
+    buffer->vertexCount = 6;
+}
+
+void GLRenderer::DeinitializeQuadGeometryBuffer ()
+{
+    GLGeometryBuffer* buffer = static_cast<GLGeometryBuffer*>(quadGeometryBuffer);
+
+    glDeleteVertexArrays(1, &buffer->VAO);
+    glDeleteBuffers(1, &buffer->VBO[VBOType::VBO_VERTICES]);
 }

@@ -14,6 +14,9 @@ public:
 
     virtual void BindFramebuffer () const = 0;
     virtual void UnbindFramebuffer () const = 0;
+    virtual void BlitFramebuffer () const = 0;
+    virtual void BindFramebufferTextures () const = 0;
+    virtual void BindFramebufferRenderbuffer () const = 0;
 
     __EAPI unsigned int GetWidth () const;
     __EAPI unsigned int GetHeight () const;

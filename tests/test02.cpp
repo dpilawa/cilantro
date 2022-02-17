@@ -11,7 +11,7 @@
 #include "graphics/Renderer.h"
 #include "graphics/GLDeferredGeometryRenderStage.h"
 #include "graphics/GLForwardGeometryRenderStage.h"
-#include "graphics/GLQuadRenderStage.h"
+#include "graphics/QuadRenderStage.h"
 #include "graphics/GLFWRenderer.h"
 #include "input/GLFWInputController.h"
 #include "math/Mathf.h"
@@ -29,7 +29,7 @@ int main (int argc, char* argv [])
     InputController& inputController = Game::CreateInputController<GLFWInputController> ();
 
     renderer.AddRenderStage<GLForwardGeometryRenderStage> ("base").SetMultisampleEnabled (true);
-    renderer.AddRenderStage<GLQuadRenderStage> ("screen").SetShaderProgram ("flatquad_shader").SetFramebufferEnabled (false).SetPipelineFramebufferInputLink (PipelineLink::LINK_PREVIOUS);
+    renderer.AddRenderStage<QuadRenderStage> ("screen").SetShaderProgram ("flatquad_shader").SetFramebufferEnabled (false).SetPipelineFramebufferInputLink (PipelineLink::LINK_PREVIOUS);
 
     inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
     inputController.BindInputEvent ("exit", [ & ]() { Game::Stop (); });

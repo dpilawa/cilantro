@@ -171,14 +171,24 @@ RenderStage& RenderStage::SetPipelineFramebufferDrawLink (PipelineLink link)
 void RenderStage::OnFrame ()
 {
     Framebuffer* inputFramebuffer = renderer->GetPipelineFramebuffer (pipelineFramebufferInputLink);
-    Framebuffer* inputFramebufferRenderbuffer = renderer->GetPipelineFramebuffer (pipelineRenderbufferLink);
+    Framebuffer* inputRenderbuffer = renderer->GetPipelineFramebuffer (pipelineRenderbufferLink);
     Framebuffer* outputFramebuffer = renderer->GetPipelineFramebuffer (pipelineFramebufferOutputLink);
   
     // bind framebuffer to render to
-    renderer->BindFramebuffer (outputFramebuffer);
+    if (outputFramebuffer != nullptr)    
+    {
+        outputFramebuffer->BindFramebuffer ();
+    }
+    else
+    {
+        renderer->BindDefaultFramebuffer ();
+    }
     
     // bind depth and stencli buffers from previous/linked stage
-    renderer->BindFramebufferRenderbuffer (inputFramebufferRenderbuffer);
+    if (inputRenderbuffer != nullptr)
+    {
+        inputRenderbuffer->BindFramebufferRenderbuffer ();
+    }
 
     // optionally clear
     if (clearOnFrameEnabled)

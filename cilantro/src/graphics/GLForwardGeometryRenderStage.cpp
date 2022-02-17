@@ -48,7 +48,7 @@ void GLForwardGeometryRenderStage::OnFrame ()
     // blit framebuffer
     if (multisampleEnabled)
     {
-        static_cast<GLMultisampleFramebuffer*>(framebuffer)->BlitFramebuffer ();
+        framebuffer->BlitFramebuffer ();
     }
 #endif
 

@@ -45,8 +45,10 @@ public:
     template <typename T, typename ...Params> 
     T& CreateRenderer (Params&&... params);
 
+    __EAPI Renderer* GetRenderer () const;
+
     // other getters
-    __EAPI Timer& GetTimer ();
+    __EAPI Timer* GetTimer () const;
 
     // active camera manipulation
     __EAPI void SetActiveCamera (const std::string& name);
