@@ -1,18 +1,14 @@
-#include "cilantroengine.h"
-#include "graphics/GLShader.h"
 #include "graphics/GLShaderProgram.h"
+#include "graphics/GLShader.h"
 #include "system/LogMessage.h"
 #include "math/Vector2f.h"
 #include "math/Vector3f.h"
 #include "math/Vector4f.h"
 
-#include <iostream>
-
 GLShaderProgram::GLShaderProgram () : ShaderProgram ()
 {
     shaderProgramId = glCreateProgram ();
 }
-
 
 GLShaderProgram::~GLShaderProgram ()
 {

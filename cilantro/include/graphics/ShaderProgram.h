@@ -3,9 +3,9 @@
 
 #include "cilantroengine.h"
 #include "resource/Resource.h"
-#include "graphics/Shader.h"
 #include <string>
 
+class Shader;
 class Vector2f;
 class Vector3f;
 class Vector4f;

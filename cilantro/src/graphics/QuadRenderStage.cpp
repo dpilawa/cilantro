@@ -1,5 +1,6 @@
 #include "graphics/QuadRenderStage.h"
-#include "system/Game.h"
+#include "graphics/Renderer.h"
+#include "graphics/Framebuffer.h"
 #include "graphics/ShaderProgram.h"
 
 QuadRenderStage::QuadRenderStage () : RenderStage ()

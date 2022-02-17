@@ -1,4 +1,5 @@
 #include "graphics/ShaderProgram.h"
+#include "graphics/Shader.h"
 #include "system/Game.h"
 
 ShaderProgram::ShaderProgram () : Resource ()

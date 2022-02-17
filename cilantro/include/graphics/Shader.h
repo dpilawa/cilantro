@@ -3,8 +3,6 @@
 
 #include "cilantroengine.h"
 #include "resource/LoadableResource.h"
-#include <string>
-#include <unordered_map>
 
 enum class ShaderType { VERTEX_SHADER, GEOMETRY_SHADER, FRAGMENT_SHADER };
 
@@ -14,7 +12,7 @@ public:
     Shader (const std::string& path, ShaderType shaderType);
     virtual ~Shader ();
 
-    void SetParameter (std::string parameter, std::string value);
+    void SetParameter (const std::string& parameter, const std::string& value);
 
 protected:
     // shader type (vertex, fragment)

@@ -1,10 +1,9 @@
 #ifndef _GLSHADERPROGRAM_H_
 #define _GLSHADERPROGRAM_H_
 
+#include "cilantroengine.h"
 #include "glad/glad.h"
 #include "graphics/ShaderProgram.h"
-#include "graphics/GLShader.h"
-#include <string>
 
 enum BindingPoint { BP_MATRICES = 1, BP_POINTLIGHTS, BP_DIRECTIONALLIGHTS, BP_SPOTLIGHTS };
 

@@ -3,14 +3,14 @@
 
 #include "cilantroengine.h"
 #include "resource/ResourceManager.h"
-#include "graphics/ShaderProgram.h"
 #include "graphics/RenderStage.h"
-#include "graphics/Framebuffer.h"
-#include "graphics/GeometryBuffer.h"
 #include <string>
 #include <vector>
 
 class GameScene;
+class GeometryBuffer;
+class Framebuffer;
+class ShaderProgram;
 
 class Renderer
 {

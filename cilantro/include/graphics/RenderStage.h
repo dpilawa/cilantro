@@ -3,14 +3,13 @@
 
 #include "cilantroengine.h"
 #include "resource/Resource.h"
-#include "graphics/Framebuffer.h"
-#include "graphics/Framebuffer.h"
-#include "graphics/ShaderProgram.h"
 #include <string>
 
 enum PipelineLink { LINK_FIRST, LINK_SECOND, LINK_PREVIOUS, LINK_CURRENT, LINK_LAST };
 enum StencilTestFunction { FUNCTION_NEVER, FUNCTION_LESS, FUNCTION_LEQUAL, FUNCTION_GREATER, FUNCTION_GEQUAL, FUNCTION_EQUAL, FUNCTION_NOTEQUAL, FUNCTION_ALWAYS };
 
+class Framebuffer;
+class Renderer;
 class Vector2f;
 class Vector3f;
 class Vector4f;

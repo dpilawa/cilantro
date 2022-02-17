@@ -1,6 +1,7 @@
 #include "graphics/RenderStage.h"
-#include "system/Game.h"
-#include "graphics/ShaderProgram.h"
+#include "graphics/Renderer.h"
+#include "graphics/Framebuffer.h"
+#include "math/Vector4f.h"
 
 RenderStage::RenderStage ()
 {

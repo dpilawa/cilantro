@@ -1,6 +1,4 @@
-#include "cilantroengine.h"
 #include "graphics/Shader.h"
-#include "resource/Mesh.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -15,7 +13,7 @@ Shader::~Shader ()
 {
 }
 
-void Shader::SetParameter (std::string parameter, std::string value)
+void Shader::SetParameter (const std::string& parameter, const std::string& value)
 {
     std::size_t pos;
 

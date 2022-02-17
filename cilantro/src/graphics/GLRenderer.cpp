@@ -1,5 +1,7 @@
-#include "system/Game.h"
 #include "graphics/GLRenderer.h"
+#include "glad/glad.h"
+#include "system/Game.h"
+#include "graphics/GLShader.h"
 #include "graphics/GLShaderProgram.h"
 #include "graphics/GLGeometryBuffer.h"
 #include "graphics/GLFramebuffer.h"

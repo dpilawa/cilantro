@@ -2,9 +2,10 @@
 #define _GLRENDERER_H_
 
 #include "cilantroengine.h"
-#include "glad/glad.h"
 #include "graphics/Renderer.h"
-#include "scene/GameScene.h"
+
+class GameScene;
+class GeometryBuffer;
 
 class GLRenderer : public Renderer
 {

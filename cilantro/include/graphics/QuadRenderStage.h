@@ -2,12 +2,12 @@
 #define _QUADRENDERSTAGE_H_
 
 #include "cilantroengine.h"
-#include "graphics/ShaderProgram.h"
 #include "graphics/RenderStage.h"
-#include "math/Vector2f.h"
-#include "math/Vector3f.h"
-#include "math/Vector4f.h"
-#include <string>
+
+class ShaderProgram;
+class Vector2f;
+class Vector3f;
+class Vector4f;
 
 class QuadRenderStage : public RenderStage
 {

@@ -1,9 +1,9 @@
 #ifndef _GLSHADER_H_
 #define _GLSHADER_H_
 
+#include "cilantroengine.h"
 #include "glad/glad.h"
 #include "graphics/Shader.h"
-#include "graphics/Renderer.h"
 #include <string>
 
 class GLShader : public Shader
