@@ -4,6 +4,7 @@
 #include "scene/GameScene.h"
 #include "system/Timer.h"
 #include "system/LogMessage.h"
+#include <cmath>
 
 Renderer::Renderer (GameScene* gameScene, unsigned int width, unsigned int height)
 {
