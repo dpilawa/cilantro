@@ -1,8 +1,6 @@
 #include "cilantroengine.h"
 #include "scene/SpotLight.h"
-#include "math/Vector3f.h"
-#include "math/Mathf.h"
-#include "graphics/GeometryRenderStage.h"
+#include "graphics/Renderer.h"
 #include "system/CallbackProvider.h"
 
 SpotLight::SpotLight (GameScene* gameScene) : PointLight (gameScene)
@@ -41,8 +39,8 @@ float SpotLight::GetOuterCutoff () const
     return outerCutoff;
 }
 
-void SpotLight::OnUpdate (GeometryRenderStage& renderStage)
+void SpotLight::OnUpdate (Renderer& renderer)
 {
-    Light::OnUpdate (renderStage);
-    renderStage.Update (*this);
+    Light::OnUpdate (renderer);
+    renderer.Update (*this);
 }

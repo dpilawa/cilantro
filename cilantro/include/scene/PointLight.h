@@ -3,9 +3,8 @@
 
 #include "cilantroengine.h"
 #include "scene/Light.h"
-#include "math/Vector3f.h"
 
-class GeometryRenderStage;
+class Renderer;
 
 class PointLight : public Light
 {
@@ -24,7 +23,7 @@ public:
     __EAPI float GetQuadraticAttenuationFactor () const;
 
     // invoked by game loop on update
-    void OnUpdate (GeometryRenderStage& renderStage);
+    void OnUpdate (Renderer& renderer);
 
 private:
 

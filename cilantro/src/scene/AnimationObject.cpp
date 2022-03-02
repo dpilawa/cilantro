@@ -1,8 +1,12 @@
 #include "scene/AnimationObject.h"
 #include "scene/AnimationProperty.h"
-#include "system/Game.h"
+#include "scene/GameScene.h"
 #include "system/LogMessage.h"
 #include "system/Timer.h"
+#include <functional>
+#include <string>
+#include <unordered_map>
+#include <memory>
 
 // template instantiations
 template __EAPI void AnimationObject::AddAnimationProperty<float> (const std::string& propertyName, float startValue, std::function<void (float)> updateFunction, std::function<float (float, float, float)> interpolateFunction);

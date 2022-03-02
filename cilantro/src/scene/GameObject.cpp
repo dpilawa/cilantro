@@ -19,7 +19,11 @@ GameObject::GameObject (GameScene* gameScene)
 
     // set callbacks on transform modification
     // this is just a passthrough of callbacks to subscribers (Scene)
-    localTransform.RegisterCallback ("OnUpdateTransform", [&](handle_t objectHandle) { InvokeCallbacks ("OnUpdateTransform", this->GetHandle (), 0); });
+    localTransform.RegisterCallback ("OnUpdateTransform", [&](handle_t objectHandle) 
+    {
+        CalculateModelTransformMatrix (); 
+        InvokeCallbacks ("OnUpdateTransform", this->GetHandle (), 0); 
+    });
 }
 
 GameObject::~GameObject ()
@@ -55,11 +59,11 @@ void GameObject::OnFrame ()
 {
 }
 
-void GameObject::OnDraw (GeometryRenderStage& renderStage)
+void GameObject::OnDraw (Renderer& renderer)
 {
 }
 
-void GameObject::OnUpdate (GeometryRenderStage& renderStage)
+void GameObject::OnUpdate (Renderer& renderer)
 {
 }
 

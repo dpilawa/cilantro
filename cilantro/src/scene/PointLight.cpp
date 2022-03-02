@@ -1,8 +1,6 @@
 #include "cilantroengine.h"
 #include "scene/PointLight.h"
-#include "scene/Light.h"
-#include "math/Vector3f.h"
-#include "graphics/GeometryRenderStage.h"
+#include "graphics/Renderer.h"
 #include "system/CallbackProvider.h"
 
 PointLight::PointLight (GameScene* gameScene) : Light (gameScene)
@@ -52,8 +50,8 @@ float PointLight::GetQuadraticAttenuationFactor () const
     return attenuationQuadratic;
 }
 
-void PointLight::OnUpdate (GeometryRenderStage& renderStage)
+void PointLight::OnUpdate (Renderer& renderer)
 {
-    Light::OnUpdate (renderStage);
-    renderStage.Update (*this);
+    Light::OnUpdate (renderer);
+    renderer.Update (*this);
 }

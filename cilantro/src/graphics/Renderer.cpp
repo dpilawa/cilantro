@@ -1,12 +1,15 @@
 #include "graphics/Renderer.h"
 #include "graphics/RenderStage.h"
+#include "graphics/GLDeferredGeometryRenderStage.h"
+#include "graphics/GLForwardGeometryRenderStage.h"
 #include "graphics/Framebuffer.h"
 #include "scene/GameScene.h"
 #include "system/Timer.h"
 #include "system/LogMessage.h"
 #include <cmath>
 
-Renderer::Renderer (GameScene* gameScene, unsigned int width, unsigned int height)
+Renderer::Renderer (GameScene* gameScene, unsigned int width, unsigned int height, bool isDeferred)
+    : m_IsDeferred(isDeferred)
 {
     totalRenderFrames = 0L;
     totalRenderTime = 0.0f;
@@ -14,7 +17,6 @@ Renderer::Renderer (GameScene* gameScene, unsigned int width, unsigned int heigh
 
     this->gameScene = gameScene;
     this->quadGeometryBuffer = nullptr;
-    this->sceneGeometryBuffer = nullptr;
 
     this->width = width;
     this->height = height;
@@ -26,10 +28,32 @@ Renderer::~Renderer ()
 
 void Renderer::Initialize ()
 {
+    InitializeObjectBuffers ();
+    InitializeRenderStages ();
+    InitializeMatrixUniformBuffers ();
+    InitializeLightUniformBuffers ();
+
     for (auto&& stage : renderStages)
     {
         stage->Initialize ();
     }
+
+    // set callback for new MeshObjects
+    gameScene->RegisterCallback ("OnUpdateMeshObject", [&](unsigned int objectHandle, unsigned int) { gameScene->GetGameObjectManager ().GetByHandle<GameObject> (objectHandle).OnUpdate (*this); });
+
+    // set callback for new or modified materials
+    gameScene->RegisterCallback ("OnUpdateMaterialTexture", [&](unsigned int materialHandle, unsigned int textureUnit) { Update (gameScene->GetMaterialManager ().GetByHandle<Material> (materialHandle), textureUnit); });
+    gameScene->RegisterCallback ("OnUpdateMaterial", [&](unsigned int materialHandle, unsigned int) { Update (gameScene->GetMaterialManager ().GetByHandle<Material> (materialHandle)); });
+    
+    // set callback for new or modified lights
+    gameScene->RegisterCallback ("OnUpdateLight", [&](unsigned int objectHandle, unsigned int) { gameScene->GetGameObjectManager ().GetByHandle<GameObject> (objectHandle).OnUpdate (*this); });
+
+    // set callback for modified scene graph (currently this only requires to reload light buffers)
+    gameScene->RegisterCallback ("OnUpdateSceneGraph", [&](unsigned int objectHandle, unsigned int) { UpdateLightBufferRecursive (objectHandle); });
+
+    // set callback for modified transforms (currently this only requires to reload light buffers)
+    gameScene->RegisterCallback ("OnUpdateTransform", [&](unsigned int objectHandle, unsigned int) { UpdateLightBufferRecursive (objectHandle); });
+
 }
 
 void Renderer::Deinitialize ()
@@ -72,7 +96,6 @@ Renderer& Renderer::SetResolution (unsigned int width, unsigned int height)
 
 void Renderer::RenderFrame ()
 {
-
     renderStage = 0;
 
     // reset global rendering timer
@@ -102,12 +125,12 @@ GameScene* Renderer::GetGameScene ()
     return gameScene;
 }
 
-GeometryBuffer* Renderer::GetSceneGeometryBuffer () const
+std::unordered_map <handle_t, SGeometryBuffers*>& Renderer::GetSceneGeometryBufferMap ()
 {
-    return sceneGeometryBuffer;
+    return sceneGeometryBuffers;
 }
 
-GeometryBuffer* Renderer::GetQuadGeometryBuffer () const
+SGeometryBuffers* Renderer::GetQuadGeometryBuffer () const
 {
     return quadGeometryBuffer;
 }
@@ -170,3 +193,34 @@ ResourceManager<ShaderProgram>& Renderer::GetShaderProgramManager ()
     return shaderPrograms;
 }
 
+void Renderer::InitializeObjectBuffers ()
+{
+    // create and load object buffers for all existing objects
+    for (auto&& gameObject : gameScene->GetGameObjectManager ())
+    {
+        // load buffers for MeshObject only
+        if (std::dynamic_pointer_cast<MeshObject> (gameObject) != nullptr)
+        {
+            gameObject->OnUpdate (*this);
+        }      
+    }
+}
+
+void Renderer::InitializeRenderStages ()
+{
+    if (m_IsDeferred == true)
+    {
+        // geometry stage
+        this->AddRenderStage<GLDeferredGeometryRenderStage> ("base");
+        
+        // lighting stages (per material shader)
+        for (auto&& material : gameScene->GetMaterialManager ())
+        {
+            this->Update (*material);
+        }
+    }
+    else
+    {
+        this->AddRenderStage<GLForwardGeometryRenderStage> ("base");
+    }
+}

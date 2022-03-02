@@ -1,8 +1,6 @@
 #include "cilantroengine.h"
 #include "system/Timer.h"
 
-#include <chrono>
-
 Timer::Timer ()
 {
     ResetSplitTime ();

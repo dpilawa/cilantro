@@ -10,8 +10,8 @@ struct GLBuffers
 public:
     GLuint FBO;
     GLuint RBO;
-    GLuint textureBuffer[MAX_FRAMEBUFFER_TEXTURES];
-    GLuint attachments[MAX_FRAMEBUFFER_TEXTURES];
+    GLuint textureBuffer[CILANTRO_MAX_FRAMEBUFFER_TEXTURES];
+    GLuint attachments[CILANTRO_MAX_FRAMEBUFFER_TEXTURES];
 };
 
 class GLFramebuffer : public Framebuffer

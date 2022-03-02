@@ -1,12 +1,14 @@
-#include "system/Game.h"
 #include "graphics/GLDeferredGeometryRenderStage.h"
-#include "graphics/QuadRenderStage.h"
+#include "graphics/RenderStage.h"
+#include "graphics/Framebuffer.h"
+#include "scene/GameScene.h"
+#include "scene/GameObject.h"
 #include "scene/MeshObject.h"
-#include <set>
+#include "glad/glad.h"
+#include <string>
 
-GLDeferredGeometryRenderStage::GLDeferredGeometryRenderStage () : GLGeometryRenderStage ()
+GLDeferredGeometryRenderStage::GLDeferredGeometryRenderStage () : RenderStage ()
 {
-    lightingShaderStagesCount = 0;
 }
 
 GLDeferredGeometryRenderStage::~GLDeferredGeometryRenderStage ()
@@ -16,33 +18,31 @@ GLDeferredGeometryRenderStage::~GLDeferredGeometryRenderStage ()
 
 void GLDeferredGeometryRenderStage::Initialize ()
 {
-    GLGeometryRenderStage::Initialize ();  
-
     InitializeFramebuffer ();
 }
 
 void GLDeferredGeometryRenderStage::Deinitialize ()
 {    
-    GLGeometryRenderStage::Deinitialize ();  
 }
 
 void GLDeferredGeometryRenderStage::OnFrame ()
 {
-    GLGeometryRenderStage::OnFrame ();
+    RenderStage::OnFrame ();
 
     // clear frame, depth and stencil buffers
-    glClearColor (0.0f, 0.0f, 0.0f, 1.0f);   
-    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    renderer->ClearColorBuffer (Vector4f (0.0f, 0.0f, 0.0f, 1.0f));
+    renderer->ClearDepthBuffer ();
+    renderer->ClearStencilBuffer ();
 
     // set viewport
     glViewport (0, 0, renderer->GetWidth (), renderer->GetHeight ());
 
     // enable depth and stencil buffer testing
-    glEnable (GL_DEPTH_TEST);
-    glEnable (GL_STENCIL_TEST);
+    renderer->SetDepthTestEnabled (true);
+    renderer->SetStencilTestEnabled (true);
 
     // load uniform buffers
-    LoadMatrixUniformBuffers ();
+    renderer->LoadMatrixUniformBuffers ();
 
     // GEOMETRY PASS
     // draw all objects in scene using geometry shader, construct g-buffer
@@ -60,65 +60,10 @@ void GLDeferredGeometryRenderStage::OnFrame ()
         }
 
         // draw to g-buffer
-        gameObject->OnDraw (*this);
+        gameObject->OnDraw (*renderer);
 
     }
-
-    // check for errors
-    CheckGLError (MSG_LOCATION);    
-}
-
-void GLDeferredGeometryRenderStage::Update (Material& material)
-{
-    handle_t shaderProgramHandle = renderer->GetShaderProgramManager ().GetByName<ShaderProgram>(material.GetDeferredLightingPassShaderProgram ()).GetHandle ();
-    std::string shaderProgramName = renderer->GetShaderProgramManager ().GetByHandle<ShaderProgram> (shaderProgramHandle).GetName ();
-
-    // add material's shader program to set of used shader programs handles
-    // add lighting deferred pass renderStages for each program
-    if (lightingShaders.find (shaderProgramHandle) == lightingShaders.end ())
-    {
-        // first rotate the pipeline to the left so that geometry stage is last
-        renderer->RotateRenderPipelineLeft ();
-
-        lightingShaderStagesCount++;
-        lightingShaders.insert (shaderProgramHandle);
-        QuadRenderStage& p = renderer->AddRenderStage <QuadRenderStage> ("deferredLightingStage_" + shaderProgramName);
-        p.SetShaderProgram (shaderProgramName);
-        p.SetStencilTestEnabled (true).SetStencilTest (StencilTestFunction::FUNCTION_EQUAL, shaderProgramHandle);
-        p.SetClearOnFrameEnabled (true);
-        p.SetDepthTestEnabled (false);
-        p.SetPipelineFramebufferInputLink (PipelineLink::LINK_FIRST);
-        p.SetPipelineRenderbufferLink (PipelineLink::LINK_FIRST);
-        p.SetPipelineFramebufferDrawLink (PipelineLink::LINK_SECOND);
-        p.SetFramebufferEnabled (true);
-
-        // rotate pipeline twice to the right, so that ultimately geometry stage is first and newly added stage is second
-        renderer->RotateRenderPipelineRight ();
-        renderer->RotateRenderPipelineRight ();
-        
-        // update flags of other deferred lighting stages (if present)
-        if (lightingShaderStagesCount > 1)
-        {
-            handle_t stageHandle = renderer->GetRenderPipeline ()[2];
-
-            QuadRenderStage& stage = renderer->GetRenderStageManager ().GetByHandle<QuadRenderStage> (stageHandle);
-            stage.SetClearOnFrameEnabled (false);
-            stage.SetFramebufferEnabled (false);
-        }
-
-        // update pipeline links of 1st stage following deferred lighting stages
-        if (renderer->GetRenderPipeline ().size () > lightingShaderStagesCount + 1)
-        {
-            handle_t stageHandle = renderer->GetRenderPipeline ()[lightingShaderStagesCount + 1];
-
-            RenderStage& stage = renderer->GetRenderStageManager ().GetByHandle<RenderStage> (stageHandle);
-            stage.SetPipelineFramebufferInputLink (PipelineLink::LINK_SECOND);
-            stage.SetPipelineRenderbufferLink (PipelineLink::LINK_CURRENT);
-            stage.SetPipelineFramebufferDrawLink (PipelineLink::LINK_CURRENT);
-        }
-    }
-
-    GLGeometryRenderStage::Update (material);
+ 
 }
 
 void GLDeferredGeometryRenderStage::InitializeFramebuffer ()
@@ -129,12 +74,3 @@ void GLDeferredGeometryRenderStage::InitializeFramebuffer ()
     }
 }
 
-std::string GLDeferredGeometryRenderStage::GetMeshObjectGeometryShaderProgram (const MeshObject& meshObject) 
-{
-    return meshObject.GetMaterial ().GetDeferredGeometryPassShaderProgram ();
-}
-
-std::string GLDeferredGeometryRenderStage::GetMeshObjectLightingShaderProgram (const MeshObject& meshObject) 
-{
-    return meshObject.GetMaterial ().GetDeferredLightingPassShaderProgram ();
-}

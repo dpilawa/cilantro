@@ -1,13 +1,13 @@
-#include "system/Game.h"
-#include "graphics/GLGeometryRenderStage.h"
 #include "graphics/GLForwardGeometryRenderStage.h"
-#include "graphics/GLFramebuffer.h"
-#if (CILANTRO_GL_VERSION > 140)
-#include "graphics/GLMultisampleFramebuffer.h"
-#endif
+#include "graphics/RenderStage.h"
+#include "graphics/Framebuffer.h"
+#include "scene/GameScene.h"
+#include "scene/GameObject.h"
 #include "scene/MeshObject.h"
+#include "glad/glad.h"
+#include <string>
 
-GLForwardGeometryRenderStage::GLForwardGeometryRenderStage () : GLGeometryRenderStage ()
+GLForwardGeometryRenderStage::GLForwardGeometryRenderStage () : RenderStage ()
 {
 }
 
@@ -18,22 +18,19 @@ GLForwardGeometryRenderStage::~GLForwardGeometryRenderStage ()
 
 void GLForwardGeometryRenderStage::Initialize ()
 {    
-    GLGeometryRenderStage::Initialize ();
-    
     InitializeFramebuffer ();
 }
 
 void GLForwardGeometryRenderStage::Deinitialize ()
 {
-    GLGeometryRenderStage::Deinitialize ();
 }
 
 void GLForwardGeometryRenderStage::OnFrame ()
 {
-    GLGeometryRenderStage::OnFrame ();
+    RenderStage::OnFrame ();
 
     // load uniform buffers
-    LoadMatrixUniformBuffers ();
+    renderer->LoadMatrixUniformBuffers ();
 
     // set viewport
     glViewport (0, 0, renderer->GetWidth (), renderer->GetHeight ());
@@ -41,19 +38,13 @@ void GLForwardGeometryRenderStage::OnFrame ()
     // draw all objects in scene
     for (auto gameObject : renderer->GetGameScene ()->GetGameObjectManager ())
     {
-        gameObject->OnDraw (*this);
+        gameObject->OnDraw (*renderer);
     }
 
-#if (CILANTRO_GL_VERSION > 140)
-    // blit framebuffer
-    if (multisampleEnabled)
+    if (framebuffer != nullptr)
     {
         framebuffer->BlitFramebuffer ();
     }
-#endif
-
-    // check for errors
-    CheckGLError (MSG_LOCATION);
 }
 
 void GLForwardGeometryRenderStage::InitializeFramebuffer ()
@@ -64,12 +55,3 @@ void GLForwardGeometryRenderStage::InitializeFramebuffer ()
     }
 }
 
-std::string GLForwardGeometryRenderStage::GetMeshObjectGeometryShaderProgram (const MeshObject& meshObject) 
-{
-    return meshObject.GetMaterial ().GetForwardShaderProgram ();
-}
-
-std::string GLForwardGeometryRenderStage::GetMeshObjectLightingShaderProgram (const MeshObject& meshObject) 
-{
-    return meshObject.GetMaterial ().GetForwardShaderProgram ();
-}

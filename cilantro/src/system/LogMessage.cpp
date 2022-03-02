@@ -1,9 +1,6 @@
 #include "cilantroengine.h"
 #include "system/LogMessage.h"
 
-#include <string>
-#include <iostream>
-
 LogMessage::LogMessage ()
 {
     didPrint = false;

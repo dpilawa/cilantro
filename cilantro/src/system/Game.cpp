@@ -1,5 +1,6 @@
-#include "cilantroengine.h"
 #include "system/Game.h"
+#include "scene/GameScene.h"
+#include "input/InputController.h"
 #include "system/LogMessage.h"
 
 ResourceManager<Resource>& Game::resourceManager = ResourceManager<Resource>();

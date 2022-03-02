@@ -22,12 +22,11 @@ int main (int argc, char* argv [])
     Game::Initialize ();
 
     GameScene& gameScene = Game::CreateGameScene<GameScene> ("scene");
-    GLFWRenderer& renderer = gameScene.CreateRenderer<GLFWRenderer> (800, 600, "Test 01", false, true, true);
+    GLFWRenderer& renderer = gameScene.CreateRenderer<GLFWRenderer> (800, 600, true, "Test 01", false, true, true);
     InputController& inputController = Game::CreateInputController<GLFWInputController> ();
 
     AssimpModelLoader modelLoader;
 
-    renderer.AddRenderStage<GLDeferredGeometryRenderStage> ("base");
     renderer.AddRenderStage<QuadRenderStage> ("hdr_postprocess").SetShaderProgram ("post_hdr_shader").SetPipelineFramebufferInputLink (PipelineLink::LINK_PREVIOUS);
     renderer.AddRenderStage<QuadRenderStage> ("fxaa_postprocess").SetShaderProgram ("post_fxaa_shader").SetRenderStageParameterFloat ("fMaxSpan", 4.0f).SetRenderStageParameterVector2f ("vInvResolution", Vector2f (1.0f / renderer.GetWidth (), 1.0f / renderer.GetHeight ())).SetPipelineFramebufferInputLink (PipelineLink::LINK_PREVIOUS);   
     renderer.AddRenderStage<QuadRenderStage> ("gamma_postprocess+screen").SetShaderProgram ("post_gamma_shader").SetRenderStageParameterFloat ("fGamma", 2.1f).SetPipelineFramebufferInputLink (PipelineLink::LINK_PREVIOUS).SetFramebufferEnabled (false);

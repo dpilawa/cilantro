@@ -10,7 +10,7 @@ class GLFWRenderer : public GLRenderer
 {
 public:
 
-    __EAPI GLFWRenderer (GameScene* gameScene, unsigned int width, unsigned int height, std::string windowCaption, bool isFullscreen, bool isResizable, bool isVSync);
+    __EAPI GLFWRenderer (GameScene* gameScene, unsigned int width, unsigned int height, bool isDeferred, std::string windowCaption, bool isFullscreen, bool isResizable, bool isVSync);
     __EAPI ~GLFWRenderer ();
 
     __EAPI virtual void Initialize ();

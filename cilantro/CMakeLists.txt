@@ -32,9 +32,7 @@ endif()
 set(CILANTRO_FILES ${CILANTRO_FILES}
 include/cilantroengine.h
 
-include/graphics/GeometryRenderStage.h
 include/graphics/Framebuffer.h
-include/graphics/GLGeometryRenderStage.h
 include/graphics/GLFramebuffer.h
 include/graphics/GLDeferredGeometryRenderStage.h
 include/graphics/GLForwardGeometryRenderStage.h
@@ -46,8 +44,6 @@ include/graphics/QuadRenderStage.h
 include/graphics/RenderStage.h
 include/graphics/Shader.h
 include/graphics/ShaderProgram.h
-include/graphics/GeometryBuffer.h
-include/graphics/GLGeometryBuffer.h
 include/input/InputController.h
 include/input/Input.h
 include/math/Bezier.h
@@ -96,9 +92,7 @@ include/system/Game.h
 include/system/LogMessage.h
 include/system/Timer.h
 
-src/graphics/GeometryRenderStage.cpp
 src/graphics/Framebuffer.cpp
-src/graphics/GLGeometryRenderStage.cpp
 src/graphics/GLFramebuffer.cpp
 src/graphics/GLDeferredGeometryRenderStage.cpp
 src/graphics/GLForwardGeometryRenderStage.cpp

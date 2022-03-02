@@ -83,7 +83,6 @@ T& GameScene::AddGameObject (const std::string& name, Params&&... params)
     gameObject.RegisterCallback ("OnUpdateLight", [ & ](unsigned int objectHandle, unsigned int) { InvokeCallbacks ("OnUpdateLight", objectHandle, 0); });
     gameObject.RegisterCallback ("OnUpdateSceneGraph", [ & ](unsigned int objectHandle, unsigned int) { InvokeCallbacks ("OnUpdateSceneGraph", objectHandle, 0); });
     gameObject.RegisterCallback ("OnUpdateTransform", [&](unsigned int objectHandle, unsigned int) { 
-        gameObjects.GetByHandle<T> (objectHandle).CalculateModelTransformMatrix ();
         InvokeCallbacks ("OnUpdateTransform", objectHandle, 0);
     });
 

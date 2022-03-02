@@ -74,7 +74,6 @@ private:
     Mesh& SetTangent (unsigned int index, const Vector3f& tangent);
     Mesh& SetBitangent (unsigned int index, const Vector3f& bitangent);
 
-    std::string materialName;
     bool smoothNormals;
 
     // index in this vector is bone index, element is bone handle in resource manager

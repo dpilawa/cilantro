@@ -43,9 +43,9 @@ Vector3f Light::GetColor () const
     }
 }
 
-void Light::OnUpdate (GeometryRenderStage& renderStage)
+void Light::OnUpdate (Renderer& renderer)
 {
-    GameObject::OnUpdate (renderStage);
+    GameObject::OnUpdate (renderer);
 }
 
 void Light::InvokeOnUpdateCallbacks ()

@@ -3,9 +3,8 @@
 
 #include "cilantroengine.h"
 #include "scene/PointLight.h"
-#include "math/Vector3f.h"
 
-class GeometryRenderStage;
+class Renderer;
 
 class SpotLight : public PointLight
 {
@@ -22,7 +21,7 @@ public:
     __EAPI float GetOuterCutoff () const;
 
     // invoked by game loop on update
-    void OnUpdate (GeometryRenderStage& renderStage);
+    void OnUpdate (Renderer& renderer);
 
 private:
 

@@ -1,8 +1,6 @@
 #include "cilantroengine.h"
 #include "scene/DirectionalLight.h"
-#include "scene/Light.h"
-#include "math/Vector3f.h"
-#include "graphics/GeometryRenderStage.h"
+#include "graphics/Renderer.h"
 #include "system/CallbackProvider.h"
 
 DirectionalLight::DirectionalLight (GameScene* gameScene) : Light (gameScene)
@@ -13,8 +11,8 @@ DirectionalLight::~DirectionalLight ()
 {
 }
 
-void DirectionalLight::OnUpdate (GeometryRenderStage& renderStage)
+void DirectionalLight::OnUpdate (Renderer& renderer)
 {
-    Light::OnUpdate (renderStage);
-    renderStage.Update (*this);
+    Light::OnUpdate (renderer);
+    renderer.Update (*this);
 }

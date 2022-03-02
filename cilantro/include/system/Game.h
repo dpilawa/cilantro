@@ -2,10 +2,11 @@
 #define _GAME_H_
 
 #include "cilantroengine.h"
-#include "resource/Resource.h"
 #include "resource/ResourceManager.h"
-#include "scene/GameScene.h"
-#include "input/InputController.h"
+
+class Resource;
+class GameScene;
+class InputController;
 
 class Game
 {

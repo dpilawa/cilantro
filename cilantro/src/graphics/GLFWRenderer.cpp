@@ -1,11 +1,12 @@
 #include "cilantroengine.h"
 #include "graphics/GLRenderer.h"
 #include "graphics/GLFWRenderer.h"
+#include "scene/GameScene.h"
 #include "system/Game.h"
 #include "system/LogMessage.h"
 
-GLFWRenderer::GLFWRenderer (GameScene* gameScene, unsigned int width, unsigned int height, std::string windowCaption, bool isFullscreen, bool isResizable, bool isVSync) 
-    : GLRenderer (gameScene, width, height)
+GLFWRenderer::GLFWRenderer (GameScene* gameScene, unsigned int width, unsigned int height, bool isDeferred, std::string windowCaption, bool isFullscreen, bool isResizable, bool isVSync) 
+    : GLRenderer (gameScene, width, height, isDeferred)
 {
     this->windowCaption = windowCaption;
     this->isFullscreen = isFullscreen;

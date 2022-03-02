@@ -28,9 +28,6 @@ void Shader::Load (const std::string& path)
 {
     std::ifstream f (path, std::ios::binary);
     std::ostringstream ss;
-    std::string versionTag ("%%CILANTRO_GL_VERSION%%");
-    std::string boneMaxTag ("%%CILANTRO_MAX_BONES%%");
-    std::string boneMaxInfluenceTag ("%%CILANTRO_MAX_BONE_INFLUENCES%%");
    
     if (!f.is_open ())
     {
@@ -48,7 +45,7 @@ void Shader::SetDefaultParameters ()
     SetParameter ("%%CILANTRO_GL_VERSION%%", std::to_string (CILANTRO_GL_VERSION));
     SetParameter ("%%CILANTRO_MAX_BONES%%", std::to_string (CILANTRO_MAX_BONES));
     SetParameter ("%%CILANTRO_MAX_BONE_INFLUENCES%%", std::to_string (CILANTRO_MAX_BONE_INFLUENCES));
-    SetParameter ("%%CILANTRO_MAX_POINT_LIGHTS%%", std::to_string (MAX_POINT_LIGHTS));
-    SetParameter ("%%CILANTRO_MAX_SPOT_LIGHTS%%", std::to_string (CILANTRO_MAX_BONE_INFLUENCES));
-    SetParameter ("%%CILANTRO_MAX_DIRECTIONAL_LIGHTS%%", std::to_string (CILANTRO_MAX_BONE_INFLUENCES));
+    SetParameter ("%%CILANTRO_MAX_POINT_LIGHTS%%", std::to_string (CILANTRO_MAX_POINT_LIGHTS));
+    SetParameter ("%%CILANTRO_MAX_SPOT_LIGHTS%%", std::to_string (CILANTRO_MAX_SPOT_LIGHTS));
+    SetParameter ("%%CILANTRO_MAX_DIRECTIONAL_LIGHTS%%", std::to_string (CILANTRO_MAX_DIRECTIONAL_LIGHTS));
 }

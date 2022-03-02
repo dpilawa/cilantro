@@ -5,7 +5,7 @@
 #include "scene/GameObject.h"
 #include "math/Vector3f.h"
 
-class GeometryRenderStage;
+class Renderer;
 
 class Light : public GameObject
 {
@@ -25,7 +25,7 @@ public:
 
 
     // invoked by game loop on update	
-    void OnUpdate (GeometryRenderStage& renderStage);
+    void OnUpdate (Renderer& renderStage);
 
 protected:
 
@@ -35,7 +35,6 @@ protected:
 private:
 
     bool isEnabled;
-
     Vector3f lightColor;
 };
 

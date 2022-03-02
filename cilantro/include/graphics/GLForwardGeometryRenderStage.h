@@ -2,9 +2,11 @@
 #define _GLFORWARDGEOMETRYRENDERSTAGE_H_
 
 #include "cilantroengine.h"
-#include "graphics/GLGeometryRenderStage.h"
+#include "graphics/RenderStage.h"
 
-class GLForwardGeometryRenderStage : public GLGeometryRenderStage
+class MeshObject;
+
+class GLForwardGeometryRenderStage : public RenderStage
 {
 public:
     __EAPI GLForwardGeometryRenderStage ();
@@ -19,10 +21,7 @@ protected:
 
     virtual void InitializeFramebuffer ();
     
-private:
 
-    virtual std::string GetMeshObjectGeometryShaderProgram (const MeshObject& meshObject);
-    virtual std::string GetMeshObjectLightingShaderProgram (const MeshObject& meshObject);
 
 };
 

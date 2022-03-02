@@ -2,12 +2,11 @@
 #define _GLDEFERREDGEOMETRYRENDERSTAGE_H_
 
 #include "cilantroengine.h"
-#include "graphics/GLGeometryRenderStage.h"
-#include <set>
+#include "graphics/RenderStage.h"
 
-class GLRenderStage;
+class MeshObject;
 
-class GLDeferredGeometryRenderStage : public GLGeometryRenderStage
+class GLDeferredGeometryRenderStage : public RenderStage
 {
 public:
     __EAPI GLDeferredGeometryRenderStage ();
@@ -17,21 +16,12 @@ public:
     __EAPI virtual void Deinitialize ();
 
     virtual void OnFrame ();
-    virtual void Update (Material& material);
 
 protected:
 
     virtual void InitializeFramebuffer ();
 
-private:
 
-    // set of handles of distinct lighting pass shader programs used in the scene
-    std::set <handle_t> lightingShaders;
-
-    unsigned int lightingShaderStagesCount;
-
-    virtual std::string GetMeshObjectGeometryShaderProgram (const MeshObject& meshObject);
-    virtual std::string GetMeshObjectLightingShaderProgram (const MeshObject& meshObject);
 
 };
 

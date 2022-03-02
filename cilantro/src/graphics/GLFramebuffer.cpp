@@ -7,7 +7,7 @@ GLFramebuffer::GLFramebuffer (unsigned int bufferWidth, unsigned int bufferHeigh
     this->rgbTextureCount = rgbTextureCount;
     this->rgbaTextureCount = rgbaTextureCount;
 
-    for (int i = 0; i < MAX_FRAMEBUFFER_TEXTURES; i++)
+    for (int i = 0; i < CILANTRO_MAX_FRAMEBUFFER_TEXTURES; i++)
     {
         glBuffers.attachments[i] = GL_COLOR_ATTACHMENT0 + i;
     }
