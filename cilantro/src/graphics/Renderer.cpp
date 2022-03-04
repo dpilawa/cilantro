@@ -63,6 +63,10 @@ void Renderer::Deinitialize ()
         stage->Deinitialize ();
     }
 
+    DeinitializeMatrixUniformBuffers ();
+    DeinitializeLightUniformBuffers ();
+    DeinitializeObjectBuffers ();
+
     LogMessage (MSG_LOCATION) << "Rendered" << totalRenderFrames << "frames in" << totalRenderTime << "seconds; avg FPS =" << std::round (totalRenderFrames / totalFrameRenderTime) << "; real FPS = " << std::round (totalRenderFrames / totalRenderTime);
 }
 
@@ -191,19 +195,6 @@ ResourceManager<RenderStage>& Renderer::GetRenderStageManager ()
 ResourceManager<ShaderProgram>& Renderer::GetShaderProgramManager ()
 {
     return shaderPrograms;
-}
-
-void Renderer::InitializeObjectBuffers ()
-{
-    // create and load object buffers for all existing objects
-    for (auto&& gameObject : gameScene->GetGameObjectManager ())
-    {
-        // load buffers for MeshObject only
-        if (std::dynamic_pointer_cast<MeshObject> (gameObject) != nullptr)
-        {
-            gameObject->OnUpdate (*this);
-        }      
-    }
 }
 
 void Renderer::InitializeRenderStages ()

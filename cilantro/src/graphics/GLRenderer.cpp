@@ -837,6 +837,30 @@ void GLRenderer::DeinitializeQuadGeometryBuffer ()
     glDeleteBuffers(1, &buffer->VBO[EVBOType::VBO_VERTICES]);
 }
 
+void GLRenderer::InitializeObjectBuffers ()
+{
+    // create and load object buffers for all existing objects
+    for (auto&& gameObject : gameScene->GetGameObjectManager ())
+    {
+        // load buffers for MeshObject only
+        if (std::dynamic_pointer_cast<MeshObject> (gameObject) != nullptr)
+        {
+            gameObject->OnUpdate (*this);
+        }      
+    }
+}
+
+void GLRenderer::DeinitializeObjectBuffers ()
+{
+    SGLGeometryBuffers* gbuffers;
+
+    for (auto&& b : sceneGeometryBuffers)
+    {
+        gbuffers = static_cast<SGLGeometryBuffers*>(b.second);
+        glDeleteBuffers (CILANTRO_VBO_COUNT, gbuffers->VBO);
+    }
+}
+
 void GLRenderer::InitializeMatrixUniformBuffers ()
 {
     SGLUniformBuffers* buffers = static_cast<SGLUniformBuffers*>(uniformBuffers);
@@ -848,6 +872,12 @@ void GLRenderer::InitializeMatrixUniformBuffers ()
     glBindBufferBase (GL_UNIFORM_BUFFER, BindingPoint::BP_MATRICES, buffers->UBO[UBO_MATRICES]);
 
     CheckGLError (MSG_LOCATION);
+}
+
+void GLRenderer::DeinitializeMatrixUniformBuffers ()
+{
+    SGLUniformBuffers* buffers = static_cast<SGLUniformBuffers*>(uniformBuffers);
+    glDeleteBuffers (1, &buffers->UBO[UBO_MATRICES]);
 }
 
 GLuint GLRenderer::GetTextureFormat (unsigned int numTextures)
@@ -1054,19 +1084,19 @@ void GLRenderer::InitializeLightUniformBuffers ()
     // create uniform buffer for point lights
     glGenBuffers (1, &buffers->UBO[UBO_POINTLIGHTS]);
     glBindBuffer (GL_UNIFORM_BUFFER, buffers->UBO[UBO_POINTLIGHTS]);
-    glBufferData (GL_UNIFORM_BUFFER, sizeof (SGLUniformPointLightBuffer), NULL, GL_DYNAMIC_DRAW);
+    glBufferData (GL_UNIFORM_BUFFER, sizeof (SGLUniformPointLightBuffer), pointLightUniformBuf, GL_DYNAMIC_DRAW);
     glBindBufferBase (GL_UNIFORM_BUFFER, BindingPoint::BP_POINTLIGHTS, buffers->UBO[UBO_POINTLIGHTS]);
 
     // create uniform buffer for directional lights
     glGenBuffers (1, &buffers->UBO[UBO_DIRECTIONALLIGHTS]);
     glBindBuffer (GL_UNIFORM_BUFFER, buffers->UBO[UBO_DIRECTIONALLIGHTS]);
-    glBufferData (GL_UNIFORM_BUFFER, sizeof (SGLUniformDirectionalLightBuffer), NULL, GL_DYNAMIC_DRAW);
+    glBufferData (GL_UNIFORM_BUFFER, sizeof (SGLUniformDirectionalLightBuffer), directionalLightUniformBuf, GL_DYNAMIC_DRAW);
     glBindBufferBase (GL_UNIFORM_BUFFER, BindingPoint::BP_DIRECTIONALLIGHTS, buffers->UBO[UBO_DIRECTIONALLIGHTS]);
 
     // create uniform buffer for spot lights
     glGenBuffers (1, &buffers->UBO[UBO_SPOTLIGHTS]);
     glBindBuffer (GL_UNIFORM_BUFFER, buffers->UBO[UBO_SPOTLIGHTS]);
-    glBufferData (GL_UNIFORM_BUFFER, sizeof (SGLUniformSpotLightBuffer), NULL, GL_DYNAMIC_DRAW);
+    glBufferData (GL_UNIFORM_BUFFER, sizeof (SGLUniformSpotLightBuffer), spotLightUniformBuf, GL_DYNAMIC_DRAW);
     glBindBufferBase (GL_UNIFORM_BUFFER, BindingPoint::BP_SPOTLIGHTS, buffers->UBO[UBO_SPOTLIGHTS]);
 
     // scan objects vector for lights and populate light buffers
@@ -1078,6 +1108,13 @@ void GLRenderer::InitializeLightUniformBuffers ()
         }
     }
 
+}
+void GLRenderer::DeinitializeLightUniformBuffers ()
+{
+    SGLUniformBuffers* buffers = static_cast<SGLUniformBuffers*>(uniformBuffers);
+    glDeleteBuffers (1, &buffers->UBO[UBO_SPOTLIGHTS]);
+    glDeleteBuffers (1, &buffers->UBO[UBO_DIRECTIONALLIGHTS]);
+    glDeleteBuffers (1, &buffers->UBO[UBO_POINTLIGHTS]);
 }
 
 void GLRenderer::UpdateLightBufferRecursive (unsigned int objectHandle)

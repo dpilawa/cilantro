@@ -143,10 +143,15 @@ private:
     void InitializeQuadGeometryBuffer ();
     void DeinitializeQuadGeometryBuffer ();
 
+    virtual void InitializeObjectBuffers () override;
+    virtual void DeinitializeObjectBuffers () override;
+
     virtual void InitializeMatrixUniformBuffers () override;
+    virtual void DeinitializeMatrixUniformBuffers () override;
 
     // initialize uniform buffers of lights
     virtual void InitializeLightUniformBuffers () override;
+    virtual void DeinitializeLightUniformBuffers () override;
     // recursively reload buffers of lights
     virtual void UpdateLightBufferRecursive (unsigned int objectHandle) override;
 

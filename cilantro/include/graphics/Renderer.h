@@ -167,13 +167,16 @@ private:
     float totalFrameRenderTime;
 
     // initialize object buffers
-    virtual void InitializeObjectBuffers ();
+    virtual void InitializeObjectBuffers () = 0;
+    virtual void DeinitializeObjectBuffers () = 0;
     
     // initialize uniform buffers of view and projection matrices
     virtual void InitializeMatrixUniformBuffers () = 0;
+    virtual void DeinitializeMatrixUniformBuffers () = 0;
 
     // initialize uniform buffers of lights
     virtual void InitializeLightUniformBuffers () = 0;
+    virtual void DeinitializeLightUniformBuffers () = 0;
     virtual void UpdateLightBufferRecursive (unsigned int objectHandle) = 0;
 
     // initialize all required internal renderstages
