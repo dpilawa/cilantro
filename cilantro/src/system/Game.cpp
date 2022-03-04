@@ -3,8 +3,11 @@
 #include "input/InputController.h"
 #include "system/LogMessage.h"
 
-ResourceManager<Resource>& Game::resourceManager = ResourceManager<Resource>();
-ResourceManager<GameScene>& Game::gameSceneManager = ResourceManager<GameScene>();
+ResourceManager<Resource> globalResourceManager;
+ResourceManager<GameScene> globalSceneManager;
+
+ResourceManager<Resource> Game::resourceManager;
+ResourceManager<GameScene> Game::gameSceneManager;
 
 GameScene* Game::currentGameScene;
 InputController* Game::inputController;
