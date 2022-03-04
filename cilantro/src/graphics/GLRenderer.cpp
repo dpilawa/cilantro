@@ -6,7 +6,7 @@
 #include "graphics/GLMultisampleFramebuffer.h"
 #endif
 #include "graphics/QuadRenderStage.h"
-#include "glad/glad.h"
+
 #include "system/Game.h"
 #include "math/Mathf.h"
 #include "math/Vector4f.h"
@@ -18,6 +18,9 @@
 #include "scene/PointLight.h"
 #include "scene/DirectionalLight.h"
 #include "scene/SpotLight.h"
+#include "glad/glad.h"
+#include <cmath>
+#include <cstring>
 
 GLRenderer::GLRenderer (GameScene* gameScene, unsigned int width, unsigned int height, bool isDeferred) 
     : Renderer (gameScene, width, height, isDeferred)
