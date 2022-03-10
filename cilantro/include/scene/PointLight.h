@@ -4,7 +4,7 @@
 #include "cilantroengine.h"
 #include "scene/Light.h"
 
-class Renderer;
+struct IRenderer;
 
 class PointLight : public Light
 {
@@ -23,7 +23,7 @@ public:
     __EAPI float GetQuadraticAttenuationFactor () const;
 
     // invoked by game loop on update
-    void OnUpdate (Renderer& renderer);
+    void OnUpdate (IRenderer& renderer);
 
 private:
 

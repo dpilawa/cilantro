@@ -38,6 +38,7 @@ include/graphics/GLDeferredGeometryRenderStage.h
 include/graphics/GLForwardGeometryRenderStage.h
 include/graphics/GLShader.h
 include/graphics/GLShaderProgram.h
+include/graphics/IRenderer.h
 include/graphics/Renderer.h
 include/graphics/GLRenderer.h
 include/graphics/QuadRenderStage.h

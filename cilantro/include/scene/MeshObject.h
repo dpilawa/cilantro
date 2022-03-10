@@ -8,7 +8,7 @@
 #include "resource/Mesh.h"
 #include <vector>
 
-class Renderer;
+struct IRenderer;
 
 // Represents a 3d mesh, inherits from GameObject
 // 3d mesh has a collection of vertices and a collection of vertex indices to represent mesh faces (polygons)
@@ -31,8 +31,8 @@ public:
 
     // invoked by game loop on each frame or on update (e.g. transform)
     virtual void OnFrame ();
-    virtual void OnDraw (Renderer& renderer) override;
-    virtual void OnUpdate (Renderer& renderer) override;
+    virtual void OnDraw (IRenderer& renderer) override;
+    virtual void OnUpdate (IRenderer& renderer) override;
 
 private:
     Mesh& mesh;

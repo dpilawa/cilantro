@@ -43,7 +43,7 @@ Vector3f Light::GetColor () const
     }
 }
 
-void Light::OnUpdate (Renderer& renderer)
+void Light::OnUpdate (IRenderer& renderer)
 {
     GameObject::OnUpdate (renderer);
 }

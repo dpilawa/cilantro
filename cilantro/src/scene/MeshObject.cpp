@@ -69,13 +69,13 @@ void MeshObject::OnFrame ()
     GameObject::OnFrame ();
 }
 
-void MeshObject::OnDraw (Renderer& renderer)
+void MeshObject::OnDraw (IRenderer& renderer)
 {
     GameObject::OnDraw (renderer);
     renderer.Draw (*this);
 }
 
-void MeshObject::OnUpdate (Renderer& renderer)
+void MeshObject::OnUpdate (IRenderer& renderer)
 {
     GameObject::OnUpdate (renderer);
     renderer.Update (*this);

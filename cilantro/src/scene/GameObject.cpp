@@ -59,11 +59,11 @@ void GameObject::OnFrame ()
 {
 }
 
-void GameObject::OnDraw (Renderer& renderer)
+void GameObject::OnDraw (IRenderer& renderer)
 {
 }
 
-void GameObject::OnUpdate (Renderer& renderer)
+void GameObject::OnUpdate (IRenderer& renderer)
 {
 }
 

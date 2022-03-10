@@ -28,7 +28,7 @@ int main (int argc, char* argv [])
     GLFWRenderer& renderer = gameScene.CreateRenderer<GLFWRenderer> (960, 600, false, "Test 02", false, true, true);
     InputController& inputController = Game::CreateInputController<GLFWInputController> ();
 
-    renderer.AddRenderStage<QuadRenderStage> ("screen").SetShaderProgram ("flatquad_shader").SetFramebufferEnabled (false).SetPipelineFramebufferInputLink (PipelineLink::LINK_PREVIOUS);
+    renderer.AddRenderStage<QuadRenderStage> ("screen").SetShaderProgram ("flatquad_shader").SetFramebufferEnabled (false).SetPipelineFramebufferInputLink (EPipelineLink::LINK_PREVIOUS);
     renderer.GetRenderStageManager ().GetByName<RenderStage> ("base").SetMultisampleEnabled (true);
 
     inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});

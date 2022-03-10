@@ -30,7 +30,7 @@ void GLForwardGeometryRenderStage::OnFrame ()
     RenderStage::OnFrame ();
 
     // load uniform buffers
-    renderer->LoadMatrixUniformBuffers ();
+    renderer->UpdateCameraBuffers (*renderer->GetGameScene ()->GetActiveCamera ());
 
     // set viewport
     glViewport (0, 0, renderer->GetWidth (), renderer->GetHeight ());

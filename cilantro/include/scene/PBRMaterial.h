@@ -6,7 +6,7 @@
 #include "resource/Texture.h"
 #include "math/Vector3f.h"
 
-class Renderer;
+struct IRenderer;
 
 enum class PBRTexture : int
 {

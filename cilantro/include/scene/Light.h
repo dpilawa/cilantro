@@ -5,7 +5,7 @@
 #include "scene/GameObject.h"
 #include "math/Vector3f.h"
 
-class Renderer;
+struct IRenderer;
 
 class Light : public GameObject
 {
@@ -25,7 +25,7 @@ public:
 
 
     // invoked by game loop on update	
-    void OnUpdate (Renderer& renderStage);
+    void OnUpdate (IRenderer& renderStage);
 
 protected:
 

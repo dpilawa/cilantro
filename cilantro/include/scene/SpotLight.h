@@ -4,7 +4,7 @@
 #include "cilantroengine.h"
 #include "scene/PointLight.h"
 
-class Renderer;
+struct IRenderer;
 
 class SpotLight : public PointLight
 {
@@ -21,7 +21,7 @@ public:
     __EAPI float GetOuterCutoff () const;
 
     // invoked by game loop on update
-    void OnUpdate (Renderer& renderer);
+    void OnUpdate (IRenderer& renderer);
 
 private:
 

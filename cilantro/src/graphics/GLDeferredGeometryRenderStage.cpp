@@ -29,20 +29,11 @@ void GLDeferredGeometryRenderStage::OnFrame ()
 {
     RenderStage::OnFrame ();
 
-    // clear frame, depth and stencil buffers
-    renderer->ClearColorBuffer (Vector4f (0.0f, 0.0f, 0.0f, 1.0f));
-    renderer->ClearDepthBuffer ();
-    renderer->ClearStencilBuffer ();
-
     // set viewport
     glViewport (0, 0, renderer->GetWidth (), renderer->GetHeight ());
 
-    // enable depth and stencil buffer testing
-    renderer->SetDepthTestEnabled (true);
-    renderer->SetStencilTestEnabled (true);
-
     // load uniform buffers
-    renderer->LoadMatrixUniformBuffers ();
+    renderer->UpdateCameraBuffers (*renderer->GetGameScene ()->GetActiveCamera ());
 
     // GEOMETRY PASS
     // draw all objects in scene using geometry shader, construct g-buffer

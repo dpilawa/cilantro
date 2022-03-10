@@ -8,81 +8,48 @@
 #include "system/LogMessage.h"
 #include <cmath>
 
-Renderer::Renderer (GameScene* gameScene, unsigned int width, unsigned int height, bool isDeferred)
-    : m_IsDeferred(isDeferred)
+CRenderer::CRenderer (GameScene* gameScene, unsigned int width, unsigned int height, bool isDeferred)
+    : m_GameScene (gameScene)
+    , m_IsDeferred (isDeferred)
+    , m_Width (width)
+    , m_Height (height)
 {
-    totalRenderFrames = 0L;
-    totalRenderTime = 0.0f;
-    totalFrameRenderTime = 0.0f;
+    m_TotalRenderedFrames = 0L;
+    m_TotalRenderTime = 0.0f;
+    m_TotalFrameRenderTime = 0.0f;
 
-    this->gameScene = gameScene;
-    this->quadGeometryBuffer = nullptr;
-
-    this->width = width;
-    this->height = height;
+    m_LightingShaderStagesCount = 0;
 }
 
-Renderer::~Renderer ()
+void CRenderer::Initialize ()
 {
-}
-
-void Renderer::Initialize ()
-{
-    InitializeObjectBuffers ();
     InitializeRenderStages ();
-    InitializeMatrixUniformBuffers ();
-    InitializeLightUniformBuffers ();
-
-    for (auto&& stage : renderStages)
-    {
-        stage->Initialize ();
-    }
-
-    // set callback for new MeshObjects
-    gameScene->RegisterCallback ("OnUpdateMeshObject", [&](unsigned int objectHandle, unsigned int) { gameScene->GetGameObjectManager ().GetByHandle<GameObject> (objectHandle).OnUpdate (*this); });
-
-    // set callback for new or modified materials
-    gameScene->RegisterCallback ("OnUpdateMaterialTexture", [&](unsigned int materialHandle, unsigned int textureUnit) { Update (gameScene->GetMaterialManager ().GetByHandle<Material> (materialHandle), textureUnit); });
-    gameScene->RegisterCallback ("OnUpdateMaterial", [&](unsigned int materialHandle, unsigned int) { Update (gameScene->GetMaterialManager ().GetByHandle<Material> (materialHandle)); });
-    
-    // set callback for new or modified lights
-    gameScene->RegisterCallback ("OnUpdateLight", [&](unsigned int objectHandle, unsigned int) { gameScene->GetGameObjectManager ().GetByHandle<GameObject> (objectHandle).OnUpdate (*this); });
-
-    // set callback for modified scene graph (currently this only requires to reload light buffers)
-    gameScene->RegisterCallback ("OnUpdateSceneGraph", [&](unsigned int objectHandle, unsigned int) { UpdateLightBufferRecursive (objectHandle); });
-
-    // set callback for modified transforms (currently this only requires to reload light buffers)
-    gameScene->RegisterCallback ("OnUpdateTransform", [&](unsigned int objectHandle, unsigned int) { UpdateLightBufferRecursive (objectHandle); });
-
 }
 
-void Renderer::Deinitialize ()
+void CRenderer::Deinitialize ()
 {
-    for (auto&& stage : renderStages)
-    {
-        stage->Deinitialize ();
-    }
+    DeinitializeRenderStages ();
 
-    LogMessage (MSG_LOCATION) << "Rendered" << totalRenderFrames << "frames in" << totalRenderTime << "seconds; avg FPS =" << std::round (totalRenderFrames / totalFrameRenderTime) << "; real FPS = " << std::round (totalRenderFrames / totalRenderTime);
+    LogMessage (MSG_LOCATION) << "Rendered" << m_TotalRenderedFrames << "frames in" << m_TotalRenderTime << "seconds; avg FPS =" << std::round (m_TotalRenderedFrames / m_TotalFrameRenderTime) << "; real FPS = " << std::round (m_TotalRenderedFrames / m_TotalRenderTime);
 }
 
-unsigned int Renderer::GetWidth () const
+unsigned int CRenderer::GetWidth () const
 {
-    return this->width;
+    return this->m_Width;
 }
 
-unsigned int Renderer::GetHeight () const
+unsigned int CRenderer::GetHeight () const
 {
-    return this->height;
+    return this->m_Height;
 }
 
-Renderer& Renderer::SetResolution (unsigned int width, unsigned int height)
+IRenderer& CRenderer::SetResolution (unsigned int width, unsigned int height)
 {
     Framebuffer* fb;
-    this->width = width;
-    this->height = height;
+    this->m_Width = width;
+    this->m_Height = height;
 
-    for (auto& stage : renderStages)
+    for (auto& stage : m_RenderStageManager)
     {
         fb = stage->GetFramebuffer ();
         if (fb != nullptr)
@@ -94,133 +61,125 @@ Renderer& Renderer::SetResolution (unsigned int width, unsigned int height)
     return *this;
 }
 
-void Renderer::RenderFrame ()
+GameScene* CRenderer::GetGameScene ()
 {
-    renderStage = 0;
-
-    // reset global rendering timer
-    if (totalRenderTime == 0L)
-    {
-        gameScene->GetTimer ()->ResetSplitTime ();
-    }
-
-    // run post-processing
-    for (handle_t stageHandle : renderPipeline)
-    {
-        renderStages.GetByHandle<RenderStage> (stageHandle).OnFrame ();
-        renderStage++;
-    }
-
-    // update game clocks (Tock)
-    gameScene->GetTimer ()->Tock ();
-
-    // update frame counters
-    totalRenderFrames++;
-    totalRenderTime = gameScene->GetTimer ()->GetTimeSinceSplitTime ();
-    totalFrameRenderTime += gameScene->GetTimer ()->GetFrameRenderTime ();
+    return m_GameScene;
 }
 
-GameScene* Renderer::GetGameScene ()
+TShaderProgramManager& CRenderer::GetShaderProgramManager ()
 {
-    return gameScene;
+    return m_ShaderProgramManager;
 }
 
-std::unordered_map <handle_t, SGeometryBuffers*>& Renderer::GetSceneGeometryBufferMap ()
+TRenderStageManager& CRenderer::GetRenderStageManager ()
 {
-    return sceneGeometryBuffers;
+    return m_RenderStageManager;
 }
 
-SGeometryBuffers* Renderer::GetQuadGeometryBuffer () const
+TRenderPipeline& CRenderer::GetRenderPipeline ()
 {
-    return quadGeometryBuffer;
+    return m_RenderPipeline;
 }
 
-Renderer& Renderer::RotateRenderPipelineLeft ()
+IRenderer& CRenderer::RotateRenderPipelineLeft ()
 {
-    std::rotate (renderPipeline.begin (), renderPipeline.begin () + 1, renderPipeline.end ());
+    std::rotate (m_RenderPipeline.begin (), m_RenderPipeline.begin () + 1, m_RenderPipeline.end ());
 
     return *this;
 }
 
-Renderer& Renderer::RotateRenderPipelineRight ()
+IRenderer& CRenderer::RotateRenderPipelineRight ()
 {
-    std::rotate (renderPipeline.rbegin (), renderPipeline.rbegin () + 1, renderPipeline.rend ());
+    std::rotate (m_RenderPipeline.rbegin (), m_RenderPipeline.rbegin () + 1, m_RenderPipeline.rend ());
 
     return *this;
 }
 
-std::vector<handle_t>& Renderer::GetRenderPipeline ()
+Framebuffer* CRenderer::GetPipelineFramebuffer (EPipelineLink link)
 {
-    return renderPipeline;
-}
-
-Framebuffer* Renderer::GetPipelineFramebuffer (PipelineLink link)
-{
-    if ((renderStage == 0 && link == PipelineLink::LINK_PREVIOUS) || (renderPipeline.size () < 2 && link == PipelineLink::LINK_SECOND))
+    if ((m_CurrentRenderStage == 0 && link == EPipelineLink::LINK_PREVIOUS) || (m_RenderPipeline.size () < 2 && link == EPipelineLink::LINK_SECOND))
     {
         LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Pipeline index out of bounds";
     }
 
-    if (link == PipelineLink::LINK_FIRST)
+    if (link == EPipelineLink::LINK_FIRST)
     {
-        return GetRenderStageManager ().GetByHandle<RenderStage> (renderPipeline.front ()).GetFramebuffer ();
+        return GetRenderStageManager ().GetByHandle<RenderStage> (m_RenderPipeline.front ()).GetFramebuffer ();
     }
-    else if (link == PipelineLink::LINK_SECOND)
+    else if (link == EPipelineLink::LINK_SECOND)
     {
-        return GetRenderStageManager ().GetByHandle<RenderStage> (renderPipeline[1]).GetFramebuffer ();
+        return GetRenderStageManager ().GetByHandle<RenderStage> (m_RenderPipeline[1]).GetFramebuffer ();
     }
-    else if (link == PipelineLink::LINK_PREVIOUS)
+    else if (link == EPipelineLink::LINK_PREVIOUS)
     {
-        return GetRenderStageManager ().GetByHandle<RenderStage> (renderPipeline[renderStage - 1]).GetFramebuffer ();
+        return GetRenderStageManager ().GetByHandle<RenderStage> (m_RenderPipeline[m_CurrentRenderStage - 1]).GetFramebuffer ();
     }
-    else if (link == PipelineLink::LINK_LAST)
+    else if (link == EPipelineLink::LINK_LAST)
     {
-        return GetRenderStageManager ().GetByHandle<RenderStage> (renderPipeline.back ()).GetFramebuffer ();
+        return GetRenderStageManager ().GetByHandle<RenderStage> (m_RenderPipeline.back ()).GetFramebuffer ();
     }
     else /* LINK_CURRENT */
     {
-        return GetRenderStageManager ().GetByHandle<RenderStage> (renderPipeline[renderStage]).GetFramebuffer ();
+        return GetRenderStageManager ().GetByHandle<RenderStage> (m_RenderPipeline[m_CurrentRenderStage]).GetFramebuffer ();
     }
 }
 
-ResourceManager<RenderStage>& Renderer::GetRenderStageManager ()
+void CRenderer::RenderFrame ()
 {
-    return renderStages;
-}
+    m_CurrentRenderStage = 0;
 
-ResourceManager<ShaderProgram>& Renderer::GetShaderProgramManager ()
-{
-    return shaderPrograms;
-}
-
-void Renderer::InitializeObjectBuffers ()
-{
-    // create and load object buffers for all existing objects
-    for (auto&& gameObject : gameScene->GetGameObjectManager ())
+    // reset global rendering timer
+    if (m_TotalRenderTime == 0L)
     {
-        // load buffers for MeshObject only
-        if (std::dynamic_pointer_cast<MeshObject> (gameObject) != nullptr)
-        {
-            gameObject->OnUpdate (*this);
-        }      
+        m_GameScene->GetTimer ()->ResetSplitTime ();
     }
+
+    // run post-processing
+    for (handle_t stageHandle : m_RenderPipeline)
+    {
+        m_RenderStageManager.GetByHandle<RenderStage> (stageHandle).OnFrame ();
+        m_CurrentRenderStage++;
+    }
+
+    // update game clocks (Tock)
+    m_GameScene->GetTimer ()->Tock ();
+
+    // update frame counters
+    m_TotalRenderedFrames++;
+    m_TotalRenderTime = m_GameScene->GetTimer ()->GetTimeSinceSplitTime ();
+    m_TotalFrameRenderTime += m_GameScene->GetTimer ()->GetFrameRenderTime ();
 }
 
-void Renderer::InitializeRenderStages ()
+void CRenderer::InitializeRenderStages ()
 {
     if (m_IsDeferred == true)
     {
         // geometry stage
-        this->AddRenderStage<GLDeferredGeometryRenderStage> ("base");
+        RenderStage& baseDeferred = this->AddRenderStage<GLDeferredGeometryRenderStage> ("base");
+        baseDeferred.SetDepthTestEnabled (true);
+        baseDeferred.SetStencilTestEnabled (true);
+        baseDeferred.SetClearColorOnFrameEnabled (true);
+        baseDeferred.SetClearDepthOnFrameEnabled (true);
+        baseDeferred.SetClearStencilOnFrameEnabled (true);
+        baseDeferred.Initialize ();
         
         // lighting stages (per material shader)
-        for (auto&& material : gameScene->GetMaterialManager ())
+        for (auto&& material : m_GameScene->GetMaterialManager ())
         {
             this->Update (*material);
         }
     }
     else
     {
-        this->AddRenderStage<GLForwardGeometryRenderStage> ("base");
+        RenderStage& baseForward = this->AddRenderStage<GLForwardGeometryRenderStage> ("base");
+        baseForward.Initialize ();
+    }
+}
+
+void CRenderer::DeinitializeRenderStages ()
+{
+    for (auto&& stage : m_RenderStageManager)
+    {
+        stage->Deinitialize ();
     }
 }

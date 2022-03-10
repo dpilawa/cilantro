@@ -45,7 +45,7 @@ public:
     template <typename T, typename ...Params> 
     T& CreateRenderer (Params&&... params);
 
-    __EAPI Renderer* GetRenderer () const;
+    __EAPI IRenderer* GetRenderer () const;
 
     // other getters
     __EAPI Timer* GetTimer () const;
@@ -64,7 +64,7 @@ private:
 
     // systems
     Timer* timer;
-    Renderer* renderer;
+    IRenderer* renderer;
 
     // reference to active camera
     Camera* activeCamera;
@@ -121,10 +121,10 @@ T& GameScene::AddMaterial (const std::string& name, Params&&... params)
 template <typename T, typename ...Params> 
 T& GameScene::CreateRenderer (Params&&... params)
 {
-    static_assert (std::is_base_of<Renderer, T>::value, "Renderer object must inherit from Renderer");
+    static_assert (std::is_base_of<IRenderer, T>::value, "Renderer object must inherit from Renderer");
     T* newRenderer = new T (this, params...);
 
-    this->renderer = static_cast<Renderer*> (newRenderer);
+    this->renderer = static_cast<IRenderer*> (newRenderer);
     this->renderer->Initialize ();
 
     return *newRenderer;

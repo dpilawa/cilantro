@@ -31,8 +31,8 @@ void GLFWRenderer::Initialize ()
     {
         monitor = glfwGetPrimaryMonitor ();
 
-        width = glfwGetVideoMode (monitor)->width;
-        height = glfwGetVideoMode (monitor)->height;
+        m_Width = glfwGetVideoMode (monitor)->width;
+        m_Height = glfwGetVideoMode (monitor)->height;
     }
     else
     {
@@ -53,7 +53,7 @@ void GLFWRenderer::Initialize ()
     glfwWindowHint (GLFW_COCOA_RETINA_FRAMEBUFFER, GL_TRUE);
 
     // create window
-    window = glfwCreateWindow (width, height, windowCaption.c_str (), monitor, nullptr);
+    window = glfwCreateWindow (m_Width, m_Height, windowCaption.c_str (), monitor, nullptr);
 
     if (window == NULL)
     {
@@ -75,7 +75,7 @@ void GLFWRenderer::Initialize ()
     glfwSetFramebufferSizeCallback (window, framebufferResizeCallback);
 
     // set framebuffer size (relevant for high DPI displays)
-    glfwGetFramebufferSize (window, (int*)(&width), (int*)(&height));
+    glfwGetFramebufferSize (window, (int*)(&m_Width), (int*)(&m_Height));
 
     // set vsync on
     glfwSwapInterval (isVSync);

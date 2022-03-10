@@ -39,7 +39,7 @@ float SpotLight::GetOuterCutoff () const
     return outerCutoff;
 }
 
-void SpotLight::OnUpdate (Renderer& renderer)
+void SpotLight::OnUpdate (IRenderer& renderer)
 {
     Light::OnUpdate (renderer);
     renderer.Update (*this);

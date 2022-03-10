@@ -11,7 +11,7 @@ DirectionalLight::~DirectionalLight ()
 {
 }
 
-void DirectionalLight::OnUpdate (Renderer& renderer)
+void DirectionalLight::OnUpdate (IRenderer& renderer)
 {
     Light::OnUpdate (renderer);
     renderer.Update (*this);

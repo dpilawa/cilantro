@@ -69,7 +69,7 @@ ResourceManager<Material>& GameScene::GetMaterialManager ()
     return materials;
 }
 
-Renderer* GameScene::GetRenderer () const
+IRenderer* GameScene::GetRenderer () const
 {
     return renderer;
 }
@@ -86,6 +86,11 @@ void GameScene::SetActiveCamera (const std::string& name)
 
 Camera* GameScene::GetActiveCamera () const
 {
+    if (activeCamera == nullptr)
+    {
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "No active camera found";
+    }
+
     return activeCamera;
 }
 

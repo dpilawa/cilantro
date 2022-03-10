@@ -4,7 +4,7 @@
 #include "cilantroengine.h"
 #include "scene/Light.h"
 
-class Renderer;
+struct IRenderer;
 
 class DirectionalLight : public Light
 {
@@ -13,7 +13,7 @@ public:
     __EAPI virtual ~DirectionalLight ();
 
     // invoked by game loop on update	
-    void OnUpdate (Renderer& renderer);
+    void OnUpdate (IRenderer& renderer);
 
 private:
 

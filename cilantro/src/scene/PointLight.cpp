@@ -50,7 +50,7 @@ float PointLight::GetQuadraticAttenuationFactor () const
     return attenuationQuadratic;
 }
 
-void PointLight::OnUpdate (Renderer& renderer)
+void PointLight::OnUpdate (IRenderer& renderer)
 {
     Light::OnUpdate (renderer);
     renderer.Update (*this);

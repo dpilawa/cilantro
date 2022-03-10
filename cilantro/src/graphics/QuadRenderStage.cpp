@@ -30,7 +30,9 @@ void QuadRenderStage::OnFrame ()
     // bind textures of framebuffer linked as previous (input) and draw
     shaderProgram->Use ();
     renderer->GetPipelineFramebuffer (pipelineFramebufferInputLink)->BindFramebufferTextures ();
-    renderer->RenderGeometryBuffer (renderer->GetQuadGeometryBuffer ());
+    
+    // draw quad
+    renderer->DrawViewportQuad (0, 0, renderer->GetWidth (), renderer->GetHeight ());
 
     // blit framebuffer
     if (framebuffer != nullptr)

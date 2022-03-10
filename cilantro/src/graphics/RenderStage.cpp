@@ -10,16 +10,19 @@ RenderStage::RenderStage ()
     multisampleEnabled = false;
     stencilTestEnabled = false;
     depthTestEnabled = true;
-    clearOnFrameEnabled = true;
     faceCullingEnabled = true;
     framebufferEnabled = true;
 
-    stencilTestFunction = StencilTestFunction::FUNCTION_ALWAYS;
+    clearColorOnFrameEnabled = true;
+    clearDepthOnFrameEnabled = true;
+    clearStencilOnFrameEnabled = true;
+
+    stencilTestFunction = EStencilTestFunction::FUNCTION_ALWAYS;
     stencilTestValue = 0;
 
-    pipelineFramebufferInputLink = PipelineLink::LINK_CURRENT;
-    pipelineRenderbufferLink = PipelineLink::LINK_CURRENT;
-    pipelineFramebufferOutputLink = PipelineLink::LINK_CURRENT;
+    pipelineFramebufferInputLink = EPipelineLink::LINK_CURRENT;
+    pipelineRenderbufferLink = EPipelineLink::LINK_CURRENT;
+    pipelineFramebufferOutputLink = EPipelineLink::LINK_CURRENT;
 }
 
 RenderStage::~RenderStage ()
@@ -31,7 +34,7 @@ RenderStage::~RenderStage ()
     }
 }
 
-RenderStage& RenderStage::SetStencilTest (StencilTestFunction stencilTestFunction, int stencilTestValue)
+RenderStage& RenderStage::SetStencilTest (EStencilTestFunction stencilTestFunction, int stencilTestValue)
 {
     this->stencilTestFunction = stencilTestFunction;
     this->stencilTestValue = stencilTestValue;
@@ -80,13 +83,6 @@ RenderStage& RenderStage::SetDepthTestEnabled (bool value)
     return *this;
 }
 
-RenderStage& RenderStage::SetClearOnFrameEnabled (bool value)
-{
-    clearOnFrameEnabled = value;
-
-    return *this;
-}
-
 RenderStage& RenderStage::SetFaceCullingEnabled (bool value)
 {
     faceCullingEnabled = value;
@@ -118,6 +114,27 @@ RenderStage& RenderStage::SetFramebufferEnabled (bool value)
     return *this;
 }
 
+RenderStage& RenderStage::SetClearColorOnFrameEnabled (bool value)
+{
+    clearColorOnFrameEnabled = value;
+
+    return *this;
+}
+
+RenderStage& RenderStage::SetClearDepthOnFrameEnabled (bool value)
+{
+    clearDepthOnFrameEnabled = value;
+
+    return *this;
+}
+
+RenderStage& RenderStage::SetClearStencilOnFrameEnabled (bool value)
+{
+    clearStencilOnFrameEnabled = value;
+
+    return *this;
+}
+
 bool RenderStage::IsMultisampleEnabled () const
 {
     return multisampleEnabled;
@@ -133,11 +150,6 @@ bool RenderStage::IsDepthTestEnabled () const
     return depthTestEnabled;
 }
 
-bool RenderStage::IsClearOnFrameEnabled () const
-{
-    return clearOnFrameEnabled;
-}
-
 bool RenderStage::IsFaceCullingEnabled () const
 {
     return faceCullingEnabled;
@@ -148,21 +160,36 @@ bool RenderStage::IsFramebufferEnabled () const
     return framebufferEnabled;
 }
 
-RenderStage& RenderStage::SetPipelineFramebufferInputLink (PipelineLink link)
+bool RenderStage::IsClearColorOnFrameEnabled () const
+{
+    return clearColorOnFrameEnabled;
+}
+
+bool RenderStage::IsClearDepthOnFrameEnabled () const
+{
+    return clearDepthOnFrameEnabled;
+}
+
+bool RenderStage::IsClearStencilOnFrameEnabled () const
+{
+    return clearStencilOnFrameEnabled;
+}
+
+RenderStage& RenderStage::SetPipelineFramebufferInputLink (EPipelineLink link)
 {
     pipelineFramebufferInputLink = link;
 
     return *this;
 }
 
-RenderStage& RenderStage::SetPipelineRenderbufferLink (PipelineLink link)
+RenderStage& RenderStage::SetPipelineRenderbufferLink (EPipelineLink link)
 {
     pipelineRenderbufferLink = link;
 
     return *this;
 }
 
-RenderStage& RenderStage::SetPipelineFramebufferDrawLink (PipelineLink link)
+RenderStage& RenderStage::SetPipelineFramebufferDrawLink (EPipelineLink link)
 {
     pipelineFramebufferOutputLink = link;
 
@@ -192,11 +219,21 @@ void RenderStage::OnFrame ()
     }
 
     // optionally clear
-    if (clearOnFrameEnabled)
+    if (clearColorOnFrameEnabled)
     {
         renderer->ClearColorBuffer (Vector4f (0.0f, 0.0f, 0.0f, 1.0f));
     }
-    
+
+    if (clearDepthOnFrameEnabled)
+    {
+        renderer->ClearDepthBuffer ();
+    }
+
+    if (clearStencilOnFrameEnabled)
+    {
+        renderer->ClearStencilBuffer ();
+    }
+
     // optionally enable depth test
     renderer->SetDepthTestEnabled (depthTestEnabled);
     if (depthTestEnabled)
