@@ -6,7 +6,7 @@
 #include "graphics/GLMultisampleFramebuffer.h"
 #endif
 #include "graphics/QuadRenderStage.h"
-#include "glad/glad.h"
+
 #include "system/Game.h"
 #include "math/Mathf.h"
 #include "math/Vector4f.h"
@@ -18,6 +18,9 @@
 #include "scene/PointLight.h"
 #include "scene/DirectionalLight.h"
 #include "scene/SpotLight.h"
+#include "glad/glad.h"
+#include <cmath>
+#include <cstring>
 
 GLRenderer::GLRenderer (GameScene* gameScene, unsigned int width, unsigned int height, bool isDeferred) 
     : CRenderer (gameScene, width, height, isDeferred)
@@ -1075,19 +1078,19 @@ void GLRenderer::InitializeLightUniformBuffers ()
     // create uniform buffer for point lights
     glGenBuffers (1, &m_UniformBuffers->UBO[UBO_POINTLIGHTS]);
     glBindBuffer (GL_UNIFORM_BUFFER, m_UniformBuffers->UBO[UBO_POINTLIGHTS]);
-    glBufferData (GL_UNIFORM_BUFFER, sizeof (SGLUniformPointLightBuffer), NULL, GL_DYNAMIC_DRAW);
+    glBufferData (GL_UNIFORM_BUFFER, sizeof (SGLUniformPointLightBuffer), m_UniformPointLightBuffer, GL_DYNAMIC_DRAW);
     glBindBufferBase (GL_UNIFORM_BUFFER, BindingPoint::BP_POINTLIGHTS, m_UniformBuffers->UBO[UBO_POINTLIGHTS]);
 
     // create uniform buffer for directional lights
     glGenBuffers (1, &m_UniformBuffers->UBO[UBO_DIRECTIONALLIGHTS]);
     glBindBuffer (GL_UNIFORM_BUFFER, m_UniformBuffers->UBO[UBO_DIRECTIONALLIGHTS]);
-    glBufferData (GL_UNIFORM_BUFFER, sizeof (SGLUniformDirectionalLightBuffer), NULL, GL_DYNAMIC_DRAW);
+    glBufferData (GL_UNIFORM_BUFFER, sizeof (SGLUniformDirectionalLightBuffer), m_UniformDirectionalLightBuffer, GL_DYNAMIC_DRAW);
     glBindBufferBase (GL_UNIFORM_BUFFER, BindingPoint::BP_DIRECTIONALLIGHTS, m_UniformBuffers->UBO[UBO_DIRECTIONALLIGHTS]);
 
     // create uniform buffer for spot lights
     glGenBuffers (1, &m_UniformBuffers->UBO[UBO_SPOTLIGHTS]);
     glBindBuffer (GL_UNIFORM_BUFFER, m_UniformBuffers->UBO[UBO_SPOTLIGHTS]);
-    glBufferData (GL_UNIFORM_BUFFER, sizeof (SGLUniformSpotLightBuffer), NULL, GL_DYNAMIC_DRAW);
+    glBufferData (GL_UNIFORM_BUFFER, sizeof (SGLUniformSpotLightBuffer), m_UniformSpotLightBuffer, GL_DYNAMIC_DRAW);
     glBindBufferBase (GL_UNIFORM_BUFFER, BindingPoint::BP_SPOTLIGHTS, m_UniformBuffers->UBO[UBO_SPOTLIGHTS]);
 
     // scan objects vector for lights and populate light buffers

@@ -3,6 +3,7 @@
 
 #include "cilantroengine.h"
 #include "resource/ResourceManager.h"
+#include "input/InputController.h"
 
 class Resource;
 class GameScene;
@@ -38,8 +39,8 @@ public:
 
 private:
     
-    static __EAPI ResourceManager<Resource>& resourceManager;
-    static __EAPI ResourceManager<GameScene>& gameSceneManager;
+    static __EAPI ResourceManager<Resource> resourceManager;
+    static __EAPI ResourceManager<GameScene> gameSceneManager;
     static __EAPI GameScene* currentGameScene;
     static __EAPI InputController* inputController;
 
