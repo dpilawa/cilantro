@@ -3,18 +3,17 @@
 
 #include "cilantroengine.h"
 #include "scene/Light.h"
-#include "math/Vector3f.h"
 
-class GeometryRenderStage;
+struct IRenderer;
 
 class DirectionalLight : public Light
 {
 public:
-    __EAPI DirectionalLight ();
+    __EAPI DirectionalLight (CGameScene* gameScene);
     __EAPI virtual ~DirectionalLight ();
 
     // invoked by game loop on update	
-    void OnUpdate (GeometryRenderStage& renderStage);
+    void OnUpdate (IRenderer& renderer);
 
 private:
 

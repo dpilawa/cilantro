@@ -2,7 +2,7 @@
 #include "scene/PhongMaterial.h"
 #include "resource/ResourceManager.h"
 #include "graphics/Renderer.h"
-#include "system/EngineContext.h"
+#include "system/Game.h"
 #include "math/Vector3f.h"
 
 PhongMaterial::PhongMaterial () : Material ()
@@ -25,7 +25,7 @@ PhongMaterial::~PhongMaterial ()
 
 PhongMaterial& PhongMaterial::SetDiffuse (const std::string& diffuse)
 {
-    Texture& tDiffuse = EngineContext::GetResourceManager ().GetByName<Texture> (diffuse);
+    Texture& tDiffuse = CGame::GetResourceManager ().GetByName<Texture> (diffuse);
     SetTexture (static_cast<int>(PhongTexture::Diffuse), "tDiffuse", tDiffuse);
 
     return *this;
@@ -33,7 +33,7 @@ PhongMaterial& PhongMaterial::SetDiffuse (const std::string& diffuse)
 
 PhongMaterial& PhongMaterial::SetNormal (const std::string& normal)
 {
-    Texture& tNormal = EngineContext::GetResourceManager ().GetByName<Texture> (normal);
+    Texture& tNormal = CGame::GetResourceManager ().GetByName<Texture> (normal);
     SetTexture (static_cast<int>(PhongTexture::Normal), "tNormal", tNormal);
 
     return *this;
@@ -41,7 +41,7 @@ PhongMaterial& PhongMaterial::SetNormal (const std::string& normal)
 
 PhongMaterial& PhongMaterial::SetSpecular (const std::string& specular)
 {
-    Texture& tSpecular = EngineContext::GetResourceManager ().GetByName<Texture> (specular);
+    Texture& tSpecular = CGame::GetResourceManager ().GetByName<Texture> (specular);
     SetTexture (static_cast<int>(PhongTexture::Specular), "tSpecular", tSpecular);
 
     return *this;
@@ -49,7 +49,7 @@ PhongMaterial& PhongMaterial::SetSpecular (const std::string& specular)
 
 PhongMaterial& PhongMaterial::SetEmissive (const std::string& emissive)
 {
-    Texture& tEmissive = EngineContext::GetResourceManager ().GetByName<Texture> (emissive);
+    Texture& tEmissive = CGame::GetResourceManager ().GetByName<Texture> (emissive);
     SetTexture (static_cast<int>(PhongTexture::Emissive), "tEmissive", tEmissive);
     
     return *this;

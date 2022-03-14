@@ -1,11 +1,9 @@
-#include "cilantroengine.h"
 #include "graphics/Shader.h"
-#include "resource/Mesh.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
 
-Shader::Shader (const std::string& path, ShaderType shaderType) : LoadableResource (path)
+Shader::Shader (const std::string& path, ShaderType shaderType) : CLoadableResource (path)
 {
     this->shaderType = shaderType;
     Load (path);
@@ -15,7 +13,7 @@ Shader::~Shader ()
 {
 }
 
-void Shader::SetParameter (std::string parameter, std::string value)
+void Shader::SetParameter (const std::string& parameter, const std::string& value)
 {
     std::size_t pos;
 
@@ -30,9 +28,6 @@ void Shader::Load (const std::string& path)
 {
     std::ifstream f (path, std::ios::binary);
     std::ostringstream ss;
-    std::string versionTag ("%%CILANTRO_GL_VERSION%%");
-    std::string boneMaxTag ("%%CILANTRO_MAX_BONES%%");
-    std::string boneMaxInfluenceTag ("%%CILANTRO_MAX_BONE_INFLUENCES%%");
    
     if (!f.is_open ())
     {
@@ -43,8 +38,6 @@ void Shader::Load (const std::string& path)
     shaderSourceCode = ss.str ();
 
     this->SetDefaultParameters ();
-
-    LogMessage (MSG_LOCATION) << "Loaded shader" << path << shaderSourceCode.length () << "bytes";
 }
 
 void Shader::SetDefaultParameters ()
@@ -52,7 +45,7 @@ void Shader::SetDefaultParameters ()
     SetParameter ("%%CILANTRO_GL_VERSION%%", std::to_string (CILANTRO_GL_VERSION));
     SetParameter ("%%CILANTRO_MAX_BONES%%", std::to_string (CILANTRO_MAX_BONES));
     SetParameter ("%%CILANTRO_MAX_BONE_INFLUENCES%%", std::to_string (CILANTRO_MAX_BONE_INFLUENCES));
-    SetParameter ("%%CILANTRO_MAX_POINT_LIGHTS%%", std::to_string (MAX_POINT_LIGHTS));
-    SetParameter ("%%CILANTRO_MAX_SPOT_LIGHTS%%", std::to_string (CILANTRO_MAX_BONE_INFLUENCES));
-    SetParameter ("%%CILANTRO_MAX_DIRECTIONAL_LIGHTS%%", std::to_string (CILANTRO_MAX_BONE_INFLUENCES));
+    SetParameter ("%%CILANTRO_MAX_POINT_LIGHTS%%", std::to_string (CILANTRO_MAX_POINT_LIGHTS));
+    SetParameter ("%%CILANTRO_MAX_SPOT_LIGHTS%%", std::to_string (CILANTRO_MAX_SPOT_LIGHTS));
+    SetParameter ("%%CILANTRO_MAX_DIRECTIONAL_LIGHTS%%", std::to_string (CILANTRO_MAX_DIRECTIONAL_LIGHTS));
 }

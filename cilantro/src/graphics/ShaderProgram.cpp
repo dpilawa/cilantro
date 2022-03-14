@@ -1,7 +1,8 @@
 #include "graphics/ShaderProgram.h"
-#include "system/EngineContext.h"
+#include "graphics/Shader.h"
+#include "system/Game.h"
 
-ShaderProgram::ShaderProgram () : Resource ()
+ShaderProgram::ShaderProgram () : CResource ()
 {
 
 }
@@ -13,7 +14,7 @@ ShaderProgram::~ShaderProgram ()
 
 ShaderProgram& ShaderProgram::AddShader (const std::string& shaderName)
 {
-    AttachShader (EngineContext::GetResourceManager ().GetByName<Shader> (shaderName));
+    AttachShader (CGame::GetResourceManager ().GetByName<Shader> (shaderName));
 
     return *this;
 }

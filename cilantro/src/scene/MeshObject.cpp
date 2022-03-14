@@ -1,20 +1,22 @@
 #include "cilantroengine.h"
 #include "scene/GameScene.h"
+#include "scene/Bone.h"
 #include "scene/MeshObject.h"
 #include "scene/Material.h"
 #include "math/Vector3f.h"
 #include "math/Mathf.h"
-#include "graphics/GeometryRenderStage.h"
-#include "system/EngineContext.h"
+#include "system/Game.h"
 #include "system/CallbackProvider.h"
 #include "system/LogMessage.h"
 
 #include <vector>
 #include <unordered_map>
+#include <cstring>
 
-MeshObject::MeshObject (const std::string& meshName, const std::string materialName) :
-mesh (EngineContext::GetResourceManager ().GetByName<Mesh> (meshName)),
-material (EngineContext::GetGameScene ().GetMaterialManager ().GetByName<Material> (materialName))
+MeshObject::MeshObject (CGameScene* gameScene, const std::string& meshName, const std::string& materialName)
+    : GameObject (gameScene)
+    , mesh (CGame::GetResourceManager ().GetByName<Mesh> (meshName))
+    , material (gameScene->GetMaterialManager ().GetByName<Material> (materialName))
 {
     mesh.RegisterCallback ("OnUpdateMesh", [&] (handle_t objectHandle) { InvokeCallbacks ("OnUpdateMeshObject", this->GetHandle (), 0); });
 }
@@ -30,7 +32,7 @@ Mesh& MeshObject::GetMesh ()
 
 MeshObject& MeshObject::SetMaterial (const std::string& materialName)
 {
-    material = EngineContext::GetGameScene ().GetMaterialManager ().GetByName<Material> (materialName);
+    material = gameScene->GetMaterialManager ().GetByName<Material> (materialName);
 
     return *this;
 }
@@ -40,20 +42,42 @@ Material& MeshObject::GetMaterial () const
     return material;
 }
 
+float* MeshObject::GetBoneTransformationsMatrixArray ()
+{
+    unsigned int index = 16;
+    Matrix4f boneTransformation;
+    Matrix4f identity;
+    identity.InitIdentity ();
+
+    // copy identity matrix in index 0
+    std::memcpy (boneTransformationMatrixArray, identity[0], 16 * sizeof (float));
+
+    // copy remaining bones
+    for (handle_t boneHandle : mesh.GetMeshBones ())
+    {
+        Bone& b = gameScene->GetGameObjectManager ().GetByHandle<Bone> (boneHandle);
+        boneTransformation = b.GetModelTransformMatrix () * b.GetOffsetMatrix ();
+
+        std::memcpy (boneTransformationMatrixArray + index, boneTransformation[0], 16 * sizeof (float));
+        index += 16;
+    }
+
+    return boneTransformationMatrixArray;
+}
+
 void MeshObject::OnFrame ()
 {
     GameObject::OnFrame ();
 }
 
-void MeshObject::OnDraw (GeometryRenderStage& renderStage)
+void MeshObject::OnDraw (IRenderer& renderer)
 {
-    GameObject::OnDraw (renderStage);
-    renderStage.Draw (*this);
+    GameObject::OnDraw (renderer);
+    renderer.Draw (*this);
 }
 
-
-void MeshObject::OnUpdate (GeometryRenderStage& renderStage)
+void MeshObject::OnUpdate (IRenderer& renderer)
 {
-    GameObject::OnUpdate (renderStage);
-    renderStage.Update (*this);
+    GameObject::OnUpdate (renderer);
+    renderer.Update (*this);
 }

@@ -58,7 +58,6 @@ const float& Vector4f::operator[] (unsigned int index) const
     return v[index];
 }
 
-
 Vector4f& Vector4f::operator*=(float f)
 {
     v[0] *= f;

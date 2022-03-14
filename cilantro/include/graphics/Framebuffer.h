@@ -1,29 +1,30 @@
-#ifndef _FRAMEBUFFER_H_
-#define _FRAMEBUFFER_H_
+#pragma once
 
 #include "cilantroengine.h"
+#include "graphics/IFramebuffer.h"
 
-class Framebuffer 
+class CFramebuffer : public IFramebuffer
 {
 public:
-    Framebuffer (unsigned int bufferWidth, unsigned int bufferHeight);
-    virtual ~Framebuffer ();
+    CFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount);
+    virtual ~CFramebuffer () {};
 
-    virtual void Initialize () = 0;
-    virtual void Deinitialize () = 0;
+    ///////////////////////////////////////////////////////////////////////////
 
-    virtual void BindFramebuffer () const = 0;
-    virtual void UnbindFramebuffer () const = 0;
+    virtual unsigned int GetWidth () const override final;
+    virtual unsigned int GetHeight () const override final;
 
-    __EAPI unsigned int GetWidth () const;
-    __EAPI unsigned int GetHeight () const;
+    virtual unsigned int GetTextureCount() const override final;
+    virtual unsigned int GetRGBTextureCount () const override final;
+    virtual unsigned int GetRGBATextureCount () const override final;
 
-    virtual void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight);
+    void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight) override;
+
+    ///////////////////////////////////////////////////////////////////////////
 
 protected:
-
-    unsigned int bufferWidth;
-    unsigned int bufferHeight;
+    unsigned int m_RgbTextureCount;
+    unsigned int m_RgbaTextureCount;
+    unsigned int m_BufferWidth;
+    unsigned int m_BufferHeight;
 };
-
-#endif

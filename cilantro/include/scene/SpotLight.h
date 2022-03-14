@@ -3,14 +3,13 @@
 
 #include "cilantroengine.h"
 #include "scene/PointLight.h"
-#include "math/Vector3f.h"
 
-class GeometryRenderStage;
+struct IRenderer;
 
 class SpotLight : public PointLight
 {
 public:
-    __EAPI SpotLight ();
+    __EAPI SpotLight (CGameScene* gameScene);
     __EAPI virtual ~SpotLight ();
 
     // set attenuation factors
@@ -22,7 +21,7 @@ public:
     __EAPI float GetOuterCutoff () const;
 
     // invoked by game loop on update
-    void OnUpdate (GeometryRenderStage& renderStage);
+    void OnUpdate (IRenderer& renderer);
 
 private:
 

@@ -17,7 +17,7 @@ struct Vector3Hash
     }
 };
 
-class Mesh : public Resource, public CallbackProvider<std::string, handle_t>
+class Mesh : public CResource, public CallbackProvider<std::string, handle_t>
 {
 
 public:
@@ -48,8 +48,7 @@ public:
     __EAPI float* GetBitangentData ();
     __EAPI unsigned int* GetBoneIndicesData ();
     __EAPI float* GetBoneWeightsData ();
-
-    __EAPI float* GetBoneTransformationsMatrixArray ();
+    __EAPI std::vector<handle_t>& GetMeshBones ();
 
     // get faces raw data
     __EAPI unsigned int* GetFacesData ();
@@ -75,13 +74,10 @@ private:
     Mesh& SetTangent (unsigned int index, const Vector3f& tangent);
     Mesh& SetBitangent (unsigned int index, const Vector3f& bitangent);
 
-    std::string materialName;
     bool smoothNormals;
 
     // index in this vector is bone index, element is bone handle in resource manager
     std::vector<handle_t> meshBones;
-    
-    float boneTransformationMatrixArray[CILANTRO_MAX_BONES * 16];
 
     std::vector<float> vertices;
     std::vector<unsigned int> indices;

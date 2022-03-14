@@ -4,7 +4,7 @@
 #include "math/Mathf.h"
 #include "math/Matrix4f.h"
 
-Camera::Camera ()
+Camera::Camera (CGameScene* gameScene) : GameObject (gameScene)
 {
 }
 

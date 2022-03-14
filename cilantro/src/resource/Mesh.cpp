@@ -6,14 +6,14 @@
 #include "math/Mathf.h"
 #include "system/CallbackProvider.h"
 #include "system/LogMessage.h"
-#include "system/EngineContext.h"
+#include "system/Game.h"
 
 #include <cstring>
 #include <vector>
 #include <algorithm>
 #include <unordered_map>
 
-Mesh::Mesh () : Resource ()
+Mesh::Mesh () : CResource ()
 {
     this->smoothNormals = false;
 }
@@ -244,32 +244,14 @@ float* Mesh::GetBoneWeightsData ()
     return boneInfluenceWeights.data ();
 }
 
-float* Mesh::GetBoneTransformationsMatrixArray ()
-{
-    unsigned int index = 16;
-    Matrix4f boneTransformation;
-    Matrix4f identity;
-    identity.InitIdentity ();
-
-    // copy identity matrix in index 0
-    std::memcpy (boneTransformationMatrixArray, identity[0], 16 * sizeof (float));
-
-    // copy remaining bones
-    for (handle_t boneHandle : meshBones)
-    {
-        Bone& b = EngineContext::GetGameScene ().GetGameObjectManager ().GetByHandle<Bone> (boneHandle);
-        boneTransformation = b.GetModelTransformMatrix () * b.GetOffsetMatrix ();
-
-        std::memcpy (boneTransformationMatrixArray + index, boneTransformation[0], 16 * sizeof (float));
-        index += 16;
-    }
-
-    return boneTransformationMatrixArray;
-}
-
 unsigned int* Mesh::GetFacesData ()
 {
     return indices.data ();
+}
+
+std::vector<handle_t>& Mesh::GetMeshBones ()
+{
+    return meshBones;
 }
 
 Mesh& Mesh::AddVertex (const Vector3f& vertex, const Vector2f& uv)

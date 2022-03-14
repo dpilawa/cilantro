@@ -5,12 +5,12 @@
 #include "scene/GameObject.h"
 #include "math/Vector3f.h"
 
-class GeometryRenderStage;
+struct IRenderer;
 
 class Light : public GameObject
 {
 public:
-    Light ();
+    Light (CGameScene* gameScene);
     virtual ~Light ();
 
     // enable or disable light
@@ -25,7 +25,7 @@ public:
 
 
     // invoked by game loop on update	
-    void OnUpdate (GeometryRenderStage& renderStage);
+    void OnUpdate (IRenderer& renderStage);
 
 protected:
 
@@ -35,7 +35,6 @@ protected:
 private:
 
     bool isEnabled;
-
     Vector3f lightColor;
 };
 

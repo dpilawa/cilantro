@@ -2,48 +2,45 @@
 #define _GLFRAMEBUFFER_H_
 
 #include "cilantroengine.h"
-#include "graphics/Framebuffer.h"
 #include "glad/glad.h"
-#include <vector>
+#include "graphics/Framebuffer.h"
 
 struct GLBuffers
 {
-public:
     GLuint FBO;
     GLuint RBO;
-    GLuint textureBuffer[MAX_FRAMEBUFFER_TEXTURES];
-    GLuint attachments[MAX_FRAMEBUFFER_TEXTURES];
+    GLuint textureBuffer[CILANTRO_MAX_FRAMEBUFFER_TEXTURES];
+    GLuint attachments[CILANTRO_MAX_FRAMEBUFFER_TEXTURES];
 };
 
-class GLFramebuffer : public Framebuffer
+class CGLFramebuffer : public CFramebuffer
 {
 public:
-    GLFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount);
-    virtual ~GLFramebuffer ();
+    CGLFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount);
+    virtual ~CGLFramebuffer () {};
 
-    virtual void Initialize ();
-    virtual void Deinitialize ();
+    ///////////////////////////////////////////////////////////////////////////
 
-    virtual void BindFramebuffer () const;
-    virtual void UnbindFramebuffer () const;
+    virtual void Initialize () override;
+    virtual void Deinitialize () override;
 
-    virtual void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight);
+    virtual void BindFramebuffer () const override;
+    virtual void UnbindFramebuffer () const override;
+    virtual void BlitFramebuffer () const override;
+    void BindFramebufferTextures () const override;
+    void BindFramebufferRenderbuffer () const override;
 
-    int GetTextureCount() const;
+    virtual void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight) override;
 
-    GLuint virtual GetDrawFramebufferRenderbufferGLId () const;
-    GLuint virtual GetDrawFramebufferTextureGLId (unsigned int textureNumber) const;
-    GLuint virtual GetDrawFramebufferGLId () const;
+    ///////////////////////////////////////////////////////////////////////////
 
-    GLuint virtual GetReadFramebufferRenderbufferGLId () const;
-    GLuint virtual GetReadFramebufferTextureGLId (unsigned int textureNumber) const;
-    GLuint virtual GetReadFramebufferGLId () const;
+    GLuint virtual GetFramebufferRenderbufferGLId () const;
+    GLuint virtual GetFramebufferTextureGLId (unsigned int textureNumber) const;
+    GLuint virtual GetFramebufferGLId () const;
 
 protected:
 
-    unsigned int rgbTextureCount;
-    unsigned int rgbaTextureCount;
-    GLBuffers glBuffers;
+    GLBuffers m_GlBuffers;
 
 };
 

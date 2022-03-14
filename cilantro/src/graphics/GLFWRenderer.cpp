@@ -1,10 +1,12 @@
 #include "cilantroengine.h"
-#include "graphics/Renderer.h"
+#include "graphics/GLRenderer.h"
 #include "graphics/GLFWRenderer.h"
-#include "system/EngineContext.h"
+#include "scene/GameScene.h"
+#include "system/Game.h"
 #include "system/LogMessage.h"
 
-GLFWRenderer::GLFWRenderer (unsigned int width, unsigned int height, std::string windowCaption, bool isFullscreen, bool isResizable, bool isVSync) : Renderer (width, height)
+CGLFWRenderer::CGLFWRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool isDeferred, std::string windowCaption, bool isFullscreen, bool isResizable, bool isVSync) 
+    : CGLRenderer (gameScene, width, height, isDeferred)
 {
     this->windowCaption = windowCaption;
     this->isFullscreen = isFullscreen;
@@ -12,12 +14,12 @@ GLFWRenderer::GLFWRenderer (unsigned int width, unsigned int height, std::string
     this->isVSync = isVSync;
 }
 
-GLFWRenderer::~GLFWRenderer ()
+CGLFWRenderer::~CGLFWRenderer ()
 {
 
 }
 
-void GLFWRenderer::Initialize ()
+void CGLFWRenderer::Initialize ()
 {
     GLFWmonitor* monitor; 
     
@@ -29,8 +31,8 @@ void GLFWRenderer::Initialize ()
     {
         monitor = glfwGetPrimaryMonitor ();
 
-        width = glfwGetVideoMode (monitor)->width;
-        height = glfwGetVideoMode (monitor)->height;
+        m_width = glfwGetVideoMode (monitor)->width;
+        m_height = glfwGetVideoMode (monitor)->height;
     }
     else
     {
@@ -51,7 +53,7 @@ void GLFWRenderer::Initialize ()
     glfwWindowHint (GLFW_COCOA_RETINA_FRAMEBUFFER, GL_TRUE);
 
     // create window
-    window = glfwCreateWindow (width, height, windowCaption.c_str (), monitor, nullptr);
+    window = glfwCreateWindow (m_width, m_height, windowCaption.c_str (), monitor, nullptr);
 
     if (window == NULL)
     {
@@ -64,13 +66,16 @@ void GLFWRenderer::Initialize ()
     // set resize callback
     auto framebufferResizeCallback = [](GLFWwindow* window, int width, int height)
     {
-        EngineContext::GetRenderer().SetResolution (width, height);
+        for (auto&& gameScene : CGame::GetGameSceneManager ())
+        {
+            gameScene->GetRenderer ()->SetResolution (width, height);
+        }
     };
 
     glfwSetFramebufferSizeCallback (window, framebufferResizeCallback);
 
     // set framebuffer size (relevant for high DPI displays)
-    glfwGetFramebufferSize (window, (int*)(&width), (int*)(&height));
+    glfwGetFramebufferSize (window, (int*)(&m_width), (int*)(&m_height));
 
     // set vsync on
     glfwSwapInterval (isVSync);
@@ -88,27 +93,28 @@ void GLFWRenderer::Initialize ()
 
     LogMessage (MSG_LOCATION) << "GLFWRenderer started";
 
-    Renderer::Initialize ();
+    CGLRenderer::Initialize ();
 }
 
-void GLFWRenderer::Deinitialize ()
+void CGLFWRenderer::Deinitialize ()
 {    
-    Renderer::Deinitialize ();
+    CGLRenderer::Deinitialize ();
     
     glfwDestroyWindow (window);
     glfwTerminate ();
 }
 
-void GLFWRenderer::RenderFrame ()
+void CGLFWRenderer::RenderFrame ()
 {
-    Renderer::RenderFrame ();
+    CGLRenderer::RenderFrame ();
 
     // swap front and back buffers
+    glfwSwapInterval (1);
     glfwSwapBuffers (window);
 
     // check window closing
     if (glfwWindowShouldClose (window))
     {
-        EngineContext::GetGame ().Stop ();
+        CGame::Stop ();
     }
 }

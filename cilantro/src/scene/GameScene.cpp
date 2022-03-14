@@ -10,32 +10,87 @@
 
 #include <vector>
 
-GameScene::GameScene()
-{
+CGameScene::CGameScene()
+{ 
+    this->timer = new Timer();
+    timer->Tick ();
+
     this->activeCamera = nullptr;
 }
 
-GameScene::~GameScene()
+CGameScene::~CGameScene()
 {
+    delete timer;
+
+    if (renderer != nullptr)
+    {
+        renderer->Deinitialize ();
+        delete renderer;
+    }
 }
 
-ResourceManager<GameObject>& GameScene::GetGameObjectManager ()
+void CGameScene::OnStart ()
+{
+    for (auto gameObject : gameObjects)
+    {
+        gameObject->OnStart ();
+    }
+}
+
+void CGameScene::OnFrame ()
+{
+    timer->Tick ();
+
+    for (auto gameObject : gameObjects)
+    {
+        gameObject->OnFrame ();
+    }
+
+    renderer->RenderFrame ();
+
+    timer->Tock ();
+}
+
+void CGameScene::OnEnd ()
+{
+    for (auto gameObject : gameObjects)
+    {
+        gameObject->OnEnd ();
+    }
+}
+
+CResourceManager<GameObject>& CGameScene::GetGameObjectManager ()
 {
     return gameObjects;
 }
 
-ResourceManager<Material>& GameScene::GetMaterialManager ()
+CResourceManager<Material>& CGameScene::GetMaterialManager ()
 {
     return materials;
 }
 
-void GameScene::SetActiveCamera (const std::string& name)
+IRenderer* CGameScene::GetRenderer () const
+{
+    return renderer;
+}
+
+Timer* CGameScene::GetTimer () const
+{
+    return timer;
+}
+
+void CGameScene::SetActiveCamera (const std::string& name)
 {
     activeCamera = &(gameObjects.GetByName<Camera> (name));
 }
 
-Camera* GameScene::GetActiveCamera () const
+Camera* CGameScene::GetActiveCamera () const
 {
+    if (activeCamera == nullptr)
+    {
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "No active camera found";
+    }
+
     return activeCamera;
 }
 

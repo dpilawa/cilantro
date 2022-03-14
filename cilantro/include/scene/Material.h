@@ -12,12 +12,12 @@
 #include <map>
 #include <functional>
 
-class Renderer;
+struct IRenderer;
 
 typedef std::map<unsigned int, std::pair<std::string, Texture*>> texture_map_t;
 typedef std::unordered_map<std::string, std::vector<float>> property_map_t;
 
-class Material : public Resource, public CallbackProvider<std::string, unsigned int, unsigned int>
+class Material : public CResource, public CallbackProvider<std::string, unsigned int, unsigned int>
 {
 public:
     __EAPI Material ();
@@ -26,9 +26,9 @@ public:
     __EAPI Material& SetForwardShaderProgram (const std::string& name);
     __EAPI Material& SetDeferredGeometryPassShaderProgram (const std::string& name);
     __EAPI Material& SetDeferredLightingPassShaderProgram (const std::string& name);
-    __EAPI ShaderProgram& GetForwardShaderProgram () const;
-    __EAPI ShaderProgram& GetDeferredGeometryPassShaderProgram () const;
-    __EAPI ShaderProgram& GetDeferredLightingPassShaderProgram () const;
+    __EAPI std::string GetForwardShaderProgram () const;
+    __EAPI std::string GetDeferredGeometryPassShaderProgram () const;
+    __EAPI std::string GetDeferredLightingPassShaderProgram () const;
 
     texture_map_t& GetTexturesMap();
     property_map_t& GetPropertiesMap ();
@@ -48,9 +48,9 @@ protected:
 private:
 
     // shader programs defined in renderer
-    handle_t forwardShaderProgram;
-    handle_t deferredGeometryPassShaderProgram;
-    handle_t deferredLightingPassShaderProgram;
+    std::string forwardShaderProgram;
+    std::string deferredGeometryPassShaderProgram;
+    std::string deferredLightingPassShaderProgram;
 
 };
 

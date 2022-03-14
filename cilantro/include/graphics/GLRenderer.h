@@ -1,0 +1,208 @@
+#pragma once
+
+#include "cilantroengine.h"
+#include "glad/glad.h"
+#include "graphics/Renderer.h"
+
+class CGameScene;
+class MeshObject;
+class Camera;
+
+enum EGlVboType { VBO_VERTICES = 0, VBO_NORMALS, VBO_UVS, VBO_TANGENTS, VBO_BITANGENTS, VBO_BONES, VBO_BONEWEIGHTS };
+enum EGlUboType { UBO_MATRICES = 0, UBO_POINTLIGHTS, UBO_DIRECTIONALLIGHTS, UBO_SPOTLIGHTS };
+
+struct SGlGeometryBuffers;
+struct SGlMaterialTextureUnits;
+
+typedef std::unordered_map <handle_t, SGlGeometryBuffers*> TObjectGeometryBufferMap;
+typedef std::unordered_map <unsigned int, SGlMaterialTextureUnits*> TMaterialTextureUnitsMap;
+typedef std::unordered_map<unsigned int, unsigned int> TLightHandleIdxMap;
+
+struct SGlGeometryBuffers
+{
+    // number of vertices
+    unsigned int vertexCount;
+    // Vertex Buffer Objects (vertices, normals, uvs, tangents, bitangents, bone indices, bone weights)
+    GLuint VBO[CILANTRO_VBO_COUNT];
+    // Element Buffer Object (face indices)
+    GLuint EBO;
+    // Vertex Array Object
+    GLuint VAO;
+};
+
+struct SGlUniformBuffers
+{
+    // Uniform Buffer Objects (view & projection matrices, point lights, directional lights, spot lights)
+    GLuint UBO[CILANTRO_UBO_COUNT];
+};
+
+struct SGlUniformMatrixBuffer
+{
+    // view matrix
+    GLfloat viewMatrix[16];
+    // projection matrix
+    GLfloat projectionMatrix[16];
+};
+
+struct SGlMaterialTextureUnits
+{
+    // how many units in use 
+    unsigned int unitsCount;
+    // using 16 texture units, as per minimum defined in OpenGL 3.x
+    GLuint textureUnits[CILANTRO_MAX_TEXTURE_UNITS];
+};
+
+struct SGlPointLightStruct
+{
+    GLfloat lightPosition[3];
+    GLfloat pad1;
+    GLfloat lightColor[3];
+    GLfloat attenuationConst;
+    GLfloat attenuationLinear;
+    GLfloat attenuationQuadratic;
+};
+
+struct SGlDirectionalLightStruct
+{
+    GLfloat lightDirection[3];
+    GLfloat pad1;
+    GLfloat lightColor[3];
+};
+
+struct SGlSpotLightStruct
+{
+    GLfloat lightPosition[3];
+    GLfloat pad1;
+    GLfloat lightDirection[3];
+    GLfloat pad2;
+    GLfloat lightColor[3];
+    GLfloat attenuationConst;
+    GLfloat attenuationLinear;
+    GLfloat attenuationQuadratic;
+    GLfloat innerCutoffCosine;
+    GLfloat outerCutoffCosine;
+};
+
+struct SGlUniformPointLightBuffer
+{
+    // number of active point lights
+    GLint pointLightCount;
+    // pad to std140 specification
+    GLint pad[3];
+    // array of active point lights
+    SGlPointLightStruct pointLights[CILANTRO_MAX_POINT_LIGHTS];
+};
+
+struct SGlUniformDirectionalLightBuffer
+{
+    // number of active directional lights
+    GLint directionalLightCount;
+    // pad to std140 specification
+    GLint pad[3];
+    // array of active point lights
+    SGlDirectionalLightStruct directionalLights[CILANTRO_MAX_DIRECTIONAL_LIGHTS];
+};
+
+struct SGlUniformSpotLightBuffer
+{
+    // number of active spot lights
+    GLint spotLightCount;
+    // pad to std140 specification
+    GLint pad[3];
+    // array of active point lights
+    SGlSpotLightStruct spotLights[CILANTRO_MAX_SPOT_LIGHTS];
+};
+
+class CGLRenderer : public CRenderer
+{
+public:
+    CGLRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool isDeferred);
+    virtual ~CGLRenderer ();
+
+    ///////////////////////////////////////////////////////////////////////////
+
+    virtual void Initialize () override;
+    virtual void Deinitialize () override;
+
+    virtual IRenderer& SetViewport (unsigned int x, unsigned int y, unsigned int sx, unsigned int sy) override;
+
+    virtual void RenderFrame () override;
+
+    virtual void Draw (MeshObject& meshObject) override;
+    virtual void DrawViewportQuad (unsigned int x, unsigned int y, unsigned int width, unsigned int height) override;
+
+    virtual void Update (MeshObject& meshObject) override;
+    virtual void Update (Material& material, unsigned int textureUnit) override;
+    virtual void Update (Material& material) override;
+    
+    virtual void Update (PointLight& pointLight) override;
+    virtual void Update (DirectionalLight& directionalLight) override;	
+    virtual void Update (SpotLight& spotLight) override;
+
+    virtual void UpdateCameraBuffers (Camera& camera) override;
+
+    virtual IFramebuffer* CreateFramebuffer (unsigned int rgbTextures, unsigned int rgbaTextures, bool multisampleEnabled) override;
+    virtual void BindDefaultFramebuffer () override;
+
+    virtual void ClearColorBuffer (const Vector4f& rgba) override;
+    virtual void ClearDepthBuffer () override;
+    virtual void ClearStencilBuffer () override;
+
+    virtual void SetDepthTestEnabled (bool value) override;
+    virtual void SetFaceCullingEnabled (bool value) override;
+    virtual void SetMultisamplingEnabled (bool value) override;
+    
+    virtual void SetStencilTestEnabled (bool value) override;
+    virtual void SetStencilTestFunction (EStencilTestFunction testFunction, int testValue) override;
+    virtual void SetStencilTestOperation (EStencilTestOperation sFail, EStencilTestOperation dpFail, EStencilTestOperation dpPass) override;
+
+    ///////////////////////////////////////////////////////////////////////////
+
+private:
+    void InitializeShaderLibrary ();
+    
+    void InitializeMatrixUniformBuffers ();
+    void LoadMatrixUniformBuffers (Camera* camera);
+    void DeinitializeMatrixUniformBuffers ();    
+    
+    void InitializeObjectBuffers ();
+    void DeinitializeObjectBuffers ();
+
+    void InitializeQuadGeometryBuffer ();
+    void DeinitializeQuadGeometryBuffer ();
+    
+    void InitializeLightUniformBuffers ();
+    void DeinitializeLightUniformBuffers ();
+    void UpdateLightBufferRecursive (unsigned int objectHandle);
+
+    void RenderGeometryBuffer (SGlGeometryBuffers* buffer); 
+  
+    GLuint GetTextureFormat (unsigned int numTextures);
+    void CheckGLError (const std::string& location);
+
+private:
+    // buffers with geometry data to be passed to GPU (key is object handle)
+    TObjectGeometryBufferMap m_SceneGeometryBuffers;
+    SGlGeometryBuffers* m_QuadGeometryBuffer;
+
+    // Buffers for uniforms shared by entire scene
+    SGlUniformBuffers* m_UniformBuffers;
+
+    // data structures for uniforms
+    SGlUniformMatrixBuffer* m_UniformMatrixBuffer;
+    SGlUniformPointLightBuffer* m_UniformPointLightBuffer;
+    SGlUniformDirectionalLightBuffer* m_UniformDirectionalLightBuffer;
+    SGlUniformSpotLightBuffer* m_UniformSpotLightBuffer;
+
+    // materials texture units (key is material handle)
+    TMaterialTextureUnitsMap materialTextureUnits;
+
+    // maps gameobject handle to index in 
+    // uniformPointLightBuffer
+    // uniformDirectionalLightBuffer
+    // uniformSpotLightBuffer
+    TLightHandleIdxMap m_PointLights;
+    TLightHandleIdxMap m_DirectionalLights;
+    TLightHandleIdxMap m_SpotLights;
+
+};

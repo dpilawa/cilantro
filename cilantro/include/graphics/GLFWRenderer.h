@@ -4,18 +4,17 @@
 #include "cilantroengine.h"
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
+#include "graphics/GLRenderer.h"
 
-class Renderer;
-
-class GLFWRenderer : public Renderer
+class CGLFWRenderer : public CGLRenderer
 {
 public:
 
-    __EAPI GLFWRenderer (unsigned int width, unsigned int height, std::string windowCaption, bool isFullscreen, bool isResizable, bool isVSync);
-    __EAPI ~GLFWRenderer ();
+    __EAPI CGLFWRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool isDeferred, std::string windowCaption, bool isFullscreen, bool isResizable, bool isVSync);
+    __EAPI ~CGLFWRenderer ();
 
-    virtual void Initialize ();
-    virtual void Deinitialize ();
+    __EAPI virtual void Initialize ();
+    __EAPI virtual void Deinitialize ();
 
     virtual void RenderFrame ();
 

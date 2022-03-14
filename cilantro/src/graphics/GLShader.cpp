@@ -1,5 +1,3 @@
-#include "cilantroengine.h"
-#include "graphics/Renderer.h"
 #include "graphics/GLShader.h"
 #include "system/LogMessage.h"
 

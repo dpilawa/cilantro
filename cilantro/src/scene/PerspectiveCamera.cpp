@@ -4,7 +4,8 @@
 #include "math/Matrix4f.h"
 #include "math/Mathf.h"
 
-PerspectiveCamera::PerspectiveCamera (float fov, float near, float far) :
+PerspectiveCamera::PerspectiveCamera (CGameScene* gameScene, float fov, float near, float far) :
+    Camera (gameScene),
     cameraFOV (fov), nearPlane (near), farPlane (far)
 {
 }

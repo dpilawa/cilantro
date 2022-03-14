@@ -2,7 +2,11 @@
 #define _GAMESCENE_H_
 
 #include "cilantroengine.h"
+#include "resource/Resource.h"
 #include "resource/ResourceManager.h"
+#include "graphics/Renderer.h"
+#include "input/InputController.h"
+#include "system/Timer.h"
 #include "scene/GameObject.h"
 #include "scene/MeshObject.h"
 #include "scene/Material.h"
@@ -12,12 +16,16 @@
 
 // This class represents a game world (a.k.a scene or level)
 // It contains all visible and invisible objects in a game
-class GameScene : public CallbackProvider<std::string, handle_t, unsigned int>
+class CGameScene : public CResource, public CallbackProvider<std::string, handle_t, unsigned int>
 {
 public:
 
-    __EAPI GameScene();
-    __EAPI ~GameScene();
+    __EAPI CGameScene();
+    __EAPI ~CGameScene();
+
+    void OnStart ();
+    void OnFrame ();
+    void OnEnd ();
 
     // add GameObject to a scene
     // returns reference to that added object
@@ -30,8 +38,17 @@ public:
     T& AddMaterial (const std::string& name, Params&&... params);
 
     // return reference to map
-    __EAPI ResourceManager<GameObject>& GetGameObjectManager ();
-    __EAPI ResourceManager<Material>& GetMaterialManager ();
+    __EAPI CResourceManager<GameObject>& GetGameObjectManager ();
+    __EAPI CResourceManager<Material>& GetMaterialManager ();
+
+    // renderer control
+    template <typename T, typename ...Params> 
+    T& CreateRenderer (Params&&... params);
+
+    __EAPI IRenderer* GetRenderer () const;
+
+    // other getters
+    __EAPI Timer* GetTimer () const;
 
     // active camera manipulation
     __EAPI void SetActiveCamera (const std::string& name);
@@ -40,10 +57,14 @@ public:
 private:
     
     // map of all GameObjects in the scene
-    ResourceManager<GameObject> gameObjects;
+    CResourceManager<GameObject> gameObjects;
 
     // map of all Materials in the scene
-    ResourceManager<Material> materials;
+    CResourceManager<Material> materials;
+
+    // systems
+    Timer* timer;
+    IRenderer* renderer;
 
     // reference to active camera
     Camera* activeCamera;
@@ -51,9 +72,9 @@ private:
 };
 
 template <typename T, typename ...Params>
-T& GameScene::AddGameObject (const std::string& name, Params&&... params)
+T& CGameScene::AddGameObject (const std::string& name, Params&&... params)
 {
-    T& gameObject = gameObjects.Create<T> (name, params...);
+    T& gameObject = gameObjects.Create<T> (name, this, params...);
     handle_t handle = gameObject.GetHandle ();
 
     // set callbacks on object modification
@@ -62,7 +83,6 @@ T& GameScene::AddGameObject (const std::string& name, Params&&... params)
     gameObject.RegisterCallback ("OnUpdateLight", [ & ](unsigned int objectHandle, unsigned int) { InvokeCallbacks ("OnUpdateLight", objectHandle, 0); });
     gameObject.RegisterCallback ("OnUpdateSceneGraph", [ & ](unsigned int objectHandle, unsigned int) { InvokeCallbacks ("OnUpdateSceneGraph", objectHandle, 0); });
     gameObject.RegisterCallback ("OnUpdateTransform", [&](unsigned int objectHandle, unsigned int) { 
-        gameObjects.GetByHandle<T> (objectHandle).CalculateModelTransformMatrix ();
         InvokeCallbacks ("OnUpdateTransform", objectHandle, 0);
     });
 
@@ -82,7 +102,7 @@ T& GameScene::AddGameObject (const std::string& name, Params&&... params)
 }
 
 template <typename T, typename ...Params>
-T& GameScene::AddMaterial (const std::string& name, Params&&... params)
+T& CGameScene::AddMaterial (const std::string& name, Params&&... params)
 {
     T& material = materials.Create<T> (name, params...);
     handle_t handle = material.GetHandle ();
@@ -96,6 +116,18 @@ T& GameScene::AddMaterial (const std::string& name, Params&&... params)
 
     // return material reference
     return material;
+}
+
+template <typename T, typename ...Params> 
+T& CGameScene::CreateRenderer (Params&&... params)
+{
+    static_assert (std::is_base_of<IRenderer, T>::value, "Renderer object must inherit from Renderer");
+    T* newRenderer = new T (this, params...);
+
+    this->renderer = static_cast<IRenderer*> (newRenderer);
+    this->renderer->Initialize ();
+
+    return *newRenderer;
 }
 
 #endif

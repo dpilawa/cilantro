@@ -2,7 +2,7 @@
 #include "scene/GameObject.h"
 #include "scene/Light.h"
 
-Light::Light ()
+Light::Light (CGameScene* gameScene) : GameObject (gameScene)
 {
     isEnabled = false;
     
@@ -43,9 +43,9 @@ Vector3f Light::GetColor () const
     }
 }
 
-void Light::OnUpdate (GeometryRenderStage& renderStage)
+void Light::OnUpdate (IRenderer& renderer)
 {
-    GameObject::OnUpdate (renderStage);
+    GameObject::OnUpdate (renderer);
 }
 
 void Light::InvokeOnUpdateCallbacks ()

@@ -1,78 +1,83 @@
-#ifndef _RENDERSTAGE_H_
-#define _RENDERSTAGE_H_
+#pragma once
 
 #include "cilantroengine.h"
+#include "graphics/IRenderer.h"
+#include "graphics/IRenderStage.h"
 #include "resource/Resource.h"
-#include "graphics/Framebuffer.h"
-#include "graphics/Framebuffer.h"
-#include "graphics/ShaderProgram.h"
-#include <string>
 
-enum PipelineLink { LINK_FIRST, LINK_SECOND, LINK_PREVIOUS, LINK_CURRENT, LINK_LAST };
-enum StencilTestFunction { FUNCTION_NEVER, FUNCTION_LESS, FUNCTION_LEQUAL, FUNCTION_GREATER, FUNCTION_GEQUAL, FUNCTION_EQUAL, FUNCTION_NOTEQUAL, FUNCTION_ALWAYS };
-
-class Vector2f;
-class Vector3f;
-class Vector4f;
-
-class RenderStage : public Resource
+class CRenderStage : public IRenderStage, public CResource
 {
+    friend class CRenderer;
 public:
-    __EAPI RenderStage ();
-    __EAPI virtual ~RenderStage ();
+    CRenderStage ();
+    virtual ~CRenderStage ();
 
-    __EAPI RenderStage& SetStencilTest (StencilTestFunction stencilTestFunction, int stencilTestValue);
+    ///////////////////////////////////////////////////////////////////////////
 
-    __EAPI virtual RenderStage& SetMultisampleEnabled (bool value);
-    __EAPI virtual RenderStage& SetStencilTestEnabled (bool value);
-    __EAPI virtual RenderStage& SetDepthTestEnabled (bool value);
-    __EAPI virtual RenderStage& SetClearOnFrameEnabled (bool value);
-    __EAPI virtual RenderStage& SetFaceCullingEnabled (bool value);
-    __EAPI virtual RenderStage& SetFramebufferEnabled (bool value);
+    IFramebuffer* GetFramebuffer () const override final;
 
-    __EAPI bool IsMultisampleEnabled () const;
-    __EAPI bool IsStencilTestEnabled () const;
-    __EAPI bool IsDepthTestEnabled () const;
-    __EAPI bool IsClearOnFrameEnabled () const;
-    __EAPI bool IsFaceCullingEnabled () const;
-    __EAPI bool IsFramebufferEnabled () const;
+    virtual void OnFrame () override;
+    __EAPI virtual IRenderStage& SetViewport (float u, float v, float su, float sv) override;
 
-    __EAPI virtual RenderStage& SetPipelineFramebufferInputLink (PipelineLink link);
-    __EAPI virtual RenderStage& SetPipelineRenderbufferLink (PipelineLink link);
-    __EAPI virtual RenderStage& SetPipelineFramebufferDrawLink (PipelineLink link);
+    __EAPI virtual IRenderStage& SetMultisampleEnabled (bool value) override;
+    __EAPI virtual IRenderStage& SetStencilTestEnabled (bool value) override;
+    __EAPI virtual IRenderStage& SetDepthTestEnabled (bool value) override;
+    __EAPI virtual IRenderStage& SetFaceCullingEnabled (bool value) override;
+    __EAPI virtual IRenderStage& SetFramebufferEnabled (bool value) override;
 
-    virtual void Initialize () = 0;
-    virtual void Deinitialize () = 0;
+    __EAPI virtual IRenderStage& SetClearColorOnFrameEnabled (bool value) override final;
+    __EAPI virtual IRenderStage& SetClearDepthOnFrameEnabled (bool value) override final;
+    __EAPI virtual IRenderStage& SetClearStencilOnFrameEnabled (bool value) override final;
 
-    virtual void OnFrame () = 0;
+    __EAPI virtual IRenderStage& SetStencilTest (EStencilTestFunction stencilTestFunction, int stencilTestValue) override final;
 
-    Framebuffer* GetFramebuffer () const;
+    __EAPI bool IsMultisampleEnabled () const override final;
+    __EAPI bool IsStencilTestEnabled () const override final;
+    __EAPI bool IsDepthTestEnabled () const override final;
+    __EAPI bool IsFaceCullingEnabled () const override final;
+    __EAPI bool IsFramebufferEnabled () const override final;
+
+    __EAPI bool IsClearColorOnFrameEnabled () const override final;
+    __EAPI bool IsClearDepthOnFrameEnabled () const override final;
+    __EAPI bool IsClearStencilOnFrameEnabled () const override final;
+
+    __EAPI virtual IRenderStage& SetPipelineFramebufferInputLink (EPipelineLink link) override final;
+    __EAPI virtual IRenderStage& SetPipelineRenderbufferLink (EPipelineLink link) override final;
+    __EAPI virtual IRenderStage& SetPipelineFramebufferDrawLink (EPipelineLink link) override final;
+
+    ///////////////////////////////////////////////////////////////////////////
 
 protected:
-
-    virtual void InitializeFramebuffer (unsigned int rgbTextures, unsigned int rgbaTextures) = 0;
-    virtual void InitializeFramebuffer () = 0;
-
     // flags
-    bool multisampleEnabled;
-    bool stencilTestEnabled;
-    bool depthTestEnabled;
-    bool clearOnFrameEnabled;
-    bool faceCullingEnabled;
-    bool framebufferEnabled;
+    bool m_isMultisampleEnabled;
+    bool m_isStencilTestEnabled;
+    bool m_isDepthTestEnabled;    
+    bool m_isFaceCullingEnabled;
+    bool m_isFramebufferEnabled;
+
+    bool m_isClearColorOnFrameEnabled;
+    bool m_isClearDepthOnFrameEnabled;
+    bool m_isClearStencilOnFrameEnabled;
+
+    // viewport relative position and dimension
+    float m_viewportU;
+    float m_viewportV;
+    float m_viewportSizeU;
+    float m_viewportSizeV;
+
+    // parent renderer
+    IRenderer* m_renderer;
 
     // output framebuffer
-    Framebuffer* framebuffer;
+    IFramebuffer* m_framebuffer;
 
     // these indicate which framebuffer and which render buffer should be current stage's input
     // and where to write to
-    PipelineLink pipelineFramebufferInputLink;
-    PipelineLink pipelineRenderbufferLink;
-    PipelineLink pipelineFramebufferOutputLink;
+    EPipelineLink m_pipelineFramebufferInputLink;
+    EPipelineLink m_pipelineRenderbufferLink;
+    EPipelineLink m_pipelineFramebufferOutputLink;
 
     // stencil testing parameters
-    StencilTestFunction stencilTestFunction;
-    int stencilTestValue;
+    EStencilTestFunction m_stencilTestFunction;
+    int m_stencilTestValue;
 };
-
-#endif

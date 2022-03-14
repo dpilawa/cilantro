@@ -1,22 +1,13 @@
 #include "cilantroengine.h"
 #include "resource/Resource.h"
 
-Resource::Resource ()
+handle_t CResource::GetHandle () const
 {
+    return m_handle;
 }
 
-Resource::~Resource ()
+std::string CResource::GetName () const
 {
-
-}
-
-handle_t Resource::GetHandle () const
-{
-    return handle;
-}
-
-std::string Resource::GetName () const
-{
-    return name;
+    return m_name;
 }
 

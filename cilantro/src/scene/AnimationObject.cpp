@@ -1,8 +1,12 @@
 #include "scene/AnimationObject.h"
 #include "scene/AnimationProperty.h"
-#include "system/EngineContext.h"
+#include "scene/GameScene.h"
 #include "system/LogMessage.h"
 #include "system/Timer.h"
+#include <functional>
+#include <string>
+#include <unordered_map>
+#include <memory>
 
 // template instantiations
 template __EAPI void AnimationObject::AddAnimationProperty<float> (const std::string& propertyName, float startValue, std::function<void (float)> updateFunction, std::function<float (float, float, float)> interpolateFunction);
@@ -17,7 +21,7 @@ template __EAPI void AnimationObject::UpdateProperties<float> ();
 template __EAPI void AnimationObject::UpdateProperties<Vector3f> ();
 template __EAPI void AnimationObject::UpdateProperties<Quaternion> ();
 
-AnimationObject::AnimationObject ()
+AnimationObject::AnimationObject (CGameScene* gameScene) : GameObject (gameScene)
 {
     isPlaying = false;
     isLooping = true;
@@ -74,7 +78,7 @@ void AnimationObject::OnFrame ()
         UpdateProperties<Vector3f> ();
         UpdateProperties<Quaternion> ();
 
-        playedTime += EngineContext::GetTimer ().GetFrameDeltaTime ();
+        playedTime += gameScene->GetTimer ()->GetFrameDeltaTime ();
     }
 }
 

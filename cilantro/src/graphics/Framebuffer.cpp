@@ -1,29 +1,40 @@
-#include "cilantroengine.h"
 #include "graphics/Framebuffer.h"
 
-
-Framebuffer::Framebuffer (unsigned int bufferWidth, unsigned int bufferHeight)
-{
-    this->bufferWidth = bufferWidth;
-    this->bufferHeight = bufferHeight;
-}
-
-Framebuffer::~Framebuffer ()
+CFramebuffer::CFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount)
+    : m_BufferWidth (bufferWidth)
+    , m_BufferHeight (bufferHeight)
+    , m_RgbTextureCount (rgbTextureCount)
+    , m_RgbaTextureCount (rgbaTextureCount)
 {
 }
 
-unsigned int Framebuffer::GetWidth () const 
+unsigned int CFramebuffer::GetWidth () const 
 {
-    return bufferWidth;
+    return m_BufferWidth;
 }
 
-unsigned int Framebuffer::GetHeight () const 
+unsigned int CFramebuffer::GetHeight () const 
 {
-    return bufferHeight;
+    return m_BufferHeight;
 }
 
-void Framebuffer::SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight)
+unsigned int CFramebuffer::GetTextureCount () const
 {
-    this->bufferWidth = bufferWidth;
-    this->bufferHeight = bufferHeight;
+    return m_RgbTextureCount + m_RgbaTextureCount;
+}
+
+unsigned int CFramebuffer::GetRGBTextureCount () const
+{
+    return m_RgbTextureCount;
+}
+
+unsigned int CFramebuffer::GetRGBATextureCount () const
+{
+    return m_RgbaTextureCount;
+}
+
+void CFramebuffer::SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight)
+{
+    m_BufferWidth = bufferWidth;
+    m_BufferHeight = bufferHeight;
 }

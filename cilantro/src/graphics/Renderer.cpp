@@ -1,59 +1,55 @@
-#include "cilantroengine.h"
 #include "graphics/Renderer.h"
-#include "graphics/RenderStage.h"
-#include "system/EngineContext.h"
+#include "graphics/IRenderStage.h"
+#include "graphics/DeferredGeometryRenderStage.h"
+#include "graphics/ForwardGeometryRenderStage.h"
+#include "graphics/IFramebuffer.h"
+#include "scene/GameScene.h"
+#include "system/Timer.h"
 #include "system/LogMessage.h"
 #include <cmath>
 
-Renderer::Renderer (unsigned int width, unsigned int height)
+CRenderer::CRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool isDeferred)
+    : m_gameScene (gameScene)
+    , m_isDeferred (isDeferred)
+    , m_width (width)
+    , m_height (height)
 {
-    totalRenderFrames = 0L;
-    totalRenderTime = 0.0f;
-    totalFrameRenderTime = 0.0f;
+    m_totalRenderedFrames = 0L;
+    m_totalRenderTime = 0.0f;
+    m_totalFrameRenderTime = 0.0f;
 
-    this->width = width;
-    this->height = height;
+    m_lightingShaderStagesCount = 0;
 }
 
-Renderer::~Renderer ()
+void CRenderer::Initialize ()
 {
+    InitializeRenderStages ();
 }
 
-void Renderer::Initialize ()
+void CRenderer::Deinitialize ()
 {
-    for (auto&& stage : renderStages)
-    {
-        stage->Initialize ();
-    }
+    DeinitializeRenderStages ();
+
+    LogMessage (MSG_LOCATION) << "Rendered" << m_totalRenderedFrames << "frames in" << m_totalRenderTime << "seconds; avg FPS =" << std::round (m_totalRenderedFrames / m_totalFrameRenderTime) << "; real FPS = " << std::round (m_totalRenderedFrames / m_totalRenderTime);
 }
 
-void Renderer::Deinitialize ()
+unsigned int CRenderer::GetWidth () const
 {
-    for (auto&& stage : renderStages)
-    {
-        stage->Deinitialize ();
-    }
-
-    LogMessage (MSG_LOCATION) << "Rendered" << totalRenderFrames << "frames in" << totalRenderTime << "seconds; avg FPS =" << std::round (totalRenderFrames / totalFrameRenderTime) << "; real FPS = " << std::round (totalRenderFrames / totalRenderTime);
+    return this->m_width;
 }
 
-unsigned int Renderer::GetWidth () const
+unsigned int CRenderer::GetHeight () const
 {
-    return this->width;
+    return this->m_height;
 }
 
-unsigned int Renderer::GetHeight () const
+IRenderer& CRenderer::SetResolution (unsigned int width, unsigned int height)
 {
-    return this->height;
-}
+    IFramebuffer* fb;
+    this->m_width = width;
+    this->m_height = height;
 
-Renderer& Renderer::SetResolution (unsigned int width, unsigned int height)
-{
-    Framebuffer* fb;
-    this->width = width;
-    this->height = height;
-
-    for (auto& stage : renderStages)
+    for (auto& stage : m_renderStageManager)
     {
         fb = stage->GetFramebuffer ();
         if (fb != nullptr)
@@ -65,88 +61,125 @@ Renderer& Renderer::SetResolution (unsigned int width, unsigned int height)
     return *this;
 }
 
-void Renderer::RenderFrame ()
+CGameScene* CRenderer::GetGameScene ()
 {
-
-    renderStage = 0;
-
-    // reset global rendering timer
-    if (totalRenderTime == 0L)
-    {
-        EngineContext::GetTimer ().ResetSplitTime ();
-    }
-
-    // run post-processing
-    for (handle_t stageHandle : renderPipeline)
-    {
-        renderStages.GetByHandle<RenderStage> (stageHandle).OnFrame ();
-        renderStage++;
-    }
-
-    // update game clocks (Tock)
-    EngineContext::GetTimer ().Tock ();
-
-    // update frame counters
-    totalRenderFrames++;
-    totalRenderTime = EngineContext::GetTimer ().GetTimeSinceSplitTime ();
-    totalFrameRenderTime += EngineContext::GetTimer ().GetFrameRenderTime ();
+    return m_gameScene;
 }
 
-Renderer& Renderer::RotateRenderPipelineLeft ()
+TShaderProgramManager& CRenderer::GetShaderProgramManager ()
 {
-    std::rotate (renderPipeline.begin (), renderPipeline.begin () + 1, renderPipeline.end ());
+    return m_shaderProgramManager;
+}
+
+TRenderStageManager& CRenderer::GetRenderStageManager ()
+{
+    return m_renderStageManager;
+}
+
+TRenderPipeline& CRenderer::GetRenderPipeline ()
+{
+    return m_renderPipeline;
+}
+
+IRenderer& CRenderer::RotateRenderPipelineLeft ()
+{
+    std::rotate (m_renderPipeline.begin (), m_renderPipeline.begin () + 1, m_renderPipeline.end ());
 
     return *this;
 }
 
-Renderer& Renderer::RotateRenderPipelineRight ()
+IRenderer& CRenderer::RotateRenderPipelineRight ()
 {
-    std::rotate (renderPipeline.rbegin (), renderPipeline.rbegin () + 1, renderPipeline.rend ());
+    std::rotate (m_renderPipeline.rbegin (), m_renderPipeline.rbegin () + 1, m_renderPipeline.rend ());
 
     return *this;
 }
 
-std::vector<handle_t>& Renderer::GetRenderPipeline ()
+IFramebuffer* CRenderer::GetPipelineFramebuffer (EPipelineLink link)
 {
-    return renderPipeline;
-}
-
-Framebuffer* Renderer::GetPipelineFramebuffer (PipelineLink link)
-{
-    if ((renderStage == 0 && link == PipelineLink::LINK_PREVIOUS) || (renderPipeline.size () < 2 && link == PipelineLink::LINK_SECOND))
+    if ((m_currentRenderStage == 0 && link == EPipelineLink::LINK_PREVIOUS) || (m_renderPipeline.size () < 2 && link == EPipelineLink::LINK_SECOND))
     {
         LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Pipeline index out of bounds";
     }
 
-    if (link == PipelineLink::LINK_FIRST)
+    if (link == EPipelineLink::LINK_FIRST)
     {
-        return GetRenderStageManager ().GetByHandle<RenderStage> (renderPipeline.front ()).GetFramebuffer ();
+        return GetRenderStageManager ().GetByHandle<IRenderStage> (m_renderPipeline.front ()).GetFramebuffer ();
     }
-    else if (link == PipelineLink::LINK_SECOND)
+    else if (link == EPipelineLink::LINK_SECOND)
     {
-        return GetRenderStageManager ().GetByHandle<RenderStage> (renderPipeline[1]).GetFramebuffer ();
+        return GetRenderStageManager ().GetByHandle<IRenderStage> (m_renderPipeline[1]).GetFramebuffer ();
     }
-    else if (link == PipelineLink::LINK_PREVIOUS)
+    else if (link == EPipelineLink::LINK_PREVIOUS)
     {
-        return GetRenderStageManager ().GetByHandle<RenderStage> (renderPipeline[renderStage - 1]).GetFramebuffer ();
+        return GetRenderStageManager ().GetByHandle<IRenderStage> (m_renderPipeline[m_currentRenderStage - 1]).GetFramebuffer ();
     }
-    else if (link == PipelineLink::LINK_LAST)
+    else if (link == EPipelineLink::LINK_LAST)
     {
-        return GetRenderStageManager ().GetByHandle<RenderStage> (renderPipeline.back ()).GetFramebuffer ();
+        return GetRenderStageManager ().GetByHandle<IRenderStage> (m_renderPipeline.back ()).GetFramebuffer ();
     }
     else /* LINK_CURRENT */
     {
-        return GetRenderStageManager ().GetByHandle<RenderStage> (renderPipeline[renderStage]).GetFramebuffer ();
+        return GetRenderStageManager ().GetByHandle<IRenderStage> (m_renderPipeline[m_currentRenderStage]).GetFramebuffer ();
     }
 }
 
-ResourceManager<RenderStage>& Renderer::GetRenderStageManager ()
+void CRenderer::RenderFrame ()
 {
-    return renderStages;
+    m_currentRenderStage = 0;
+
+    // reset global rendering timer
+    if (m_totalRenderTime == 0L)
+    {
+        m_gameScene->GetTimer ()->ResetSplitTime ();
+    }
+
+    // run post-processing
+    for (handle_t stageHandle : m_renderPipeline)
+    {
+        m_renderStageManager.GetByHandle<IRenderStage> (stageHandle).OnFrame ();
+        m_currentRenderStage++;
+    }
+
+    // update game clocks (Tock)
+    m_gameScene->GetTimer ()->Tock ();
+
+    // update frame counters
+    m_totalRenderedFrames++;
+    m_totalRenderTime = m_gameScene->GetTimer ()->GetTimeSinceSplitTime ();
+    m_totalFrameRenderTime += m_gameScene->GetTimer ()->GetFrameRenderTime ();
 }
 
-ResourceManager<ShaderProgram>& Renderer::GetShaderProgramManager ()
+void CRenderer::InitializeRenderStages ()
 {
-    return shaderPrograms;
+    if (m_isDeferred == true)
+    {
+        // geometry stage
+        IRenderStage& baseDeferred = this->AddRenderStage<CDeferredGeometryRenderStage> ("base");
+        baseDeferred.SetDepthTestEnabled (true);
+        baseDeferred.SetStencilTestEnabled (true);
+        baseDeferred.SetClearColorOnFrameEnabled (true);
+        baseDeferred.SetClearDepthOnFrameEnabled (true);
+        baseDeferred.SetClearStencilOnFrameEnabled (true);
+        baseDeferred.Initialize ();
+        
+        // lighting stages (per material shader)
+        for (auto&& material : m_gameScene->GetMaterialManager ())
+        {
+            this->Update (*material);
+        }
+    }
+    else
+    {
+        IRenderStage& baseForward = this->AddRenderStage<CForwardGeometryRenderStage> ("base");
+        baseForward.Initialize ();
+    }
 }
 
+void CRenderer::DeinitializeRenderStages ()
+{
+    for (auto&& stage : m_renderStageManager)
+    {
+        stage->Deinitialize ();
+    }
+}

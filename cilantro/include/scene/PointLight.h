@@ -3,14 +3,13 @@
 
 #include "cilantroengine.h"
 #include "scene/Light.h"
-#include "math/Vector3f.h"
 
-class GeometryRenderStage;
+struct IRenderer;
 
 class PointLight : public Light
 {
 public:
-    __EAPI PointLight ();
+    __EAPI PointLight (CGameScene* gameScene);
     __EAPI virtual ~PointLight ();
 
     // set attenuation factors
@@ -24,7 +23,7 @@ public:
     __EAPI float GetQuadraticAttenuationFactor () const;
 
     // invoked by game loop on update
-    void OnUpdate (GeometryRenderStage& renderStage);
+    void OnUpdate (IRenderer& renderer);
 
 private:
 

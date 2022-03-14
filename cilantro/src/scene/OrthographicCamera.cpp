@@ -4,7 +4,8 @@
 #include "math/Matrix4f.h"
 #include "math/Mathf.h"
 
-OrthographicCamera::OrthographicCamera (float width, float near, float far) :
+OrthographicCamera::OrthographicCamera (CGameScene* gameScene, float width, float near, float far) :
+    Camera (gameScene),
     cameraWidth (width), nearPlane (near), farPlane (far)
 {
 }

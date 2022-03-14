@@ -1,18 +1,15 @@
 #include "cilantroengine.h"
 #include "resource/LoadableResource.h"
 
-LoadableResource::LoadableResource () : Resource ()
+CLoadableResource::CLoadableResource () : CResource ()
 {
     this->path = std::string ();
 }
 
-LoadableResource::LoadableResource (const std::string& path) : Resource ()
+CLoadableResource::CLoadableResource (const std::string& path) : CResource ()
 {
     this->path = path;
 }
 
-LoadableResource::~LoadableResource ()
-{
 
-}
 

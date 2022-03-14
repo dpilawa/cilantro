@@ -2,7 +2,7 @@
 
 #if (__VERSION__ >= 330)
 layout (location = 0) in vec2 vPosition;
-layout (location = 1) in vec2 vTextureCoordinates;
+layout (location = 2) in vec2 vTextureCoordinates;
 #else
 in vec2 vPosition;
 in vec2 vTextureCoordinates;

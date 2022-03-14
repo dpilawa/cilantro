@@ -6,15 +6,11 @@
 #include "scene/GameObject.h"
 #include "math/Vector3f.h"
 #include "math/Quaternion.h"
-#include <functional>
-#include <string>
-#include <unordered_map>
-#include <memory>
 
 class AnimationObject : public GameObject
 {
 public:
-    __EAPI AnimationObject ();
+    __EAPI AnimationObject (CGameScene* gameScene);
     __EAPI virtual ~AnimationObject ();
 
     template <typename P>

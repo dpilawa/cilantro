@@ -3,18 +3,18 @@
 
 #include "cilantroengine.h"
 #include "resource/Resource.h"
-#include "game/Game.h"
 #include "scene/Transform.h"
 #include "system/CallbackProvider.h"
 #include <string>
 #include <vector>
 
-class GeometryRenderStage;
+class CGameScene;
+struct IRenderer;
 
-class GameObject : public Resource, public CallbackProvider<std::string, handle_t, unsigned int>
+class GameObject : public CResource, public CallbackProvider<std::string, handle_t, unsigned int>
 {
 public:
-    __EAPI GameObject ();
+    __EAPI GameObject (CGameScene* gameScene);
     __EAPI virtual ~GameObject ();
 
     // set pointer to parent object (i.e. put current object inside hierarchy)
@@ -29,8 +29,8 @@ public:
 
     // invoked by game loop on each frame or on update (e.g. transform change)
     __EAPI virtual void OnFrame ();
-    __EAPI virtual void OnDraw (GeometryRenderStage& renderStage);
-    __EAPI virtual void OnUpdate (GeometryRenderStage& renderStage);
+    __EAPI virtual void OnDraw (IRenderer& renderer);
+    __EAPI virtual void OnUpdate (IRenderer& renderer);
 
     // invoked by game loop during deinitialization
     __EAPI virtual void OnEnd ();
@@ -52,11 +52,15 @@ public:
     __EAPI Vector3f GetUp () const;
     __EAPI Vector3f GetForward () const;	
 
-private:
+protected:
+
+    // parent scene
+    CGameScene* gameScene;
 
     // pointer to parent object (objects may form a hierarchy)
     GameObject* parentObject;
-    
+
+private:
     // vector of child objects
     std::vector<GameObject*> childObjects;
 

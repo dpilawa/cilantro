@@ -1,62 +1,63 @@
 #include "resource/ResourceManager.h"
 #include "resource/Resource.h"
+#include "scene/GameScene.h"
 #include "scene/Material.h"
 #include "scene/GameObject.h"
 #include "graphics/ShaderProgram.h"
 #include "graphics/RenderStage.h"
 
 template <typename Base>
-ResourceManager<Base>::ResourceManager ()
+CResourceManager<Base>::CResourceManager ()
 {
-    static_assert (std::is_base_of<Resource, Base>::value, "Resource base object must inherit from Resource");
-    this->handle = 0;
+    static_assert (std::is_base_of<CResource, Base>::value, "Resource base object must inherit from CResource");
+    this->m_nextHandle = 0;
     LogMessage (MSG_LOCATION) << "ResourceManager started";
 }
 
 template <typename Base>
-ResourceManager<Base>::~ResourceManager ()
+CResourceManager<Base>::~CResourceManager ()
 {
     LogMessage (MSG_LOCATION) << "ResourceManager stopped";
 }
 
 template <typename Base>
-typename ResourceManager<Base>::iterator ResourceManager<Base>::begin ()
+typename CResourceManager<Base>::iterator CResourceManager<Base>::begin ()
 { 
-    return resources.begin (); 
+    return m_resources.begin (); 
 }
 
 template <typename Base>
-typename ResourceManager<Base>::iterator ResourceManager<Base>::end () 
+typename CResourceManager<Base>::iterator CResourceManager<Base>::end () 
 { 
-    return resources.end (); 
+    return m_resources.end (); 
 }
 
 template <typename Base>
-typename ResourceManager<Base>::const_iterator ResourceManager<Base>::begin () const 
+typename CResourceManager<Base>::const_iterator CResourceManager<Base>::begin () const 
 { 
-    return resources.begin (); 
+    return m_resources.begin (); 
 }
 
 template <typename Base>
-typename ResourceManager<Base>::const_iterator ResourceManager<Base>::end () const 
+typename CResourceManager<Base>::const_iterator CResourceManager<Base>::end () const 
 { 
-    return resources.end (); 
+    return m_resources.end (); 
 }
 
 template <typename Base>
-typename ResourceManager<Base>::const_iterator ResourceManager<Base>::cbegin () const 
+typename CResourceManager<Base>::const_iterator CResourceManager<Base>::cbegin () const 
 { 
-    return resources.cbegin (); 
+    return m_resources.cbegin (); 
 }
 
 template <typename Base>
-typename ResourceManager<Base>::const_iterator ResourceManager<Base>::cend () const 
+typename CResourceManager<Base>::const_iterator CResourceManager<Base>::cend () const 
 { 
-    return resources.cend (); 
+    return m_resources.cend (); 
 }
 
 template <typename Base>
-std::shared_ptr<Base> ResourceManager<Base>::Push (const std::string& name, std::shared_ptr<Base> resource)
+std::shared_ptr<Base> CResourceManager<Base>::Push (const std::string& name, std::shared_ptr<Base> resource)
 {
     auto resourceFound = resourceNames.find (name);
     if (resourceFound != resourceNames.end ()) 
@@ -65,10 +66,10 @@ std::shared_ptr<Base> ResourceManager<Base>::Push (const std::string& name, std:
     }
     else
     {
-        resource->name = name;
-        resource->handle = handle++;
-        resources.push_back (resource);
-        resourceNames[name] = resource->handle;
+        resource->m_name = name;
+        resource->m_handle = m_nextHandle++;
+        m_resources.push_back (resource);
+        resourceNames[name] = resource->m_handle;
     }
 
     return resource;
@@ -76,52 +77,62 @@ std::shared_ptr<Base> ResourceManager<Base>::Push (const std::string& name, std:
 
 // template instantiations
 
-template __EAPI ResourceManager<Resource>::ResourceManager ();
-template __EAPI ResourceManager<Resource>::~ResourceManager ();
-template __EAPI ResourceManager<Resource>::iterator ResourceManager<Resource>::begin ();
-template __EAPI ResourceManager<Resource>::iterator ResourceManager<Resource>::end ();
-template __EAPI ResourceManager<Resource>::const_iterator ResourceManager<Resource>::begin () const;
-template __EAPI ResourceManager<Resource>::const_iterator ResourceManager<Resource>::end () const;
-template __EAPI ResourceManager<Resource>::const_iterator ResourceManager<Resource>::cbegin () const;
-template __EAPI ResourceManager<Resource>::const_iterator ResourceManager<Resource>::cend () const;
-template __EAPI std::shared_ptr<Resource> ResourceManager<Resource>::Push (const std::string& name, std::shared_ptr<Resource> resource);
+template __EAPI CResourceManager<CResource>::CResourceManager ();
+template __EAPI CResourceManager<CResource>::~CResourceManager ();
+template __EAPI CResourceManager<CResource>::iterator CResourceManager<CResource>::begin ();
+template __EAPI CResourceManager<CResource>::iterator CResourceManager<CResource>::end ();
+template __EAPI CResourceManager<CResource>::const_iterator CResourceManager<CResource>::begin () const;
+template __EAPI CResourceManager<CResource>::const_iterator CResourceManager<CResource>::end () const;
+template __EAPI CResourceManager<CResource>::const_iterator CResourceManager<CResource>::cbegin () const;
+template __EAPI CResourceManager<CResource>::const_iterator CResourceManager<CResource>::cend () const;
+template __EAPI std::shared_ptr<CResource> CResourceManager<CResource>::Push (const std::string& name, std::shared_ptr<CResource> resource);
 
-template __EAPI ResourceManager<Material>::ResourceManager ();
-template __EAPI ResourceManager<Material>::~ResourceManager ();
-template __EAPI ResourceManager<Material>::iterator ResourceManager<Material>::begin ();
-template __EAPI ResourceManager<Material>::iterator ResourceManager<Material>::end ();
-template __EAPI ResourceManager<Material>::const_iterator ResourceManager<Material>::begin () const;
-template __EAPI ResourceManager<Material>::const_iterator ResourceManager<Material>::end () const;
-template __EAPI ResourceManager<Material>::const_iterator ResourceManager<Material>::cbegin () const;
-template __EAPI ResourceManager<Material>::const_iterator ResourceManager<Material>::cend () const;
-template __EAPI std::shared_ptr<Material> ResourceManager<Material>::Push (const std::string& name, std::shared_ptr<Material> resource);
+template __EAPI CResourceManager<CGameScene>::CResourceManager ();
+template __EAPI CResourceManager<CGameScene>::~CResourceManager ();
+template __EAPI CResourceManager<CGameScene>::iterator CResourceManager<CGameScene>::begin ();
+template __EAPI CResourceManager<CGameScene>::iterator CResourceManager<CGameScene>::end ();
+template __EAPI CResourceManager<CGameScene>::const_iterator CResourceManager<CGameScene>::begin () const;
+template __EAPI CResourceManager<CGameScene>::const_iterator CResourceManager<CGameScene>::end () const;
+template __EAPI CResourceManager<CGameScene>::const_iterator CResourceManager<CGameScene>::cbegin () const;
+template __EAPI CResourceManager<CGameScene>::const_iterator CResourceManager<CGameScene>::cend () const;
+template __EAPI std::shared_ptr<CGameScene> CResourceManager<CGameScene>::Push (const std::string& name, std::shared_ptr<CGameScene> resource);
 
-template __EAPI ResourceManager<GameObject>::ResourceManager ();
-template __EAPI ResourceManager<GameObject>::~ResourceManager ();
-template __EAPI ResourceManager<GameObject>::iterator ResourceManager<GameObject>::begin ();
-template __EAPI ResourceManager<GameObject>::iterator ResourceManager<GameObject>::end ();
-template __EAPI ResourceManager<GameObject>::const_iterator ResourceManager<GameObject>::begin () const;
-template __EAPI ResourceManager<GameObject>::const_iterator ResourceManager<GameObject>::end () const;
-template __EAPI ResourceManager<GameObject>::const_iterator ResourceManager<GameObject>::cbegin () const;
-template __EAPI ResourceManager<GameObject>::const_iterator ResourceManager<GameObject>::cend () const;
-template __EAPI std::shared_ptr<GameObject> ResourceManager<GameObject>::Push (const std::string& name, std::shared_ptr<GameObject> resource);
+template __EAPI CResourceManager<Material>::CResourceManager ();
+template __EAPI CResourceManager<Material>::~CResourceManager ();
+template __EAPI CResourceManager<Material>::iterator CResourceManager<Material>::begin ();
+template __EAPI CResourceManager<Material>::iterator CResourceManager<Material>::end ();
+template __EAPI CResourceManager<Material>::const_iterator CResourceManager<Material>::begin () const;
+template __EAPI CResourceManager<Material>::const_iterator CResourceManager<Material>::end () const;
+template __EAPI CResourceManager<Material>::const_iterator CResourceManager<Material>::cbegin () const;
+template __EAPI CResourceManager<Material>::const_iterator CResourceManager<Material>::cend () const;
+template __EAPI std::shared_ptr<Material> CResourceManager<Material>::Push (const std::string& name, std::shared_ptr<Material> resource);
 
-template __EAPI ResourceManager<ShaderProgram>::ResourceManager ();
-template __EAPI ResourceManager<ShaderProgram>::~ResourceManager ();
-template __EAPI ResourceManager<ShaderProgram>::iterator ResourceManager<ShaderProgram>::begin ();
-template __EAPI ResourceManager<ShaderProgram>::iterator ResourceManager<ShaderProgram>::end ();
-template __EAPI ResourceManager<ShaderProgram>::const_iterator ResourceManager<ShaderProgram>::begin () const;
-template __EAPI ResourceManager<ShaderProgram>::const_iterator ResourceManager<ShaderProgram>::end () const;
-template __EAPI ResourceManager<ShaderProgram>::const_iterator ResourceManager<ShaderProgram>::cbegin () const;
-template __EAPI ResourceManager<ShaderProgram>::const_iterator ResourceManager<ShaderProgram>::cend () const;
-template __EAPI std::shared_ptr<ShaderProgram> ResourceManager<ShaderProgram>::Push (const std::string& name, std::shared_ptr<ShaderProgram> resource);
+template __EAPI CResourceManager<GameObject>::CResourceManager ();
+template __EAPI CResourceManager<GameObject>::~CResourceManager ();
+template __EAPI CResourceManager<GameObject>::iterator CResourceManager<GameObject>::begin ();
+template __EAPI CResourceManager<GameObject>::iterator CResourceManager<GameObject>::end ();
+template __EAPI CResourceManager<GameObject>::const_iterator CResourceManager<GameObject>::begin () const;
+template __EAPI CResourceManager<GameObject>::const_iterator CResourceManager<GameObject>::end () const;
+template __EAPI CResourceManager<GameObject>::const_iterator CResourceManager<GameObject>::cbegin () const;
+template __EAPI CResourceManager<GameObject>::const_iterator CResourceManager<GameObject>::cend () const;
+template __EAPI std::shared_ptr<GameObject> CResourceManager<GameObject>::Push (const std::string& name, std::shared_ptr<GameObject> resource);
 
-template __EAPI ResourceManager<RenderStage>::ResourceManager ();
-template __EAPI ResourceManager<RenderStage>::~ResourceManager ();
-template __EAPI ResourceManager<RenderStage>::iterator ResourceManager<RenderStage>::begin ();
-template __EAPI ResourceManager<RenderStage>::iterator ResourceManager<RenderStage>::end ();
-template __EAPI ResourceManager<RenderStage>::const_iterator ResourceManager<RenderStage>::begin () const;
-template __EAPI ResourceManager<RenderStage>::const_iterator ResourceManager<RenderStage>::end () const;
-template __EAPI ResourceManager<RenderStage>::const_iterator ResourceManager<RenderStage>::cbegin () const;
-template __EAPI ResourceManager<RenderStage>::const_iterator ResourceManager<RenderStage>::cend () const;
-template __EAPI std::shared_ptr<RenderStage> ResourceManager<RenderStage>::Push (const std::string& name, std::shared_ptr<RenderStage> resource);
+template __EAPI CResourceManager<ShaderProgram>::CResourceManager ();
+template __EAPI CResourceManager<ShaderProgram>::~CResourceManager ();
+template __EAPI CResourceManager<ShaderProgram>::iterator CResourceManager<ShaderProgram>::begin ();
+template __EAPI CResourceManager<ShaderProgram>::iterator CResourceManager<ShaderProgram>::end ();
+template __EAPI CResourceManager<ShaderProgram>::const_iterator CResourceManager<ShaderProgram>::begin () const;
+template __EAPI CResourceManager<ShaderProgram>::const_iterator CResourceManager<ShaderProgram>::end () const;
+template __EAPI CResourceManager<ShaderProgram>::const_iterator CResourceManager<ShaderProgram>::cbegin () const;
+template __EAPI CResourceManager<ShaderProgram>::const_iterator CResourceManager<ShaderProgram>::cend () const;
+template __EAPI std::shared_ptr<ShaderProgram> CResourceManager<ShaderProgram>::Push (const std::string& name, std::shared_ptr<ShaderProgram> resource);
+
+template __EAPI CResourceManager<CRenderStage>::CResourceManager ();
+template __EAPI CResourceManager<CRenderStage>::~CResourceManager ();
+template __EAPI CResourceManager<CRenderStage>::iterator CResourceManager<CRenderStage>::begin ();
+template __EAPI CResourceManager<CRenderStage>::iterator CResourceManager<CRenderStage>::end ();
+template __EAPI CResourceManager<CRenderStage>::const_iterator CResourceManager<CRenderStage>::begin () const;
+template __EAPI CResourceManager<CRenderStage>::const_iterator CResourceManager<CRenderStage>::end () const;
+template __EAPI CResourceManager<CRenderStage>::const_iterator CResourceManager<CRenderStage>::cbegin () const;
+template __EAPI CResourceManager<CRenderStage>::const_iterator CResourceManager<CRenderStage>::cend () const;
+template __EAPI std::shared_ptr<CRenderStage> CResourceManager<CRenderStage>::Push (const std::string& name, std::shared_ptr<CRenderStage> resource);

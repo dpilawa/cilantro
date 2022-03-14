@@ -7,7 +7,7 @@
 class LinearPath : public Path
 {
 public:
-    __EAPI LinearPath ();
+    __EAPI LinearPath (CGameScene* gameScene);
     __EAPI virtual ~LinearPath ();
 
     __EAPI Vector3f GetPositionAtDistance (float distance) const;
