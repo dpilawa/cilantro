@@ -6,7 +6,7 @@
 
 enum class ShaderType { VERTEX_SHADER, GEOMETRY_SHADER, FRAGMENT_SHADER };
 
-class Shader : public LoadableResource
+class Shader : public CLoadableResource
 {
 public:
     Shader (const std::string& path, ShaderType shaderType);

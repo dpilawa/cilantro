@@ -32,6 +32,7 @@ endif()
 set(CILANTRO_FILES ${CILANTRO_FILES}
 include/cilantroengine.h
 
+include/graphics/IFramebuffer.h
 include/graphics/Framebuffer.h
 include/graphics/GLFramebuffer.h
 include/graphics/GLDeferredGeometryRenderStage.h
@@ -42,6 +43,7 @@ include/graphics/IRenderer.h
 include/graphics/Renderer.h
 include/graphics/GLRenderer.h
 include/graphics/QuadRenderStage.h
+include/graphics/IRenderStage.h
 include/graphics/RenderStage.h
 include/graphics/Shader.h
 include/graphics/ShaderProgram.h

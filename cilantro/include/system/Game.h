@@ -5,7 +5,7 @@
 #include "resource/ResourceManager.h"
 #include "input/InputController.h"
 
-class Resource;
+class CResource;
 class GameScene;
 class InputController;
 
@@ -23,8 +23,8 @@ public:
     static __EAPI void Step ();
 
     // managers
-    static __EAPI ResourceManager<Resource>& GetResourceManager ();
-    static __EAPI ResourceManager<GameScene>& GetGameSceneManager ();
+    static __EAPI CResourceManager<CResource>& GetResourceManager ();
+    static __EAPI CResourceManager<GameScene>& GetGameSceneManager ();
 
     // scene control
     template <typename T, typename ...Params> 
@@ -39,14 +39,14 @@ public:
 
 private:
     
-    static __EAPI ResourceManager<Resource> resourceManager;
-    static __EAPI ResourceManager<GameScene> gameSceneManager;
-    static __EAPI GameScene* currentGameScene;
+    static __EAPI CResourceManager<CResource> m_resourceManager;
+    static __EAPI CResourceManager<GameScene> m_gameSceneManager;
+    static __EAPI GameScene* m_currentGameScene;
     static __EAPI InputController* inputController;
 
     // game state
-    static bool shouldStop;
-    static bool isRunning;
+    static bool m_shouldStop;
+    static bool m_isRunning;
 
 };
 
@@ -54,11 +54,11 @@ template <typename T, typename ...Params>
 T& Game::CreateGameScene (Params&&... params)
 {
     static_assert (std::is_base_of<GameScene, T>::value, "Game scene object must inherit from GameScene");
-    T& gameScene = gameSceneManager.Create<T> (params...);
+    T& gameScene = m_gameSceneManager.Create<T> (params...);
 
-    if (currentGameScene == nullptr)
+    if (m_currentGameScene == nullptr)
     {
-        currentGameScene = &gameScene;
+        m_currentGameScene = &gameScene;
     }
 
     return gameScene;

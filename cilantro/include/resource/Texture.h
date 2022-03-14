@@ -6,7 +6,7 @@
 #include "resource/LoadableResource.h"
 #include <string>
 
-class Texture : public LoadableResource
+class Texture : public CLoadableResource
 {
 public:
     __EAPI Texture (const int width, const int height, float channel);

@@ -16,7 +16,7 @@
 
 // This class represents a game world (a.k.a scene or level)
 // It contains all visible and invisible objects in a game
-class GameScene : public Resource, public CallbackProvider<std::string, handle_t, unsigned int>
+class GameScene : public CResource, public CallbackProvider<std::string, handle_t, unsigned int>
 {
 public:
 
@@ -38,8 +38,8 @@ public:
     T& AddMaterial (const std::string& name, Params&&... params);
 
     // return reference to map
-    __EAPI ResourceManager<GameObject>& GetGameObjectManager ();
-    __EAPI ResourceManager<Material>& GetMaterialManager ();
+    __EAPI CResourceManager<GameObject>& GetGameObjectManager ();
+    __EAPI CResourceManager<Material>& GetMaterialManager ();
 
     // renderer control
     template <typename T, typename ...Params> 
@@ -57,10 +57,10 @@ public:
 private:
     
     // map of all GameObjects in the scene
-    ResourceManager<GameObject> gameObjects;
+    CResourceManager<GameObject> gameObjects;
 
     // map of all Materials in the scene
-    ResourceManager<Material> materials;
+    CResourceManager<Material> materials;
 
     // systems
     Timer* timer;

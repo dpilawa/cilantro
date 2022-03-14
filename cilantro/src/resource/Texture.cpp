@@ -4,19 +4,19 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-Texture::Texture (const int width, const int height, float channel) : LoadableResource ()
+Texture::Texture (const int width, const int height, float channel) : CLoadableResource ()
 {
     data = nullptr;
     GenerateSolid (width, height, channel);
 }
 
-Texture::Texture (const int width, const int height, const Vector3f& channels) : LoadableResource ()
+Texture::Texture (const int width, const int height, const Vector3f& channels) : CLoadableResource ()
 {
     data = nullptr;
     GenerateSolid (width, height, channels);
 }
 
-Texture::Texture (const std::string& path) : LoadableResource (path)
+Texture::Texture (const std::string& path) : CLoadableResource (path)
 {
     Load (path.c_str ());
 }

@@ -1,57 +1,48 @@
 #include "graphics/GLForwardGeometryRenderStage.h"
-#include "graphics/RenderStage.h"
-#include "graphics/Framebuffer.h"
+#include "graphics/IFramebuffer.h"
 #include "scene/GameScene.h"
 #include "scene/GameObject.h"
 #include "scene/MeshObject.h"
 #include "glad/glad.h"
 #include <string>
 
-GLForwardGeometryRenderStage::GLForwardGeometryRenderStage () : RenderStage ()
+CGLForwardGeometryRenderStage::CGLForwardGeometryRenderStage () 
+    : CRenderStage ()
 {
 }
 
-GLForwardGeometryRenderStage::~GLForwardGeometryRenderStage ()
-{
-
-}
-
-void GLForwardGeometryRenderStage::Initialize ()
+void CGLForwardGeometryRenderStage::Initialize ()
 {    
     InitializeFramebuffer ();
 }
 
-void GLForwardGeometryRenderStage::Deinitialize ()
+void CGLForwardGeometryRenderStage::OnFrame ()
 {
-}
-
-void GLForwardGeometryRenderStage::OnFrame ()
-{
-    RenderStage::OnFrame ();
+    CRenderStage::OnFrame ();
 
     // load uniform buffers
-    renderer->UpdateCameraBuffers (*renderer->GetGameScene ()->GetActiveCamera ());
+    m_renderer->UpdateCameraBuffers (*m_renderer->GetGameScene ()->GetActiveCamera ());
 
     // set viewport
-    glViewport (0, 0, renderer->GetWidth (), renderer->GetHeight ());
+    glViewport (0, 0, m_renderer->GetWidth (), m_renderer->GetHeight ());
 
     // draw all objects in scene
-    for (auto gameObject : renderer->GetGameScene ()->GetGameObjectManager ())
+    for (auto gameObject : m_renderer->GetGameScene ()->GetGameObjectManager ())
     {
-        gameObject->OnDraw (*renderer);
+        gameObject->OnDraw (*m_renderer);
     }
 
-    if (framebuffer != nullptr)
+    if (m_framebuffer != nullptr)
     {
-        framebuffer->BlitFramebuffer ();
+        m_framebuffer->BlitFramebuffer ();
     }
 }
 
-void GLForwardGeometryRenderStage::InitializeFramebuffer ()
+void CGLForwardGeometryRenderStage::InitializeFramebuffer ()
 {
-    if (framebufferEnabled)
+    if (m_isFramebufferEnabled)
     {
-        framebuffer = renderer->CreateFramebuffer (0, 1, multisampleEnabled);
+        m_framebuffer = m_renderer->CreateFramebuffer (0, 1, m_isMultisampleEnabled);
     }
 }
 

@@ -13,7 +13,7 @@
 #include <algorithm>
 #include <unordered_map>
 
-Mesh::Mesh () : Resource ()
+Mesh::Mesh () : CResource ()
 {
     this->smoothNormals = false;
 }

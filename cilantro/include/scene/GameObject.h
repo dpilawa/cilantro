@@ -11,7 +11,7 @@
 class GameScene;
 struct IRenderer;
 
-class GameObject : public Resource, public CallbackProvider<std::string, handle_t, unsigned int>
+class GameObject : public CResource, public CallbackProvider<std::string, handle_t, unsigned int>
 {
 public:
     __EAPI GameObject (GameScene* gameScene);

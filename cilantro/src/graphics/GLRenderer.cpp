@@ -22,18 +22,18 @@
 #include <cmath>
 #include <cstring>
 
-GLRenderer::GLRenderer (GameScene* gameScene, unsigned int width, unsigned int height, bool isDeferred) 
+CGLRenderer::CGLRenderer (GameScene* gameScene, unsigned int width, unsigned int height, bool isDeferred) 
     : CRenderer (gameScene, width, height, isDeferred)
 {
-    m_QuadGeometryBuffer = new SGLGeometryBuffers ();
-    m_UniformBuffers = new SGLUniformBuffers ();
-    m_UniformMatrixBuffer = new SGLUniformMatrixBuffer ();
-    m_UniformPointLightBuffer = new SGLUniformPointLightBuffer ();
-    m_UniformDirectionalLightBuffer = new SGLUniformDirectionalLightBuffer ();
-    m_UniformSpotLightBuffer = new SGLUniformSpotLightBuffer ();
+    m_QuadGeometryBuffer = new SGlGeometryBuffers ();
+    m_UniformBuffers = new SGlUniformBuffers ();
+    m_UniformMatrixBuffer = new SGlUniformMatrixBuffer ();
+    m_UniformPointLightBuffer = new SGlUniformPointLightBuffer ();
+    m_UniformDirectionalLightBuffer = new SGlUniformDirectionalLightBuffer ();
+    m_UniformSpotLightBuffer = new SGlUniformSpotLightBuffer ();
 }
 
-GLRenderer::~GLRenderer ()
+CGLRenderer::~CGLRenderer ()
 {
     for (auto&& objectBuffer : m_SceneGeometryBuffers)
     {
@@ -48,7 +48,7 @@ GLRenderer::~GLRenderer ()
     delete m_UniformSpotLightBuffer;
 }
 
-void GLRenderer::Initialize ()
+void CGLRenderer::Initialize ()
 {
     CRenderer::Initialize ();
 
@@ -59,38 +59,38 @@ void GLRenderer::Initialize ()
     InitializeLightUniformBuffers ();
 
     // set callback for new MeshObjects
-    m_GameScene->RegisterCallback ("OnUpdateMeshObject", 
+    m_gameScene->RegisterCallback ("OnUpdateMeshObject", 
         [&](unsigned int objectHandle, unsigned int) 
         { 
-            m_GameScene->GetGameObjectManager ().GetByHandle<GameObject> (objectHandle).OnUpdate (*this); 
+            m_gameScene->GetGameObjectManager ().GetByHandle<GameObject> (objectHandle).OnUpdate (*this); 
         }
     );
 
     // set callback for new or modified materials
-    m_GameScene->RegisterCallback ("OnUpdateMaterialTexture", 
+    m_gameScene->RegisterCallback ("OnUpdateMaterialTexture", 
         [&](unsigned int materialHandle, unsigned int textureUnit) 
         { 
-            Update (m_GameScene->GetMaterialManager ().GetByHandle<Material> (materialHandle), textureUnit); 
+            Update (m_gameScene->GetMaterialManager ().GetByHandle<Material> (materialHandle), textureUnit); 
         }
     );
 
-    m_GameScene->RegisterCallback ("OnUpdateMaterial", 
+    m_gameScene->RegisterCallback ("OnUpdateMaterial", 
         [&](unsigned int materialHandle, unsigned int) 
         { 
-            Update (m_GameScene->GetMaterialManager ().GetByHandle<Material> (materialHandle)); 
+            Update (m_gameScene->GetMaterialManager ().GetByHandle<Material> (materialHandle)); 
         }
     );
     
     // set callback for new or modified lights
-    m_GameScene->RegisterCallback ("OnUpdateLight", 
+    m_gameScene->RegisterCallback ("OnUpdateLight", 
         [&](unsigned int objectHandle, unsigned int) 
         { 
-            m_GameScene->GetGameObjectManager ().GetByHandle<GameObject> (objectHandle).OnUpdate (*this); 
+            m_gameScene->GetGameObjectManager ().GetByHandle<GameObject> (objectHandle).OnUpdate (*this); 
         }
     );
 
     // set callback for modified scene graph (currently this only requires to reload light buffers)
-    m_GameScene->RegisterCallback ("OnUpdateSceneGraph", 
+    m_gameScene->RegisterCallback ("OnUpdateSceneGraph", 
         [&](unsigned int objectHandle, unsigned int) 
         { 
             UpdateLightBufferRecursive (objectHandle);
@@ -98,7 +98,7 @@ void GLRenderer::Initialize ()
     );
 
     // set callback for modified transforms (currently this only requires to reload light buffers)
-    m_GameScene->RegisterCallback ("OnUpdateTransform", 
+    m_gameScene->RegisterCallback ("OnUpdateTransform", 
         [&](unsigned int objectHandle, unsigned int) 
         { 
             UpdateLightBufferRecursive (objectHandle); 
@@ -107,7 +107,7 @@ void GLRenderer::Initialize ()
     
 }
 
-void GLRenderer::Deinitialize ()
+void CGLRenderer::Deinitialize ()
 {
     CRenderer::Deinitialize ();
 
@@ -117,12 +117,12 @@ void GLRenderer::Deinitialize ()
     // TODO: DeinitializeLightUniformBuffers ();
 }
 
-void GLRenderer::RenderFrame ()
+void CGLRenderer::RenderFrame ()
 {
     CRenderer::RenderFrame ();
 }
 
-void GLRenderer::Draw (MeshObject& meshObject)
+void CGLRenderer::Draw (MeshObject& meshObject)
 {
     GLuint eyePositionId;
     GLuint modelMatrixId;
@@ -134,8 +134,8 @@ void GLRenderer::Draw (MeshObject& meshObject)
     Material& objM = meshObject.GetMaterial ();
 
     // get shader program for rendered meshobject (geometry pass)
-    GLShaderProgram& geometryShaderProgram = m_ShaderProgramManager.GetByName<GLShaderProgram> (
-        m_IsDeferred
+    GLShaderProgram& geometryShaderProgram = m_shaderProgramManager.GetByName<GLShaderProgram> (
+        m_isDeferred
         ? objM.GetDeferredGeometryPassShaderProgram ()
         : objM.GetForwardShaderProgram ()
     );
@@ -145,7 +145,7 @@ void GLRenderer::Draw (MeshObject& meshObject)
     // bind textures for active material
     if (materialTextureUnits.find(meshObject.GetMaterial ().GetHandle ()) != materialTextureUnits.end ())
     {
-        SGLMaterialTextureUnits* u = materialTextureUnits[meshObject.GetMaterial ().GetHandle ()];
+        SGlMaterialTextureUnits* u = materialTextureUnits[meshObject.GetMaterial ().GetHandle ()];
 
         for (GLuint i = 0; i < u->unitsCount; i++)
         {
@@ -201,7 +201,7 @@ void GLRenderer::Draw (MeshObject& meshObject)
     eyePositionId = glGetUniformLocation (shaderProgramId, "eyePosition");
     if (eyePositionId != GL_INVALID_INDEX)
     {
-        glUniform3fv (eyePositionId, 1, &m_GameScene->GetActiveCamera ()->GetPosition ()[0]);
+        glUniform3fv (eyePositionId, 1, &m_gameScene->GetActiveCamera ()->GetPosition ()[0]);
     }
 
     // set bone transformation matrix array uniform
@@ -212,9 +212,9 @@ void GLRenderer::Draw (MeshObject& meshObject)
     }
 
     // get shader program for rendered meshobject (lighting pass)
-    if (m_IsDeferred)
+    if (m_isDeferred)
     {
-        GLShaderProgram& lightingShaderProgram = m_ShaderProgramManager.GetByName<GLShaderProgram>(objM.GetDeferredLightingPassShaderProgram ());
+        GLShaderProgram& lightingShaderProgram = m_shaderProgramManager.GetByName<GLShaderProgram>(objM.GetDeferredLightingPassShaderProgram ());
         lightingShaderProgram.Use ();
         shaderProgramId = lightingShaderProgram.GetProgramId ();
 
@@ -222,26 +222,26 @@ void GLRenderer::Draw (MeshObject& meshObject)
         eyePositionId = glGetUniformLocation (shaderProgramId, "eyePosition");
         if (eyePositionId != GL_INVALID_INDEX)
         {
-            glUniform3fv (eyePositionId, 1, &m_GameScene->GetActiveCamera ()->GetPosition ()[0]);
+            glUniform3fv (eyePositionId, 1, &m_gameScene->GetActiveCamera ()->GetPosition ()[0]);
         }
 
     }
     
     // draw mesh
-    SGLGeometryBuffers* b = m_SceneGeometryBuffers[meshObject.GetHandle ()];
+    SGlGeometryBuffers* b = m_SceneGeometryBuffers[meshObject.GetHandle ()];
     geometryShaderProgram.Use ();
     glBindVertexArray (b->VAO);
     glDrawElements (GL_TRIANGLES, meshObject.GetMesh ().GetIndexCount (), GL_UNSIGNED_INT, 0);
     glBindVertexArray (0);
 }
 
-void GLRenderer::DrawViewportQuad (unsigned int x, unsigned int y, unsigned int width, unsigned int height)
+void CGLRenderer::DrawViewportQuad (unsigned int x, unsigned int y, unsigned int width, unsigned int height)
 {
     glViewport (x, y, width, height);
     RenderGeometryBuffer (m_QuadGeometryBuffer);
 }
 
-void GLRenderer::Update (MeshObject& meshObject)
+void CGLRenderer::Update (MeshObject& meshObject)
 {
     unsigned int objectHandle = meshObject.GetHandle ();
 
@@ -251,7 +251,7 @@ void GLRenderer::Update (MeshObject& meshObject)
     if (find == m_SceneGeometryBuffers.end ())
     {
         // it is a new object, so generate buffers 
-        SGLGeometryBuffers* b = new SGLGeometryBuffers ();
+        SGlGeometryBuffers* b = new SGlGeometryBuffers ();
         m_SceneGeometryBuffers.insert ({ objectHandle, b });
 
         // generate and bind Vertex Array Object (VAO)
@@ -318,7 +318,7 @@ void GLRenderer::Update (MeshObject& meshObject)
     }
 
     // resize buffers and load data
-    SGLGeometryBuffers* b = m_SceneGeometryBuffers[objectHandle];
+    SGlGeometryBuffers* b = m_SceneGeometryBuffers[objectHandle];
 
     // bind Vertex Array Object (VAO)
     glBindVertexArray (b->VAO);
@@ -360,7 +360,7 @@ void GLRenderer::Update (MeshObject& meshObject)
 
 }
 
-void GLRenderer::Update (Material& material, unsigned int textureUnit)
+void CGLRenderer::Update (Material& material, unsigned int textureUnit)
 {
     unsigned int materialHandle = material.GetHandle ();
     GLuint texture;
@@ -373,7 +373,7 @@ void GLRenderer::Update (Material& material, unsigned int textureUnit)
 
     if (find == materialTextureUnits.end ())
     {
-        materialTextureUnits.insert ({ materialHandle, new SGLMaterialTextureUnits () });
+        materialTextureUnits.insert ({ materialHandle, new SGlMaterialTextureUnits () });
         
         for (auto&& t : textures)
         {
@@ -416,23 +416,23 @@ void GLRenderer::Update (Material& material, unsigned int textureUnit)
 
 }
 
-void GLRenderer::Update (Material& material)
+void CGLRenderer::Update (Material& material)
 {
-    handle_t shaderProgramHandle = m_ShaderProgramManager.GetByName<ShaderProgram>(material.GetDeferredLightingPassShaderProgram ()).GetHandle ();
+    handle_t shaderProgramHandle = m_shaderProgramManager.GetByName<ShaderProgram>(material.GetDeferredLightingPassShaderProgram ()).GetHandle ();
     std::string shaderProgramName = material.GetDeferredLightingPassShaderProgram ();
 
-    if (m_IsDeferred)
+    if (m_isDeferred)
     {
         // add material's shader program to set of used shader programs handles
         // add lighting deferred pass renderStages for each program
-        if (m_LightingShaders.find (shaderProgramHandle) == m_LightingShaders.end ())
+        if (m_lightingShaders.find (shaderProgramHandle) == m_lightingShaders.end ())
         {
             // first rotate the pipeline to the left so that geometry stage is last
             RotateRenderPipelineLeft ();
 
-            m_LightingShaderStagesCount++;
-            m_LightingShaders.insert (shaderProgramHandle);
-            QuadRenderStage& p = AddRenderStage <QuadRenderStage> ("deferredLightingStage_" + shaderProgramName);
+            m_lightingShaderStagesCount++;
+            m_lightingShaders.insert (shaderProgramHandle);
+            CQuadRenderStage& p = AddRenderStage <CQuadRenderStage> ("deferredLightingStage_" + shaderProgramName);
             p.SetShaderProgram (shaderProgramName);
             p.SetStencilTestEnabled (true).SetStencilTest (EStencilTestFunction::FUNCTION_EQUAL, shaderProgramHandle);
             p.SetClearColorOnFrameEnabled (true);
@@ -451,21 +451,21 @@ void GLRenderer::Update (Material& material)
             RotateRenderPipelineRight ();
             
             // update flags of other deferred lighting stages (if present)
-            if (m_LightingShaderStagesCount > 1)
+            if (m_lightingShaderStagesCount > 1)
             {
                 handle_t stageHandle = GetRenderPipeline ()[2];
 
-                QuadRenderStage& stage = m_RenderStageManager.GetByHandle<QuadRenderStage> (stageHandle);
+                CQuadRenderStage& stage = m_renderStageManager.GetByHandle<CQuadRenderStage> (stageHandle);
                 stage.SetClearColorOnFrameEnabled (false);
                 stage.SetFramebufferEnabled (false);
             }
 
             // update pipeline links of 1st stage following deferred lighting stages
-            if (m_RenderPipeline.size () > m_LightingShaderStagesCount + 1)
+            if (m_renderPipeline.size () > m_lightingShaderStagesCount + 1)
             {
-                handle_t stageHandle = m_RenderPipeline[m_LightingShaderStagesCount + 1];
+                handle_t stageHandle = m_renderPipeline[m_lightingShaderStagesCount + 1];
 
-                RenderStage& stage = m_RenderStageManager.GetByHandle<RenderStage> (stageHandle);
+                IRenderStage& stage = m_renderStageManager.GetByHandle<IRenderStage> (stageHandle);
                 stage.SetPipelineFramebufferInputLink (EPipelineLink::LINK_SECOND);
                 stage.SetPipelineRenderbufferLink (EPipelineLink::LINK_CURRENT);
                 stage.SetPipelineFramebufferDrawLink (EPipelineLink::LINK_CURRENT);
@@ -474,7 +474,7 @@ void GLRenderer::Update (Material& material)
     }
 }
 
-void GLRenderer::Update (PointLight& pointLight)
+void CGLRenderer::Update (PointLight& pointLight)
 {
     unsigned int objectHandle = pointLight.GetHandle ();
     unsigned int lightId;
@@ -517,14 +517,14 @@ void GLRenderer::Update (PointLight& pointLight)
     glBufferSubData (GL_UNIFORM_BUFFER, 0, sizeof (m_UniformPointLightBuffer->pointLightCount), &m_UniformPointLightBuffer->pointLightCount);
 
     // load uniform buffer for a light at given index
-    uniformBufferOffset = sizeof (m_UniformPointLightBuffer->pointLightCount) + 3 * sizeof (GLint) + lightId * sizeof (SGLPointLightStruct);
-    glBufferSubData (GL_UNIFORM_BUFFER, uniformBufferOffset, sizeof (SGLPointLightStruct), &m_UniformPointLightBuffer->pointLights[lightId]);
+    uniformBufferOffset = sizeof (m_UniformPointLightBuffer->pointLightCount) + 3 * sizeof (GLint) + lightId * sizeof (SGlPointLightStruct);
+    glBufferSubData (GL_UNIFORM_BUFFER, uniformBufferOffset, sizeof (SGlPointLightStruct), &m_UniformPointLightBuffer->pointLights[lightId]);
 
     glBindBuffer (GL_UNIFORM_BUFFER, 0);
 
 }
 
-void GLRenderer::Update (DirectionalLight& directionalLight)
+void CGLRenderer::Update (DirectionalLight& directionalLight)
 {
     unsigned int objectHandle = directionalLight.GetHandle ();
     unsigned int lightId;
@@ -562,13 +562,13 @@ void GLRenderer::Update (DirectionalLight& directionalLight)
     glBufferSubData (GL_UNIFORM_BUFFER, 0, sizeof (m_UniformDirectionalLightBuffer->directionalLightCount), &m_UniformDirectionalLightBuffer->directionalLightCount);
 
     // load uniform buffer for a light at given index
-    uniformBufferOffset = sizeof (m_UniformDirectionalLightBuffer->directionalLightCount) + 3 * sizeof (GLint) + lightId * sizeof (SGLDirectionalLightStruct);
-    glBufferSubData (GL_UNIFORM_BUFFER, uniformBufferOffset, sizeof (SGLDirectionalLightStruct), &m_UniformDirectionalLightBuffer->directionalLights[lightId]);
+    uniformBufferOffset = sizeof (m_UniformDirectionalLightBuffer->directionalLightCount) + 3 * sizeof (GLint) + lightId * sizeof (SGlDirectionalLightStruct);
+    glBufferSubData (GL_UNIFORM_BUFFER, uniformBufferOffset, sizeof (SGlDirectionalLightStruct), &m_UniformDirectionalLightBuffer->directionalLights[lightId]);
 
     glBindBuffer (GL_UNIFORM_BUFFER, 0);
 }
 
-void GLRenderer::Update (SpotLight& spotLight)
+void CGLRenderer::Update (SpotLight& spotLight)
 {
     unsigned int objectHandle = spotLight.GetHandle ();
     unsigned int lightId;
@@ -621,32 +621,32 @@ void GLRenderer::Update (SpotLight& spotLight)
     glBufferSubData (GL_UNIFORM_BUFFER, 0, sizeof (m_UniformSpotLightBuffer->spotLightCount), &m_UniformSpotLightBuffer->spotLightCount);
 
     // load uniform buffer for a light at given index
-    uniformBufferOffset = sizeof (m_UniformSpotLightBuffer->spotLightCount) + 3 * sizeof (GLint) + lightId * sizeof (SGLSpotLightStruct);
-    glBufferSubData (GL_UNIFORM_BUFFER, uniformBufferOffset, sizeof (SGLSpotLightStruct), &m_UniformSpotLightBuffer->spotLights[lightId]);
+    uniformBufferOffset = sizeof (m_UniformSpotLightBuffer->spotLightCount) + 3 * sizeof (GLint) + lightId * sizeof (SGlSpotLightStruct);
+    glBufferSubData (GL_UNIFORM_BUFFER, uniformBufferOffset, sizeof (SGlSpotLightStruct), &m_UniformSpotLightBuffer->spotLights[lightId]);
 
     glBindBuffer (GL_UNIFORM_BUFFER, 0);
 }
 
-void GLRenderer::UpdateCameraBuffers (Camera& camera)
+void CGLRenderer::UpdateCameraBuffers (Camera& camera)
 {
     LoadMatrixUniformBuffers (&camera);
 }
 
-Framebuffer* GLRenderer::CreateFramebuffer (unsigned int rgbTextures, unsigned int rgbaTextures, bool multisampleEnabled)
+IFramebuffer* CGLRenderer::CreateFramebuffer (unsigned int rgbTextures, unsigned int rgbaTextures, bool multisampleEnabled)
 {
-    Framebuffer* framebuffer;
+    IFramebuffer* framebuffer;
 
     if (multisampleEnabled)
     {
 #if (CILANTRO_GL_VERSION <= 140)
         LogMessage (MSG_LOCATION, EXIT_FAILURE) << "OpenGL 3.2 required for multisample framebuffers";
 #else
-        framebuffer = new GLMultisampleFramebuffer (this->m_Width, this->m_Height, rgbTextures, rgbaTextures);
+        framebuffer = new CGLMultisampleFramebuffer (this->m_width, this->m_height, rgbTextures, rgbaTextures);
 #endif
     }
     else
     {
-        framebuffer = new GLFramebuffer (this->m_Width, this->m_Height, rgbTextures, rgbaTextures);
+        framebuffer = new CGLFramebuffer (this->m_width, this->m_height, rgbTextures, rgbaTextures);
     }
     
     framebuffer->Initialize ();
@@ -654,30 +654,30 @@ Framebuffer* GLRenderer::CreateFramebuffer (unsigned int rgbTextures, unsigned i
     return framebuffer;
 }
 
-void GLRenderer::BindDefaultFramebuffer ()
+void CGLRenderer::BindDefaultFramebuffer ()
 {
     glBindFramebuffer (GL_FRAMEBUFFER, (GLint) 0);
 }
 
-void GLRenderer::ClearColorBuffer (const Vector4f& rgba)
+void CGLRenderer::ClearColorBuffer (const Vector4f& rgba)
 {
     glClearColor (rgba[0], rgba[1], rgba[2], rgba[3]);
     glClear (GL_COLOR_BUFFER_BIT);
 }
 
-void GLRenderer::ClearDepthBuffer ()
+void CGLRenderer::ClearDepthBuffer ()
 {
     glClearDepth (1.0f);
     glClear (GL_DEPTH_BUFFER_BIT);
 }
 
-void GLRenderer::ClearStencilBuffer ()
+void CGLRenderer::ClearStencilBuffer ()
 {
     glClearStencil (0);
     glClear (GL_STENCIL_BUFFER_BIT);
 }
 
-void GLRenderer::SetDepthTestEnabled (bool value)
+void CGLRenderer::SetDepthTestEnabled (bool value)
 {
     if (value == true)
     {
@@ -689,7 +689,7 @@ void GLRenderer::SetDepthTestEnabled (bool value)
     }    
 }
 
-void GLRenderer::SetFaceCullingEnabled (bool value)
+void CGLRenderer::SetFaceCullingEnabled (bool value)
 {
     if (value == true)
     {        
@@ -702,7 +702,7 @@ void GLRenderer::SetFaceCullingEnabled (bool value)
     }    
 }
 
-void GLRenderer::SetMultisamplingEnabled (bool value)
+void CGLRenderer::SetMultisamplingEnabled (bool value)
 {
     if (value == true)
     {        
@@ -714,7 +714,7 @@ void GLRenderer::SetMultisamplingEnabled (bool value)
     }    
 }
 
-void GLRenderer::SetStencilTestEnabled (bool value)
+void CGLRenderer::SetStencilTestEnabled (bool value)
 {
     if (value == true)
     {        
@@ -727,7 +727,7 @@ void GLRenderer::SetStencilTestEnabled (bool value)
     } 
 }
 
-void GLRenderer::SetStencilTestFunction (EStencilTestFunction testFunction, int testValue)
+void CGLRenderer::SetStencilTestFunction (EStencilTestFunction testFunction, int testValue)
 {
     GLuint glStencilFunction;
 
@@ -747,7 +747,7 @@ void GLRenderer::SetStencilTestFunction (EStencilTestFunction testFunction, int 
     glStencilFunc (glStencilFunction, testValue, 0xff);
 }
 
-void GLRenderer::InitializeShaderLibrary ()
+void CGLRenderer::InitializeShaderLibrary ()
 {
     GLShaderProgram* p;
 
@@ -958,27 +958,27 @@ void GLRenderer::InitializeShaderLibrary ()
 
 }
 
-void GLRenderer::InitializeMatrixUniformBuffers ()
+void CGLRenderer::InitializeMatrixUniformBuffers ()
 {
     // create and pre-load uniform buffer for view and projection matrices
     glGenBuffers (1, &m_UniformBuffers->UBO[UBO_MATRICES]);
     glBindBuffer (GL_UNIFORM_BUFFER, m_UniformBuffers->UBO[UBO_MATRICES]);
-    glBufferData (GL_UNIFORM_BUFFER, sizeof (SGLUniformMatrixBuffer), NULL, GL_DYNAMIC_DRAW);
+    glBufferData (GL_UNIFORM_BUFFER, sizeof (SGlUniformMatrixBuffer), NULL, GL_DYNAMIC_DRAW);
     glBindBufferBase (GL_UNIFORM_BUFFER, BindingPoint::BP_MATRICES, m_UniformBuffers->UBO[UBO_MATRICES]);
 
     CheckGLError (MSG_LOCATION);
 }
 
-void GLRenderer::LoadMatrixUniformBuffers (Camera* camera)
+void CGLRenderer::LoadMatrixUniformBuffers (Camera* camera)
 {
-    SGLUniformBuffers* buffers = static_cast<SGLUniformBuffers*>(m_UniformBuffers);
-    SGLUniformMatrixBuffer* mBuffer = static_cast<SGLUniformMatrixBuffer*>(m_UniformMatrixBuffer);
+    SGlUniformBuffers* buffers = static_cast<SGlUniformBuffers*>(m_UniformBuffers);
+    SGlUniformMatrixBuffer* mBuffer = static_cast<SGlUniformMatrixBuffer*>(m_UniformMatrixBuffer);
 
     // load view matrix
     std::memcpy (mBuffer->viewMatrix, Mathf::Transpose (camera->GetViewMatrix ())[0], 16 * sizeof (GLfloat));
 
     // load projection matrix
-    std::memcpy (mBuffer->projectionMatrix, Mathf::Transpose (camera->GetProjectionMatrix (m_Width, m_Height))[0], 16 * sizeof (GLfloat));
+    std::memcpy (mBuffer->projectionMatrix, Mathf::Transpose (camera->GetProjectionMatrix (m_width, m_height))[0], 16 * sizeof (GLfloat));
 
     // load to GPU
     glBindBuffer (GL_UNIFORM_BUFFER, buffers->UBO[UBO_MATRICES]);
@@ -987,15 +987,15 @@ void GLRenderer::LoadMatrixUniformBuffers (Camera* camera)
     glBindBuffer (GL_UNIFORM_BUFFER, 0);
 }
 
-void GLRenderer::DeinitializeMatrixUniformBuffers ()
+void CGLRenderer::DeinitializeMatrixUniformBuffers ()
 {
     glDeleteBuffers (1, &m_UniformBuffers->UBO[UBO_MATRICES]);
 }
 
-void GLRenderer::InitializeObjectBuffers ()
+void CGLRenderer::InitializeObjectBuffers ()
 {
     // create and load object buffers for all existing objects
-    for (auto&& gameObject : m_GameScene->GetGameObjectManager ())
+    for (auto&& gameObject : m_gameScene->GetGameObjectManager ())
     {
         // load buffers for MeshObject only
         if (std::dynamic_pointer_cast<MeshObject> (gameObject) != nullptr)
@@ -1005,7 +1005,7 @@ void GLRenderer::InitializeObjectBuffers ()
     }
 }
 
-void GLRenderer::DeinitializeObjectBuffers ()
+void CGLRenderer::DeinitializeObjectBuffers ()
 {
     for (auto&& buffer : m_SceneGeometryBuffers)
     {
@@ -1015,7 +1015,7 @@ void GLRenderer::DeinitializeObjectBuffers ()
     }
 }
 
-void GLRenderer::InitializeQuadGeometryBuffer ()
+void CGLRenderer::InitializeQuadGeometryBuffer ()
 {
     // set up VBO and VAO
     float quadVertices[] = {
@@ -1063,13 +1063,13 @@ void GLRenderer::InitializeQuadGeometryBuffer ()
     CheckGLError (MSG_LOCATION);
 }
 
-void GLRenderer::DeinitializeQuadGeometryBuffer ()
+void CGLRenderer::DeinitializeQuadGeometryBuffer ()
 {
     glDeleteVertexArrays(1, &m_QuadGeometryBuffer->VAO);
     glDeleteBuffers(1, &m_QuadGeometryBuffer->VBO[EGlVboType::VBO_VERTICES]);
 }
 
-void GLRenderer::InitializeLightUniformBuffers ()
+void CGLRenderer::InitializeLightUniformBuffers ()
 {
     m_UniformPointLightBuffer->pointLightCount = 0;
     m_UniformSpotLightBuffer->spotLightCount = 0;
@@ -1078,23 +1078,23 @@ void GLRenderer::InitializeLightUniformBuffers ()
     // create uniform buffer for point lights
     glGenBuffers (1, &m_UniformBuffers->UBO[UBO_POINTLIGHTS]);
     glBindBuffer (GL_UNIFORM_BUFFER, m_UniformBuffers->UBO[UBO_POINTLIGHTS]);
-    glBufferData (GL_UNIFORM_BUFFER, sizeof (SGLUniformPointLightBuffer), m_UniformPointLightBuffer, GL_DYNAMIC_DRAW);
+    glBufferData (GL_UNIFORM_BUFFER, sizeof (SGlUniformPointLightBuffer), m_UniformPointLightBuffer, GL_DYNAMIC_DRAW);
     glBindBufferBase (GL_UNIFORM_BUFFER, BindingPoint::BP_POINTLIGHTS, m_UniformBuffers->UBO[UBO_POINTLIGHTS]);
 
     // create uniform buffer for directional lights
     glGenBuffers (1, &m_UniformBuffers->UBO[UBO_DIRECTIONALLIGHTS]);
     glBindBuffer (GL_UNIFORM_BUFFER, m_UniformBuffers->UBO[UBO_DIRECTIONALLIGHTS]);
-    glBufferData (GL_UNIFORM_BUFFER, sizeof (SGLUniformDirectionalLightBuffer), m_UniformDirectionalLightBuffer, GL_DYNAMIC_DRAW);
+    glBufferData (GL_UNIFORM_BUFFER, sizeof (SGlUniformDirectionalLightBuffer), m_UniformDirectionalLightBuffer, GL_DYNAMIC_DRAW);
     glBindBufferBase (GL_UNIFORM_BUFFER, BindingPoint::BP_DIRECTIONALLIGHTS, m_UniformBuffers->UBO[UBO_DIRECTIONALLIGHTS]);
 
     // create uniform buffer for spot lights
     glGenBuffers (1, &m_UniformBuffers->UBO[UBO_SPOTLIGHTS]);
     glBindBuffer (GL_UNIFORM_BUFFER, m_UniformBuffers->UBO[UBO_SPOTLIGHTS]);
-    glBufferData (GL_UNIFORM_BUFFER, sizeof (SGLUniformSpotLightBuffer), m_UniformSpotLightBuffer, GL_DYNAMIC_DRAW);
+    glBufferData (GL_UNIFORM_BUFFER, sizeof (SGlUniformSpotLightBuffer), m_UniformSpotLightBuffer, GL_DYNAMIC_DRAW);
     glBindBufferBase (GL_UNIFORM_BUFFER, BindingPoint::BP_SPOTLIGHTS, m_UniformBuffers->UBO[UBO_SPOTLIGHTS]);
 
     // scan objects vector for lights and populate light buffers
-    for (auto gameObject : m_GameScene->GetGameObjectManager ())
+    for (auto gameObject : m_gameScene->GetGameObjectManager ())
     {
         if (std::dynamic_pointer_cast<Light> (gameObject) != nullptr)
         {
@@ -1104,7 +1104,7 @@ void GLRenderer::InitializeLightUniformBuffers ()
 
 }
 
-void GLRenderer::DeinitializeLightUniformBuffers ()
+void CGLRenderer::DeinitializeLightUniformBuffers ()
 {
     // delete all light buffers
     glDeleteBuffers (1, &m_UniformBuffers->UBO[UBO_POINTLIGHTS]);
@@ -1112,9 +1112,9 @@ void GLRenderer::DeinitializeLightUniformBuffers ()
     glDeleteBuffers (1, &m_UniformBuffers->UBO[UBO_SPOTLIGHTS]);
 }
 
-void GLRenderer::UpdateLightBufferRecursive (unsigned int objectHandle)
+void CGLRenderer::UpdateLightBufferRecursive (unsigned int objectHandle)
 {
-    GameObject* light = &m_GameScene->GetGameObjectManager ().GetByHandle<GameObject> (objectHandle);
+    GameObject* light = &m_gameScene->GetGameObjectManager ().GetByHandle<GameObject> (objectHandle);
 
     if (dynamic_cast<Light*>(light) != nullptr)
     {
@@ -1128,9 +1128,9 @@ void GLRenderer::UpdateLightBufferRecursive (unsigned int objectHandle)
 
 }
 
-void GLRenderer::RenderGeometryBuffer (SGLGeometryBuffers* buffer)
+void CGLRenderer::RenderGeometryBuffer (SGlGeometryBuffers* buffer)
 {
-    SGLGeometryBuffers* glBuffer = static_cast<SGLGeometryBuffers*>(buffer);
+    SGlGeometryBuffers* glBuffer = static_cast<SGlGeometryBuffers*>(buffer);
 
     // bind
     glBindVertexArray (glBuffer->VAO);    
@@ -1144,7 +1144,7 @@ void GLRenderer::RenderGeometryBuffer (SGLGeometryBuffers* buffer)
     glBindFramebuffer (GL_FRAMEBUFFER, 0);
 }
 
-GLuint GLRenderer::GetTextureFormat (unsigned int numTextures)
+GLuint CGLRenderer::GetTextureFormat (unsigned int numTextures)
 {
     switch (numTextures)
     {
@@ -1162,7 +1162,7 @@ GLuint GLRenderer::GetTextureFormat (unsigned int numTextures)
     }
 }
 
-void GLRenderer::CheckGLError (const std::string& location)
+void CGLRenderer::CheckGLError (const std::string& location)
 {
     GLuint errorCode;
 

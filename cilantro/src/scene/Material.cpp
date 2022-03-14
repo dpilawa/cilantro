@@ -4,7 +4,7 @@
 #include "system/Game.h"
 #include <string>
 
-Material::Material () : Resource ()
+Material::Material () : CResource ()
 {
 }
 

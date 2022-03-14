@@ -1,26 +1,23 @@
-#ifndef _RESOURCE_H_
-#define _RESOURCE_H_
+#pragma once
 
 #include "cilantroengine.h"
 #include "resource/ResourceManager.h"
 #include <string>
 
-class Resource
+class CResource
 {
     template <typename Base>
-    friend class ResourceManager;
+    friend class CResourceManager;
 
 public:
-    __EAPI Resource ();
-    __EAPI virtual ~Resource ();
+    __EAPI CResource () {};
+    __EAPI virtual ~CResource () {};
 
     __EAPI handle_t GetHandle () const;
     __EAPI std::string GetName () const;
 
 protected:
-    handle_t handle;
-    std::string name;
+    handle_t m_handle;
+    std::string m_name;
  
 };
-
-#endif

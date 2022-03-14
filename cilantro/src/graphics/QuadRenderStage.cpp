@@ -1,84 +1,75 @@
 #include "graphics/QuadRenderStage.h"
-#include "graphics/Renderer.h"
-#include "graphics/Framebuffer.h"
+#include "graphics/IRenderer.h"
+#include "graphics/IFramebuffer.h"
 #include "graphics/ShaderProgram.h"
 
-QuadRenderStage::QuadRenderStage () : RenderStage ()
-{
-    shaderProgram = nullptr;
-}
-
-
-QuadRenderStage::~QuadRenderStage ()
+CQuadRenderStage::CQuadRenderStage () 
+    : CRenderStage ()
+    , m_shaderProgram (nullptr)
 {
 }
 
-void QuadRenderStage::Initialize ()
+void CQuadRenderStage::Initialize ()
 {
     InitializeFramebuffer ();
 }
 
-void QuadRenderStage::Deinitialize ()
+void CQuadRenderStage::OnFrame ()
 {
-    // no op
-}
-
-void QuadRenderStage::OnFrame ()
-{
-    RenderStage::OnFrame ();
+    CRenderStage::OnFrame ();
  
     // bind textures of framebuffer linked as previous (input) and draw
-    shaderProgram->Use ();
-    renderer->GetPipelineFramebuffer (pipelineFramebufferInputLink)->BindFramebufferTextures ();
+    m_shaderProgram->Use ();
+    m_renderer->GetPipelineFramebuffer (m_pipelineFramebufferInputLink)->BindFramebufferTextures ();
     
     // draw quad
-    renderer->DrawViewportQuad (0, 0, renderer->GetWidth (), renderer->GetHeight ());
+    m_renderer->DrawViewportQuad (0, 0, m_renderer->GetWidth (), m_renderer->GetHeight ());
 
     // blit framebuffer
-    if (framebuffer != nullptr)
+    if (m_framebuffer != nullptr)
     {
-        framebuffer->BlitFramebuffer ();
+        m_framebuffer->BlitFramebuffer ();
     }
 }
 
-QuadRenderStage& QuadRenderStage::SetShaderProgram (const std::string& shaderProgramName)
+CQuadRenderStage& CQuadRenderStage::SetShaderProgram (const std::string& shaderProgramName)
 {
-    shaderProgram = &(renderer->GetShaderProgramManager ().GetByName<ShaderProgram> (shaderProgramName));
+    m_shaderProgram = &(m_renderer->GetShaderProgramManager ().GetByName<ShaderProgram> (shaderProgramName));
 
     return *this;
 }
 
-void QuadRenderStage::InitializeFramebuffer ()
-{   
-    if (framebufferEnabled)
-    {
-        framebuffer = renderer->CreateFramebuffer (0, 1, multisampleEnabled);
-    }
-}
-
-QuadRenderStage& QuadRenderStage::SetRenderStageParameterFloat (const std::string& parameterName, float parameterValue)
+CQuadRenderStage& CQuadRenderStage::SetRenderStageParameterFloat (const std::string& parameterName, float parameterValue)
 {
-    shaderProgram->SetUniformFloat (parameterName, parameterValue);
+    m_shaderProgram->SetUniformFloat (parameterName, parameterValue);
     return *this;
 }
 
-QuadRenderStage& QuadRenderStage::SetRenderStageParameterVector2f (const std::string& parameterName, const Vector2f& parameterValue)
+CQuadRenderStage& CQuadRenderStage::SetRenderStageParameterVector2f (const std::string& parameterName, const Vector2f& parameterValue)
 {
-    shaderProgram->SetUniformVector2f (parameterName, parameterValue);
+    m_shaderProgram->SetUniformVector2f (parameterName, parameterValue);
     
     return *this;
 }
 
-QuadRenderStage& QuadRenderStage::SetRenderStageParameterVector3f (const std::string& parameterName, const Vector3f& parameterValue)
+CQuadRenderStage& CQuadRenderStage::SetRenderStageParameterVector3f (const std::string& parameterName, const Vector3f& parameterValue)
 {    
-    shaderProgram->SetUniformVector3f (parameterName, parameterValue);
+    m_shaderProgram->SetUniformVector3f (parameterName, parameterValue);
     
     return *this;
 }
 
-QuadRenderStage& QuadRenderStage::SetRenderStageParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue)
+CQuadRenderStage& CQuadRenderStage::SetRenderStageParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue)
 {
-    shaderProgram->SetUniformVector4f (parameterName, parameterValue);
+    m_shaderProgram->SetUniformVector4f (parameterName, parameterValue);
     
     return *this;
+}
+
+void CQuadRenderStage::InitializeFramebuffer ()
+{   
+    if (m_isFramebufferEnabled)
+    {
+        m_framebuffer = m_renderer->CreateFramebuffer (0, 1, m_isMultisampleEnabled);
+    }
 }

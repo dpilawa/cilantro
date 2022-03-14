@@ -5,24 +5,30 @@
 #include "glad/glad.h"
 #include "graphics/GLFramebuffer.h"
 
-class GLMultisampleFramebuffer : public GLFramebuffer 
+class CGLMultisampleFramebuffer : public CGLFramebuffer 
 {
 public:
-    GLMultisampleFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount);
-    virtual ~GLMultisampleFramebuffer ();
+    CGLMultisampleFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount);
+    virtual ~CGLMultisampleFramebuffer () {};
 
-    virtual void Initialize ();
-    virtual void Deinitialize ();
+    ///////////////////////////////////////////////////////////////////////////
 
-    virtual void BindFramebuffer () const;
-    virtual void BlitFramebuffer () const;
+    virtual void Initialize () override;
+    virtual void Deinitialize () override;
 
-    GLuint virtual GetFramebufferRenderbufferGLId () const;
-    GLuint virtual GetFramebufferGLId () const;
+    virtual void BindFramebuffer () const override;
+    virtual void BlitFramebuffer () const override;
+
+    virtual void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight) override;
+
+    ///////////////////////////////////////////////////////////////////////////
+
+    GLuint virtual GetFramebufferRenderbufferGLId () const override;
+    GLuint virtual GetFramebufferGLId () const override;
 
 protected:
 
-    GLBuffers glMultisampleBuffers;
+    GLBuffers m_GlMultisampleBuffers;
 
 };
 

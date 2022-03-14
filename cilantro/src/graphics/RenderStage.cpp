@@ -1,206 +1,48 @@
 #include "graphics/RenderStage.h"
-#include "graphics/Renderer.h"
-#include "graphics/Framebuffer.h"
+#include "graphics/IRenderer.h"
+#include "graphics/IFramebuffer.h"
 #include "math/Vector4f.h"
 
-RenderStage::RenderStage ()
+CRenderStage::CRenderStage ()
+    : m_framebuffer (nullptr)
+    , m_isMultisampleEnabled (false)
+    , m_isStencilTestEnabled (false)
+    , m_isDepthTestEnabled (true)
+    , m_isFaceCullingEnabled (true)
+    , m_isFramebufferEnabled (true)
+
+    , m_isClearColorOnFrameEnabled (true)
+    , m_isClearDepthOnFrameEnabled (true)
+    , m_isClearStencilOnFrameEnabled (true)
+
+    , m_stencilTestFunction (EStencilTestFunction::FUNCTION_ALWAYS)
+    , m_stencilTestValue (0)
+
+    , m_pipelineFramebufferInputLink (EPipelineLink::LINK_CURRENT)
+    , m_pipelineRenderbufferLink (EPipelineLink::LINK_CURRENT)
+    , m_pipelineFramebufferOutputLink (EPipelineLink::LINK_CURRENT)
 {
-    framebuffer = nullptr;
-
-    multisampleEnabled = false;
-    stencilTestEnabled = false;
-    depthTestEnabled = true;
-    faceCullingEnabled = true;
-    framebufferEnabled = true;
-
-    clearColorOnFrameEnabled = true;
-    clearDepthOnFrameEnabled = true;
-    clearStencilOnFrameEnabled = true;
-
-    stencilTestFunction = EStencilTestFunction::FUNCTION_ALWAYS;
-    stencilTestValue = 0;
-
-    pipelineFramebufferInputLink = EPipelineLink::LINK_CURRENT;
-    pipelineRenderbufferLink = EPipelineLink::LINK_CURRENT;
-    pipelineFramebufferOutputLink = EPipelineLink::LINK_CURRENT;
 }
 
-RenderStage::~RenderStage ()
+CRenderStage::~CRenderStage ()
 {
-    if (framebuffer != nullptr)
+    if (m_framebuffer != nullptr)
     {
-        framebuffer->Deinitialize ();
-        delete framebuffer;
+        m_framebuffer->Deinitialize ();
+        delete m_framebuffer;
     }
 }
 
-RenderStage& RenderStage::SetStencilTest (EStencilTestFunction stencilTestFunction, int stencilTestValue)
+IFramebuffer* CRenderStage::GetFramebuffer () const
 {
-    this->stencilTestFunction = stencilTestFunction;
-    this->stencilTestValue = stencilTestValue;
-
-    return *this;
+    return m_framebuffer;
 }
 
-RenderStage& RenderStage::SetMultisampleEnabled (bool value)
+void CRenderStage::OnFrame ()
 {
-    unsigned int rgbTextureCount;
-    unsigned int rgbaTextureCount;
-
-    if (value != multisampleEnabled)
-    {
-        // set flag
-        multisampleEnabled = value;
-
-        // destroy and recreate framebuffer if already existed
-        if (framebuffer != nullptr)
-        {
-            rgbaTextureCount = framebuffer->GetRGBATextureCount ();
-            rgbTextureCount = framebuffer->GetRGBTextureCount ();
-
-            framebuffer->Deinitialize ();
-            delete framebuffer;
-
-            framebuffer = renderer->CreateFramebuffer (rgbTextureCount, rgbaTextureCount, multisampleEnabled);
-            framebuffer->Initialize ();
-        }
-    }
-
-    return *this;
-}
-
-RenderStage& RenderStage::SetStencilTestEnabled (bool value)
-{
-    stencilTestEnabled = value;
-
-    return *this;
-}
-
-RenderStage& RenderStage::SetDepthTestEnabled (bool value)
-{
-    depthTestEnabled = value;
-
-    return *this;
-}
-
-RenderStage& RenderStage::SetFaceCullingEnabled (bool value)
-{
-    faceCullingEnabled = value;
-
-    return *this;
-}
-
-RenderStage& RenderStage::SetFramebufferEnabled (bool value)
-{
-    if (framebufferEnabled != value)
-    {
-        if (value == false) // disabling
-        {
-            if (framebuffer != nullptr)
-            {
-                framebuffer->Deinitialize ();
-                
-                delete framebuffer;
-                framebuffer = nullptr;
-            }
-        }
-        else // enabling 
-        {
-            InitializeFramebuffer ();
-        }
-    }    
-
-    framebufferEnabled = value;
-    return *this;
-}
-
-RenderStage& RenderStage::SetClearColorOnFrameEnabled (bool value)
-{
-    clearColorOnFrameEnabled = value;
-
-    return *this;
-}
-
-RenderStage& RenderStage::SetClearDepthOnFrameEnabled (bool value)
-{
-    clearDepthOnFrameEnabled = value;
-
-    return *this;
-}
-
-RenderStage& RenderStage::SetClearStencilOnFrameEnabled (bool value)
-{
-    clearStencilOnFrameEnabled = value;
-
-    return *this;
-}
-
-bool RenderStage::IsMultisampleEnabled () const
-{
-    return multisampleEnabled;
-}
-
-bool RenderStage::IsStencilTestEnabled () const
-{
-    return stencilTestEnabled;
-}
-
-bool RenderStage::IsDepthTestEnabled () const
-{
-    return depthTestEnabled;
-}
-
-bool RenderStage::IsFaceCullingEnabled () const
-{
-    return faceCullingEnabled;
-}
-
-bool RenderStage::IsFramebufferEnabled () const
-{
-    return framebufferEnabled;
-}
-
-bool RenderStage::IsClearColorOnFrameEnabled () const
-{
-    return clearColorOnFrameEnabled;
-}
-
-bool RenderStage::IsClearDepthOnFrameEnabled () const
-{
-    return clearDepthOnFrameEnabled;
-}
-
-bool RenderStage::IsClearStencilOnFrameEnabled () const
-{
-    return clearStencilOnFrameEnabled;
-}
-
-RenderStage& RenderStage::SetPipelineFramebufferInputLink (EPipelineLink link)
-{
-    pipelineFramebufferInputLink = link;
-
-    return *this;
-}
-
-RenderStage& RenderStage::SetPipelineRenderbufferLink (EPipelineLink link)
-{
-    pipelineRenderbufferLink = link;
-
-    return *this;
-}
-
-RenderStage& RenderStage::SetPipelineFramebufferDrawLink (EPipelineLink link)
-{
-    pipelineFramebufferOutputLink = link;
-
-    return *this;
-}
-
-void RenderStage::OnFrame ()
-{
-    Framebuffer* inputFramebuffer = renderer->GetPipelineFramebuffer (pipelineFramebufferInputLink);
-    Framebuffer* inputRenderbuffer = renderer->GetPipelineFramebuffer (pipelineRenderbufferLink);
-    Framebuffer* outputFramebuffer = renderer->GetPipelineFramebuffer (pipelineFramebufferOutputLink);
+    IFramebuffer* inputFramebuffer = m_renderer->GetPipelineFramebuffer (m_pipelineFramebufferInputLink);
+    IFramebuffer* inputRenderbuffer = m_renderer->GetPipelineFramebuffer (m_pipelineRenderbufferLink);
+    IFramebuffer* outputFramebuffer = m_renderer->GetPipelineFramebuffer (m_pipelineFramebufferOutputLink);
   
     // bind framebuffer to render to
     if (outputFramebuffer != nullptr)    
@@ -209,7 +51,7 @@ void RenderStage::OnFrame ()
     }
     else
     {
-        renderer->BindDefaultFramebuffer ();
+        m_renderer->BindDefaultFramebuffer ();
     }
     
     // bind depth and stencli buffers from previous/linked stage
@@ -219,44 +61,201 @@ void RenderStage::OnFrame ()
     }
 
     // optionally clear
-    if (clearColorOnFrameEnabled)
+    if (m_isClearColorOnFrameEnabled)
     {
-        renderer->ClearColorBuffer (Vector4f (0.0f, 0.0f, 0.0f, 1.0f));
+        m_renderer->ClearColorBuffer (Vector4f (0.0f, 0.0f, 0.0f, 1.0f));
     }
 
-    if (clearDepthOnFrameEnabled)
+    if (m_isClearDepthOnFrameEnabled)
     {
-        renderer->ClearDepthBuffer ();
+        m_renderer->ClearDepthBuffer ();
     }
 
-    if (clearStencilOnFrameEnabled)
+    if (m_isClearStencilOnFrameEnabled)
     {
-        renderer->ClearStencilBuffer ();
+        m_renderer->ClearStencilBuffer ();
     }
 
     // optionally enable depth test
-    renderer->SetDepthTestEnabled (depthTestEnabled);
-    if (depthTestEnabled)
+    m_renderer->SetDepthTestEnabled (m_isDepthTestEnabled);
+    if (m_isDepthTestEnabled)
     {
-        renderer->ClearDepthBuffer ();
+        m_renderer->ClearDepthBuffer ();
     }
 
     // optionally enable face culling
-    renderer->SetFaceCullingEnabled (faceCullingEnabled);
+    m_renderer->SetFaceCullingEnabled (m_isFaceCullingEnabled);
 
     // optionally enable multisampling
-    renderer->SetMultisamplingEnabled (multisampleEnabled);
+    m_renderer->SetMultisamplingEnabled (m_isMultisampleEnabled);
 
     // optionally enable stencil test
-    renderer->SetStencilTestEnabled (stencilTestEnabled);
-    if (stencilTestEnabled)
+    m_renderer->SetStencilTestEnabled (m_isStencilTestEnabled);
+    if (m_isStencilTestEnabled)
     {
-        renderer->SetStencilTestFunction (stencilTestFunction, stencilTestValue);
+        m_renderer->SetStencilTestFunction (m_stencilTestFunction, m_stencilTestValue);
     }
 
 }
 
-Framebuffer* RenderStage::GetFramebuffer () const
+IRenderStage& CRenderStage::SetMultisampleEnabled (bool value)
 {
-    return framebuffer;
+    unsigned int rgbTextureCount;
+    unsigned int rgbaTextureCount;
+
+    if (value != m_isMultisampleEnabled)
+    {
+        // set flag
+        m_isMultisampleEnabled = value;
+
+        // destroy and recreate framebuffer if already existed
+        if (m_framebuffer != nullptr)
+        {
+            rgbaTextureCount = m_framebuffer->GetRGBATextureCount ();
+            rgbTextureCount = m_framebuffer->GetRGBTextureCount ();
+
+            m_framebuffer->Deinitialize ();
+            delete m_framebuffer;
+
+            m_framebuffer = m_renderer->CreateFramebuffer (rgbTextureCount, rgbaTextureCount, m_isMultisampleEnabled);
+            m_framebuffer->Initialize ();
+        }
+    }
+
+    return *this;
+}
+
+IRenderStage& CRenderStage::SetStencilTestEnabled (bool value)
+{
+    m_isStencilTestEnabled = value;
+
+    return *this;
+}
+
+IRenderStage& CRenderStage::SetDepthTestEnabled (bool value)
+{
+    m_isDepthTestEnabled = value;
+
+    return *this;
+}
+
+IRenderStage& CRenderStage::SetFaceCullingEnabled (bool value)
+{
+    m_isFaceCullingEnabled = value;
+
+    return *this;
+}
+
+IRenderStage& CRenderStage::SetFramebufferEnabled (bool value)
+{
+    if (m_isFramebufferEnabled != value)
+    {
+        if (value == false) // disabling
+        {
+            if (m_framebuffer != nullptr)
+            {
+                m_framebuffer->Deinitialize ();
+                
+                delete m_framebuffer;
+                m_framebuffer = nullptr;
+            }
+        }
+        else // enabling 
+        {
+            InitializeFramebuffer ();
+        }
+    }    
+
+    m_isFramebufferEnabled = value;
+    return *this;
+}
+
+IRenderStage& CRenderStage::SetClearColorOnFrameEnabled (bool value)
+{
+    m_isClearColorOnFrameEnabled = value;
+
+    return *this;
+}
+
+IRenderStage& CRenderStage::SetClearDepthOnFrameEnabled (bool value)
+{
+    m_isClearDepthOnFrameEnabled = value;
+
+    return *this;
+}
+
+IRenderStage& CRenderStage::SetClearStencilOnFrameEnabled (bool value)
+{
+    m_isClearStencilOnFrameEnabled = value;
+
+    return *this;
+}
+
+IRenderStage& CRenderStage::SetStencilTest (EStencilTestFunction stencilTestFunction, int stencilTestValue)
+{
+    this->m_stencilTestFunction = stencilTestFunction;
+    this->m_stencilTestValue = stencilTestValue;
+
+    return *this;
+}
+
+bool CRenderStage::IsMultisampleEnabled () const
+{
+    return m_isMultisampleEnabled;
+}
+
+bool CRenderStage::IsStencilTestEnabled () const
+{
+    return m_isStencilTestEnabled;
+}
+
+bool CRenderStage::IsDepthTestEnabled () const
+{
+    return m_isDepthTestEnabled;
+}
+
+bool CRenderStage::IsFaceCullingEnabled () const
+{
+    return m_isFaceCullingEnabled;
+}
+
+bool CRenderStage::IsFramebufferEnabled () const
+{
+    return m_isFramebufferEnabled;
+}
+
+bool CRenderStage::IsClearColorOnFrameEnabled () const
+{
+    return m_isClearColorOnFrameEnabled;
+}
+
+bool CRenderStage::IsClearDepthOnFrameEnabled () const
+{
+    return m_isClearDepthOnFrameEnabled;
+}
+
+bool CRenderStage::IsClearStencilOnFrameEnabled () const
+{
+    return m_isClearStencilOnFrameEnabled;
+}
+
+IRenderStage& CRenderStage::SetPipelineFramebufferInputLink (EPipelineLink link)
+{
+    m_pipelineFramebufferInputLink = link;
+
+    return *this;
+}
+
+IRenderStage& CRenderStage::SetPipelineRenderbufferLink (EPipelineLink link)
+{
+    m_pipelineRenderbufferLink = link;
+
+    return *this;
+}
+
+IRenderStage& CRenderStage::SetPipelineFramebufferDrawLink (EPipelineLink link)
+{
+    m_pipelineFramebufferOutputLink = link;
+
+    return *this;
 }

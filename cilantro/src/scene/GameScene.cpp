@@ -59,12 +59,12 @@ void GameScene::OnEnd ()
     }
 }
 
-ResourceManager<GameObject>& GameScene::GetGameObjectManager ()
+CResourceManager<GameObject>& GameScene::GetGameObjectManager ()
 {
     return gameObjects;
 }
 
-ResourceManager<Material>& GameScene::GetMaterialManager ()
+CResourceManager<Material>& GameScene::GetMaterialManager ()
 {
     return materials;
 }

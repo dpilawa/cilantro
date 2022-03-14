@@ -17,7 +17,7 @@ struct Vector3Hash
     }
 };
 
-class Mesh : public Resource, public CallbackProvider<std::string, handle_t>
+class Mesh : public CResource, public CallbackProvider<std::string, handle_t>
 {
 
 public:

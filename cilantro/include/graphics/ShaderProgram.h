@@ -10,7 +10,7 @@ class Vector2f;
 class Vector3f;
 class Vector4f;
 
-class ShaderProgram : public Resource
+class ShaderProgram : public CResource
 {
 public:
     __EAPI ShaderProgram ();

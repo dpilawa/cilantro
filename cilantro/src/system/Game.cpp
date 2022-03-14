@@ -3,25 +3,22 @@
 #include "input/InputController.h"
 #include "system/LogMessage.h"
 
-ResourceManager<Resource> globalResourceManager;
-ResourceManager<GameScene> globalSceneManager;
+CResourceManager<CResource> Game::m_resourceManager;
+CResourceManager<GameScene> Game::m_gameSceneManager;
 
-ResourceManager<Resource> Game::resourceManager;
-ResourceManager<GameScene> Game::gameSceneManager;
-
-GameScene* Game::currentGameScene;
+GameScene* Game::m_currentGameScene;
 InputController* Game::inputController;
 
-bool Game::shouldStop;
-bool Game::isRunning;
+bool Game::m_shouldStop;
+bool Game::m_isRunning;
 
 void Game::Initialize ()
 {
     LogMessage () << "Engine starting";
 
     // set flags
-    shouldStop = false;
-    isRunning = false;
+    m_shouldStop = false;
+    m_isRunning = false;
 }
 
 void Game::Deinitialize ()
@@ -35,24 +32,24 @@ void Game::Deinitialize ()
     LogMessage () << "Engine stopping";
 }
 
-ResourceManager<Resource>& Game::GetResourceManager ()
+CResourceManager<CResource>& Game::GetResourceManager ()
 {
-    return resourceManager;
+    return m_resourceManager;
 }
 
-ResourceManager<GameScene>& Game::GetGameSceneManager ()
+CResourceManager<GameScene>& Game::GetGameSceneManager ()
 {
-    return gameSceneManager;
+    return m_gameSceneManager;
 }
 
 GameScene& Game::GetCurrentGameScene ()
 {
-    return *currentGameScene;
+    return *m_currentGameScene;
 }
 
 void Game::SetCurrentGameScene (const std::string sceneName)
 {
-    currentGameScene = &gameSceneManager.GetByName<GameScene>(sceneName);
+    m_currentGameScene = &m_gameSceneManager.GetByName<GameScene>(sceneName);
 }
 
 InputController& Game::GetInputController ()
@@ -63,22 +60,22 @@ InputController& Game::GetInputController ()
 void Game::Run ()
 {	
     // initialize all game scenes
-    for (auto gameScene : gameSceneManager)
+    for (auto gameScene : m_gameSceneManager)
     {
         gameScene->OnStart ();
     }
 
-    isRunning = true;
+    m_isRunning = true;
 
     // run game loop, terminate when shouldStop condition is met
-    while (shouldStop != true) {
+    while (m_shouldStop != true) {
         Step ();
     }
 
-    isRunning = false;
+    m_isRunning = false;
 
     // deinitialize all game objects
-    for (auto gameScene : gameSceneManager)
+    for (auto gameScene : m_gameSceneManager)
     {
         gameScene->OnEnd ();
     }
@@ -87,13 +84,13 @@ void Game::Run ()
 void Game::Stop ()
 {
     // stop game loop
-    shouldStop = true;
+    m_shouldStop = true;
 }
 
 void Game::Step ()
 {
     // step current scene
-    currentGameScene->OnFrame ();
+    m_currentGameScene->OnFrame ();
 
     // process input
     inputController->OnFrame ();

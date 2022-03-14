@@ -4,7 +4,7 @@
 #include "cilantroengine.h"
 #include "resource/ResourceManager.h"
 #include "graphics/IRenderer.h"
-#include "graphics/RenderStage.h"
+#include "graphics/IRenderStage.h"
 #include <string>
 #include <vector>
 #include <set>
@@ -35,7 +35,7 @@ public:
     virtual TRenderPipeline& GetRenderPipeline () override final;
     virtual IRenderer& RotateRenderPipelineLeft () override final;
     virtual IRenderer& RotateRenderPipelineRight () override final;
-    virtual Framebuffer* GetPipelineFramebuffer (EPipelineLink link) override final;
+    virtual IFramebuffer* GetPipelineFramebuffer (EPipelineLink link) override final;
     
     virtual void RenderFrame () override;   
     
@@ -49,32 +49,32 @@ public:
 
 protected:
     // game scene being rendered
-    GameScene* m_GameScene;
+    GameScene* m_gameScene;
 
     // render pipeline
-    unsigned int m_CurrentRenderStage;
-    TRenderStageManager m_RenderStageManager;
-    TRenderPipeline m_RenderPipeline;
+    unsigned int m_currentRenderStage;
+    TRenderStageManager m_renderStageManager;
+    TRenderPipeline m_renderPipeline;
 
     // shader library
-    TShaderProgramManager m_ShaderProgramManager;
+    TShaderProgramManager m_shaderProgramManager;
 
     // set of handles of distinct lighting pass shader programs used in the scene
-    TLightingShaderSet m_LightingShaders;
-    unsigned int m_LightingShaderStagesCount;
+    TLightingShaderSet m_lightingShaders;
+    unsigned int m_lightingShaderStagesCount;
 
     // dimensions
-    unsigned int m_Width;
-    unsigned int m_Height;
+    unsigned int m_width;
+    unsigned int m_height;
 
     // flags
-    bool m_IsDeferred;
+    bool m_isDeferred;
 
 private:
     // timing data
-    long int m_TotalRenderedFrames;
-    float m_TotalRenderTime;
-    float m_TotalFrameRenderTime;
+    long int m_totalRenderedFrames;
+    float m_totalRenderTime;
+    float m_totalFrameRenderTime;
 
     // initialize and deinitialize all required internal renderstages
     void InitializeRenderStages ();
@@ -84,12 +84,12 @@ private:
 template <typename T, typename ...Params>
 T& CRenderer::AddRenderStage (const std::string& name, Params&&... params)
 {
-    T& renderStage = m_RenderStageManager.Create<T> (name, params...);
-    renderStage.renderer = this;
+    T& renderStage = m_renderStageManager.Create<T> (name, params...);
+    renderStage.m_renderer = this;
 
     // initialize
     renderStage.Initialize ();
-    m_RenderPipeline.push_back (renderStage.GetHandle ());
+    m_renderPipeline.push_back (renderStage.GetHandle ());
 
     // return stage
     return renderStage;
@@ -98,7 +98,7 @@ T& CRenderer::AddRenderStage (const std::string& name, Params&&... params)
 template <typename T, typename ...Params>
 T& CRenderer::AddShaderProgram (const std::string& name, Params&&... params)
 {
-    T& shaderProgram = m_ShaderProgramManager.Create<T> (name, params...);
+    T& shaderProgram = m_shaderProgramManager.Create<T> (name, params...);
 
     // return program
     return shaderProgram;

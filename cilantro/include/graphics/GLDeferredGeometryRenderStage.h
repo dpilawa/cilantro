@@ -1,28 +1,26 @@
-#ifndef _GLDEFERREDGEOMETRYRENDERSTAGE_H_
-#define _GLDEFERREDGEOMETRYRENDERSTAGE_H_
+#pragma once
 
 #include "cilantroengine.h"
 #include "graphics/RenderStage.h"
 
 class MeshObject;
 
-class GLDeferredGeometryRenderStage : public RenderStage
+class CGLDeferredGeometryRenderStage : public CRenderStage
 {
 public:
-    __EAPI GLDeferredGeometryRenderStage ();
-    __EAPI virtual ~GLDeferredGeometryRenderStage ();
+    __EAPI CGLDeferredGeometryRenderStage ();
+    __EAPI virtual ~CGLDeferredGeometryRenderStage () {};
 
-    __EAPI virtual void Initialize ();
-    __EAPI virtual void Deinitialize ();
+    ///////////////////////////////////////////////////////////////////////////
 
-    virtual void OnFrame ();
+    virtual void Initialize () override;
+    virtual void Deinitialize () override {};
+
+    virtual void OnFrame () override;
+
+    ///////////////////////////////////////////////////////////////////////////
 
 protected:
-
     virtual void InitializeFramebuffer ();
-
-
-
 };
 
-#endif

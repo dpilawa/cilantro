@@ -7,29 +7,32 @@
 
 struct GLBuffers
 {
-public:
     GLuint FBO;
     GLuint RBO;
     GLuint textureBuffer[CILANTRO_MAX_FRAMEBUFFER_TEXTURES];
     GLuint attachments[CILANTRO_MAX_FRAMEBUFFER_TEXTURES];
 };
 
-class GLFramebuffer : public Framebuffer
+class CGLFramebuffer : public CFramebuffer
 {
 public:
-    GLFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount);
-    virtual ~GLFramebuffer ();
+    CGLFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount);
+    virtual ~CGLFramebuffer () {};
 
-    virtual void Initialize ();
-    virtual void Deinitialize ();
+    ///////////////////////////////////////////////////////////////////////////
 
-    virtual void BindFramebuffer () const;
-    virtual void UnbindFramebuffer () const;
-    virtual void BlitFramebuffer () const;
-    void BindFramebufferTextures () const;
-    void BindFramebufferRenderbuffer () const;
+    virtual void Initialize () override;
+    virtual void Deinitialize () override;
 
-    virtual void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight);
+    virtual void BindFramebuffer () const override;
+    virtual void UnbindFramebuffer () const override;
+    virtual void BlitFramebuffer () const override;
+    void BindFramebufferTextures () const override;
+    void BindFramebufferRenderbuffer () const override;
+
+    virtual void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight) override;
+
+    ///////////////////////////////////////////////////////////////////////////
 
     GLuint virtual GetFramebufferRenderbufferGLId () const;
     GLuint virtual GetFramebufferTextureGLId (unsigned int textureNumber) const;
@@ -37,7 +40,7 @@ public:
 
 protected:
 
-    GLBuffers glBuffers;
+    GLBuffers m_GlBuffers;
 
 };
 

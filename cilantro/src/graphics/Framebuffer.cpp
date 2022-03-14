@@ -1,42 +1,40 @@
 #include "graphics/Framebuffer.h"
 
-Framebuffer::Framebuffer (unsigned int bufferWidth, unsigned int bufferHeight)
-{
-    this->bufferWidth = bufferWidth;
-    this->bufferHeight = bufferHeight;
-}
-
-Framebuffer::~Framebuffer ()
+CFramebuffer::CFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount)
+    : m_BufferWidth (bufferWidth)
+    , m_BufferHeight (bufferHeight)
+    , m_RgbTextureCount (rgbTextureCount)
+    , m_RgbaTextureCount (rgbaTextureCount)
 {
 }
 
-unsigned int Framebuffer::GetWidth () const 
+unsigned int CFramebuffer::GetWidth () const 
 {
-    return bufferWidth;
+    return m_BufferWidth;
 }
 
-unsigned int Framebuffer::GetHeight () const 
+unsigned int CFramebuffer::GetHeight () const 
 {
-    return bufferHeight;
+    return m_BufferHeight;
 }
 
-unsigned int Framebuffer::GetTextureCount () const
+unsigned int CFramebuffer::GetTextureCount () const
 {
-    return rgbTextureCount + rgbaTextureCount;
+    return m_RgbTextureCount + m_RgbaTextureCount;
 }
 
-unsigned int Framebuffer::GetRGBTextureCount () const
+unsigned int CFramebuffer::GetRGBTextureCount () const
 {
-    return rgbTextureCount;
+    return m_RgbTextureCount;
 }
 
-unsigned int Framebuffer::GetRGBATextureCount () const
+unsigned int CFramebuffer::GetRGBATextureCount () const
 {
-    return rgbaTextureCount;
+    return m_RgbaTextureCount;
 }
 
-void Framebuffer::SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight)
+void CFramebuffer::SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight)
 {
-    this->bufferWidth = bufferWidth;
-    this->bufferHeight = bufferHeight;
+    m_BufferWidth = bufferWidth;
+    m_BufferHeight = bufferHeight;
 }

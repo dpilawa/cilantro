@@ -5,8 +5,8 @@
 #include "system/Game.h"
 #include "system/LogMessage.h"
 
-GLFWRenderer::GLFWRenderer (GameScene* gameScene, unsigned int width, unsigned int height, bool isDeferred, std::string windowCaption, bool isFullscreen, bool isResizable, bool isVSync) 
-    : GLRenderer (gameScene, width, height, isDeferred)
+CGLFWRenderer::CGLFWRenderer (GameScene* gameScene, unsigned int width, unsigned int height, bool isDeferred, std::string windowCaption, bool isFullscreen, bool isResizable, bool isVSync) 
+    : CGLRenderer (gameScene, width, height, isDeferred)
 {
     this->windowCaption = windowCaption;
     this->isFullscreen = isFullscreen;
@@ -14,12 +14,12 @@ GLFWRenderer::GLFWRenderer (GameScene* gameScene, unsigned int width, unsigned i
     this->isVSync = isVSync;
 }
 
-GLFWRenderer::~GLFWRenderer ()
+CGLFWRenderer::~CGLFWRenderer ()
 {
 
 }
 
-void GLFWRenderer::Initialize ()
+void CGLFWRenderer::Initialize ()
 {
     GLFWmonitor* monitor; 
     
@@ -31,8 +31,8 @@ void GLFWRenderer::Initialize ()
     {
         monitor = glfwGetPrimaryMonitor ();
 
-        m_Width = glfwGetVideoMode (monitor)->width;
-        m_Height = glfwGetVideoMode (monitor)->height;
+        m_width = glfwGetVideoMode (monitor)->width;
+        m_height = glfwGetVideoMode (monitor)->height;
     }
     else
     {
@@ -53,7 +53,7 @@ void GLFWRenderer::Initialize ()
     glfwWindowHint (GLFW_COCOA_RETINA_FRAMEBUFFER, GL_TRUE);
 
     // create window
-    window = glfwCreateWindow (m_Width, m_Height, windowCaption.c_str (), monitor, nullptr);
+    window = glfwCreateWindow (m_width, m_height, windowCaption.c_str (), monitor, nullptr);
 
     if (window == NULL)
     {
@@ -75,7 +75,7 @@ void GLFWRenderer::Initialize ()
     glfwSetFramebufferSizeCallback (window, framebufferResizeCallback);
 
     // set framebuffer size (relevant for high DPI displays)
-    glfwGetFramebufferSize (window, (int*)(&m_Width), (int*)(&m_Height));
+    glfwGetFramebufferSize (window, (int*)(&m_width), (int*)(&m_height));
 
     // set vsync on
     glfwSwapInterval (isVSync);
@@ -93,20 +93,20 @@ void GLFWRenderer::Initialize ()
 
     LogMessage (MSG_LOCATION) << "GLFWRenderer started";
 
-    GLRenderer::Initialize ();
+    CGLRenderer::Initialize ();
 }
 
-void GLFWRenderer::Deinitialize ()
+void CGLFWRenderer::Deinitialize ()
 {    
-    GLRenderer::Deinitialize ();
+    CGLRenderer::Deinitialize ();
     
     glfwDestroyWindow (window);
     glfwTerminate ();
 }
 
-void GLFWRenderer::RenderFrame ()
+void CGLFWRenderer::RenderFrame ()
 {
-    GLRenderer::RenderFrame ();
+    CGLRenderer::RenderFrame ();
 
     // swap front and back buffers
     glfwSwapInterval (1);

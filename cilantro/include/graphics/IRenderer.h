@@ -5,30 +5,28 @@
 #include <set>
 #include <vector>
 
+struct IFramebuffer;
+class CRenderStage;
 class GameScene;
-class Vector4f;
-class ShaderProgram;
-class Framebuffer;
-class RenderStage;
 class MeshObject;
 class Material;
 class PointLight;
 class DirectionalLight;
 class SpotLight;
 class Camera;
+class ShaderProgram;
+class Vector4f;
 
 enum EPipelineLink { LINK_FIRST, LINK_SECOND, LINK_PREVIOUS, LINK_CURRENT, LINK_LAST };
 enum EStencilTestFunction { FUNCTION_NEVER, FUNCTION_LESS, FUNCTION_LEQUAL, FUNCTION_GREATER, FUNCTION_GEQUAL, FUNCTION_EQUAL, FUNCTION_NOTEQUAL, FUNCTION_ALWAYS };
 
-typedef ResourceManager<ShaderProgram> TShaderProgramManager;
-typedef ResourceManager<RenderStage> TRenderStageManager;
+typedef CResourceManager<ShaderProgram> TShaderProgramManager;
+typedef CResourceManager<CRenderStage> TRenderStageManager;
 typedef std::vector<handle_t> TRenderPipeline;
 typedef std::set<handle_t> TLightingShaderSet;
 
 struct IRenderer
 {
-    ///////////////////////////////////////////////////////////////////////////
-
     virtual ~IRenderer() {};
 
     // initialize and cleanup
@@ -52,7 +50,7 @@ struct IRenderer
     virtual TRenderPipeline& GetRenderPipeline () = 0;
     virtual IRenderer& RotateRenderPipelineLeft () = 0;
     virtual IRenderer& RotateRenderPipelineRight () = 0;
-    virtual Framebuffer* GetPipelineFramebuffer (EPipelineLink link) = 0;    
+    virtual IFramebuffer* GetPipelineFramebuffer (EPipelineLink link) = 0;    
     
     // render current frame
     virtual void RenderFrame () = 0;    
@@ -72,7 +70,7 @@ struct IRenderer
     virtual void UpdateCameraBuffers (Camera& camera) = 0;
 
     // framebuffer control
-    virtual Framebuffer* CreateFramebuffer (unsigned int rgbTextures, unsigned int rgbaTextures, bool multisampleEnabled) = 0;
+    virtual IFramebuffer* CreateFramebuffer (unsigned int rgbTextures, unsigned int rgbaTextures, bool multisampleEnabled) = 0;
     virtual void BindDefaultFramebuffer () = 0;
 
     virtual void ClearColorBuffer (const Vector4f& rgba) = 0;

@@ -1,39 +1,30 @@
 #include "graphics/GLDeferredGeometryRenderStage.h"
-#include "graphics/RenderStage.h"
-#include "graphics/Framebuffer.h"
+#include "graphics/IFramebuffer.h"
 #include "scene/GameScene.h"
 #include "scene/GameObject.h"
 #include "scene/MeshObject.h"
 #include "glad/glad.h"
 #include <string>
 
-GLDeferredGeometryRenderStage::GLDeferredGeometryRenderStage () : RenderStage ()
+CGLDeferredGeometryRenderStage::CGLDeferredGeometryRenderStage () 
+    : CRenderStage ()
 {
 }
 
-GLDeferredGeometryRenderStage::~GLDeferredGeometryRenderStage ()
-{
-
-}
-
-void GLDeferredGeometryRenderStage::Initialize ()
+void CGLDeferredGeometryRenderStage::Initialize ()
 {
     InitializeFramebuffer ();
 }
 
-void GLDeferredGeometryRenderStage::Deinitialize ()
-{    
-}
-
-void GLDeferredGeometryRenderStage::OnFrame ()
+void CGLDeferredGeometryRenderStage::OnFrame ()
 {
-    RenderStage::OnFrame ();
+    CRenderStage::OnFrame ();
 
     // set viewport
-    glViewport (0, 0, renderer->GetWidth (), renderer->GetHeight ());
+    glViewport (0, 0, m_renderer->GetWidth (), m_renderer->GetHeight ());
 
     // load uniform buffers
-    renderer->UpdateCameraBuffers (*renderer->GetGameScene ()->GetActiveCamera ());
+    m_renderer->UpdateCameraBuffers (*m_renderer->GetGameScene ()->GetActiveCamera ());
 
     // GEOMETRY PASS
     // draw all objects in scene using geometry shader, construct g-buffer
@@ -41,27 +32,27 @@ void GLDeferredGeometryRenderStage::OnFrame ()
 
     glStencilOp (GL_KEEP, GL_KEEP, GL_REPLACE);
 
-    for (auto gameObject : renderer->GetGameScene ()->GetGameObjectManager ())
+    for (auto gameObject : m_renderer->GetGameScene ()->GetGameObjectManager ())
     {
         // overwrite stencil value with material Id
         if (MeshObject* meshObject = dynamic_cast<MeshObject*>(gameObject.get ()))
         {
-            glStencilFunc (GL_ALWAYS, renderer->GetShaderProgramManager ().GetByName<ShaderProgram>(meshObject->GetMaterial ().GetDeferredLightingPassShaderProgram ()).GetHandle (), 0xff);
+            glStencilFunc (GL_ALWAYS, m_renderer->GetShaderProgramManager ().GetByName<ShaderProgram>(meshObject->GetMaterial ().GetDeferredLightingPassShaderProgram ()).GetHandle (), 0xff);
             glStencilMask (0xff);
         }
 
         // draw to g-buffer
-        gameObject->OnDraw (*renderer);
+        gameObject->OnDraw (*m_renderer);
 
     }
  
 }
 
-void GLDeferredGeometryRenderStage::InitializeFramebuffer ()
+void CGLDeferredGeometryRenderStage::InitializeFramebuffer ()
 {
-    if (framebufferEnabled)
+    if (m_isFramebufferEnabled)
     {
-        framebuffer = renderer->CreateFramebuffer (0, 5, multisampleEnabled);
+        m_framebuffer = m_renderer->CreateFramebuffer (0, 5, m_isMultisampleEnabled);
     }
 }
 

@@ -1,5 +1,4 @@
-#ifndef _QUADRENDERSTAGE_H_
-#define _QUADRENDERSTAGE_H_
+#pragma once
 
 #include "cilantroengine.h"
 #include "graphics/RenderStage.h"
@@ -9,32 +8,33 @@ class Vector2f;
 class Vector3f;
 class Vector4f;
 
-class QuadRenderStage : public RenderStage
+class CQuadRenderStage : public CRenderStage
 {
 public:
-    __EAPI QuadRenderStage ();
-    __EAPI virtual ~QuadRenderStage ();
+    __EAPI CQuadRenderStage ();
+    __EAPI virtual ~CQuadRenderStage () {};
 
-    virtual void Initialize ();
-    virtual void Deinitialize ();
+    ///////////////////////////////////////////////////////////////////////////
 
-    virtual void OnFrame ();
+    virtual void Initialize () override;
+    virtual void Deinitialize () override {};
 
-    __EAPI virtual QuadRenderStage& SetShaderProgram (const std::string& shaderProgramName);
+    virtual void OnFrame () override;
 
-    __EAPI virtual QuadRenderStage& SetRenderStageParameterFloat (const std::string& parameterName, float parameterValue);
-    __EAPI virtual QuadRenderStage& SetRenderStageParameterVector2f (const std::string& parameterName, const Vector2f& parameterValue);
-    __EAPI virtual QuadRenderStage& SetRenderStageParameterVector3f (const std::string& parameterName, const Vector3f& parameterValue);
-    __EAPI virtual QuadRenderStage& SetRenderStageParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue);
+    ///////////////////////////////////////////////////////////////////////////
+
+    __EAPI virtual CQuadRenderStage& SetShaderProgram (const std::string& shaderProgramName);
+
+    __EAPI virtual CQuadRenderStage& SetRenderStageParameterFloat (const std::string& parameterName, float parameterValue);
+    __EAPI virtual CQuadRenderStage& SetRenderStageParameterVector2f (const std::string& parameterName, const Vector2f& parameterValue);
+    __EAPI virtual CQuadRenderStage& SetRenderStageParameterVector3f (const std::string& parameterName, const Vector3f& parameterValue);
+    __EAPI virtual CQuadRenderStage& SetRenderStageParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue);
 
 protected:
-
     virtual void InitializeFramebuffer ();
 
 protected:
 
-    ShaderProgram* shaderProgram;
+    ShaderProgram* m_shaderProgram;
 
 };
-
-#endif

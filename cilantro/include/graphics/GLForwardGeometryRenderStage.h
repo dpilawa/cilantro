@@ -1,28 +1,27 @@
-#ifndef _GLFORWARDGEOMETRYRENDERSTAGE_H_
-#define _GLFORWARDGEOMETRYRENDERSTAGE_H_
+#pragma once
 
 #include "cilantroengine.h"
 #include "graphics/RenderStage.h"
 
 class MeshObject;
 
-class GLForwardGeometryRenderStage : public RenderStage
+class CGLForwardGeometryRenderStage : public CRenderStage
 {
 public:
-    __EAPI GLForwardGeometryRenderStage ();
-    __EAPI virtual ~GLForwardGeometryRenderStage ();
+    __EAPI CGLForwardGeometryRenderStage ();
+    __EAPI virtual ~CGLForwardGeometryRenderStage () {};
 
-    __EAPI virtual void Initialize ();
-    __EAPI virtual void Deinitialize ();
+    ///////////////////////////////////////////////////////////////////////////
 
-    virtual void OnFrame ();
+    virtual void Initialize () override;
+    virtual void Deinitialize () override {};
+
+    virtual void OnFrame () override;
+
+    ///////////////////////////////////////////////////////////////////////////
 
 protected:
-
     virtual void InitializeFramebuffer ();
     
-
-
 };
 
-#endif

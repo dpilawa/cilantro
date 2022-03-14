@@ -9,19 +9,20 @@
 #include <string>
 #include <type_traits>
 
-class Resource;
-class LoadableResource;
+class CResource;
+class CLoadableResource;
 
-template <typename Base = Resource>
-class ResourceManager
+template <typename Base = CResource>
+class CResourceManager
 {
-    using resources_t = std::vector<std::shared_ptr<Base>>;
-    using iterator = typename resources_t::iterator;
-    using const_iterator = typename resources_t::const_iterator;
+    using TResourcesVec = std::vector<std::shared_ptr<Base>>;
+    using TResourceNameMap = std::unordered_map<std::string, handle_t>;
+    using iterator = typename TResourcesVec::iterator;
+    using const_iterator = typename TResourcesVec::const_iterator;
 
 public:
-    __EAPI ResourceManager();
-    __EAPI virtual ~ResourceManager();
+    __EAPI CResourceManager();
+    __EAPI virtual ~CResourceManager();
 
     template <typename T, typename ...Params>
     T& Load (const std::string& name, const std::string& path, Params&&... params);
@@ -49,17 +50,17 @@ private:
 
     __EAPI std::shared_ptr<Base> Push (const std::string& name, std::shared_ptr<Base> resource);
 
-    handle_t handle;
-    resources_t resources;
-    std::unordered_map<std::string, handle_t> resourceNames;
+    handle_t m_nextHandle;
+    TResourcesVec m_resources;
+    TResourceNameMap resourceNames;
 };
 
 template <typename Base>
 template <typename T, typename ...Params>
-T& ResourceManager<Base>::Load (const std::string& name, const std::string& path, Params&&... params)
+T& CResourceManager<Base>::Load (const std::string& name, const std::string& path, Params&&... params)
 {
     static_assert (std::is_base_of<Base, T>::value, "Invalid base class for resource");
-    static_assert (std::is_base_of<LoadableResource, T>::value, "Resource is not derived from LoadableResource");
+    static_assert (std::is_base_of<CLoadableResource, T>::value, "Resource is not derived from LoadableResource");
     std::shared_ptr<T> newResource;
 
     newResource = std::make_shared<T> (path, std::forward<Params>(params)...);
@@ -72,7 +73,7 @@ T& ResourceManager<Base>::Load (const std::string& name, const std::string& path
 
 template <typename Base>
 template <typename T, typename ...Params>
-T& ResourceManager<Base>::Create (const std::string& name, Params&&... params)
+T& CResourceManager<Base>::Create (const std::string& name, Params&&... params)
 {
     static_assert (std::is_base_of<Base, T>::value, "Invalid base class for resource");
     std::shared_ptr<T> newResource;
@@ -87,14 +88,14 @@ T& ResourceManager<Base>::Create (const std::string& name, Params&&... params)
 
 template <typename Base>
 template <typename T>
-T& ResourceManager<Base>::GetByHandle (handle_t handle) const
+T& CResourceManager<Base>::GetByHandle (handle_t handle) const
 {
-    if (handle >= this->handle)
+    if (handle >= this->m_nextHandle)
     {
         LogMessage(MSG_LOCATION, EXIT_FAILURE) << "Resource handle" << handle << "out of bounds";
     }
 
-    auto resource = resources[handle];
+    auto resource = m_resources[handle];
     auto resourcePtr = std::dynamic_pointer_cast<T> (resource);
         
     if (resourcePtr == nullptr)
@@ -107,7 +108,7 @@ T& ResourceManager<Base>::GetByHandle (handle_t handle) const
 
 template <typename Base>
 template <typename T>
-T& ResourceManager<Base>::GetByName (const std::string& name) const
+T& CResourceManager<Base>::GetByName (const std::string& name) const
 {
     auto resourceName = resourceNames.find (name);
 
@@ -121,7 +122,7 @@ T& ResourceManager<Base>::GetByName (const std::string& name) const
 
 template <typename Base>
 template <typename T>
-bool ResourceManager<Base>::HasName (const std::string& name) const
+bool CResourceManager<Base>::HasName (const std::string& name) const
 {
     auto resourceName = resourceNames.find (name);
 
@@ -130,7 +131,7 @@ bool ResourceManager<Base>::HasName (const std::string& name) const
         return false;
     }
 
-    auto resource = resources[resourceName->second];
+    auto resource = m_resources[resourceName->second];
     auto resourcePtr = std::dynamic_pointer_cast<T> (resource);
         
     if (resourcePtr == nullptr)
@@ -142,6 +143,6 @@ bool ResourceManager<Base>::HasName (const std::string& name) const
 }
 
 // deduction guide for clang (c++17)
-ResourceManager () -> ResourceManager<Resource>;
+CResourceManager () -> CResourceManager<CResource>;
 
 #endif
