@@ -5,8 +5,6 @@
 #include "scene/PBRMaterial.h"
 #include "resource/ResourceManager.h"
 #include "resource/AssimpModelLoader.h"
-#include "graphics/GLDeferredGeometryRenderStage.h"
-#include "graphics/GLForwardGeometryRenderStage.h"
 #include "graphics/QuadRenderStage.h"
 #include "graphics/Renderer.h"
 #include "graphics/GLFWRenderer.h"

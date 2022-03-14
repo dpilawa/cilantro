@@ -15,6 +15,7 @@ struct IRenderStage
     virtual IFramebuffer* GetFramebuffer () const = 0;
 
     virtual void OnFrame () = 0;
+    virtual IRenderStage& SetViewport (float u, float v, float su, float sv) = 0;
 
     virtual IRenderStage& SetMultisampleEnabled (bool value) = 0;
     virtual IRenderStage& SetStencilTestEnabled (bool value) = 0;

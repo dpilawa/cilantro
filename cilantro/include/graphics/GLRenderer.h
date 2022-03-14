@@ -124,6 +124,8 @@ public:
     virtual void Initialize () override;
     virtual void Deinitialize () override;
 
+    virtual IRenderer& SetViewport (unsigned int x, unsigned int y, unsigned int sx, unsigned int sy) override;
+
     virtual void RenderFrame () override;
 
     virtual void Draw (MeshObject& meshObject) override;
@@ -152,6 +154,7 @@ public:
     
     virtual void SetStencilTestEnabled (bool value) override;
     virtual void SetStencilTestFunction (EStencilTestFunction testFunction, int testValue) override;
+    virtual void SetStencilTestOperation (EStencilTestOperation sFail, EStencilTestOperation dpFail, EStencilTestOperation dpPass) override;
 
     ///////////////////////////////////////////////////////////////////////////
 

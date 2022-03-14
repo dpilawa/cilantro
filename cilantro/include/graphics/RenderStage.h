@@ -17,6 +17,7 @@ public:
     IFramebuffer* GetFramebuffer () const override final;
 
     virtual void OnFrame () override;
+    __EAPI virtual IRenderStage& SetViewport (float u, float v, float su, float sv) override;
 
     __EAPI virtual IRenderStage& SetMultisampleEnabled (bool value) override;
     __EAPI virtual IRenderStage& SetStencilTestEnabled (bool value) override;
@@ -57,6 +58,12 @@ protected:
     bool m_isClearColorOnFrameEnabled;
     bool m_isClearDepthOnFrameEnabled;
     bool m_isClearStencilOnFrameEnabled;
+
+    // viewport relative position and dimension
+    float m_viewportU;
+    float m_viewportV;
+    float m_viewportSizeU;
+    float m_viewportSizeV;
 
     // parent renderer
     IRenderer* m_renderer;

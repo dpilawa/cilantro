@@ -1,4 +1,4 @@
-#include "graphics/GLForwardGeometryRenderStage.h"
+#include "graphics/ForwardGeometryRenderStage.h"
 #include "graphics/IFramebuffer.h"
 #include "scene/GameScene.h"
 #include "scene/GameObject.h"
@@ -6,25 +6,22 @@
 #include "glad/glad.h"
 #include <string>
 
-CGLForwardGeometryRenderStage::CGLForwardGeometryRenderStage () 
+CForwardGeometryRenderStage::CForwardGeometryRenderStage () 
     : CRenderStage ()
 {
 }
 
-void CGLForwardGeometryRenderStage::Initialize ()
+void CForwardGeometryRenderStage::Initialize ()
 {    
     InitializeFramebuffer ();
 }
 
-void CGLForwardGeometryRenderStage::OnFrame ()
+void CForwardGeometryRenderStage::OnFrame ()
 {
     CRenderStage::OnFrame ();
 
     // load uniform buffers
     m_renderer->UpdateCameraBuffers (*m_renderer->GetGameScene ()->GetActiveCamera ());
-
-    // set viewport
-    glViewport (0, 0, m_renderer->GetWidth (), m_renderer->GetHeight ());
 
     // draw all objects in scene
     for (auto gameObject : m_renderer->GetGameScene ()->GetGameObjectManager ())
@@ -38,7 +35,7 @@ void CGLForwardGeometryRenderStage::OnFrame ()
     }
 }
 
-void CGLForwardGeometryRenderStage::InitializeFramebuffer ()
+void CForwardGeometryRenderStage::InitializeFramebuffer ()
 {
     if (m_isFramebufferEnabled)
     {

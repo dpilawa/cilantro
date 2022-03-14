@@ -1,4 +1,4 @@
-#include "graphics/GLDeferredGeometryRenderStage.h"
+#include "graphics/DeferredGeometryRenderStage.h"
 #include "graphics/IFramebuffer.h"
 #include "scene/GameScene.h"
 #include "scene/GameObject.h"
@@ -6,22 +6,19 @@
 #include "glad/glad.h"
 #include <string>
 
-CGLDeferredGeometryRenderStage::CGLDeferredGeometryRenderStage () 
+CDeferredGeometryRenderStage::CDeferredGeometryRenderStage () 
     : CRenderStage ()
 {
 }
 
-void CGLDeferredGeometryRenderStage::Initialize ()
+void CDeferredGeometryRenderStage::Initialize ()
 {
     InitializeFramebuffer ();
 }
 
-void CGLDeferredGeometryRenderStage::OnFrame ()
+void CDeferredGeometryRenderStage::OnFrame ()
 {
     CRenderStage::OnFrame ();
-
-    // set viewport
-    glViewport (0, 0, m_renderer->GetWidth (), m_renderer->GetHeight ());
 
     // load uniform buffers
     m_renderer->UpdateCameraBuffers (*m_renderer->GetGameScene ()->GetActiveCamera ());
@@ -30,15 +27,14 @@ void CGLDeferredGeometryRenderStage::OnFrame ()
     // draw all objects in scene using geometry shader, construct g-buffer
     // set stencil value to lowest depth lighting shader handle
 
-    glStencilOp (GL_KEEP, GL_KEEP, GL_REPLACE);
+    m_renderer->SetStencilTestOperation (EStencilTestOperation::OP_KEEP, EStencilTestOperation::OP_KEEP, EStencilTestOperation::OP_REPLACE);
 
     for (auto gameObject : m_renderer->GetGameScene ()->GetGameObjectManager ())
     {
         // overwrite stencil value with material Id
         if (MeshObject* meshObject = dynamic_cast<MeshObject*>(gameObject.get ()))
         {
-            glStencilFunc (GL_ALWAYS, m_renderer->GetShaderProgramManager ().GetByName<ShaderProgram>(meshObject->GetMaterial ().GetDeferredLightingPassShaderProgram ()).GetHandle (), 0xff);
-            glStencilMask (0xff);
+            m_renderer->SetStencilTestFunction (EStencilTestFunction::FUNCTION_ALWAYS, m_renderer->GetShaderProgramManager ().GetByName<ShaderProgram>(meshObject->GetMaterial ().GetDeferredLightingPassShaderProgram ()).GetHandle ());
         }
 
         // draw to g-buffer
@@ -48,7 +44,7 @@ void CGLDeferredGeometryRenderStage::OnFrame ()
  
 }
 
-void CGLDeferredGeometryRenderStage::InitializeFramebuffer ()
+void CDeferredGeometryRenderStage::InitializeFramebuffer ()
 {
     if (m_isFramebufferEnabled)
     {

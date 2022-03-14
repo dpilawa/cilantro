@@ -5,11 +5,11 @@
 
 class MeshObject;
 
-class CGLDeferredGeometryRenderStage : public CRenderStage
+class CDeferredGeometryRenderStage : public CRenderStage
 {
 public:
-    __EAPI CGLDeferredGeometryRenderStage ();
-    __EAPI virtual ~CGLDeferredGeometryRenderStage () {};
+    __EAPI CDeferredGeometryRenderStage ();
+    __EAPI virtual ~CDeferredGeometryRenderStage () {};
 
     ///////////////////////////////////////////////////////////////////////////
 

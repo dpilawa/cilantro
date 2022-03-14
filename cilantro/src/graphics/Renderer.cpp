@@ -1,7 +1,7 @@
 #include "graphics/Renderer.h"
 #include "graphics/IRenderStage.h"
-#include "graphics/GLDeferredGeometryRenderStage.h"
-#include "graphics/GLForwardGeometryRenderStage.h"
+#include "graphics/DeferredGeometryRenderStage.h"
+#include "graphics/ForwardGeometryRenderStage.h"
 #include "graphics/IFramebuffer.h"
 #include "scene/GameScene.h"
 #include "system/Timer.h"
@@ -155,7 +155,7 @@ void CRenderer::InitializeRenderStages ()
     if (m_isDeferred == true)
     {
         // geometry stage
-        IRenderStage& baseDeferred = this->AddRenderStage<CGLDeferredGeometryRenderStage> ("base");
+        IRenderStage& baseDeferred = this->AddRenderStage<CDeferredGeometryRenderStage> ("base");
         baseDeferred.SetDepthTestEnabled (true);
         baseDeferred.SetStencilTestEnabled (true);
         baseDeferred.SetClearColorOnFrameEnabled (true);
@@ -171,7 +171,7 @@ void CRenderer::InitializeRenderStages ()
     }
     else
     {
-        IRenderStage& baseForward = this->AddRenderStage<CGLForwardGeometryRenderStage> ("base");
+        IRenderStage& baseForward = this->AddRenderStage<CForwardGeometryRenderStage> ("base");
         baseForward.Initialize ();
     }
 }

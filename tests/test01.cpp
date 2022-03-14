@@ -14,8 +14,6 @@
 #include "resource/ResourceManager.h"
 #include "resource/Texture.h"
 #include "graphics/QuadRenderStage.h"
-#include "graphics/GLDeferredGeometryRenderStage.h"
-#include "graphics/GLForwardGeometryRenderStage.h"
 #include "graphics/GLFWRenderer.h"
 #include "input/GLFWInputController.h"
 #include "math/Mathf.h"

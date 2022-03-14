@@ -9,8 +9,6 @@
 #include "scene/SplinePath.h"
 #include "resource/ResourceManager.h"
 #include "graphics/Renderer.h"
-#include "graphics/GLDeferredGeometryRenderStage.h"
-#include "graphics/GLForwardGeometryRenderStage.h"
 #include "graphics/QuadRenderStage.h"
 #include "graphics/GLFWRenderer.h"
 #include "input/GLFWInputController.h"

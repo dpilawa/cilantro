@@ -5,11 +5,11 @@
 
 class MeshObject;
 
-class CGLForwardGeometryRenderStage : public CRenderStage
+class CForwardGeometryRenderStage : public CRenderStage
 {
 public:
-    __EAPI CGLForwardGeometryRenderStage ();
-    __EAPI virtual ~CGLForwardGeometryRenderStage () {};
+    __EAPI CForwardGeometryRenderStage ();
+    __EAPI virtual ~CForwardGeometryRenderStage () {};
 
     ///////////////////////////////////////////////////////////////////////////
 

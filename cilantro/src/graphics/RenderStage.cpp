@@ -4,7 +4,12 @@
 #include "math/Vector4f.h"
 
 CRenderStage::CRenderStage ()
-    : m_framebuffer (nullptr)
+    : m_viewportU (0.0f)
+    , m_viewportV (0.0f)
+    , m_viewportSizeU (1.0f)
+    , m_viewportSizeV (1.0f)
+
+    , m_framebuffer (nullptr)
     , m_isMultisampleEnabled (false)
     , m_isStencilTestEnabled (false)
     , m_isDepthTestEnabled (true)
@@ -96,6 +101,23 @@ void CRenderStage::OnFrame ()
         m_renderer->SetStencilTestFunction (m_stencilTestFunction, m_stencilTestValue);
     }
 
+    // set viewport
+    m_renderer->SetViewport 
+        ( (unsigned int) (m_viewportU * m_renderer->GetWidth ())
+        , (unsigned int) (m_viewportV * m_renderer->GetHeight ())
+        , (unsigned int) (m_viewportSizeU * m_renderer->GetWidth ())
+        , (unsigned int) (m_viewportSizeV * m_renderer->GetHeight ()));
+
+}
+
+IRenderStage& CRenderStage::SetViewport (float u, float v, float su, float sv)
+{
+    m_viewportU = u;
+    m_viewportV = v;
+    m_viewportSizeU = su;
+    m_viewportSizeV = sv;
+
+    return *this;
 }
 
 IRenderStage& CRenderStage::SetMultisampleEnabled (bool value)

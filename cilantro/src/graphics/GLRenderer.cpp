@@ -112,9 +112,16 @@ void CGLRenderer::Deinitialize ()
     CRenderer::Deinitialize ();
 
     DeinitializeQuadGeometryBuffer ();
-    // TODO: DeinitializeObjectBuffers ();
-    // TODO: DeinitializeMatrixUniformBuffers ();
-    // TODO: DeinitializeLightUniformBuffers ();
+    DeinitializeObjectBuffers ();
+    DeinitializeMatrixUniformBuffers ();
+    DeinitializeLightUniformBuffers ();
+}
+
+IRenderer& CGLRenderer::SetViewport (unsigned int x, unsigned int y, unsigned int sx, unsigned int sy)
+{
+    glViewport (x, y, sx, sy);
+
+    return *this;
 }
 
 void CGLRenderer::RenderFrame ()
@@ -729,22 +736,45 @@ void CGLRenderer::SetStencilTestEnabled (bool value)
 
 void CGLRenderer::SetStencilTestFunction (EStencilTestFunction testFunction, int testValue)
 {
-    GLuint glStencilFunction;
-
-    switch (testFunction)   
+    auto GLFun = [](EStencilTestFunction f)
     {
-        case EStencilTestFunction::FUNCTION_ALWAYS: glStencilFunction = GL_ALWAYS; break;
-        case EStencilTestFunction::FUNCTION_EQUAL: glStencilFunction = GL_EQUAL; break;
-        case EStencilTestFunction::FUNCTION_GEQUAL: glStencilFunction = GL_GEQUAL; break;
-        case EStencilTestFunction::FUNCTION_GREATER: glStencilFunction = GL_GREATER; break;
-        case EStencilTestFunction::FUNCTION_LEQUAL: glStencilFunction = GL_LEQUAL; break;
-        case EStencilTestFunction::FUNCTION_LESS: glStencilFunction = GL_LESS; break;
-        case EStencilTestFunction::FUNCTION_NEVER: glStencilFunction = GL_NEVER; break;
-        case EStencilTestFunction::FUNCTION_NOTEQUAL: glStencilFunction = GL_NOTEQUAL; break;
-        default: glStencilFunction = GL_ALWAYS; break;
-    }
+        switch (f)   
+        {
+            case EStencilTestFunction::FUNCTION_ALWAYS: return GL_ALWAYS; break;
+            case EStencilTestFunction::FUNCTION_EQUAL: return GL_EQUAL; break;
+            case EStencilTestFunction::FUNCTION_GEQUAL: return GL_GEQUAL; break;
+            case EStencilTestFunction::FUNCTION_GREATER: return GL_GREATER; break;
+            case EStencilTestFunction::FUNCTION_LEQUAL: return GL_LEQUAL; break;
+            case EStencilTestFunction::FUNCTION_LESS: return GL_LESS; break;
+            case EStencilTestFunction::FUNCTION_NEVER: return GL_NEVER; break;
+            case EStencilTestFunction::FUNCTION_NOTEQUAL: return GL_NOTEQUAL; break;
+            default: return GL_ALWAYS; break;
+        }
+    };
 
-    glStencilFunc (glStencilFunction, testValue, 0xff);
+    glStencilFunc (GLFun (testFunction), testValue, 0xff);
+    glStencilMask (0xff);
+}
+
+void CGLRenderer::SetStencilTestOperation (EStencilTestOperation sFail, EStencilTestOperation dpFail, EStencilTestOperation dpPass)
+{
+    auto GLOp = [](EStencilTestOperation op)
+    {
+        switch (op)
+        {
+            case EStencilTestOperation::OP_KEEP: return GL_KEEP; break;
+            case EStencilTestOperation::OP_REPLACE: return GL_REPLACE; break;
+            case EStencilTestOperation::OP_ZERO: return GL_ZERO; break;
+            case EStencilTestOperation::OP_INC: return GL_INCR; break;
+            case EStencilTestOperation::OP_DEC: return GL_DECR; break;
+            case EStencilTestOperation::OP_INC_WRAP: return GL_INCR_WRAP; break;
+            case EStencilTestOperation::OP_DEC_WRAP: return GL_DECR_WRAP; break;
+            case EStencilTestOperation::OP_INV: return GL_INVERT; break;
+            default: return GL_KEEP; break;
+        }
+    };
+
+    glStencilOp (GLOp (sFail), GLOp (dpFail), GLOp (dpPass));
 }
 
 void CGLRenderer::InitializeShaderLibrary ()

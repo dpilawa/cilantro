@@ -35,8 +35,8 @@ include/cilantroengine.h
 include/graphics/IFramebuffer.h
 include/graphics/Framebuffer.h
 include/graphics/GLFramebuffer.h
-include/graphics/GLDeferredGeometryRenderStage.h
-include/graphics/GLForwardGeometryRenderStage.h
+include/graphics/DeferredGeometryRenderStage.h
+include/graphics/ForwardGeometryRenderStage.h
 include/graphics/GLShader.h
 include/graphics/GLShaderProgram.h
 include/graphics/IRenderer.h
@@ -97,8 +97,8 @@ include/system/Timer.h
 
 src/graphics/Framebuffer.cpp
 src/graphics/GLFramebuffer.cpp
-src/graphics/GLDeferredGeometryRenderStage.cpp
-src/graphics/GLForwardGeometryRenderStage.cpp
+src/graphics/DeferredGeometryRenderStage.cpp
+src/graphics/ForwardGeometryRenderStage.cpp
 src/graphics/GLShader.cpp
 src/graphics/GLShaderProgram.cpp
 src/graphics/Renderer.cpp
