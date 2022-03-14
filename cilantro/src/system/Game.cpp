@@ -3,16 +3,16 @@
 #include "input/InputController.h"
 #include "system/LogMessage.h"
 
-CResourceManager<CResource> Game::m_resourceManager;
-CResourceManager<GameScene> Game::m_gameSceneManager;
+CResourceManager<CResource> CGame::m_resourceManager;
+CResourceManager<CGameScene> CGame::m_gameSceneManager;
 
-GameScene* Game::m_currentGameScene;
-InputController* Game::inputController;
+CGameScene* CGame::m_currentGameScene;
+InputController* CGame::inputController;
 
-bool Game::m_shouldStop;
-bool Game::m_isRunning;
+bool CGame::m_shouldStop;
+bool CGame::m_isRunning;
 
-void Game::Initialize ()
+void CGame::Initialize ()
 {
     LogMessage () << "Engine starting";
 
@@ -21,7 +21,7 @@ void Game::Initialize ()
     m_isRunning = false;
 }
 
-void Game::Deinitialize ()
+void CGame::Deinitialize ()
 {
     if (inputController != nullptr)
     {
@@ -32,32 +32,32 @@ void Game::Deinitialize ()
     LogMessage () << "Engine stopping";
 }
 
-CResourceManager<CResource>& Game::GetResourceManager ()
+CResourceManager<CResource>& CGame::GetResourceManager ()
 {
     return m_resourceManager;
 }
 
-CResourceManager<GameScene>& Game::GetGameSceneManager ()
+CResourceManager<CGameScene>& CGame::GetGameSceneManager ()
 {
     return m_gameSceneManager;
 }
 
-GameScene& Game::GetCurrentGameScene ()
+CGameScene& CGame::GetCurrentGameScene ()
 {
     return *m_currentGameScene;
 }
 
-void Game::SetCurrentGameScene (const std::string sceneName)
+void CGame::SetCurrentGameScene (const std::string sceneName)
 {
-    m_currentGameScene = &m_gameSceneManager.GetByName<GameScene>(sceneName);
+    m_currentGameScene = &m_gameSceneManager.GetByName<CGameScene>(sceneName);
 }
 
-InputController& Game::GetInputController ()
+InputController& CGame::GetInputController ()
 {
     return *inputController;
 }
 
-void Game::Run ()
+void CGame::Run ()
 {	
     // initialize all game scenes
     for (auto gameScene : m_gameSceneManager)
@@ -81,13 +81,13 @@ void Game::Run ()
     }
 }
 
-void Game::Stop ()
+void CGame::Stop ()
 {
     // stop game loop
     m_shouldStop = true;
 }
 
-void Game::Step ()
+void CGame::Step ()
 {
     // step current scene
     m_currentGameScene->OnFrame ();

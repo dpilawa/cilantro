@@ -8,7 +8,7 @@
 class Camera : public GameObject
 {
 public:
-    Camera (GameScene* gameScene);
+    Camera (CGameScene* gameScene);
     virtual ~Camera ();
 
     Matrix4f GetViewMatrix ();

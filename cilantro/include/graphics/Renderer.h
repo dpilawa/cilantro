@@ -9,12 +9,12 @@
 #include <vector>
 #include <set>
 
-class GameScene;
+class CGameScene;
 
 class CRenderer : public IRenderer
 {
 public:
-    CRenderer (GameScene* gameScene, unsigned int width, unsigned int height, bool isDeferred);
+    CRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool isDeferred);
     virtual ~CRenderer () {};
 
     ///////////////////////////////////////////////////////////////////////////
@@ -26,7 +26,7 @@ public:
     __EAPI unsigned int GetHeight () const override final;
     __EAPI IRenderer& SetResolution (unsigned int width, unsigned int height) override;
 
-    GameScene* GetGameScene () override final;
+    CGameScene* GetGameScene () override final;
 
     __EAPI virtual TShaderProgramManager& GetShaderProgramManager () override final;
 
@@ -49,7 +49,7 @@ public:
 
 protected:
     // game scene being rendered
-    GameScene* m_gameScene;
+    CGameScene* m_gameScene;
 
     // render pipeline
     unsigned int m_currentRenderStage;

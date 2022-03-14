@@ -5,7 +5,7 @@
 #include "system/Game.h"
 #include "system/LogMessage.h"
 
-CGLFWRenderer::CGLFWRenderer (GameScene* gameScene, unsigned int width, unsigned int height, bool isDeferred, std::string windowCaption, bool isFullscreen, bool isResizable, bool isVSync) 
+CGLFWRenderer::CGLFWRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool isDeferred, std::string windowCaption, bool isFullscreen, bool isResizable, bool isVSync) 
     : CGLRenderer (gameScene, width, height, isDeferred)
 {
     this->windowCaption = windowCaption;
@@ -66,7 +66,7 @@ void CGLFWRenderer::Initialize ()
     // set resize callback
     auto framebufferResizeCallback = [](GLFWwindow* window, int width, int height)
     {
-        for (auto&& gameScene : Game::GetGameSceneManager ())
+        for (auto&& gameScene : CGame::GetGameSceneManager ())
         {
             gameScene->GetRenderer ()->SetResolution (width, height);
         }
@@ -115,6 +115,6 @@ void CGLFWRenderer::RenderFrame ()
     // check window closing
     if (glfwWindowShouldClose (window))
     {
-        Game::Stop ();
+        CGame::Stop ();
     }
 }

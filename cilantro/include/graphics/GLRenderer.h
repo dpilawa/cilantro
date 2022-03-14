@@ -4,7 +4,7 @@
 #include "glad/glad.h"
 #include "graphics/Renderer.h"
 
-class GameScene;
+class CGameScene;
 class MeshObject;
 class Camera;
 
@@ -116,7 +116,7 @@ struct SGlUniformSpotLightBuffer
 class CGLRenderer : public CRenderer
 {
 public:
-    CGLRenderer (GameScene* gameScene, unsigned int width, unsigned int height, bool isDeferred);
+    CGLRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool isDeferred);
     virtual ~CGLRenderer ();
 
     ///////////////////////////////////////////////////////////////////////////

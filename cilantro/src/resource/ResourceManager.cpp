@@ -87,15 +87,15 @@ template __EAPI CResourceManager<CResource>::const_iterator CResourceManager<CRe
 template __EAPI CResourceManager<CResource>::const_iterator CResourceManager<CResource>::cend () const;
 template __EAPI std::shared_ptr<CResource> CResourceManager<CResource>::Push (const std::string& name, std::shared_ptr<CResource> resource);
 
-template __EAPI CResourceManager<GameScene>::CResourceManager ();
-template __EAPI CResourceManager<GameScene>::~CResourceManager ();
-template __EAPI CResourceManager<GameScene>::iterator CResourceManager<GameScene>::begin ();
-template __EAPI CResourceManager<GameScene>::iterator CResourceManager<GameScene>::end ();
-template __EAPI CResourceManager<GameScene>::const_iterator CResourceManager<GameScene>::begin () const;
-template __EAPI CResourceManager<GameScene>::const_iterator CResourceManager<GameScene>::end () const;
-template __EAPI CResourceManager<GameScene>::const_iterator CResourceManager<GameScene>::cbegin () const;
-template __EAPI CResourceManager<GameScene>::const_iterator CResourceManager<GameScene>::cend () const;
-template __EAPI std::shared_ptr<GameScene> CResourceManager<GameScene>::Push (const std::string& name, std::shared_ptr<GameScene> resource);
+template __EAPI CResourceManager<CGameScene>::CResourceManager ();
+template __EAPI CResourceManager<CGameScene>::~CResourceManager ();
+template __EAPI CResourceManager<CGameScene>::iterator CResourceManager<CGameScene>::begin ();
+template __EAPI CResourceManager<CGameScene>::iterator CResourceManager<CGameScene>::end ();
+template __EAPI CResourceManager<CGameScene>::const_iterator CResourceManager<CGameScene>::begin () const;
+template __EAPI CResourceManager<CGameScene>::const_iterator CResourceManager<CGameScene>::end () const;
+template __EAPI CResourceManager<CGameScene>::const_iterator CResourceManager<CGameScene>::cbegin () const;
+template __EAPI CResourceManager<CGameScene>::const_iterator CResourceManager<CGameScene>::cend () const;
+template __EAPI std::shared_ptr<CGameScene> CResourceManager<CGameScene>::Push (const std::string& name, std::shared_ptr<CGameScene> resource);
 
 template __EAPI CResourceManager<Material>::CResourceManager ();
 template __EAPI CResourceManager<Material>::~CResourceManager ();

@@ -3,7 +3,7 @@
 #include "math/GaussLegendreIntegrator.h"
 #include "math/Vector3f.h"
 
-SplinePath::SplinePath (GameScene* gameScene) : Path (gameScene)
+SplinePath::SplinePath (CGameScene* gameScene) : Path (gameScene)
 {
 
 }

@@ -10,7 +10,7 @@
 #include "system/CallbackProvider.h"
 #include <string>
 
-GameObject::GameObject (GameScene* gameScene)
+GameObject::GameObject (CGameScene* gameScene)
 {
     parentObject = nullptr;
     this->gameScene = gameScene;

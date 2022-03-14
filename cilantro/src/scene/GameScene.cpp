@@ -10,7 +10,7 @@
 
 #include <vector>
 
-GameScene::GameScene()
+CGameScene::CGameScene()
 { 
     this->timer = new Timer();
     timer->Tick ();
@@ -18,7 +18,7 @@ GameScene::GameScene()
     this->activeCamera = nullptr;
 }
 
-GameScene::~GameScene()
+CGameScene::~CGameScene()
 {
     delete timer;
 
@@ -29,7 +29,7 @@ GameScene::~GameScene()
     }
 }
 
-void GameScene::OnStart ()
+void CGameScene::OnStart ()
 {
     for (auto gameObject : gameObjects)
     {
@@ -37,7 +37,7 @@ void GameScene::OnStart ()
     }
 }
 
-void GameScene::OnFrame ()
+void CGameScene::OnFrame ()
 {
     timer->Tick ();
 
@@ -51,7 +51,7 @@ void GameScene::OnFrame ()
     timer->Tock ();
 }
 
-void GameScene::OnEnd ()
+void CGameScene::OnEnd ()
 {
     for (auto gameObject : gameObjects)
     {
@@ -59,32 +59,32 @@ void GameScene::OnEnd ()
     }
 }
 
-CResourceManager<GameObject>& GameScene::GetGameObjectManager ()
+CResourceManager<GameObject>& CGameScene::GetGameObjectManager ()
 {
     return gameObjects;
 }
 
-CResourceManager<Material>& GameScene::GetMaterialManager ()
+CResourceManager<Material>& CGameScene::GetMaterialManager ()
 {
     return materials;
 }
 
-IRenderer* GameScene::GetRenderer () const
+IRenderer* CGameScene::GetRenderer () const
 {
     return renderer;
 }
 
-Timer* GameScene::GetTimer () const
+Timer* CGameScene::GetTimer () const
 {
     return timer;
 }
 
-void GameScene::SetActiveCamera (const std::string& name)
+void CGameScene::SetActiveCamera (const std::string& name)
 {
     activeCamera = &(gameObjects.GetByName<Camera> (name));
 }
 
-Camera* GameScene::GetActiveCamera () const
+Camera* CGameScene::GetActiveCamera () const
 {
     if (activeCamera == nullptr)
     {

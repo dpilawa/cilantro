@@ -10,7 +10,7 @@ struct IRenderer;
 class Light : public GameObject
 {
 public:
-    Light (GameScene* gameScene);
+    Light (CGameScene* gameScene);
     virtual ~Light ();
 
     // enable or disable light

@@ -6,10 +6,10 @@
 #include "input/InputController.h"
 
 class CResource;
-class GameScene;
+class CGameScene;
 class InputController;
 
-class Game
+class CGame
 {
 public:
 
@@ -24,12 +24,12 @@ public:
 
     // managers
     static __EAPI CResourceManager<CResource>& GetResourceManager ();
-    static __EAPI CResourceManager<GameScene>& GetGameSceneManager ();
+    static __EAPI CResourceManager<CGameScene>& GetGameSceneManager ();
 
     // scene control
     template <typename T, typename ...Params> 
     static T& CreateGameScene (Params&&... params);
-    static __EAPI GameScene& GetCurrentGameScene ();
+    static __EAPI CGameScene& GetCurrentGameScene ();
     static __EAPI void SetCurrentGameScene (const std::string sceneName);
 
     // input control
@@ -40,8 +40,8 @@ public:
 private:
     
     static __EAPI CResourceManager<CResource> m_resourceManager;
-    static __EAPI CResourceManager<GameScene> m_gameSceneManager;
-    static __EAPI GameScene* m_currentGameScene;
+    static __EAPI CResourceManager<CGameScene> m_gameSceneManager;
+    static __EAPI CGameScene* m_currentGameScene;
     static __EAPI InputController* inputController;
 
     // game state
@@ -51,9 +51,9 @@ private:
 };
 
 template <typename T, typename ...Params> 
-T& Game::CreateGameScene (Params&&... params)
+T& CGame::CreateGameScene (Params&&... params)
 {
-    static_assert (std::is_base_of<GameScene, T>::value, "Game scene object must inherit from GameScene");
+    static_assert (std::is_base_of<CGameScene, T>::value, "Game scene object must inherit from GameScene");
     T& gameScene = m_gameSceneManager.Create<T> (params...);
 
     if (m_currentGameScene == nullptr)
@@ -66,13 +66,13 @@ T& Game::CreateGameScene (Params&&... params)
 
 
 template <typename T, typename ...Params> 
-T& Game::CreateInputController (Params&&... params)
+T& CGame::CreateInputController (Params&&... params)
 {
     static_assert (std::is_base_of<InputController, T>::value, "Input controller object must inherit from InputController");
     T* newInputController = new T (params...);
 
-    Game::inputController = static_cast<InputController*> (newInputController);
-    Game::inputController->Initialize ();
+    CGame::inputController = static_cast<InputController*> (newInputController);
+    CGame::inputController->Initialize ();
 
     return *newInputController;
 }

@@ -23,11 +23,11 @@
 
 int main (int argc, char* argv[])
 {
-    Game::Initialize ();
+    CGame::Initialize ();
 
-    GameScene& gameScene = Game::CreateGameScene<GameScene> ("scene");
+    CGameScene& gameScene = CGame::CreateGameScene<CGameScene> ("scene");
     CGLFWRenderer& renderer = gameScene.CreateRenderer<CGLFWRenderer> (1920, 1080, false, "Test 03", false, true, true);
-    InputController& inputController = Game::CreateInputController<GLFWInputController> ();
+    InputController& inputController = CGame::CreateInputController<GLFWInputController> ();
 
     AssimpModelLoader modelLoader;
 
@@ -36,7 +36,7 @@ int main (int argc, char* argv[])
     renderer.AddRenderStage<CQuadRenderStage> ("gamma_postprocess+screen").SetShaderProgram ("post_gamma_shader").SetRenderStageParameterFloat ("fGamma", 2.1f).SetPipelineFramebufferInputLink (EPipelineLink::LINK_PREVIOUS).SetFramebufferEnabled (false);    
 
     inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
-    inputController.BindInputEvent ("exit", [ & ]() { Game::Stop (); });
+    inputController.BindInputEvent ("exit", [ & ]() { CGame::Stop (); });
 
     inputController.CreateInputEvent ("mousemode", InputKey::KeySpace, InputTrigger::Release, {});
     inputController.BindInputEvent ("mousemode", [ & ]() { inputController.SetMouseGameMode (!inputController.IsGameMode ()); });
@@ -57,9 +57,9 @@ int main (int argc, char* argv[])
     anim.SetLooping (true);
     anim.Play();
 
-    Game::Run ();
+    CGame::Run ();
 
-    Game::Deinitialize ();
+    CGame::Deinitialize ();
 
     return 0;
 }

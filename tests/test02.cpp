@@ -22,23 +22,23 @@
 
 int main (int argc, char* argv [])
 {
-    Game::Initialize ();
+    CGame::Initialize ();
 
-    GameScene& gameScene = Game::CreateGameScene<GameScene> ("scene");
+    CGameScene& gameScene = CGame::CreateGameScene<CGameScene> ("scene");
     CGLFWRenderer& renderer = gameScene.CreateRenderer<CGLFWRenderer> (960, 600, false, "Test 02", false, true, true);
-    InputController& inputController = Game::CreateInputController<GLFWInputController> ();
+    InputController& inputController = CGame::CreateInputController<GLFWInputController> ();
 
     renderer.AddRenderStage<CQuadRenderStage> ("screen").SetShaderProgram ("flatquad_shader").SetFramebufferEnabled (false).SetPipelineFramebufferInputLink (EPipelineLink::LINK_PREVIOUS);
     renderer.GetRenderStageManager ().GetByName<IRenderStage> ("base").SetMultisampleEnabled (true);
 
     inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
-    inputController.BindInputEvent ("exit", [ & ]() { Game::Stop (); });
+    inputController.BindInputEvent ("exit", [ & ]() { CGame::Stop (); });
 
-    Game::GetResourceManager().Load<Texture> ("tEarthDiffuse", "textures/2k_earth_daymap.jpg");
-    Game::GetResourceManager().Load<Texture> ("tEarthSpec", "textures/2k_earth_specular_map.png");
-    Game::GetResourceManager().Load<Texture> ("tEarthNormal", "textures/2k_earth_normal_map.png");
-    Game::GetResourceManager().Load<Texture> ("tMoon", "textures/2k_moon.jpg");
-    Game::GetResourceManager().Load<Texture> ("tSun", "textures/2k_sun.jpg");
+    CGame::GetResourceManager().Load<Texture> ("tEarthDiffuse", "textures/2k_earth_daymap.jpg");
+    CGame::GetResourceManager().Load<Texture> ("tEarthSpec", "textures/2k_earth_specular_map.png");
+    CGame::GetResourceManager().Load<Texture> ("tEarthNormal", "textures/2k_earth_normal_map.png");
+    CGame::GetResourceManager().Load<Texture> ("tMoon", "textures/2k_moon.jpg");
+    CGame::GetResourceManager().Load<Texture> ("tSun", "textures/2k_sun.jpg");
 
     gameScene.AddMaterial<PhongMaterial> ("mSun").SetEmissive ("tSun");
     gameScene.AddMaterial<PhongMaterial> ("mEarth").SetDiffuse ("tEarthDiffuse").SetSpecular ("tEarthSpec").SetNormal("tEarthNormal").SetSpecularShininess (32.0f);
@@ -48,20 +48,20 @@ int main (int argc, char* argv [])
     cam.GetLocalTransform ().Translate (0.0f, 0.0f, 160.0f);
     gameScene.SetActiveCamera ("camera");
 
-    Mesh& sunMesh = Game::GetResourceManager().Create<Mesh> ("sunMesh");
+    Mesh& sunMesh = CGame::GetResourceManager().Create<Mesh> ("sunMesh");
     MeshObject& sun = gameScene.AddGameObject<MeshObject> ("sun", "sunMesh", "mSun");
     Primitives::GenerateSphere (sunMesh, 8);
     sun.GetLocalTransform ().Scale (10.0f);
 
     Orbiter& earthOrbit = gameScene.AddGameObject<Orbiter> ("earthOrbit", gameScene.GetGameObjectManager ().GetByName<GameObject> ("sun"), 1.0f, 23.5f, 365.256f, 50.0f, 0.0f);
-    Mesh& earthMesh = Game::GetResourceManager().Create<Mesh> ("earthMesh").SetSmoothNormals (true);
+    Mesh& earthMesh = CGame::GetResourceManager().Create<Mesh> ("earthMesh").SetSmoothNormals (true);
     MeshObject& earth = gameScene.AddGameObject<MeshObject> ("earth", "earthMesh", "mEarth");
     Primitives::GenerateSphere (earthMesh, 8);
     earth.SetParentObject ("earthOrbit");
     earth.GetLocalTransform ().Scale (3.0f);
 
     Orbiter& moonOrbit = gameScene.AddGameObject<Orbiter> ("moonOrbit", gameScene.GetGameObjectManager ().GetByName<GameObject> ("earth"), 27.321f, -6.68f, 27.321f, 20.0f, -5.14f);
-    Mesh& moonMesh = Game::GetResourceManager().Create<Mesh> ("moonMesh").SetSmoothNormals (true);
+    Mesh& moonMesh = CGame::GetResourceManager().Create<Mesh> ("moonMesh").SetSmoothNormals (true);
     MeshObject& moon = gameScene.AddGameObject<MeshObject> ("moon", "moonMesh", "mMoon");
     Primitives::GenerateSphere (moonMesh, 8);
     moon.GetLocalTransform ().Scale (0.273f * 5.0f);
@@ -93,9 +93,9 @@ int main (int argc, char* argv [])
     animation.SetLooping (false);
     animation.Play ();
 
-    Game::Run ();
+    CGame::Run ();
 
-    Game::Deinitialize ();
+    CGame::Deinitialize ();
 
     return 0;
 }

@@ -16,12 +16,12 @@
 
 // This class represents a game world (a.k.a scene or level)
 // It contains all visible and invisible objects in a game
-class GameScene : public CResource, public CallbackProvider<std::string, handle_t, unsigned int>
+class CGameScene : public CResource, public CallbackProvider<std::string, handle_t, unsigned int>
 {
 public:
 
-    __EAPI GameScene();
-    __EAPI ~GameScene();
+    __EAPI CGameScene();
+    __EAPI ~CGameScene();
 
     void OnStart ();
     void OnFrame ();
@@ -72,7 +72,7 @@ private:
 };
 
 template <typename T, typename ...Params>
-T& GameScene::AddGameObject (const std::string& name, Params&&... params)
+T& CGameScene::AddGameObject (const std::string& name, Params&&... params)
 {
     T& gameObject = gameObjects.Create<T> (name, this, params...);
     handle_t handle = gameObject.GetHandle ();
@@ -102,7 +102,7 @@ T& GameScene::AddGameObject (const std::string& name, Params&&... params)
 }
 
 template <typename T, typename ...Params>
-T& GameScene::AddMaterial (const std::string& name, Params&&... params)
+T& CGameScene::AddMaterial (const std::string& name, Params&&... params)
 {
     T& material = materials.Create<T> (name, params...);
     handle_t handle = material.GetHandle ();
@@ -119,7 +119,7 @@ T& GameScene::AddMaterial (const std::string& name, Params&&... params)
 }
 
 template <typename T, typename ...Params> 
-T& GameScene::CreateRenderer (Params&&... params)
+T& CGameScene::CreateRenderer (Params&&... params)
 {
     static_assert (std::is_base_of<IRenderer, T>::value, "Renderer object must inherit from Renderer");
     T* newRenderer = new T (this, params...);

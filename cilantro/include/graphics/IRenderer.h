@@ -7,7 +7,7 @@
 
 struct IFramebuffer;
 class CRenderStage;
-class GameScene;
+class CGameScene;
 class MeshObject;
 class Material;
 class PointLight;
@@ -39,7 +39,7 @@ struct IRenderer
     virtual IRenderer& SetResolution (unsigned int width, unsigned int height) = 0;
     
     // access scene
-    virtual GameScene* GetGameScene () = 0;
+    virtual CGameScene* GetGameScene () = 0;
 
     // shader library manipulation
     virtual TShaderProgramManager& GetShaderProgramManager () = 0;

@@ -8,7 +8,7 @@
 #include <string>
 #include <set>
 
-class GameScene;
+class CGameScene;
 class GameObject;
 class AnimationObject;
 class Mesh;
@@ -29,7 +29,7 @@ public:
 
 private:
 
-    GameScene* gameScene;
+    CGameScene* gameScene;
 
     Assimp::Importer importer;
     std::set<std::string> boneNodes;

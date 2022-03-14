@@ -8,7 +8,7 @@
 class OrthographicCamera : public Camera
 {
 public:
-    __EAPI OrthographicCamera (GameScene* gameScene, float width, float near, float far);
+    __EAPI OrthographicCamera (CGameScene* gameScene, float width, float near, float far);
     __EAPI ~OrthographicCamera ();
 
     __EAPI Matrix4f GetProjectionMatrix (unsigned int xRes, unsigned int yRes) const;

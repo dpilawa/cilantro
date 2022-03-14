@@ -3,7 +3,7 @@
 #include "graphics/Renderer.h"
 #include "system/CallbackProvider.h"
 
-PointLight::PointLight (GameScene* gameScene) : Light (gameScene)
+PointLight::PointLight (CGameScene* gameScene) : Light (gameScene)
 {
     attenuationConst = 1.0f;
     attenuationLinear = 0.0f;

@@ -14,7 +14,7 @@ ShaderProgram::~ShaderProgram ()
 
 ShaderProgram& ShaderProgram::AddShader (const std::string& shaderName)
 {
-    AttachShader (Game::GetResourceManager ().GetByName<Shader> (shaderName));
+    AttachShader (CGame::GetResourceManager ().GetByName<Shader> (shaderName));
 
     return *this;
 }

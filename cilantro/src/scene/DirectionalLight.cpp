@@ -3,7 +3,7 @@
 #include "graphics/Renderer.h"
 #include "system/CallbackProvider.h"
 
-DirectionalLight::DirectionalLight (GameScene* gameScene) : Light (gameScene)
+DirectionalLight::DirectionalLight (CGameScene* gameScene) : Light (gameScene)
 {
 }
 

@@ -8,7 +8,7 @@
 #include "system/LogMessage.h"
 #include <cmath>
 
-CRenderer::CRenderer (GameScene* gameScene, unsigned int width, unsigned int height, bool isDeferred)
+CRenderer::CRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool isDeferred)
     : m_gameScene (gameScene)
     , m_isDeferred (isDeferred)
     , m_width (width)
@@ -61,7 +61,7 @@ IRenderer& CRenderer::SetResolution (unsigned int width, unsigned int height)
     return *this;
 }
 
-GameScene* CRenderer::GetGameScene ()
+CGameScene* CRenderer::GetGameScene ()
 {
     return m_gameScene;
 }

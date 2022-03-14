@@ -21,7 +21,7 @@ template __EAPI void AnimationObject::UpdateProperties<float> ();
 template __EAPI void AnimationObject::UpdateProperties<Vector3f> ();
 template __EAPI void AnimationObject::UpdateProperties<Quaternion> ();
 
-AnimationObject::AnimationObject (GameScene* gameScene) : GameObject (gameScene)
+AnimationObject::AnimationObject (CGameScene* gameScene) : GameObject (gameScene)
 {
     isPlaying = false;
     isLooping = true;

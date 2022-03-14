@@ -19,11 +19,11 @@
 
 int main (int argc, char* argv [])
 {
-    Game::Initialize ();
+    CGame::Initialize ();
 
-    GameScene& gameScene = Game::CreateGameScene<GameScene> ("scene");
+    CGameScene& gameScene = CGame::CreateGameScene<CGameScene> ("scene");
     CGLFWRenderer& renderer = gameScene.CreateRenderer<CGLFWRenderer> (800, 600, true, "Test 01", false, true, true);
-    InputController& inputController = Game::CreateInputController<GLFWInputController> ();
+    InputController& inputController = CGame::CreateInputController<GLFWInputController> ();
 
     AssimpModelLoader modelLoader;
 
@@ -32,13 +32,13 @@ int main (int argc, char* argv [])
     renderer.AddRenderStage<CQuadRenderStage> ("gamma_postprocess+screen").SetShaderProgram ("post_gamma_shader").SetRenderStageParameterFloat ("fGamma", 2.1f).SetPipelineFramebufferInputLink (EPipelineLink::LINK_PREVIOUS).SetFramebufferEnabled (false);
 
     modelLoader.Load ("scene", "assets/Cerberus_LP.FBX");
-    Game::GetResourceManager ().Load<Texture> ("tAlbedo", "assets/Textures/Cerberus_A.tga");
-    Game::GetResourceManager ().Load<Texture> ("tNormal", "assets/Textures/Cerberus_N.tga");
-    Game::GetResourceManager ().Load<Texture> ("tMetalness", "assets/Textures/Cerberus_M.tga");
-    Game::GetResourceManager ().Load<Texture> ("tRoughness", "assets/Textures/Cerberus_R.tga");
+    CGame::GetResourceManager ().Load<Texture> ("tAlbedo", "assets/Textures/Cerberus_A.tga");
+    CGame::GetResourceManager ().Load<Texture> ("tNormal", "assets/Textures/Cerberus_N.tga");
+    CGame::GetResourceManager ().Load<Texture> ("tMetalness", "assets/Textures/Cerberus_M.tga");
+    CGame::GetResourceManager ().Load<Texture> ("tRoughness", "assets/Textures/Cerberus_R.tga");
   
     inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
-    inputController.BindInputEvent ("exit", [ & ]() { Game::Stop (); });
+    inputController.BindInputEvent ("exit", [ & ]() { CGame::Stop (); });
 
     inputController.CreateInputEvent ("mousemode", InputKey::KeySpace, InputTrigger::Release, {});
     inputController.BindInputEvent ("mousemode", [ & ]() { inputController.SetMouseGameMode (!inputController.IsGameMode ()); });
@@ -60,9 +60,9 @@ int main (int argc, char* argv [])
     light.SetColor (Vector3f (2.5f, 2.1f, 1.7f));
     light.SetEnabled (true);
 
-    Game::Run ();
+    CGame::Run ();
 
-    Game::Deinitialize ();
+    CGame::Deinitialize ();
 
     return 0;
 }

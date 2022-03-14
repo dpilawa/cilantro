@@ -3,7 +3,7 @@
 #include "graphics/Renderer.h"
 #include "system/CallbackProvider.h"
 
-SpotLight::SpotLight (GameScene* gameScene) : PointLight (gameScene)
+SpotLight::SpotLight (CGameScene* gameScene) : PointLight (gameScene)
 {
     innerCutoff = 45.0f;
     outerCutoff = innerCutoff;

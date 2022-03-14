@@ -7,7 +7,7 @@
 #include "system/Game.h"
 #include <cmath>
 
-Orbiter::Orbiter (GameScene* gameScene, GameObject& parent, float axisPeriod, float axisAngle, float orbitingPeriod, float orbitingDistance, float orbitInclination) : GameObject (gameScene), parent (parent)
+Orbiter::Orbiter (CGameScene* gameScene, GameObject& parent, float axisPeriod, float axisAngle, float orbitingPeriod, float orbitingDistance, float orbitInclination) : GameObject (gameScene), parent (parent)
 {
     this->orbitingPeriod = orbitingPeriod;
     this->axisPeriod = axisPeriod;

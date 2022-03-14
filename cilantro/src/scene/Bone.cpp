@@ -1,6 +1,6 @@
 #include "scene/Bone.h"
 
-Bone::Bone (GameScene* gameScene) : GameObject (gameScene)
+Bone::Bone (CGameScene* gameScene) : GameObject (gameScene)
 {
 
 }

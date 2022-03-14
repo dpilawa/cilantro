@@ -11,10 +11,11 @@
 
 #include <vector>
 #include <unordered_map>
+#include <cstring>
 
-MeshObject::MeshObject (GameScene* gameScene, const std::string& meshName, const std::string& materialName)
+MeshObject::MeshObject (CGameScene* gameScene, const std::string& meshName, const std::string& materialName)
     : GameObject (gameScene)
-    , mesh (Game::GetResourceManager ().GetByName<Mesh> (meshName))
+    , mesh (CGame::GetResourceManager ().GetByName<Mesh> (meshName))
     , material (gameScene->GetMaterialManager ().GetByName<Material> (materialName))
 {
     mesh.RegisterCallback ("OnUpdateMesh", [&] (handle_t objectHandle) { InvokeCallbacks ("OnUpdateMeshObject", this->GetHandle (), 0); });

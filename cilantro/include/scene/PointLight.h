@@ -9,7 +9,7 @@ struct IRenderer;
 class PointLight : public Light
 {
 public:
-    __EAPI PointLight (GameScene* gameScene);
+    __EAPI PointLight (CGameScene* gameScene);
     __EAPI virtual ~PointLight ();
 
     // set attenuation factors

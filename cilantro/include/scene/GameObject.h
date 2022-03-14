@@ -8,13 +8,13 @@
 #include <string>
 #include <vector>
 
-class GameScene;
+class CGameScene;
 struct IRenderer;
 
 class GameObject : public CResource, public CallbackProvider<std::string, handle_t, unsigned int>
 {
 public:
-    __EAPI GameObject (GameScene* gameScene);
+    __EAPI GameObject (CGameScene* gameScene);
     __EAPI virtual ~GameObject ();
 
     // set pointer to parent object (i.e. put current object inside hierarchy)
@@ -55,7 +55,7 @@ public:
 protected:
 
     // parent scene
-    GameScene* gameScene;
+    CGameScene* gameScene;
 
     // pointer to parent object (objects may form a hierarchy)
     GameObject* parentObject;
