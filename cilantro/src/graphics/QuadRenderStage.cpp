@@ -23,7 +23,7 @@ void CQuadRenderStage::OnFrame ()
     m_renderer->GetPipelineFramebuffer (m_pipelineFramebufferInputLink)->BindFramebufferTextures ();
     
     // draw quad
-    m_renderer->DrawViewportQuad (0, 0, m_renderer->GetWidth (), m_renderer->GetHeight ());
+    m_renderer->DrawQuad ();
 
     // blit framebuffer
     if (m_framebuffer != nullptr)

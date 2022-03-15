@@ -21,7 +21,7 @@ typedef std::unordered_map<unsigned int, unsigned int> TLightHandleIdxMap;
 struct SGlGeometryBuffers
 {
     // number of vertices
-    unsigned int vertexCount;
+    unsigned int indexCount;
     // Vertex Buffer Objects (vertices, normals, uvs, tangents, bitangents, bone indices, bone weights)
     GLuint VBO[CILANTRO_VBO_COUNT];
     // Element Buffer Object (face indices)
@@ -129,7 +129,7 @@ public:
     virtual void RenderFrame () override;
 
     virtual void Draw (MeshObject& meshObject) override;
-    virtual void DrawViewportQuad (unsigned int x, unsigned int y, unsigned int width, unsigned int height) override;
+    virtual void DrawQuad () override;
 
     virtual void Update (MeshObject& meshObject) override;
     virtual void Update (Material& material, unsigned int textureUnit) override;
@@ -182,27 +182,27 @@ private:
 
 private:
     // buffers with geometry data to be passed to GPU (key is object handle)
-    TObjectGeometryBufferMap m_SceneGeometryBuffers;
-    SGlGeometryBuffers* m_QuadGeometryBuffer;
+    TObjectGeometryBufferMap m_sceneGeometryBuffers;
+    SGlGeometryBuffers* m_quadGeometryBuffer;
 
     // Buffers for uniforms shared by entire scene
-    SGlUniformBuffers* m_UniformBuffers;
+    SGlUniformBuffers* m_uniformBuffers;
 
     // data structures for uniforms
-    SGlUniformMatrixBuffer* m_UniformMatrixBuffer;
-    SGlUniformPointLightBuffer* m_UniformPointLightBuffer;
-    SGlUniformDirectionalLightBuffer* m_UniformDirectionalLightBuffer;
-    SGlUniformSpotLightBuffer* m_UniformSpotLightBuffer;
+    SGlUniformMatrixBuffer* m_uniformMatrixBuffer;
+    SGlUniformPointLightBuffer* m_uniformPointLightBuffer;
+    SGlUniformDirectionalLightBuffer* m_uniformDirectionalLightBuffer;
+    SGlUniformSpotLightBuffer* m_uniformSpotLightBuffer;
 
     // materials texture units (key is material handle)
-    TMaterialTextureUnitsMap materialTextureUnits;
+    TMaterialTextureUnitsMap m_materialTextureUnits;
 
     // maps gameobject handle to index in 
     // uniformPointLightBuffer
     // uniformDirectionalLightBuffer
     // uniformSpotLightBuffer
-    TLightHandleIdxMap m_PointLights;
-    TLightHandleIdxMap m_DirectionalLights;
-    TLightHandleIdxMap m_SpotLights;
+    TLightHandleIdxMap m_pointLights;
+    TLightHandleIdxMap m_directionalLights;
+    TLightHandleIdxMap m_spotLights;
 
 };

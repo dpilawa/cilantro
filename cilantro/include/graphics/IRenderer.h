@@ -59,7 +59,7 @@ struct IRenderer
 
     // geometry
     virtual void Draw (MeshObject& meshObject) = 0;
-    virtual void DrawViewportQuad (unsigned int x, unsigned int y, unsigned int width, unsigned int height) = 0;
+    virtual void DrawQuad () = 0;
 
     virtual void Update (MeshObject& meshObject) = 0;
     virtual void Update (Material& material, unsigned int textureUnit) = 0;
