@@ -371,6 +371,24 @@ void CGLRenderer::Update (Material& material, unsigned int textureUnit)
     GLuint texture;
     GLuint format;
 
+    auto GLTextureFormat = [](unsigned int numChannels)
+    {
+        switch (numChannels)
+        {
+        case 1:
+            return GL_RED;
+            break;
+        case 3:
+            return GL_RGB;
+            break;
+        case 4:
+            return GL_RGBA;
+            break;
+        default:
+            return GL_RGB;
+        }
+    };
+
     texture_map_t& textures = material.GetTexturesMap ();
 
     // check if material already exists
@@ -385,7 +403,7 @@ void CGLRenderer::Update (Material& material, unsigned int textureUnit)
             Texture* tPtr = t.second.second;
             std::string tName = t.second.first;
             GLuint unit = t.first;
-            format = GetTextureFormat (tPtr->GetChannels ());
+            format = GLTextureFormat (tPtr->GetChannels ());
 
             glGenTextures (1, &texture);
             glBindTexture (GL_TEXTURE_2D, texture);
@@ -408,7 +426,7 @@ void CGLRenderer::Update (Material& material, unsigned int textureUnit)
         Texture* tPtr = t.second;
         std::string tName = t.first;
         GLuint unit = textureUnit;
-        format = GetTextureFormat (tPtr->GetChannels ());
+        format = GLTextureFormat (tPtr->GetChannels ());
 
         glBindTexture (GL_TEXTURE_2D, m_materialTextureUnits[materialHandle]->textureUnits[unit]);
         glPixelStorei (GL_UNPACK_ALIGNMENT, 1);
@@ -1169,24 +1187,6 @@ void CGLRenderer::RenderGeometryBuffer (SGlGeometryBuffers* buffer)
     
     // unbind
     glBindVertexArray (0);
-}
-
-GLuint CGLRenderer::GetTextureFormat (unsigned int numTextures)
-{
-    switch (numTextures)
-    {
-    case 1:
-        return GL_RED;
-        break;
-    case 3:
-        return GL_RGB;
-        break;
-    case 4:
-        return GL_RGBA;
-        break;
-    default:
-        return GL_RGB;
-    }
 }
 
 void CGLRenderer::CheckGLError (const std::string& location)

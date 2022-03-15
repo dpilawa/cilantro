@@ -177,7 +177,6 @@ private:
 
     void RenderGeometryBuffer (SGlGeometryBuffers* buffer); 
   
-    GLuint GetTextureFormat (unsigned int numTextures);
     void CheckGLError (const std::string& location);
 
 private:
