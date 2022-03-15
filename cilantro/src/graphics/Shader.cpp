@@ -1,4 +1,5 @@
 #include "graphics/Shader.h"
+#include "system/LogMessage.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
