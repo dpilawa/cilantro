@@ -5,24 +5,24 @@
 #include "math/Vector3f.h"
 #include "math/Vector4f.h"
 
-GLShaderProgram::GLShaderProgram () : ShaderProgram ()
+CGLShaderProgram::CGLShaderProgram () : CShaderProgram ()
 {
-    shaderProgramId = glCreateProgram ();
+    m_glShaderProgramId = glCreateProgram ();
 }
 
-GLShaderProgram::~GLShaderProgram ()
+CGLShaderProgram::~CGLShaderProgram ()
 {
 }
 
-GLuint GLShaderProgram::GetProgramId () const
+GLuint CGLShaderProgram::GetProgramId () const
 {
-    return shaderProgramId;
+    return m_glShaderProgramId;
 }
 
-GLuint GLShaderProgram::GetUniformLocationId (const std::string& uniformName) const
+GLuint CGLShaderProgram::GetUniformLocationId (const std::string& uniformName) const
 {
     this->Use ();
-    GLuint paramUniformLocation = glGetUniformLocation (shaderProgramId, uniformName.c_str ());
+    GLuint paramUniformLocation = glGetUniformLocation (m_glShaderProgramId, uniformName.c_str ());
 
     if (paramUniformLocation == GL_INVALID_INDEX)
     {
@@ -32,13 +32,13 @@ GLuint GLShaderProgram::GetUniformLocationId (const std::string& uniformName) co
     return paramUniformLocation;
 }
 
-void GLShaderProgram::BindUniformBlock (const std::string& blockName, BindingPoint bp)
+void CGLShaderProgram::BindUniformBlock (const std::string& blockName, EBindingPoint bp)
 {
-    GLuint uniformBlockIndex = glGetUniformBlockIndex (shaderProgramId, blockName.c_str ());
+    GLuint uniformBlockIndex = glGetUniformBlockIndex (m_glShaderProgramId, blockName.c_str ());
 
     if (uniformBlockIndex != GL_INVALID_INDEX)
     {
-        glUniformBlockBinding (shaderProgramId, uniformBlockIndex, bp);
+        glUniformBlockBinding (m_glShaderProgramId, uniformBlockIndex, bp);
     }	
     else
     {
@@ -47,7 +47,7 @@ void GLShaderProgram::BindUniformBlock (const std::string& blockName, BindingPoi
     
 }
 
-ShaderProgram& GLShaderProgram::SetUniformFloat (const std::string& uniformName, float uniformValue)
+CShaderProgram& CGLShaderProgram::SetUniformFloat (const std::string& uniformName, float uniformValue)
 {
     GLuint location = GetUniformLocationId (uniformName);
     glUniform1f (location, uniformValue);
@@ -55,7 +55,7 @@ ShaderProgram& GLShaderProgram::SetUniformFloat (const std::string& uniformName,
     return *this;
 }
 
-ShaderProgram& GLShaderProgram::SetUniformVector2f (const std::string& uniformName, const Vector2f& uniformValue)
+CShaderProgram& CGLShaderProgram::SetUniformVector2f (const std::string& uniformName, const Vector2f& uniformValue)
 {
     GLuint location = GetUniformLocationId (uniformName);
     glUniform2fv (location, 1, &uniformValue[0]);
@@ -63,7 +63,7 @@ ShaderProgram& GLShaderProgram::SetUniformVector2f (const std::string& uniformNa
     return *this;
 }
 
-ShaderProgram& GLShaderProgram::SetUniformVector3f (const std::string& uniformName, const Vector3f& uniformValue)
+CShaderProgram& CGLShaderProgram::SetUniformVector3f (const std::string& uniformName, const Vector3f& uniformValue)
 {
     GLuint location = GetUniformLocationId (uniformName);
     glUniform3fv (location, 1, &uniformValue[0]);
@@ -71,7 +71,7 @@ ShaderProgram& GLShaderProgram::SetUniformVector3f (const std::string& uniformNa
     return *this;
 }
 
-ShaderProgram& GLShaderProgram::SetUniformVector4f (const std::string& uniformName, const Vector4f& uniformValue)
+CShaderProgram& CGLShaderProgram::SetUniformVector4f (const std::string& uniformName, const Vector4f& uniformValue)
 {
     GLuint location = GetUniformLocationId (uniformName);
     glUniform4fv (location, 1, &uniformValue[0]);
@@ -79,33 +79,33 @@ ShaderProgram& GLShaderProgram::SetUniformVector4f (const std::string& uniformNa
     return *this;
 }
 
-void GLShaderProgram::Link ()
+void CGLShaderProgram::Link ()
 {
     GLint success;
     char errorLog[512];
 
-    glLinkProgram (shaderProgramId);
-    glGetProgramiv (shaderProgramId, GL_LINK_STATUS, &success);
+    glLinkProgram (m_glShaderProgramId);
+    glGetProgramiv (m_glShaderProgramId, GL_LINK_STATUS, &success);
 
     if (!success)
     {
-        glGetProgramInfoLog (shaderProgramId, 512, nullptr, errorLog);
-        glDeleteProgram (shaderProgramId);
+        glGetProgramInfoLog (m_glShaderProgramId, 512, nullptr, errorLog);
+        glDeleteProgram (m_glShaderProgramId);
         LogMessage () << errorLog;
-        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to link program" << shaderProgramId;
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to link program" << m_glShaderProgramId;
     }
 }
 
-void GLShaderProgram::Use () const
+void CGLShaderProgram::Use () const
 {
-    glUseProgram (shaderProgramId);
+    glUseProgram (m_glShaderProgramId);
 }
 
-void GLShaderProgram::AttachShader (const Shader& shader)
+void CGLShaderProgram::AttachShader (const CShader& shader)
 {
-    const GLShader* glShader = static_cast<const GLShader*> (&shader);
+    const CGLShader* glShader = static_cast<const CGLShader*> (&shader);
 
-    glAttachShader (shaderProgramId, glShader->GetShaderId ());
+    glAttachShader (m_glShaderProgramId, glShader->GetShaderId ());
 }
 
 

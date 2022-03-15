@@ -1,25 +1,17 @@
-#ifndef _SHADER_H_
-#define _SHADER_H_
+#pragma once
 
 #include "cilantroengine.h"
 #include "resource/LoadableResource.h"
 
-enum class ShaderType { VERTEX_SHADER, GEOMETRY_SHADER, FRAGMENT_SHADER };
+enum class EShaderType { VERTEX_SHADER, GEOMETRY_SHADER, FRAGMENT_SHADER };
 
-class Shader : public CLoadableResource
+class CShader : public CLoadableResource
 {
 public:
-    Shader (const std::string& path, ShaderType shaderType);
-    virtual ~Shader ();
+    CShader (const std::string& path, EShaderType shaderType);
+    virtual ~CShader ();
 
     void SetParameter (const std::string& parameter, const std::string& value);
-
-protected:
-    // shader type (vertex, fragment)
-    ShaderType shaderType;
-
-    // source code
-    std::string shaderSourceCode;
 
 private:
     void Load (const std::string& path);
@@ -27,6 +19,12 @@ private:
 
     virtual void Compile() = 0;
 
+protected:
+    // shader type (vertex, fragment)
+    EShaderType m_shaderType;
+
+    // source code
+    std::string m_shaderSource;
 };
 
-#endif
+

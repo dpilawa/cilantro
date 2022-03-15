@@ -14,14 +14,14 @@ class PointLight;
 class DirectionalLight;
 class SpotLight;
 class Camera;
-class ShaderProgram;
+class CShaderProgram;
 class Vector4f;
 
 enum EPipelineLink { LINK_FIRST, LINK_SECOND, LINK_PREVIOUS, LINK_CURRENT, LINK_LAST };
 enum EStencilTestFunction { FUNCTION_NEVER, FUNCTION_LESS, FUNCTION_LEQUAL, FUNCTION_GREATER, FUNCTION_GEQUAL, FUNCTION_EQUAL, FUNCTION_NOTEQUAL, FUNCTION_ALWAYS };
 enum EStencilTestOperation { OP_KEEP, OP_ZERO, OP_REPLACE, OP_INC, OP_INC_WRAP, OP_DEC, OP_DEC_WRAP, OP_INV };
 
-typedef CResourceManager<ShaderProgram> TShaderProgramManager;
+typedef CResourceManager<CShaderProgram> TShaderProgramManager;
 typedef CResourceManager<CRenderStage> TRenderStageManager;
 typedef std::vector<handle_t> TRenderPipeline;
 typedef std::set<handle_t> TLightingShaderSet;

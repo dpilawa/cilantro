@@ -3,51 +3,51 @@
 
 #include <string>
 
-GLShader::GLShader (const std::string& path, ShaderType shaderType) : Shader (path, shaderType)
+CGLShader::CGLShader (const std::string& path, EShaderType shaderType) : CShader (path, shaderType)
 {
     GLint success;
     char errorLog[512];
 
     switch (shaderType)
     {
-        case ShaderType::VERTEX_SHADER:
-            shaderId = glCreateShader (GL_VERTEX_SHADER);
+        case EShaderType::VERTEX_SHADER:
+            m_glShaderId = glCreateShader (GL_VERTEX_SHADER);
             break;
-        case ShaderType::GEOMETRY_SHADER:
-            shaderId = glCreateShader (GL_GEOMETRY_SHADER);
+        case EShaderType::GEOMETRY_SHADER:
+            m_glShaderId = glCreateShader (GL_GEOMETRY_SHADER);
             break;
-        case ShaderType::FRAGMENT_SHADER:
-            shaderId = glCreateShader (GL_FRAGMENT_SHADER);
+        case EShaderType::FRAGMENT_SHADER:
+            m_glShaderId = glCreateShader (GL_FRAGMENT_SHADER);
             break;
     }
 
     Compile ();
 
-    glGetShaderiv (shaderId, GL_COMPILE_STATUS, &success);
+    glGetShaderiv (m_glShaderId, GL_COMPILE_STATUS, &success);
 
     if (!success)
     {
-        glGetShaderInfoLog (shaderId, 512, nullptr, errorLog);
-        glDeleteShader (shaderId);
+        glGetShaderInfoLog (m_glShaderId, 512, nullptr, errorLog);
+        glDeleteShader (m_glShaderId);
         LogMessage () << errorLog;
-        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to compile shader" << shaderId << path;
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to compile shader" << m_glShaderId << path;
     }
 }
 
-GLShader::~GLShader ()
+CGLShader::~CGLShader ()
 {
 }
 
-GLuint GLShader::GetShaderId () const
+GLuint CGLShader::GetShaderId () const
 {
-    return shaderId;
+    return m_glShaderId;
 }
 
-void GLShader::Compile ()
+void CGLShader::Compile ()
 {
     const char* src;
 
-    src = shaderSourceCode.c_str ();
-    glShaderSource (shaderId, 1, &src, NULL);
-    glCompileShader (shaderId); 
+    src = m_shaderSource.c_str ();
+    glShaderSource (m_glShaderId, 1, &src, NULL);
+    glCompileShader (m_glShaderId); 
 }

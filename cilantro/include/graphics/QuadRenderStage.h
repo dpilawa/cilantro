@@ -3,7 +3,7 @@
 #include "cilantroengine.h"
 #include "graphics/RenderStage.h"
 
-class ShaderProgram;
+class CShaderProgram;
 class Vector2f;
 class Vector3f;
 class Vector4f;
@@ -35,6 +35,6 @@ protected:
 
 protected:
 
-    ShaderProgram* m_shaderProgram;
+    CShaderProgram* m_shaderProgram;
 
 };

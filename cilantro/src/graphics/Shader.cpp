@@ -3,28 +3,28 @@
 #include <fstream>
 #include <sstream>
 
-Shader::Shader (const std::string& path, ShaderType shaderType) : CLoadableResource (path)
+CShader::CShader (const std::string& path, EShaderType shaderType) : CLoadableResource (path)
 {
-    this->shaderType = shaderType;
+    this->m_shaderType = shaderType;
     Load (path);
 }
 
-Shader::~Shader ()
+CShader::~CShader ()
 {
 }
 
-void Shader::SetParameter (const std::string& parameter, const std::string& value)
+void CShader::SetParameter (const std::string& parameter, const std::string& value)
 {
     std::size_t pos;
 
-    pos = shaderSourceCode.find (parameter);
+    pos = m_shaderSource.find (parameter);
     if (pos != std::string::npos)
     {
-        shaderSourceCode.replace (pos, parameter.length (), value);
+        m_shaderSource.replace (pos, parameter.length (), value);
     }
 }
 
-void Shader::Load (const std::string& path)
+void CShader::Load (const std::string& path)
 {
     std::ifstream f (path, std::ios::binary);
     std::ostringstream ss;
@@ -35,12 +35,12 @@ void Shader::Load (const std::string& path)
     }
 
     ss << f.rdbuf ();
-    shaderSourceCode = ss.str ();
+    m_shaderSource = ss.str ();
 
     this->SetDefaultParameters ();
 }
 
-void Shader::SetDefaultParameters ()
+void CShader::SetDefaultParameters ()
 {
     SetParameter ("%%CILANTRO_GL_VERSION%%", std::to_string (CILANTRO_GL_VERSION));
     SetParameter ("%%CILANTRO_MAX_BONES%%", std::to_string (CILANTRO_MAX_BONES));

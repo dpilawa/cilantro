@@ -1,30 +1,29 @@
-#ifndef _GLSHADERPROGRAM_H_
-#define _GLSHADERPROGRAM_H_
+#pragma once
 
 #include "cilantroengine.h"
 #include "glad/glad.h"
 #include "graphics/ShaderProgram.h"
 
-enum BindingPoint { BP_MATRICES = 1, BP_POINTLIGHTS, BP_DIRECTIONALLIGHTS, BP_SPOTLIGHTS };
+enum EBindingPoint { BP_MATRICES = 1, BP_POINTLIGHTS, BP_DIRECTIONALLIGHTS, BP_SPOTLIGHTS };
 
-class GLShaderProgram : public ShaderProgram
+class CGLShaderProgram : public CShaderProgram
 {
 public:
-    __EAPI GLShaderProgram ();
-    __EAPI virtual ~GLShaderProgram ();
+    __EAPI CGLShaderProgram ();
+    __EAPI virtual ~CGLShaderProgram ();
 
     // return GL ids
     GLuint GetProgramId () const;
     GLuint GetUniformLocationId (const std::string& uniformName) const;
 
     // bind uniform block
-    void BindUniformBlock (const std::string& blockName, BindingPoint bp);
+    void BindUniformBlock (const std::string& blockName, EBindingPoint bp);
 
     // uniform manipulation
-    __EAPI virtual ShaderProgram& SetUniformFloat (const std::string& uniformName, float uniformValue);
-    __EAPI virtual ShaderProgram& SetUniformVector2f (const std::string& uniformName, const Vector2f& uniformValue);
-    __EAPI virtual ShaderProgram& SetUniformVector3f (const std::string& uniformName, const Vector3f& uniformValue);
-    __EAPI virtual ShaderProgram& SetUniformVector4f (const std::string& uniformName, const Vector4f& uniformValue);
+    __EAPI virtual CShaderProgram& SetUniformFloat (const std::string& uniformName, float uniformValue);
+    __EAPI virtual CShaderProgram& SetUniformVector2f (const std::string& uniformName, const Vector2f& uniformValue);
+    __EAPI virtual CShaderProgram& SetUniformVector3f (const std::string& uniformName, const Vector3f& uniformValue);
+    __EAPI virtual CShaderProgram& SetUniformVector4f (const std::string& uniformName, const Vector4f& uniformValue);
     
     // link program
     void Link ();
@@ -35,11 +34,10 @@ public:
 private:
 
     // attach shader to a program
-    void AttachShader (const Shader& shader);
+    void AttachShader (const CShader& shader);
 
     // ID of a shader program
-    GLuint shaderProgramId;
+    GLuint m_glShaderProgramId;
 };
 
-#endif
 

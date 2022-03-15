@@ -34,7 +34,7 @@ void CQuadRenderStage::OnFrame ()
 
 CQuadRenderStage& CQuadRenderStage::SetShaderProgram (const std::string& shaderProgramName)
 {
-    m_shaderProgram = &(m_renderer->GetShaderProgramManager ().GetByName<ShaderProgram> (shaderProgramName));
+    m_shaderProgram = &(m_renderer->GetShaderProgramManager ().GetByName<CShaderProgram> (shaderProgramName));
 
     return *this;
 }

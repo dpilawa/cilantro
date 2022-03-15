@@ -1,26 +1,25 @@
-#ifndef _GLSHADER_H_
-#define _GLSHADER_H_
+#pragma once
 
 #include "cilantroengine.h"
 #include "glad/glad.h"
 #include "graphics/Shader.h"
 #include <string>
 
-class GLShader : public Shader
+class CGLShader : public CShader
 {
 public:
-    GLShader (const std::string& path, ShaderType type);
-    ~GLShader ();
+    CGLShader (const std::string& path, EShaderType type);
+    ~CGLShader ();
 
     // return shader ID
     GLuint GetShaderId () const;
 
 private:
-
-    // ID of a shader
-    GLuint shaderId;
-
     virtual void Compile();
+
+private:
+    // GL id of a shader
+    GLuint m_glShaderId;
+
 };
 
-#endif

@@ -2,19 +2,19 @@
 #include "graphics/Shader.h"
 #include "system/Game.h"
 
-ShaderProgram::ShaderProgram () : CResource ()
+CShaderProgram::CShaderProgram () : CResource ()
 {
 
 }
 
-ShaderProgram::~ShaderProgram ()
+CShaderProgram::~CShaderProgram ()
 {
     
 }
 
-ShaderProgram& ShaderProgram::AddShader (const std::string& shaderName)
+CShaderProgram& CShaderProgram::AddShader (const std::string& shaderName)
 {
-    AttachShader (CGame::GetResourceManager ().GetByName<Shader> (shaderName));
+    AttachShader (CGame::GetResourceManager ().GetByName<CShader> (shaderName));
 
     return *this;
 }
