@@ -813,8 +813,8 @@ void CGLRenderer::InitializeShaderLibrary ()
 
     // PBR model (forward)
     p = &AddShaderProgram<CGLShaderProgram> ("pbr_forward_shader");
-    p->AddShader ("default_vertex_shader");
-    p->AddShader ("pbr_forward_fragment_shader");
+    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("default_vertex_shader"));
+    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("pbr_forward_fragment_shader"));
     p->Link ();
     p->Use ();
 #if (CILANTRO_GL_VERSION < 330)
@@ -838,8 +838,8 @@ void CGLRenderer::InitializeShaderLibrary ()
 
     // PBR model (deferred, geometry pass)
     p = &AddShaderProgram<CGLShaderProgram> ("pbr_deferred_geometrypass_shader");
-    p->AddShader ("default_vertex_shader");
-    p->AddShader ("pbr_deferred_geometrypass_fragment_shader");
+    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("default_vertex_shader"));
+    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("pbr_deferred_geometrypass_fragment_shader"));
     p->Link ();
     p->Use ();
 #if (CILANTRO_GL_VERSION < 330)
@@ -860,8 +860,8 @@ void CGLRenderer::InitializeShaderLibrary ()
 
     // PBR model (deferred, lighting pass)
     p = &AddShaderProgram<CGLShaderProgram> ("pbr_deferred_lightingpass_shader");
-    p->AddShader ("flatquad_vertex_shader");
-    p->AddShader ("pbr_deferred_lightingpass_fragment_shader");
+    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("flatquad_vertex_shader"));
+    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("pbr_deferred_lightingpass_fragment_shader"));
     p->Link ();
     p->Use ();
 #if (CILANTRO_GL_VERSION < 330)
@@ -880,8 +880,8 @@ void CGLRenderer::InitializeShaderLibrary ()
 
     // Blinn-Phong model (forward)
     p = &AddShaderProgram<CGLShaderProgram> ("blinnphong_forward_shader");
-    p->AddShader ("default_vertex_shader");
-    p->AddShader ("blinnphong_forward_fragment_shader");
+    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("default_vertex_shader"));
+    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("blinnphong_forward_fragment_shader"));
     p->Link ();
     p->Use ();
 #if (CILANTRO_GL_VERSION < 330)	
@@ -904,8 +904,8 @@ void CGLRenderer::InitializeShaderLibrary ()
     
     // Blinn-Phong model (deferred, geometry pass)
     p = &AddShaderProgram<CGLShaderProgram> ("blinnphong_deferred_geometrypass_shader");
-    p->AddShader ("default_vertex_shader");
-    p->AddShader ("blinnphong_deferred_geometrypass_fragment_shader");
+    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("default_vertex_shader"));
+    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("blinnphong_deferred_geometrypass_fragment_shader"));
     p->Link ();
     p->Use ();
 #if (CILANTRO_GL_VERSION < 330)
@@ -925,8 +925,8 @@ void CGLRenderer::InitializeShaderLibrary ()
 
     // Blinn-Phong model (deferred, lighting pass)
     p = &AddShaderProgram<CGLShaderProgram> ("blinnphong_deferred_lightingpass_shader");
-    p->AddShader ("flatquad_vertex_shader");
-    p->AddShader ("blinnphong_deferred_lightingpass_fragment_shader");
+    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("flatquad_vertex_shader"));
+    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("blinnphong_deferred_lightingpass_fragment_shader"));
     p->Link ();
     p->Use ();
 #if (CILANTRO_GL_VERSION < 330)
@@ -946,8 +946,8 @@ void CGLRenderer::InitializeShaderLibrary ()
  
     // Screen quad rendering
     p = &AddShaderProgram<CGLShaderProgram> ("flatquad_shader");
-    p->AddShader ("flatquad_vertex_shader");
-    p->AddShader ("flatquad_fragment_shader");   
+    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("flatquad_vertex_shader"));
+    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("flatquad_fragment_shader"));   
 #if (CILANTRO_GL_VERSION < 330)	
     glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
     glBindAttribLocation (p->GetProgramId (), 1, "vTextureCoordinates");
@@ -960,8 +960,8 @@ void CGLRenderer::InitializeShaderLibrary ()
 
     // Post-processing HDR
     p = &AddShaderProgram<CGLShaderProgram> ("post_hdr_shader");
-    p->AddShader ("flatquad_vertex_shader");
-    p->AddShader ("post_hdr_fragment_shader");
+    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("flatquad_vertex_shader"));
+    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("post_hdr_fragment_shader"));
 #if (CILANTRO_GL_VERSION < 330)	
     glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
     glBindAttribLocation (p->GetProgramId (), 1, "vTextureCoordinates");
@@ -974,8 +974,8 @@ void CGLRenderer::InitializeShaderLibrary ()
 
     // Post-processing gamma
     p = &AddShaderProgram<CGLShaderProgram> ("post_gamma_shader");
-    p->AddShader ("flatquad_vertex_shader");
-    p->AddShader ("post_gamma_fragment_shader");   
+    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("flatquad_vertex_shader"));
+    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("post_gamma_fragment_shader"));   
 #if (CILANTRO_GL_VERSION < 330)	
     glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
     glBindAttribLocation (p->GetProgramId (), 1, "vTextureCoordinates");
@@ -988,8 +988,8 @@ void CGLRenderer::InitializeShaderLibrary ()
 
     // Post-processing fxaa
     p = &AddShaderProgram<CGLShaderProgram> ("post_fxaa_shader");
-    p->AddShader ("flatquad_vertex_shader");
-    p->AddShader ("post_fxaa_fragment_shader");   
+    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("flatquad_vertex_shader"));
+    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("post_fxaa_fragment_shader"));   
 #if (CILANTRO_GL_VERSION < 330)	
     glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
     glBindAttribLocation (p->GetProgramId (), 1, "vTextureCoordinates");

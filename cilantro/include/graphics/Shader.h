@@ -1,25 +1,29 @@
 #pragma once
 
 #include "cilantroengine.h"
+#include "graphics/IShader.h"
 #include "resource/LoadableResource.h"
+#include <string>
 
-enum class EShaderType { VERTEX_SHADER, GEOMETRY_SHADER, FRAGMENT_SHADER };
-
-class CShader : public CLoadableResource
+class CShader : public IShader, public CLoadableResource
 {
 public:
     CShader (const std::string& path, EShaderType shaderType);
-    virtual ~CShader ();
+    virtual ~CShader () {};
 
-    void SetParameter (const std::string& parameter, const std::string& value);
+    ///////////////////////////////////////////////////////////////////////////
+
+    virtual void Load (const std::string& path) override;
+    
+    void SetParameter (const std::string& parameter, const std::string& value) override;
+
+    ///////////////////////////////////////////////////////////////////////////
 
 private:
-    void Load (const std::string& path);
     void SetDefaultParameters ();
 
-    virtual void Compile() = 0;
-
 protected:
+
     // shader type (vertex, fragment)
     EShaderType m_shaderType;
 

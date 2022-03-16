@@ -9,15 +9,18 @@ class CGLShader : public CShader
 {
 public:
     CGLShader (const std::string& path, EShaderType type);
-    ~CGLShader ();
+    ~CGLShader () {};
 
-    // return shader ID
+    ///////////////////////////////////////////////////////////////////////////
+
+    virtual void Compile () override;
+
+    ///////////////////////////////////////////////////////////////////////////
+
     GLuint GetShaderId () const;
 
 private:
-    virtual void Compile();
 
-private:
     // GL id of a shader
     GLuint m_glShaderId;
 

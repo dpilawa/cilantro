@@ -10,21 +10,6 @@ CShader::CShader (const std::string& path, EShaderType shaderType) : CLoadableRe
     Load (path);
 }
 
-CShader::~CShader ()
-{
-}
-
-void CShader::SetParameter (const std::string& parameter, const std::string& value)
-{
-    std::size_t pos;
-
-    pos = m_shaderSource.find (parameter);
-    if (pos != std::string::npos)
-    {
-        m_shaderSource.replace (pos, parameter.length (), value);
-    }
-}
-
 void CShader::Load (const std::string& path)
 {
     std::ifstream f (path, std::ios::binary);
@@ -39,6 +24,17 @@ void CShader::Load (const std::string& path)
     m_shaderSource = ss.str ();
 
     this->SetDefaultParameters ();
+}
+
+void CShader::SetParameter (const std::string& parameter, const std::string& value)
+{
+    std::size_t pos;
+
+    pos = m_shaderSource.find (parameter);
+    if (pos != std::string::npos)
+    {
+        m_shaderSource.replace (pos, parameter.length (), value);
+    }
 }
 
 void CShader::SetDefaultParameters ()

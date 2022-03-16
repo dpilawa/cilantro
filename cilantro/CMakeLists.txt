@@ -45,6 +45,8 @@ include/graphics/GLRenderer.h
 include/graphics/QuadRenderStage.h
 include/graphics/IRenderStage.h
 include/graphics/RenderStage.h
+include/graphics/IShader.h
+include/graphics/IShaderProgram.h
 include/graphics/Shader.h
 include/graphics/ShaderProgram.h
 include/input/InputController.h

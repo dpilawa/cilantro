@@ -34,15 +34,6 @@ CGLShader::CGLShader (const std::string& path, EShaderType shaderType) : CShader
     }
 }
 
-CGLShader::~CGLShader ()
-{
-}
-
-GLuint CGLShader::GetShaderId () const
-{
-    return m_glShaderId;
-}
-
 void CGLShader::Compile ()
 {
     const char* src;
@@ -51,3 +42,9 @@ void CGLShader::Compile ()
     glShaderSource (m_glShaderId, 1, &src, NULL);
     glCompileShader (m_glShaderId); 
 }
+
+GLuint CGLShader::GetShaderId () const
+{
+    return m_glShaderId;
+}
+

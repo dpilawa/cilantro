@@ -53,7 +53,7 @@ private:
 template <typename T, typename ...Params> 
 T& CGame::CreateGameScene (Params&&... params)
 {
-    static_assert (std::is_base_of<CGameScene, T>::value, "Game scene object must inherit from GameScene");
+    static_assert (std::is_base_of<CGameScene, T>::value, "Game scene object must inherit from CGameScene");
     T& gameScene = m_gameSceneManager.Create<T> (params...);
 
     if (m_currentGameScene == nullptr)
