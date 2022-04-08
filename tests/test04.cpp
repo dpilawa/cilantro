@@ -20,7 +20,7 @@ int main (int argc, char* argv [])
     CGame::Initialize ();
 
     CGameScene& gameScene = CGame::CreateGameScene<CGameScene> ("scene");
-    CGLFWRenderer& renderer = gameScene.CreateRenderer<CGLFWRenderer> (800, 600, true, true, "Test 01", false, true, true);
+    CGLFWRenderer& renderer = gameScene.CreateRenderer<CGLFWRenderer> (800, 600, true, false, "Test 04", false, true, true);
     InputController& inputController = CGame::CreateInputController<GLFWInputController> ();
 
     AssimpModelLoader modelLoader;
@@ -46,15 +46,15 @@ int main (int argc, char* argv [])
 
     MeshObject& gun = gameScene.GetGameObjectManager ().GetByName<MeshObject> ("Cerberus00_Fixed");
     gun.SetMaterial ("gunMaterial");
-    gun.GetLocalTransform ().Scale (0.8f).Rotate (0.0f, 15.0f, 0.0f);
+    gun.GetLocalTransform ().Rotate (0.0f, 0.0f, 135.0f);
 
-    ControlledCamera& cam = gameScene.AddGameObject<ControlledCamera> ("camera", 60.0f, 0.01f, 100.0f, 0.1f, 0.1f);
+    ControlledCamera& cam = gameScene.AddGameObject<ControlledCamera> ("camera", 60.0f, 10.0f, 250.0f, 1.5f, 0.1f);
     cam.Initialize ();
-    cam.GetLocalTransform ().Translate (0.0f, 0.0f, 20.0f);
+    cam.GetLocalTransform ().Translate (0.0f, 0.0f, 50.0f);
     gameScene.SetActiveCamera ("camera");
 
     DirectionalLight& light = gameScene.AddGameObject<DirectionalLight> ("light");
-    light.GetLocalTransform ().Rotate (45.0f, -135.0f, 0.0f);
+    light.GetLocalTransform ().Rotate (45.0f, -120.0f, 0.0f);
     light.SetColor (Vector3f (2.5f, 2.1f, 1.7f));
     light.SetEnabled (true);
 

@@ -137,7 +137,7 @@ void CGLRenderer::Draw (MeshObject& meshObject)
 
     // get shader program for rendered meshobject (geometry pass)
     CGLShaderProgram& geometryShaderProgram = m_shaderProgramManager.GetByName<CGLShaderProgram> (
-        m_isDeferred
+        m_isDeferredRendering
         ? objM.GetDeferredGeometryPassShaderProgram ()
         : objM.GetForwardShaderProgram ()
     );
@@ -201,7 +201,7 @@ void CGLRenderer::Draw (MeshObject& meshObject)
     geometryShaderProgram.SetUniformMatrix4fv ("mBoneTransformations", meshObject.GetBoneTransformationsMatrixArray (), CILANTRO_MAX_BONES);
 
     // get shader program for rendered meshobject (lighting pass)
-    if (m_isDeferred)
+    if (m_isDeferredRendering)
     {
         CGLShaderProgram& lightingShaderProgram = m_shaderProgramManager.GetByName<CGLShaderProgram>(objM.GetDeferredLightingPassShaderProgram ());
         lightingShaderProgram.Use ();
@@ -441,7 +441,7 @@ void CGLRenderer::Update (Material& material)
     handle_t shaderProgramHandle = m_shaderProgramManager.GetByName<CShaderProgram>(material.GetDeferredLightingPassShaderProgram ()).GetHandle ();
     std::string shaderProgramName = material.GetDeferredLightingPassShaderProgram ();
 
-    if (m_isDeferred)
+    if (m_isDeferredRendering)
     {
         // add material's shader program to set of used shader programs handles
         // add lighting deferred pass renderStages for each program

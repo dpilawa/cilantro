@@ -9,9 +9,9 @@
 #include "system/LogMessage.h"
 #include <cmath>
 
-CRenderer::CRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferred)
+CRenderer::CRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled)
     : m_gameScene (gameScene)
-    , m_isDeferred (deferred)
+    , m_isDeferredRendering (deferredRenderingEnabled)
     , m_isShadowMapping (shadowMappingEnabled)
     , m_width (width)
     , m_height (height)
@@ -166,7 +166,7 @@ void CRenderer::InitializeRenderStages ()
         shadow.Initialize ();
     }
 
-    if (m_isDeferred == true)
+    if (m_isDeferredRendering == true)
     {
         // geometry stage
         IRenderStage& baseDeferred = this->AddRenderStage<CDeferredGeometryRenderStage> ("base");
@@ -186,7 +186,10 @@ void CRenderer::InitializeRenderStages ()
     else
     {
         IRenderStage& baseForward = this->AddRenderStage<CForwardGeometryRenderStage> ("base");
-        baseForward.SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);
+        if (m_isShadowMapping == true)
+        {
+            baseForward.SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);
+        }
         baseForward.Initialize ();
     }
 }

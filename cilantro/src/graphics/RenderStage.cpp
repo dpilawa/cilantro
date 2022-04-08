@@ -168,6 +168,8 @@ IRenderStage& CRenderStage::SetMultisampleEnabled (bool value)
     size_t rgbTextureCount;
     size_t rgbaTextureCount;
     size_t dsArraySize;
+    size_t width;
+    size_t height;
     bool hasDSRenderbuffer;
 
     if (value != m_isMultisampleEnabled)
@@ -183,10 +185,13 @@ IRenderStage& CRenderStage::SetMultisampleEnabled (bool value)
             dsArraySize = m_framebuffer->GetDepthArrayLayerCount ();
             hasDSRenderbuffer = m_framebuffer->IsDepthStencilRenderbufferEnabled ();
 
+            width = m_framebuffer->GetWidth ();
+            height = m_framebuffer->GetHeight ();
+
             m_framebuffer->Deinitialize ();
             delete m_framebuffer;
 
-            m_framebuffer = m_renderer->CreateFramebuffer (m_framebuffer->GetWidth (), m_framebuffer->GetHeight (), rgbTextureCount, rgbaTextureCount, dsArraySize, hasDSRenderbuffer, m_isMultisampleEnabled);
+            m_framebuffer = m_renderer->CreateFramebuffer (width, height, rgbTextureCount, rgbaTextureCount, dsArraySize, hasDSRenderbuffer, m_isMultisampleEnabled);
             m_framebuffer->Initialize ();
         }
     }

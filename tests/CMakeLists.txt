@@ -54,3 +54,4 @@ add_custom_command (TARGET deps PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy_direc
 
 externalproject_get_property(cerberus SOURCE_DIR)
 add_custom_command (TARGET cerberus POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${SOURCE_DIR} $<TARGET_FILE_DIR:cilantro>/assets/)
+add_custom_command (TARGET cerberus POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${SOURCE_DIR}/Textures $<TARGET_FILE_DIR:cilantro>/textures/)
