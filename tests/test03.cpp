@@ -50,7 +50,7 @@ int main (int argc, char* argv[])
     MeshObject& floor = gameScene.AddGameObject<MeshObject> ("floor", "floorMesh", "floorMaterial");
     floor.GetLocalTransform ().Scale (1000.0f, 0.05f, 1000.0f).Translate (0.0f, -0.05f, 0.0f);
 
-    ControlledCamera& cam = gameScene.AddGameObject<ControlledCamera> ("camera", 60.0f, 10.0f, 1000.0f, 5.0f, 0.1f);
+    ControlledCamera& cam = gameScene.AddGameObject<ControlledCamera> ("camera", 60.0f, 10.0f, 600.0f, 5.0f, 0.1f);
     cam.Initialize ();
     cam.GetLocalTransform ().Translate (0.0f, 100.0f, 250.0f);
     gameScene.SetActiveCamera ("camera");

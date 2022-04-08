@@ -229,7 +229,7 @@ void main()
     {
         vec3 lightDirection = normalize (-directionalLights[i].lightDirection);
         vec3 halfwayDirection = normalize (viewDirection + lightDirection);
-        
+
         vec4 fragmentLightSpace = mLightSpace[i] * vec4 (fPosition, 1.0);
         vec3 depthMapCoords = vec3 (fragmentLightSpace / fragmentLightSpace.w) * 0.5 + 0.5;
 
@@ -237,6 +237,10 @@ void main()
         float fragmentDepth = abs (depthMapCoords.z);
         float lightmapDepth = texture (tDirectionalShadowMap, vec3 (depthMapCoords.x, depthMapCoords.y, i)).r;
         shadow = (lightmapDepth < fragmentDepth) ? 0.0 : 1.0;
+        if (fragmentDepth > 1.0)
+        {
+            shadow = 1.0;
+        }
 
         vec3 radiance = CalculateDirectionalLightRadiance (directionalLights[i]);
         vec3 specular = CalculateCookTorranceSpecularBRDF (fNormal, lightDirection, viewDirection, halfwayDirection);

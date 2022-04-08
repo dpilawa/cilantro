@@ -207,6 +207,10 @@ void main()
         float fragmentDepth = abs (depthMapCoords.z);
         float lightmapDepth = texture (tDirectionalShadowMap, vec3 (depthMapCoords.x, depthMapCoords.y, i)).r;
         shadow = (lightmapDepth < fragmentDepth) ? 0.0 : 1.0;
+        if (fragmentDepth > 1.0)
+        {
+            shadow = 1.0;
+        }        
 
         color += CalculateDirectionalLight (directionalLights[i]) * shadow;
     }
