@@ -29,6 +29,13 @@ uniform sampler2D tSpecular;
 uniform sampler2D tEmissive;
 #endif
 
+/* shadow maps */
+#if (__VERSION__ >= 420)
+layout (binding = 4) uniform sampler2DArray tDirectionalShadowMap;
+#else
+uniform sampler2DArray tDirectionalShadowMap;
+#endif
+
 vec3 fNormal;
 vec3 fDiffuseColor;
 vec3 fSpecularColor;
@@ -193,7 +200,15 @@ void main()
 
     for (int i=0; i < directionalLightCount; i++)
     {
-        color += CalculateDirectionalLight (directionalLights[i]);
+        vec4 fragmentLightSpace = mLightSpace[i] * vec4 (fPosition, 1.0);
+        vec3 depthMapCoords = vec3 (fragmentLightSpace / fragmentLightSpace.w) * 0.5 + 0.5;
+
+        float shadow;
+        float fragmentDepth = abs (depthMapCoords.z);
+        float lightmapDepth = texture (tDirectionalShadowMap, vec3 (depthMapCoords.x, depthMapCoords.y, i)).r;
+        shadow = (lightmapDepth < fragmentDepth) ? 0.0 : 1.0;
+
+        color += CalculateDirectionalLight (directionalLights[i]) * shadow;
     }
 
     for (int i=0; i < spotLightCount; i++)

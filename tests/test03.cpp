@@ -3,8 +3,10 @@
 #include "scene/AnimationObject.h"
 #include "scene/GameScene.h"
 #include "scene/PhongMaterial.h"
+#include "scene/PBRMaterial.h"
 #include "scene/MeshObject.h"
 #include "scene/PointLight.h"
+#include "scene/DirectionalLight.h"
 #include "resource/ResourceManager.h"
 #include "resource/AssimpModelLoader.h"
 #include "graphics/QuadRenderStage.h"
@@ -41,7 +43,14 @@ int main (int argc, char* argv[])
 
     modelLoader.Load ("scene", "assets/Drunk Idle.fbx");
 
-    ControlledCamera& cam = gameScene.AddGameObject<ControlledCamera> ("camera", 60.0f, 0.1f, 100.0f, 5.0f, 0.1f);
+    gameScene.AddMaterial<PBRMaterial> ("floorMaterial").SetAlbedo (Vector3f (0.3f, 0.2f, 0.2f)).SetRoughness (0.1f).SetMetallic (0.6f);
+
+    Mesh& floorMesh = CGame::GetResourceManager ().Create<Mesh> ("floorMesh");
+    Primitives::GenerateCube (floorMesh);
+    MeshObject& floor = gameScene.AddGameObject<MeshObject> ("floor", "floorMesh", "floorMaterial");
+    floor.GetLocalTransform ().Scale (1000.0f, 0.05f, 1000.0f).Translate (0.0f, -0.05f, 0.0f);
+
+    ControlledCamera& cam = gameScene.AddGameObject<ControlledCamera> ("camera", 60.0f, 10.0f, 1000.0f, 5.0f, 0.1f);
     cam.Initialize ();
     cam.GetLocalTransform ().Translate (0.0f, 100.0f, 250.0f);
     gameScene.SetActiveCamera ("camera");
@@ -50,6 +59,11 @@ int main (int argc, char* argv[])
     light.GetLocalTransform ().Translate (100.0f, 100.0f, 100.0f);
     light.SetColor (Vector3f (1.0f, 1.0f, 1.0f));
     light.SetEnabled (true);
+
+    DirectionalLight& light2 = gameScene.AddGameObject<DirectionalLight> ("light2");
+    light2.GetLocalTransform ().Rotate (60.0f, 180.0f, 0.0f);
+    light2.SetColor (Vector3f (1.0f, 1.0f, 1.0f));
+    light2.SetEnabled (true);
 
     AnimationObject& anim = gameScene.GetGameObjectManager ().GetByName<AnimationObject> ("mixamo.com");
     anim.SetLooping (true);

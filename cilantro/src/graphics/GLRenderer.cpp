@@ -229,8 +229,13 @@ void CGLRenderer::DrawAllGeometryBuffers (IShaderProgram& shader)
 
     for (auto&& geomertyBuffer : m_sceneGeometryBuffers)
     {
+        MeshObject m = m_gameScene->GetGameObjectManager ().GetByHandle<MeshObject> (geomertyBuffer.first);
+
         // load model matrix to currently bound shader
-        shader.SetUniformMatrix4f ("mModel", m_gameScene->GetGameObjectManager ().GetByHandle<MeshObject> (geomertyBuffer.first).GetModelTransformMatrix ());
+        shader.SetUniformMatrix4f ("mModel", m.GetModelTransformMatrix ());
+
+        // set bone transformation matrix array uniform
+        shader.SetUniformMatrix4fv ("mBoneTransformations", m.GetBoneTransformationsMatrixArray (), CILANTRO_MAX_BONES);
 
         // draw
         RenderGeometryBuffer (geomertyBuffer.second);
@@ -868,8 +873,7 @@ void CGLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tNormal"), 1);
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tMetallic"), 2);
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tRoughness"), 3);
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tAO"), 4)
-    ;
+    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tAO"), 4);
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 5);
 #endif
     p->BindUniformBlock ("UniformMatricesBlock", EBindingPoint::BP_MATRICES);
@@ -938,6 +942,7 @@ void CGLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tNormal"), 1);
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tSpecular"), 2);
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tEmissive"), 3);
+    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 4);
 #endif
     p->BindUniformBlock ("UniformMatricesBlock", EBindingPoint::BP_MATRICES);
     p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL);
