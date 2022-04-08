@@ -32,6 +32,7 @@ public:
 
     __EAPI virtual TRenderStageManager& GetRenderStageManager () override final;
     
+    virtual IRenderStage* GetCurrentRenderStage () override final;
     virtual TRenderPipeline& GetRenderPipeline () override final;
     virtual IRenderer& RotateRenderPipelineLeft () override final;
     virtual IRenderer& RotateRenderPipelineRight () override final;
@@ -52,7 +53,8 @@ protected:
     CGameScene* m_gameScene;
 
     // render pipeline
-    unsigned int m_currentRenderStage;
+    size_t m_currentRenderStageIdx;
+    IRenderStage* m_currentRenderStage;
     TRenderStageManager m_renderStageManager;
     TRenderPipeline m_renderPipeline;
 
@@ -61,11 +63,11 @@ protected:
 
     // set of handles of distinct lighting pass shader programs used in the scene
     TLightingShaderSet m_lightingShaders;
-    unsigned int m_lightingShaderStagesCount;
+    size_t m_lightingShaderStagesCount;
 
     // dimensions
-    unsigned int m_width;
-    unsigned int m_height;
+    size_t m_width;
+    size_t m_height;
 
     // flags
     bool m_isDeferred;

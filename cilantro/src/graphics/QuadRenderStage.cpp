@@ -17,12 +17,10 @@ void CQuadRenderStage::Initialize ()
 void CQuadRenderStage::OnFrame ()
 {
     CRenderStage::OnFrame ();
-    
-    IFramebuffer* colorFramebuffer = m_renderer->GetPipelineFramebuffer (m_colorAttachmentsFramebufferLink);
-  
+      
     // bind textures of framebuffer linked as previous (input) and draw
     m_shaderProgram->Use ();
-    colorFramebuffer->BindFramebufferColorTextures ();
+    m_linkedColorAttachmentsFramebuffer->BindFramebufferColorTexturesAsColor ();
     
     // draw quad
     m_renderer->DrawQuad ();

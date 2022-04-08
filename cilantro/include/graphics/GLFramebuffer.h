@@ -26,9 +26,10 @@ public:
     virtual void Deinitialize () override;
 
     virtual void BindFramebuffer () const override;
-    virtual void BindFramebufferColorTextures () const override;
-    virtual void BindFramebufferDepthArrayTexture () const override;
-    virtual void BindFramebufferDSRenderbuffer () const override;
+    virtual void BindFramebufferColorTexturesAsColor () const override;
+    virtual void BindFramebufferDepthArrayTextureAsColor (size_t index) const override;
+    virtual void BindFramebufferDepthArrayTextureAsDepth () const override;
+    virtual void BindFramebufferRenderbuffer () const override;
 
     virtual void UnbindFramebuffer () const override;    
 

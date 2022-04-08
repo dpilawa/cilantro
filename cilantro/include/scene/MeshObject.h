@@ -30,7 +30,7 @@ public:
     float* GetBoneTransformationsMatrixArray ();
 
     // invoked by game loop on each frame or on update (e.g. transform)
-    virtual void OnFrame ();
+    virtual void OnFrame () override;
     virtual void OnDraw (IRenderer& renderer) override;
     virtual void OnUpdate (IRenderer& renderer) override;
 

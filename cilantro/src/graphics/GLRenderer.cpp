@@ -144,7 +144,7 @@ void CGLRenderer::Draw (MeshObject& meshObject)
     geometryShaderProgram.Use ();
     shaderProgramId = geometryShaderProgram.GetProgramId ();
 
-    // bind textures for active material
+    // bind textures for active material and shadow map
     if (m_materialTextureUnits.find(meshObject.GetMaterial ().GetHandle ()) != m_materialTextureUnits.end ())
     {
         SGlMaterialTextureUnits* u = m_materialTextureUnits[meshObject.GetMaterial ().GetHandle ()];
@@ -154,6 +154,10 @@ void CGLRenderer::Draw (MeshObject& meshObject)
             glActiveTexture (GL_TEXTURE0 + i);
             glBindTexture (GL_TEXTURE_2D, u->textureUnits[i]);
         }
+
+        // bind shadow map on next available texture slot
+        GetCurrentRenderStage ()->GetLinkedColorAttachmentsFramebuffer ()->BindFramebufferDepthArrayTextureAsColor (u->unitsCount);
+
     }
     else
     {
@@ -864,7 +868,9 @@ void CGLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tNormal"), 1);
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tMetallic"), 2);
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tRoughness"), 3);
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tAO"), 4);
+    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tAO"), 4)
+    ;
+    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 5);
 #endif
     p->BindUniformBlock ("UniformMatricesBlock", EBindingPoint::BP_MATRICES);
     p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL);
@@ -1133,7 +1139,7 @@ void CGLRenderer::LoadLightViewUniformBuffers ()
 
         size_t lightIdx = light.second;
         DirectionalLight& l = m_gameScene->GetGameObjectManager ().GetByHandle<DirectionalLight> (light.first);
-        lightView = Mathf::GenCameraViewMatrix (frustumCenter + l.GetForward (), frustumCenter, l.GetUp ());
+        lightView = Mathf::GenCameraViewMatrix (frustumCenter - l.GetForward (), frustumCenter, l.GetUp ());
 
         for (auto&& v : frustumVertices)
         {
@@ -1147,7 +1153,7 @@ void CGLRenderer::LoadLightViewUniformBuffers ()
             maxZ = std::max(maxZ, lv[2]);
         }
 
-        constexpr float zMult = 2.0f;
+        constexpr float zMult = 1.0f;
         if (minZ < 0)
         {
             minZ *= zMult;

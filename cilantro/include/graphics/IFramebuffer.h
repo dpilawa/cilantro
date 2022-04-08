@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cilantroengine.h"
+#include <cstddef>
 #include <cstdint>
 
 struct IFramebuffer 
@@ -11,9 +12,10 @@ struct IFramebuffer
     virtual void Deinitialize () = 0;
 
     virtual void BindFramebuffer () const = 0;
-    virtual void BindFramebufferColorTextures () const = 0;
-    virtual void BindFramebufferDepthArrayTexture () const = 0;
-    virtual void BindFramebufferDSRenderbuffer () const = 0;
+    virtual void BindFramebufferColorTexturesAsColor () const = 0;
+    virtual void BindFramebufferDepthArrayTextureAsColor (size_t index) const = 0;
+    virtual void BindFramebufferDepthArrayTextureAsDepth () const = 0;
+    virtual void BindFramebufferRenderbuffer () const = 0;
     
     virtual void UnbindFramebuffer () const = 0;    
 

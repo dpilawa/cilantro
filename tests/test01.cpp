@@ -27,7 +27,7 @@
 
 int main (int argc, char* argv [])
 {
-    CGame::Initialize (); 
+    CGame::Initialize ();
 
     CGameScene& gameScene = CGame::CreateGameScene<CGameScene> ("scene");
     CGLFWRenderer& renderer = gameScene.CreateRenderer<CGLFWRenderer> (800, 600, true, false, "Test 01", false, true, true);

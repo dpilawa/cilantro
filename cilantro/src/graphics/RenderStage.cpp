@@ -25,7 +25,7 @@ CRenderStage::CRenderStage ()
 
     , m_colorAttachmentsFramebufferLink (EPipelineLink::LINK_CURRENT)
     , m_dsAttachmentsFramebufferLink (EPipelineLink::LINK_CURRENT)
-    , m_outputFramebufferLink (EPipelineLink::LINK_CURRENT)
+    , m_drawFramebufferLink (EPipelineLink::LINK_CURRENT)
 {
 }
 
@@ -43,17 +43,35 @@ IFramebuffer* CRenderStage::GetFramebuffer () const
     return m_framebuffer;
 }
 
+IFramebuffer* CRenderStage::GetLinkedColorAttachmentsFramebuffer () const
+{
+    return m_renderer->GetPipelineFramebuffer (m_colorAttachmentsFramebufferLink);
+}
+
+IFramebuffer* CRenderStage::GetLinkedDSAttachmentsFramebuffer () const
+{
+    return m_renderer->GetPipelineFramebuffer (m_dsAttachmentsFramebufferLink);
+}
+
+IFramebuffer* CRenderStage::GetLinkedDrawFramebuffer () const
+{
+    return m_renderer->GetPipelineFramebuffer (m_drawFramebufferLink);
+}
+
 void CRenderStage::OnFrame ()
 {
-    IFramebuffer* dsFramebuffer = m_renderer->GetPipelineFramebuffer (m_dsAttachmentsFramebufferLink);
-    IFramebuffer* outputFramebuffer = m_renderer->GetPipelineFramebuffer (m_outputFramebufferLink);
     size_t width;
     size_t height;
-  
+
+    // link pipeline framebuffers
+    m_linkedColorAttachmentsFramebuffer = GetLinkedColorAttachmentsFramebuffer ();
+    m_linkedDSAttachmentsFramebuffer = GetLinkedDSAttachmentsFramebuffer ();
+    m_linkedDrawFramebuffer = GetLinkedDrawFramebuffer ();
+    
     // bind framebuffer to render to
-    if (outputFramebuffer != nullptr)    
+    if (m_linkedDrawFramebuffer != nullptr)    
     {
-        outputFramebuffer->BindFramebuffer ();
+        m_linkedDrawFramebuffer->BindFramebuffer ();
     }
     else
     {
@@ -61,15 +79,15 @@ void CRenderStage::OnFrame ()
     }
     
     // bind depth and stencli buffers from previous/linked stage
-    if (dsFramebuffer != nullptr)
+    if (m_linkedDSAttachmentsFramebuffer != nullptr)
     {
-        if (dsFramebuffer->IsDepthStencilRenderbufferEnabled ()) 
+        if (m_linkedDSAttachmentsFramebuffer->IsDepthStencilRenderbufferEnabled ()) 
         {
-            dsFramebuffer->BindFramebufferDSRenderbuffer ();
+            m_linkedDSAttachmentsFramebuffer->BindFramebufferRenderbuffer ();
         } 
-        else if (dsFramebuffer->GetDepthArrayLayerCount () > 0)
+        else if (m_linkedDSAttachmentsFramebuffer->GetDepthArrayLayerCount () > 0)
         {
-            dsFramebuffer->BindFramebufferDepthArrayTexture ();
+            m_linkedDSAttachmentsFramebuffer->BindFramebufferDepthArrayTextureAsDepth ();
         }
         else
         {
@@ -116,10 +134,10 @@ void CRenderStage::OnFrame ()
 
     // set viewport
 
-    if (outputFramebuffer != nullptr)
+    if (m_linkedDrawFramebuffer != nullptr)
     {
-        width = outputFramebuffer->GetWidth ();
-        height = outputFramebuffer->GetHeight ();
+        width = m_linkedDrawFramebuffer->GetWidth ();
+        height = m_linkedDrawFramebuffer->GetHeight ();
     }
     else
     {
@@ -306,7 +324,7 @@ IRenderStage& CRenderStage::SetDepthStencilAttachmentsFramebufferLink (EPipeline
 
 IRenderStage& CRenderStage::SetOutputFramebufferLink (EPipelineLink link)
 {
-    m_outputFramebufferLink = link;
+    m_drawFramebufferLink = link;
 
     return *this;
 }

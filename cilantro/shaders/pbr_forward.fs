@@ -33,6 +33,13 @@ uniform sampler2D tRoughness;
 uniform sampler2D tAO;
 #endif
 
+/* shadow maps */
+#if (__VERSION__ >= 420)
+layout (binding = 5) uniform sampler2DArray tDirectionalShadowMap;
+#else
+uniform sampler2DArray tDirectionalShadowMap;
+#endif
+
 vec3 fNormal;
 vec3 fAlbedo;
 float fMetallic;
@@ -222,6 +229,13 @@ void main()
     {
         vec3 lightDirection = normalize (-directionalLights[i].lightDirection);
         vec3 halfwayDirection = normalize (viewDirection + lightDirection);
+        vec4 fragmentLightSpace = mLightSpace[i] * vec4 (fPosition, 1.0);
+        vec3 depthMapCoords = vec3 (fragmentLightSpace / fragmentLightSpace.w) * 0.5 + 0.5;
+
+        float shadow;
+        float fragmentDepth = abs (depthMapCoords.z);
+        float lightmapDepth = texture (tDirectionalShadowMap, vec3 (depthMapCoords.x, depthMapCoords.y, i)).r;
+        shadow = (lightmapDepth < fragmentDepth) ? 0.0 : 1.0;
 
         vec3 radiance = CalculateDirectionalLightRadiance (directionalLights[i]);
         vec3 specular = CalculateCookTorranceSpecularBRDF (fNormal, lightDirection, viewDirection, halfwayDirection);
@@ -234,7 +248,7 @@ void main()
         kD = kD * (1.0 - fMetallic);	
 
         float NdotL = max (dot (fNormal, lightDirection), 0.0);        
-        Lo += (kD * fAlbedo / PI + specular) * radiance * NdotL + vec3(0.01) * fAlbedo * fAO;
+        Lo += ((kD * fAlbedo / PI + specular) * radiance * NdotL + vec3(0.01) * fAlbedo * fAO) * shadow;
     }
 
     for (int i = 0; i < spotLightCount; i++)

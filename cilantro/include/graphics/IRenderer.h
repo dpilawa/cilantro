@@ -5,9 +5,11 @@
 #include <set>
 #include <vector>
 
+struct IRenderStage;
 struct IFramebuffer;
 struct IShaderProgram;
 class CRenderStage;
+class CShaderProgram;
 class CGameScene;
 class MeshObject;
 class Material;
@@ -15,7 +17,7 @@ class PointLight;
 class DirectionalLight;
 class SpotLight;
 class Camera;
-class CShaderProgram;
+
 class Vector4f;
 
 enum EPipelineLink { LINK_FIRST, LINK_SECOND, LINK_PREVIOUS, LINK_CURRENT, LINK_LAST };
@@ -50,6 +52,7 @@ struct IRenderer
     // render pipeline
     virtual TRenderStageManager& GetRenderStageManager () = 0;
     
+    virtual IRenderStage* GetCurrentRenderStage () = 0;
     virtual TRenderPipeline& GetRenderPipeline () = 0;
     virtual IRenderer& RotateRenderPipelineLeft () = 0;
     virtual IRenderer& RotateRenderPipelineRight () = 0;

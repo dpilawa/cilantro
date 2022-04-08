@@ -78,6 +78,11 @@ TRenderStageManager& CRenderer::GetRenderStageManager ()
     return m_renderStageManager;
 }
 
+IRenderStage* CRenderer::GetCurrentRenderStage ()
+{
+    return m_currentRenderStage;
+}
+
 TRenderPipeline& CRenderer::GetRenderPipeline ()
 {
     return m_renderPipeline;
@@ -99,7 +104,7 @@ IRenderer& CRenderer::RotateRenderPipelineRight ()
 
 IFramebuffer* CRenderer::GetPipelineFramebuffer (EPipelineLink link)
 {
-    if ((m_currentRenderStage == 0 && link == EPipelineLink::LINK_PREVIOUS) || (m_renderPipeline.size () < 2 && link == EPipelineLink::LINK_SECOND))
+    if ((m_currentRenderStageIdx == 0 && link == EPipelineLink::LINK_PREVIOUS) || (m_renderPipeline.size () < 2 && link == EPipelineLink::LINK_SECOND))
     {
         LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Pipeline index out of bounds";
     }
@@ -114,7 +119,7 @@ IFramebuffer* CRenderer::GetPipelineFramebuffer (EPipelineLink link)
     }
     else if (link == EPipelineLink::LINK_PREVIOUS)
     {
-        return GetRenderStageManager ().GetByHandle<IRenderStage> (m_renderPipeline[m_currentRenderStage - 1]).GetFramebuffer ();
+        return GetRenderStageManager ().GetByHandle<IRenderStage> (m_renderPipeline[m_currentRenderStageIdx - 1]).GetFramebuffer ();
     }
     else if (link == EPipelineLink::LINK_LAST)
     {
@@ -122,13 +127,13 @@ IFramebuffer* CRenderer::GetPipelineFramebuffer (EPipelineLink link)
     }
     else /* LINK_CURRENT */
     {
-        return GetRenderStageManager ().GetByHandle<IRenderStage> (m_renderPipeline[m_currentRenderStage]).GetFramebuffer ();
+        return GetRenderStageManager ().GetByHandle<IRenderStage> (m_renderPipeline[m_currentRenderStageIdx]).GetFramebuffer ();
     }
 }
 
 void CRenderer::RenderFrame ()
 {
-    m_currentRenderStage = 0;
+    m_currentRenderStageIdx = 0;
 
     // reset global rendering timer
     if (m_totalRenderTime == 0L)
@@ -139,8 +144,9 @@ void CRenderer::RenderFrame ()
     // run post-processing
     for (handle_t stageHandle : m_renderPipeline)
     {
-        m_renderStageManager.GetByHandle<IRenderStage> (stageHandle).OnFrame ();
-        m_currentRenderStage++;
+        m_currentRenderStage = &m_renderStageManager.GetByHandle<IRenderStage> (stageHandle);
+        m_currentRenderStage->OnFrame ();
+        m_currentRenderStageIdx++;
     }
 
     // update game clocks (Tock)
@@ -180,6 +186,7 @@ void CRenderer::InitializeRenderStages ()
     else
     {
         IRenderStage& baseForward = this->AddRenderStage<CForwardGeometryRenderStage> ("base");
+        baseForward.SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);
         baseForward.Initialize ();
     }
 }

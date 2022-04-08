@@ -14,7 +14,10 @@ public:
 
     ///////////////////////////////////////////////////////////////////////////
 
-    IFramebuffer* GetFramebuffer () const override final;
+    virtual IFramebuffer* GetFramebuffer () const override final;
+    virtual IFramebuffer* GetLinkedColorAttachmentsFramebuffer () const override final;
+    virtual IFramebuffer* GetLinkedDSAttachmentsFramebuffer () const override final;
+    virtual IFramebuffer* GetLinkedDrawFramebuffer () const override final;
 
     virtual void OnFrame () override;
     __EAPI virtual IRenderStage& SetViewport (float u, float v, float su, float sv) override;
@@ -68,14 +71,19 @@ protected:
     // parent renderer
     IRenderer* m_renderer;
 
-    // output framebuffer
+    // this stage's framebuffer
     IFramebuffer* m_framebuffer;
 
     // these indicate which framebuffer and which render buffer should be current stage's input
     // and where to write to
     EPipelineLink m_colorAttachmentsFramebufferLink;
     EPipelineLink m_dsAttachmentsFramebufferLink;
-    EPipelineLink m_outputFramebufferLink;
+    EPipelineLink m_drawFramebufferLink;
+
+    // linked framebuffers
+    IFramebuffer* m_linkedColorAttachmentsFramebuffer;
+    IFramebuffer* m_linkedDSAttachmentsFramebuffer;
+    IFramebuffer* m_linkedDrawFramebuffer;
 
     // stencil testing parameters
     EStencilTestFunction m_stencilTestFunction;

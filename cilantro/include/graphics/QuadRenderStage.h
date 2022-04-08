@@ -31,7 +31,7 @@ public:
     __EAPI virtual CQuadRenderStage& SetRenderStageParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue);
 
 protected:
-    virtual void InitializeFramebuffer ();
+    virtual void InitializeFramebuffer () override;
 
 protected:
 

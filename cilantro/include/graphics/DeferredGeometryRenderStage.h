@@ -21,6 +21,6 @@ public:
     ///////////////////////////////////////////////////////////////////////////
 
 protected:
-    virtual void InitializeFramebuffer ();
+    virtual void InitializeFramebuffer () override;
 };
 

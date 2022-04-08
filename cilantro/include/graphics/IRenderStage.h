@@ -14,6 +14,9 @@ struct IRenderStage
 
     virtual void InitializeFramebuffer () = 0;
     virtual IFramebuffer* GetFramebuffer () const = 0;
+    virtual IFramebuffer* GetLinkedColorAttachmentsFramebuffer () const = 0;
+    virtual IFramebuffer* GetLinkedDSAttachmentsFramebuffer () const = 0;
+    virtual IFramebuffer* GetLinkedDrawFramebuffer () const = 0;
 
     virtual void OnFrame () = 0;
     virtual IRenderStage& SetViewport (float u, float v, float su, float sv) = 0;

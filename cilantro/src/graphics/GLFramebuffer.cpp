@@ -88,7 +88,7 @@ void CGLFramebuffer::BindFramebuffer () const
     glBindFramebuffer (GL_FRAMEBUFFER, m_glBuffers.FBO);
 }
 
-void CGLFramebuffer::BindFramebufferColorTextures () const
+void CGLFramebuffer::BindFramebufferColorTexturesAsColor () const
 {
     for (unsigned int i = 0; i < GetColorTextureCount (); ++i)
     {
@@ -97,12 +97,18 @@ void CGLFramebuffer::BindFramebufferColorTextures () const
     }
 }
 
-void CGLFramebuffer::BindFramebufferDepthArrayTexture () const
+void CGLFramebuffer::BindFramebufferDepthArrayTextureAsColor (size_t index) const
+{
+    glActiveTexture (GL_TEXTURE0 + index);
+    glBindTexture (GL_TEXTURE_2D_ARRAY, m_glBuffers.depthTextureArray);
+}
+
+void CGLFramebuffer::BindFramebufferDepthArrayTextureAsDepth () const
 {
     glFramebufferTexture (GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_glBuffers.depthTextureArray, 0);
 }
 
-void CGLFramebuffer::BindFramebufferDSRenderbuffer () const
+void CGLFramebuffer::BindFramebufferRenderbuffer () const
 {
     glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, GetFramebufferRenderbufferGLId ());
 }
