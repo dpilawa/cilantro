@@ -11,7 +11,7 @@ typedef unsigned int handle_t;
 #define CILANTRO_MAX_FRAMEBUFFER_TEXTURES   8
 #define CILANTRO_MAX_BONES                  128
 #define CILANTRO_MAX_BONE_INFLUENCES        4
-#define CILANTRO_SHADOW_MAP_SIZE            1024
+#define CILANTRO_SHADOW_MAP_SIZE            4096
 #define CILANTRO_MULTISAMPLE                4
 
 // linking
