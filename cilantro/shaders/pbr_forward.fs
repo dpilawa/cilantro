@@ -1,8 +1,8 @@
 #version %%CILANTRO_GL_VERSION%%
 
-#define MAX_POINT_LIGHTS 64
-#define MAX_DIRECTIONAL_LIGHTS 64
-#define MAX_SPOT_LIGHTS 64
+#define MAX_POINT_LIGHTS %%CILANTRO_MAX_POINT_LIGHTS%%
+#define MAX_DIRECTIONAL_LIGHTS %%CILANTRO_MAX_DIRECTIONAL_LIGHTS%%
+#define MAX_SPOT_LIGHTS %%CILANTRO_MAX_SPOT_LIGHTS%%
 
 const float PI = 3.14159265359;
 
@@ -87,6 +87,11 @@ layout(std140) uniform UniformSpotLightsBlock
 {
     int spotLightCount;
     SpotLightStruct spotLights[MAX_SPOT_LIGHTS];
+};
+
+layout (std140) uniform UniformDirectionalLightViewMatricesBlock
+{
+    mat4 mLightSpace[MAX_DIRECTIONAL_LIGHTS];
 };
 
 /* output color */

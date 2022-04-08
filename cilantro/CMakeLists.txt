@@ -43,6 +43,7 @@ include/graphics/IRenderer.h
 include/graphics/Renderer.h
 include/graphics/GLRenderer.h
 include/graphics/QuadRenderStage.h
+include/graphics/ShadowMapRenderStage.h
 include/graphics/IRenderStage.h
 include/graphics/RenderStage.h
 include/graphics/IShader.h
@@ -107,6 +108,7 @@ src/graphics/Renderer.cpp
 src/graphics/GLRenderer.cpp
 src/graphics/RenderStage.cpp
 src/graphics/QuadRenderStage.cpp
+src/graphics/ShadowMapRenderStage.cpp
 src/graphics/Shader.cpp
 src/graphics/ShaderProgram.cpp
 src/input/InputController.cpp
@@ -154,6 +156,23 @@ src/scene/Transform.cpp
 src/system/Game.cpp
 src/system/LogMessage.cpp
 src/system/Timer.cpp
+
+shaders/blinnphong_deferred_geometrypass.fs
+shaders/blinnphong_deferred_lightingpass.fs
+shaders/blinnphong_forward.fs
+shaders/default.vs
+shaders/flatquad.fs
+shaders/flatquad.vs
+shaders/pbr_deferred_geometrypass.fs
+shaders/pbr_deferred_lightingpass.fs
+shaders/pbr_forward.fs
+shaders/post_fxaa.fs
+shaders/post_gamma.fs
+shaders/post_hdr.fs
+shaders/shadowmap.fs
+shaders/shadowmap_directional.gs
+shaders/shadowmap.vs
+
 )
 
 add_library(cilantro SHARED ${CILANTRO_FILES})

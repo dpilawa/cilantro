@@ -29,6 +29,7 @@ CGLShader::CGLShader (const std::string& path, EShaderType shaderType) : CShader
     {
         glGetShaderInfoLog (m_glShaderId, 512, nullptr, errorLog);
         glDeleteShader (m_glShaderId);
+        LogMessage () << m_shaderSource;
         LogMessage () << errorLog;
         LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to compile shader" << m_glShaderId << path;
     }

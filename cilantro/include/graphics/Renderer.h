@@ -14,7 +14,7 @@ class CGameScene;
 class CRenderer : public IRenderer
 {
 public:
-    CRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool isDeferred);
+    CRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferred);
     virtual ~CRenderer () {};
 
     ///////////////////////////////////////////////////////////////////////////
@@ -69,6 +69,7 @@ protected:
 
     // flags
     bool m_isDeferred;
+    bool m_isShadowMapping;
 
 private:
     // timing data

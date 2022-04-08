@@ -22,8 +22,8 @@
 #include <cmath>
 #include <cstring>
 
-CGLRenderer::CGLRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool isDeferred) 
-    : CRenderer (gameScene, width, height, isDeferred)
+CGLRenderer::CGLRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferred) 
+    : CRenderer (gameScene, width, height, shadowMappingEnabled, deferred)
 {
     m_quadGeometryBuffer = new SGlGeometryBuffers ();
     m_uniformBuffers = new SGlUniformBuffers ();
@@ -131,12 +131,7 @@ void CGLRenderer::RenderFrame ()
 
 void CGLRenderer::Draw (MeshObject& meshObject)
 {
-    GLuint eyePositionId;
-    GLuint modelMatrixId;
-    GLuint normalMatrixId;
-    GLuint boneTransformationArrayId;
     GLuint shaderProgramId;
-    GLuint uniformId;
 
     Material& objM = meshObject.GetMaterial ();
 
@@ -168,16 +163,15 @@ void CGLRenderer::Draw (MeshObject& meshObject)
     // set material uniforms for active material
     for (auto&& property : meshObject.GetMaterial ().GetPropertiesMap ())
     {
-        uniformId = glGetUniformLocation (shaderProgramId, property.first.c_str ());
-        if (uniformId != GL_INVALID_INDEX)
+        if (geometryShaderProgram.HasUniform (property.first.c_str ()))
         {
             if (property.second.size () == 1)
             {
-                glUniform1f (uniformId, property.second[0]);
+                geometryShaderProgram.SetUniformFloat (property.first.c_str (), property.second[0]);
             }
             else if ((property.second.size () == 3))
             {
-                glUniform3fv (uniformId, 1, property.second.data ());
+                geometryShaderProgram.SetUniformFloatv (property.first.c_str (), property.second.data (), 3);
             }
             else
             {
@@ -191,32 +185,16 @@ void CGLRenderer::Draw (MeshObject& meshObject)
     }
 
     // get world matrix for drawn objects and set uniform value
-    modelMatrixId = glGetUniformLocation (shaderProgramId, "mModel");
-    if (modelMatrixId != GL_INVALID_INDEX)
-    {
-        glUniformMatrix4fv (modelMatrixId, 1, GL_TRUE, meshObject.GetModelTransformMatrix ()[0]);
-    }
+    geometryShaderProgram.SetUniformMatrix4f ("mModel", meshObject.GetModelTransformMatrix ());
 
     // calculate normal matrix for drawn objects and set uniform value
-    normalMatrixId = glGetUniformLocation (shaderProgramId, "mNormal");
-    if (normalMatrixId != GL_INVALID_INDEX)
-    {
-        glUniformMatrix3fv (normalMatrixId, 1, GL_TRUE, Mathf::Invert (Mathf::Transpose (Matrix3f (meshObject.GetModelTransformMatrix ())))[0]);
-    }
+    geometryShaderProgram.SetUniformMatrix3f ("mNormal", Mathf::Invert (Mathf::Transpose (Matrix3f (meshObject.GetModelTransformMatrix ()))));
 
     // get camera position in world space and set uniform value
-    eyePositionId = glGetUniformLocation (shaderProgramId, "eyePosition");
-    if (eyePositionId != GL_INVALID_INDEX)
-    {
-        glUniform3fv (eyePositionId, 1, &m_gameScene->GetActiveCamera ()->GetPosition ()[0]);
-    }
+    geometryShaderProgram.SetUniformVector3f ("eyePosition", m_gameScene->GetActiveCamera ()->GetPosition ());
 
     // set bone transformation matrix array uniform
-    boneTransformationArrayId = glGetUniformLocation (shaderProgramId, "mBoneTransformations");
-    if (boneTransformationArrayId != GL_INVALID_INDEX)
-    {
-        glUniformMatrix4fv (boneTransformationArrayId, CILANTRO_MAX_BONES, GL_TRUE, meshObject.GetBoneTransformationsMatrixArray ());
-    }
+    geometryShaderProgram.SetUniformMatrix4fv ("mBoneTransformations", meshObject.GetBoneTransformationsMatrixArray (), CILANTRO_MAX_BONES);
 
     // get shader program for rendered meshobject (lighting pass)
     if (m_isDeferred)
@@ -226,11 +204,7 @@ void CGLRenderer::Draw (MeshObject& meshObject)
         shaderProgramId = lightingShaderProgram.GetProgramId ();
 
         // get camera position in world space and set uniform value (this needs to be done again for deferred lighting shader program)
-        eyePositionId = glGetUniformLocation (shaderProgramId, "eyePosition");
-        if (eyePositionId != GL_INVALID_INDEX)
-        {
-            glUniform3fv (eyePositionId, 1, &m_gameScene->GetActiveCamera ()->GetPosition ()[0]);
-        }
+        lightingShaderProgram.SetUniformVector3f ("eyePosition", m_gameScene->GetActiveCamera ()->GetPosition ());
 
     }
     
@@ -243,6 +217,20 @@ void CGLRenderer::Draw (MeshObject& meshObject)
 void CGLRenderer::DrawQuad ()
 {
     RenderGeometryBuffer (m_quadGeometryBuffer);
+}
+
+void CGLRenderer::DrawAllGeometryBuffers (IShaderProgram& shader)
+{
+    shader.Use ();
+
+    for (auto&& geomertyBuffer : m_sceneGeometryBuffers)
+    {
+        // load model matrix to currently bound shader
+        shader.SetUniformMatrix4f ("mModel", m_gameScene->GetGameObjectManager ().GetByHandle<MeshObject> (geomertyBuffer.first).GetModelTransformMatrix ());
+
+        // draw
+        RenderGeometryBuffer (geomertyBuffer.second);
+    }
 }
 
 void CGLRenderer::Update (MeshObject& meshObject)
@@ -462,9 +450,9 @@ void CGLRenderer::Update (Material& material)
             p.SetClearDepthOnFrameEnabled (false);
             p.SetClearStencilOnFrameEnabled (false);
             p.SetDepthTestEnabled (false);
-            p.SetPipelineFramebufferInputLink (EPipelineLink::LINK_FIRST);
-            p.SetPipelineRenderbufferLink (EPipelineLink::LINK_FIRST);
-            p.SetPipelineFramebufferDrawLink (EPipelineLink::LINK_SECOND);
+            p.SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_FIRST);
+            p.SetDepthStencilAttachmentsFramebufferLink (EPipelineLink::LINK_FIRST);
+            p.SetOutputFramebufferLink (EPipelineLink::LINK_SECOND);
             p.SetFramebufferEnabled (true);
 
             p.Initialize ();
@@ -489,9 +477,9 @@ void CGLRenderer::Update (Material& material)
                 handle_t stageHandle = m_renderPipeline[m_lightingShaderStagesCount + 1];
 
                 IRenderStage& stage = m_renderStageManager.GetByHandle<IRenderStage> (stageHandle);
-                stage.SetPipelineFramebufferInputLink (EPipelineLink::LINK_SECOND);
-                stage.SetPipelineRenderbufferLink (EPipelineLink::LINK_CURRENT);
-                stage.SetPipelineFramebufferDrawLink (EPipelineLink::LINK_CURRENT);
+                stage.SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_SECOND);
+                stage.SetDepthStencilAttachmentsFramebufferLink (EPipelineLink::LINK_CURRENT);
+                stage.SetOutputFramebufferLink (EPipelineLink::LINK_CURRENT);
             }
         }
     }
@@ -566,6 +554,11 @@ void CGLRenderer::Update (DirectionalLight& directionalLight)
         // existing light modified
         lightId = m_directionalLights[objectHandle];
     }
+
+    // update invocation count in shadow map geometry shader
+    CGLShader shadowmapShader = CGame::GetResourceManager ().GetByName<CGLShader> ("shadowmap_directional_geometry_shader");
+    shadowmapShader.SetParameter ("%%ACTIVE_DIRECTIONAL_LIGHTS%%", std::to_string (m_uniformDirectionalLightBuffer->directionalLightCount));
+    shadowmapShader.Compile ();
 
     // copy direction
     Vector3f lightDirection = directionalLight.GetForward ();
@@ -652,10 +645,30 @@ void CGLRenderer::Update (SpotLight& spotLight)
 
 void CGLRenderer::UpdateCameraBuffers (Camera& camera)
 {
-    LoadMatrixUniformBuffers (&camera);
+    LoadViewProjectionUniformBuffers (&camera);
 }
 
-IFramebuffer* CGLRenderer::CreateFramebuffer (unsigned int rgbTextures, unsigned int rgbaTextures, bool multisampleEnabled)
+void CGLRenderer::UpdateLightViewBuffers ()
+{
+    LoadLightViewUniformBuffers ();
+}
+
+size_t CGLRenderer::GetPointLightCount () const
+{
+    return m_uniformPointLightBuffer->pointLightCount;
+}
+
+size_t CGLRenderer::GetDirectionalLightCount () const
+{
+    return m_uniformDirectionalLightBuffer->directionalLightCount;
+}
+
+size_t CGLRenderer::GetSpotLightCount () const
+{
+    return m_uniformSpotLightBuffer->spotLightCount;
+}
+
+IFramebuffer* CGLRenderer::CreateFramebuffer (size_t width, size_t height, size_t rgbTextureCount, size_t rgbaTextureCount, size_t depthBufferArrayTextureCount, bool depthStencilRenderbufferEnabled, bool multisampleEnabled)
 {
     IFramebuffer* framebuffer;
 
@@ -664,12 +677,12 @@ IFramebuffer* CGLRenderer::CreateFramebuffer (unsigned int rgbTextures, unsigned
 #if (CILANTRO_GL_VERSION <= 140)
         LogMessage (MSG_LOCATION, EXIT_FAILURE) << "OpenGL 3.2 required for multisample framebuffers";
 #else
-        framebuffer = new CGLMultisampleFramebuffer (this->m_width, this->m_height, rgbTextures, rgbaTextures);
+        framebuffer = new CGLMultisampleFramebuffer (width, height, rgbTextureCount, rgbaTextureCount, depthBufferArrayTextureCount, depthStencilRenderbufferEnabled);
 #endif
     }
     else
     {
-        framebuffer = new CGLFramebuffer (this->m_width, this->m_height, rgbTextures, rgbaTextures);
+        framebuffer = new CGLFramebuffer (width, height, rgbTextureCount, rgbaTextureCount, depthBufferArrayTextureCount, depthStencilRenderbufferEnabled);
     }
     
     framebuffer->Initialize ();
@@ -680,6 +693,25 @@ IFramebuffer* CGLRenderer::CreateFramebuffer (unsigned int rgbTextures, unsigned
 void CGLRenderer::BindDefaultFramebuffer ()
 {
     glBindFramebuffer (GL_FRAMEBUFFER, (GLint) 0);
+}
+
+void CGLRenderer::BindDefaultDepthBuffer ()
+{
+    glFramebufferTexture (GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, 0, 0);
+}
+
+void CGLRenderer::BindDefaultStencilBuffer ()
+{
+    glFramebufferTexture (GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, 0, 0);
+}
+
+void CGLRenderer::BindDefaultTextures ()
+{
+    for (unsigned int i = 0; i < CILANTRO_MAX_TEXTURE_UNITS; ++i)
+    {
+        glActiveTexture (GL_TEXTURE0 + i);
+        glBindTexture (GL_TEXTURE_2D, 0);
+    }
 }
 
 void CGLRenderer::ClearColorBuffer (const Vector4f& rgba)
@@ -810,6 +842,9 @@ void CGLRenderer::InitializeShaderLibrary ()
     CGame::GetResourceManager ().Load<CGLShader> ("post_hdr_fragment_shader", "shaders/post_hdr.fs", EShaderType::FRAGMENT_SHADER);
     CGame::GetResourceManager ().Load<CGLShader> ("post_gamma_fragment_shader", "shaders/post_gamma.fs", EShaderType::FRAGMENT_SHADER);
     CGame::GetResourceManager ().Load<CGLShader> ("post_fxaa_fragment_shader", "shaders/post_fxaa.fs", EShaderType::FRAGMENT_SHADER);
+    CGame::GetResourceManager ().Load<CGLShader> ("shadowmap_vertex_shader", "shaders/shadowmap.vs", EShaderType::VERTEX_SHADER);
+    CGame::GetResourceManager ().Load<CGLShader> ("shadowmap_directional_geometry_shader", "shaders/shadowmap_directional.gs", EShaderType::GEOMETRY_SHADER);
+    CGame::GetResourceManager ().Load<CGLShader> ("shadowmap_fragment_shader", "shaders/shadowmap.fs", EShaderType::FRAGMENT_SHADER);
 
     // PBR model (forward)
     p = &AddShaderProgram<CGLShaderProgram> ("pbr_forward_shader");
@@ -832,6 +867,7 @@ void CGLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tAO"), 4);
 #endif
     p->BindUniformBlock ("UniformMatricesBlock", EBindingPoint::BP_MATRICES);
+    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL);
     p->BindUniformBlock ("UniformPointLightsBlock", EBindingPoint::BP_POINTLIGHTS);
     p->BindUniformBlock ("UniformDirectionalLightsBlock", EBindingPoint::BP_DIRECTIONALLIGHTS);
     p->BindUniformBlock ("UniformSpotLightsBlock", EBindingPoint::BP_SPOTLIGHTS);
@@ -898,6 +934,7 @@ void CGLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tEmissive"), 3);
 #endif
     p->BindUniformBlock ("UniformMatricesBlock", EBindingPoint::BP_MATRICES);
+    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL);
     p->BindUniformBlock ("UniformPointLightsBlock", EBindingPoint::BP_POINTLIGHTS);
     p->BindUniformBlock ("UniformDirectionalLightsBlock", EBindingPoint::BP_DIRECTIONALLIGHTS);
     p->BindUniformBlock ("UniformSpotLightsBlock", EBindingPoint::BP_SPOTLIGHTS); 
@@ -1000,42 +1037,151 @@ void CGLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "fScreenTexture"), 0);
 #endif
 
+    // Shadow map (directional)
+    p = &AddShaderProgram<CGLShaderProgram> ("shadowmap_directional_shader");
+    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("shadowmap_vertex_shader"));
+    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("shadowmap_directional_geometry_shader"));
+    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("shadowmap_fragment_shader"));
+#if (CILANTRO_GL_VERSION < 330)	
+    glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
+#endif
+    p->Link ();
+    p->Use (); 
+#if (CILANTRO_GL_VERSION < 420)
+#endif
+    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL);
+
     CheckGLError (MSG_LOCATION);
 
 }
 
 void CGLRenderer::InitializeMatrixUniformBuffers ()
 {
-    // create and pre-load uniform buffer for view and projection matrices
+    // create uniform buffer for view and projection matrices
     glGenBuffers (1, &m_uniformBuffers->UBO[UBO_MATRICES]);
     glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_MATRICES]);
     glBufferData (GL_UNIFORM_BUFFER, sizeof (SGlUniformMatrixBuffer), NULL, GL_DYNAMIC_DRAW);
     glBindBufferBase (GL_UNIFORM_BUFFER, EBindingPoint::BP_MATRICES, m_uniformBuffers->UBO[UBO_MATRICES]);
 
+    // create unform buffers for light view transforms
+    glGenBuffers (1, &m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTVIEWMATRICES]);
+    glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTVIEWMATRICES]);
+    glBufferData (GL_UNIFORM_BUFFER, 16 * sizeof (GLfloat) * CILANTRO_MAX_DIRECTIONAL_LIGHTS, NULL, GL_DYNAMIC_DRAW);
+    glBindBufferBase (GL_UNIFORM_BUFFER, EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL, m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTVIEWMATRICES]);
+
     CheckGLError (MSG_LOCATION);
 }
 
-void CGLRenderer::LoadMatrixUniformBuffers (Camera* camera)
+void CGLRenderer::LoadViewProjectionUniformBuffers (Camera* camera)
 {
-    SGlUniformBuffers* buffers = static_cast<SGlUniformBuffers*>(m_uniformBuffers);
-    SGlUniformMatrixBuffer* mBuffer = static_cast<SGlUniformMatrixBuffer*>(m_uniformMatrixBuffer);
+    Matrix4f view = camera->GetViewMatrix ();
+    Matrix4f projection = camera->GetProjectionMatrix (m_width, m_height);
 
     // load view matrix
-    std::memcpy (mBuffer->viewMatrix, Mathf::Transpose (camera->GetViewMatrix ())[0], 16 * sizeof (GLfloat));
+    std::memcpy (m_uniformMatrixBuffer->viewMatrix, Mathf::Transpose (view)[0], 16 * sizeof (GLfloat));
 
     // load projection matrix
-    std::memcpy (mBuffer->projectionMatrix, Mathf::Transpose (camera->GetProjectionMatrix (m_width, m_height))[0], 16 * sizeof (GLfloat));
+    std::memcpy (m_uniformMatrixBuffer->projectionMatrix, Mathf::Transpose (projection)[0], 16 * sizeof (GLfloat));
 
-    // load to GPU
-    glBindBuffer (GL_UNIFORM_BUFFER, buffers->UBO[UBO_MATRICES]);
-    glBufferSubData (GL_UNIFORM_BUFFER, 0, 16 * sizeof (GLfloat), mBuffer->viewMatrix);
-    glBufferSubData (GL_UNIFORM_BUFFER, 16 * sizeof (GLfloat), 16 * sizeof (GLfloat), mBuffer->projectionMatrix);
+    // load to GPU - view and projection
+    glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_MATRICES]);
+    glBufferSubData (GL_UNIFORM_BUFFER, 0, 16 * sizeof (GLfloat), m_uniformMatrixBuffer->viewMatrix);
+    glBufferSubData (GL_UNIFORM_BUFFER, 16 * sizeof (GLfloat), 16 * sizeof (GLfloat), m_uniformMatrixBuffer->projectionMatrix);
     glBindBuffer (GL_UNIFORM_BUFFER, 0);
+}
+
+void CGLRenderer::LoadLightViewUniformBuffers ()
+{
+    Matrix4f view = m_gameScene->GetActiveCamera ()->GetViewMatrix ();
+    Matrix4f projection = m_gameScene->GetActiveCamera ()->GetProjectionMatrix (m_width, m_height);
+    Matrix4f invMV = Mathf::Invert (projection * view);
+    Matrix4f lightView;
+    Matrix4f lightViewProjection;
+    Vector3f frustumCenter {0.0f, 0.0f, 0.0f};
+    std::vector<Vector4f> frustumVertices;
+
+    // calculate camera frustum vertices in world space
+    for (size_t x = 0; x < 2; ++x)
+    {
+        for (size_t y = 0; y < 2; ++y)
+        {
+            for (size_t z = 0; z < 2; ++z)
+            {
+                Vector4f v = invMV * Vector4f {2.0f * x - 1.0f, 2.0f * y - 1.0f, 2.0f * z - 1.0f, 1.0f};
+
+                frustumVertices.push_back (v / v[3]);
+            }
+        }
+    }
+
+    // find frustum center
+    for (auto&& v : frustumVertices)
+    {
+        frustumCenter += v;
+    }
+    frustumCenter /= (float) frustumVertices.size ();
+
+    // calculate and load lightview matrix for each directional light
+    for (auto&& light : m_directionalLights)
+    {
+        float minX = std::numeric_limits<float>::max();
+        float maxX = std::numeric_limits<float>::min();
+        float minY = std::numeric_limits<float>::max();
+        float maxY = std::numeric_limits<float>::min();
+        float minZ = std::numeric_limits<float>::max();
+        float maxZ = std::numeric_limits<float>::min();
+
+        size_t lightIdx = light.second;
+        DirectionalLight& l = m_gameScene->GetGameObjectManager ().GetByHandle<DirectionalLight> (light.first);
+        lightView = Mathf::GenCameraViewMatrix (frustumCenter + l.GetForward (), frustumCenter, l.GetUp ());
+
+        for (auto&& v : frustumVertices)
+        {
+            Vector4f lv = lightView * v;
+
+            minX = std::min(minX, lv[0]);
+            maxX = std::max(maxX, lv[0]);
+            minY = std::min(minY, lv[1]);
+            maxY = std::max(maxY, lv[1]);
+            minZ = std::min(minZ, lv[2]);
+            maxZ = std::max(maxZ, lv[2]);
+        }
+
+        constexpr float zMult = 2.0f;
+        if (minZ < 0)
+        {
+            minZ *= zMult;
+        }
+        else
+        {
+            minZ /= zMult;
+        }
+        if (maxZ < 0)
+        {
+            maxZ /= zMult;
+        }
+        else
+        {
+            maxZ *= zMult;
+        }
+
+        lightViewProjection = Mathf::GenOrthographicProjectionMatrix (minX, maxX, minY, maxY, minZ, maxZ) * lightView;
+
+        // copy to buffer
+        std::memcpy (m_uniformMatrixBuffer->directionalLightView + lightIdx * 16, Mathf::Transpose (lightViewProjection)[0], 16 * sizeof (GLfloat));
+    }
+
+    // load to GPU - directional light view
+    glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTVIEWMATRICES]);
+    glBufferSubData (GL_UNIFORM_BUFFER, 0, 16 * sizeof (GLfloat) * m_uniformDirectionalLightBuffer->directionalLightCount, m_uniformMatrixBuffer->directionalLightView);
+    glBindBuffer (GL_UNIFORM_BUFFER, 0);
+
 }
 
 void CGLRenderer::DeinitializeMatrixUniformBuffers ()
 {
     glDeleteBuffers (1, &m_uniformBuffers->UBO[UBO_MATRICES]);
+    glDeleteBuffers (1, &m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTVIEWMATRICES]);
 }
 
 void CGLRenderer::InitializeObjectBuffers ()

@@ -17,10 +17,12 @@ void CQuadRenderStage::Initialize ()
 void CQuadRenderStage::OnFrame ()
 {
     CRenderStage::OnFrame ();
- 
+    
+    IFramebuffer* colorFramebuffer = m_renderer->GetPipelineFramebuffer (m_colorAttachmentsFramebufferLink);
+  
     // bind textures of framebuffer linked as previous (input) and draw
     m_shaderProgram->Use ();
-    m_renderer->GetPipelineFramebuffer (m_pipelineFramebufferInputLink)->BindFramebufferTextures ();
+    colorFramebuffer->BindFramebufferColorTextures ();
     
     // draw quad
     m_renderer->DrawQuad ();
@@ -70,6 +72,6 @@ void CQuadRenderStage::InitializeFramebuffer ()
 {   
     if (m_isFramebufferEnabled)
     {
-        m_framebuffer = m_renderer->CreateFramebuffer (0, 1, m_isMultisampleEnabled);
+        m_framebuffer = m_renderer->CreateFramebuffer (m_renderer->GetWidth (), m_renderer->GetHeight (), 0, 1, 0, true, m_isMultisampleEnabled);
     }
 }

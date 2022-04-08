@@ -9,7 +9,7 @@ class MeshObject;
 class Camera;
 
 enum EGlVboType { VBO_VERTICES = 0, VBO_NORMALS, VBO_UVS, VBO_TANGENTS, VBO_BITANGENTS, VBO_BONES, VBO_BONEWEIGHTS };
-enum EGlUboType { UBO_MATRICES = 0, UBO_POINTLIGHTS, UBO_DIRECTIONALLIGHTS, UBO_SPOTLIGHTS };
+enum EGlUboType { UBO_MATRICES = 0, UBO_POINTLIGHTS, UBO_DIRECTIONALLIGHTS, UBO_SPOTLIGHTS, UBO_DIRECTIONALLIGHTVIEWMATRICES };
 
 struct SGlGeometryBuffers;
 struct SGlMaterialTextureUnits;
@@ -32,7 +32,7 @@ struct SGlGeometryBuffers
 
 struct SGlUniformBuffers
 {
-    // Uniform Buffer Objects (view & projection matrices, point lights, directional lights, spot lights)
+    // Uniform Buffer Objects (view & projection matrices, point lights, directional lights, spot lights, directional light view transforms)
     GLuint UBO[CILANTRO_UBO_COUNT];
 };
 
@@ -42,6 +42,8 @@ struct SGlUniformMatrixBuffer
     GLfloat viewMatrix[16];
     // projection matrix
     GLfloat projectionMatrix[16];
+    // directional light view matrices
+    GLfloat directionalLightView[16 * CILANTRO_MAX_DIRECTIONAL_LIGHTS];
 };
 
 struct SGlMaterialTextureUnits
@@ -86,7 +88,7 @@ struct SGlSpotLightStruct
 struct SGlUniformPointLightBuffer
 {
     // number of active point lights
-    GLint pointLightCount;
+    GLuint pointLightCount;
     // pad to std140 specification
     GLint pad[3];
     // array of active point lights
@@ -96,7 +98,7 @@ struct SGlUniformPointLightBuffer
 struct SGlUniformDirectionalLightBuffer
 {
     // number of active directional lights
-    GLint directionalLightCount;
+    GLuint directionalLightCount;
     // pad to std140 specification
     GLint pad[3];
     // array of active point lights
@@ -106,7 +108,7 @@ struct SGlUniformDirectionalLightBuffer
 struct SGlUniformSpotLightBuffer
 {
     // number of active spot lights
-    GLint spotLightCount;
+    GLuint spotLightCount;
     // pad to std140 specification
     GLint pad[3];
     // array of active point lights
@@ -116,7 +118,7 @@ struct SGlUniformSpotLightBuffer
 class CGLRenderer : public CRenderer
 {
 public:
-    CGLRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool isDeferred);
+    CGLRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferred);
     virtual ~CGLRenderer ();
 
     ///////////////////////////////////////////////////////////////////////////
@@ -130,6 +132,7 @@ public:
 
     virtual void Draw (MeshObject& meshObject) override;
     virtual void DrawQuad () override;
+    virtual void DrawAllGeometryBuffers (IShaderProgram& shader) override;
 
     virtual void Update (MeshObject& meshObject) override;
     virtual void Update (Material& material, unsigned int textureUnit) override;
@@ -140,9 +143,17 @@ public:
     virtual void Update (SpotLight& spotLight) override;
 
     virtual void UpdateCameraBuffers (Camera& camera) override;
+    virtual void UpdateLightViewBuffers () override;
 
-    virtual IFramebuffer* CreateFramebuffer (unsigned int rgbTextures, unsigned int rgbaTextures, bool multisampleEnabled) override;
+    virtual size_t GetPointLightCount () const override;
+    virtual size_t GetDirectionalLightCount () const override;
+    virtual size_t GetSpotLightCount () const override;
+
+    virtual IFramebuffer* CreateFramebuffer (size_t width, size_t height, size_t rgbTextureCount, size_t rgbaTextureCount, size_t depthBufferArrayTextureCount, bool depthStencilRenderbufferEnabled, bool multisampleEnabled) override;
     virtual void BindDefaultFramebuffer () override;
+    virtual void BindDefaultDepthBuffer () override;
+    virtual void BindDefaultStencilBuffer () override;
+    virtual void BindDefaultTextures () override;    
 
     virtual void ClearColorBuffer (const Vector4f& rgba) override;
     virtual void ClearDepthBuffer () override;
@@ -162,7 +173,8 @@ private:
     void InitializeShaderLibrary ();
     
     void InitializeMatrixUniformBuffers ();
-    void LoadMatrixUniformBuffers (Camera* camera);
+    void LoadViewProjectionUniformBuffers (Camera* camera);
+    void LoadLightViewUniformBuffers ();
     void DeinitializeMatrixUniformBuffers ();    
     
     void InitializeObjectBuffers ();

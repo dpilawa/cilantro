@@ -3,7 +3,6 @@
 #include "scene/GameScene.h"
 #include "scene/GameObject.h"
 #include "scene/MeshObject.h"
-#include "glad/glad.h"
 #include <string>
 
 CForwardGeometryRenderStage::CForwardGeometryRenderStage () 
@@ -39,7 +38,7 @@ void CForwardGeometryRenderStage::InitializeFramebuffer ()
 {
     if (m_isFramebufferEnabled)
     {
-        m_framebuffer = m_renderer->CreateFramebuffer (0, 1, m_isMultisampleEnabled);
+        m_framebuffer = m_renderer->CreateFramebuffer (m_renderer->GetWidth (), m_renderer->GetHeight (), 0, 1, 0, true, m_isMultisampleEnabled);
     }
 }
 

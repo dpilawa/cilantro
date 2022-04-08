@@ -41,9 +41,9 @@ public:
     __EAPI bool IsClearDepthOnFrameEnabled () const override final;
     __EAPI bool IsClearStencilOnFrameEnabled () const override final;
 
-    __EAPI virtual IRenderStage& SetPipelineFramebufferInputLink (EPipelineLink link) override final;
-    __EAPI virtual IRenderStage& SetPipelineRenderbufferLink (EPipelineLink link) override final;
-    __EAPI virtual IRenderStage& SetPipelineFramebufferDrawLink (EPipelineLink link) override final;
+    __EAPI virtual IRenderStage& SetColorAttachmentsFramebufferLink (EPipelineLink link) override final;
+    __EAPI virtual IRenderStage& SetDepthStencilAttachmentsFramebufferLink (EPipelineLink link) override final;
+    __EAPI virtual IRenderStage& SetOutputFramebufferLink (EPipelineLink link) override final;
 
     ///////////////////////////////////////////////////////////////////////////
 
@@ -73,9 +73,9 @@ protected:
 
     // these indicate which framebuffer and which render buffer should be current stage's input
     // and where to write to
-    EPipelineLink m_pipelineFramebufferInputLink;
-    EPipelineLink m_pipelineRenderbufferLink;
-    EPipelineLink m_pipelineFramebufferOutputLink;
+    EPipelineLink m_colorAttachmentsFramebufferLink;
+    EPipelineLink m_dsAttachmentsFramebufferLink;
+    EPipelineLink m_outputFramebufferLink;
 
     // stencil testing parameters
     EStencilTestFunction m_stencilTestFunction;

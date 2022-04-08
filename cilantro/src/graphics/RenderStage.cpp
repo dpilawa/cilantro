@@ -23,9 +23,9 @@ CRenderStage::CRenderStage ()
     , m_stencilTestFunction (EStencilTestFunction::FUNCTION_ALWAYS)
     , m_stencilTestValue (0)
 
-    , m_pipelineFramebufferInputLink (EPipelineLink::LINK_CURRENT)
-    , m_pipelineRenderbufferLink (EPipelineLink::LINK_CURRENT)
-    , m_pipelineFramebufferOutputLink (EPipelineLink::LINK_CURRENT)
+    , m_colorAttachmentsFramebufferLink (EPipelineLink::LINK_CURRENT)
+    , m_dsAttachmentsFramebufferLink (EPipelineLink::LINK_CURRENT)
+    , m_outputFramebufferLink (EPipelineLink::LINK_CURRENT)
 {
 }
 
@@ -45,9 +45,10 @@ IFramebuffer* CRenderStage::GetFramebuffer () const
 
 void CRenderStage::OnFrame ()
 {
-    IFramebuffer* inputFramebuffer = m_renderer->GetPipelineFramebuffer (m_pipelineFramebufferInputLink);
-    IFramebuffer* inputRenderbuffer = m_renderer->GetPipelineFramebuffer (m_pipelineRenderbufferLink);
-    IFramebuffer* outputFramebuffer = m_renderer->GetPipelineFramebuffer (m_pipelineFramebufferOutputLink);
+    IFramebuffer* dsFramebuffer = m_renderer->GetPipelineFramebuffer (m_dsAttachmentsFramebufferLink);
+    IFramebuffer* outputFramebuffer = m_renderer->GetPipelineFramebuffer (m_outputFramebufferLink);
+    size_t width;
+    size_t height;
   
     // bind framebuffer to render to
     if (outputFramebuffer != nullptr)    
@@ -60,9 +61,21 @@ void CRenderStage::OnFrame ()
     }
     
     // bind depth and stencli buffers from previous/linked stage
-    if (inputRenderbuffer != nullptr)
+    if (dsFramebuffer != nullptr)
     {
-        inputRenderbuffer->BindFramebufferRenderbuffer ();
+        if (dsFramebuffer->IsDepthStencilRenderbufferEnabled ()) 
+        {
+            dsFramebuffer->BindFramebufferDSRenderbuffer ();
+        } 
+        else if (dsFramebuffer->GetDepthArrayLayerCount () > 0)
+        {
+            dsFramebuffer->BindFramebufferDepthArrayTexture ();
+        }
+        else
+        {
+            m_renderer->BindDefaultDepthBuffer ();
+            m_renderer->BindDefaultStencilBuffer ();
+        }
     }
 
     // optionally clear
@@ -102,11 +115,23 @@ void CRenderStage::OnFrame ()
     }
 
     // set viewport
+
+    if (outputFramebuffer != nullptr)
+    {
+        width = outputFramebuffer->GetWidth ();
+        height = outputFramebuffer->GetHeight ();
+    }
+    else
+    {
+        width = m_renderer->GetWidth ();
+        height = m_renderer->GetHeight ();
+    }
+
     m_renderer->SetViewport 
-        ( (unsigned int) (m_viewportU * m_renderer->GetWidth ())
-        , (unsigned int) (m_viewportV * m_renderer->GetHeight ())
-        , (unsigned int) (m_viewportSizeU * m_renderer->GetWidth ())
-        , (unsigned int) (m_viewportSizeV * m_renderer->GetHeight ()));
+        ( (unsigned int) (m_viewportU * width)
+        , (unsigned int) (m_viewportV * height)
+        , (unsigned int) (m_viewportSizeU * width)
+        , (unsigned int) (m_viewportSizeV * height));
 
 }
 
@@ -122,8 +147,10 @@ IRenderStage& CRenderStage::SetViewport (float u, float v, float su, float sv)
 
 IRenderStage& CRenderStage::SetMultisampleEnabled (bool value)
 {
-    unsigned int rgbTextureCount;
-    unsigned int rgbaTextureCount;
+    size_t rgbTextureCount;
+    size_t rgbaTextureCount;
+    size_t dsArraySize;
+    bool hasDSRenderbuffer;
 
     if (value != m_isMultisampleEnabled)
     {
@@ -135,11 +162,13 @@ IRenderStage& CRenderStage::SetMultisampleEnabled (bool value)
         {
             rgbaTextureCount = m_framebuffer->GetRGBATextureCount ();
             rgbTextureCount = m_framebuffer->GetRGBTextureCount ();
+            dsArraySize = m_framebuffer->GetDepthArrayLayerCount ();
+            hasDSRenderbuffer = m_framebuffer->IsDepthStencilRenderbufferEnabled ();
 
             m_framebuffer->Deinitialize ();
             delete m_framebuffer;
 
-            m_framebuffer = m_renderer->CreateFramebuffer (rgbTextureCount, rgbaTextureCount, m_isMultisampleEnabled);
+            m_framebuffer = m_renderer->CreateFramebuffer (m_framebuffer->GetWidth (), m_framebuffer->GetHeight (), rgbTextureCount, rgbaTextureCount, dsArraySize, hasDSRenderbuffer, m_isMultisampleEnabled);
             m_framebuffer->Initialize ();
         }
     }
@@ -261,23 +290,23 @@ bool CRenderStage::IsClearStencilOnFrameEnabled () const
     return m_isClearStencilOnFrameEnabled;
 }
 
-IRenderStage& CRenderStage::SetPipelineFramebufferInputLink (EPipelineLink link)
+IRenderStage& CRenderStage::SetColorAttachmentsFramebufferLink (EPipelineLink link)
 {
-    m_pipelineFramebufferInputLink = link;
+    m_colorAttachmentsFramebufferLink = link;
 
     return *this;
 }
 
-IRenderStage& CRenderStage::SetPipelineRenderbufferLink (EPipelineLink link)
+IRenderStage& CRenderStage::SetDepthStencilAttachmentsFramebufferLink (EPipelineLink link)
 {
-    m_pipelineRenderbufferLink = link;
+    m_dsAttachmentsFramebufferLink = link;
 
     return *this;
 }
 
-IRenderStage& CRenderStage::SetPipelineFramebufferDrawLink (EPipelineLink link)
+IRenderStage& CRenderStage::SetOutputFramebufferLink (EPipelineLink link)
 {
-    m_pipelineFramebufferOutputLink = link;
+    m_outputFramebufferLink = link;
 
     return *this;
 }

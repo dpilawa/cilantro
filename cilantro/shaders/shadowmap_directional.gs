@@ -1,11 +1,11 @@
 #version %%CILANTRO_GL_VERSION%%
 
-layout(triangles, invocations = %%MAX_DIRECTIONAL_LIGHTS%%) in;
+layout(triangles, invocations = %%ACTIVE_DIRECTIONAL_LIGHTS%%) in;
 layout(triangle_strip, max_vertices = 3) out;
-    
-layout (std140, binding = 0) uniform LightSpaceMatricesBlock
+
+layout (std140) uniform UniformDirectionalLightViewMatricesBlock
 {
-    mat4 mLightSpace[%%MAX_DIRECTIONAL_LIGHTS%%];
+    mat4 mLightSpace[%%CILANTRO_MAX_DIRECTIONAL_LIGHTS%%];
 };
     
 void main()

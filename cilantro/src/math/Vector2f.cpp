@@ -64,6 +64,14 @@ Vector2f& Vector2f::operator*=(float f)
     return *this;
 }
 
+Vector2f& Vector2f::operator/=(float f)
+{
+    v[0] /= f;
+    v[1] /= f;
+
+    return *this;
+}
+
 Vector2f& Vector2f::operator+=(const Vector2f& other)
 {
     v[0] += other.v[0];
@@ -94,6 +102,12 @@ Vector2f operator* (Vector2f u, float f)
 Vector2f operator* (float f, Vector2f u)
 {
     u *= f;
+    return u;
+}
+
+Vector2f operator/ (Vector2f u, float f)
+{
+    u /= f;
     return u;
 }
 

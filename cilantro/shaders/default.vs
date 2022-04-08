@@ -26,7 +26,8 @@ uniform mat3 mNormal;
 /* array of bone transformation matrices */
 uniform mat4 mBoneTransformations[%%CILANTRO_MAX_BONES%%];
 
-layout(std140) uniform UniformMatricesBlock
+/* view and projection matrices */
+layout (std140) uniform UniformMatricesBlock
 {
     mat4 mView;
     mat4 mProjection;
@@ -71,6 +72,7 @@ void main ()
     /* world space vertex position */
     fPosition = vec3 (mModel * transformedPosition);
 
+    /* texture coordinates */
     fUV = vUV;
 }
     

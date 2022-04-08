@@ -125,6 +125,7 @@ public:
 
     // generate projection matrix (orthographic)
     __EAPI static Matrix4f GenOrthographicProjectionMatrix (float aspect, float width, float nearZ, float farZ);
+    __EAPI static Matrix4f GenOrthographicProjectionMatrix (float left, float right, float top, float bottom, float near, float far);   
 
     // system of linear equations
     template <typename T>

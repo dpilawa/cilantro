@@ -4,6 +4,8 @@
 #include "math/Vector2f.h"
 #include "math/Vector3f.h"
 #include "math/Vector4f.h"
+#include "math/Matrix3f.h"
+#include "math/Matrix4f.h"
 
 CGLShaderProgram::CGLShaderProgram () 
     : CShaderProgram ()
@@ -35,10 +37,36 @@ void CGLShaderProgram::Link ()
     }
 }
 
+bool CGLShaderProgram::HasUniform (const std::string& uniformName) const
+{
+    GLuint location = GetUniformLocationId (uniformName);
+
+    if (location == GL_INVALID_INDEX)
+    {
+        return false;
+    }
+
+    return true;
+}
+
 IShaderProgram& CGLShaderProgram::SetUniformFloat (const std::string& uniformName, float uniformValue)
 {
     GLuint location = GetUniformLocationId (uniformName);
-    glUniform1f (location, uniformValue);
+    if (location != GL_INVALID_INDEX)
+    {
+        glUniform1f (location, uniformValue);
+    }
+
+    return *this;
+}
+
+IShaderProgram& CGLShaderProgram::SetUniformFloatv (const std::string& uniformName, const float* uniformValue, size_t count)
+{
+    GLuint location = GetUniformLocationId (uniformName);
+    if (location != GL_INVALID_INDEX)
+    {
+        glUniform1fv (location, count, uniformValue);
+    }
 
     return *this;
 }
@@ -46,15 +74,20 @@ IShaderProgram& CGLShaderProgram::SetUniformFloat (const std::string& uniformNam
 IShaderProgram& CGLShaderProgram::SetUniformVector2f (const std::string& uniformName, const Vector2f& uniformValue)
 {
     GLuint location = GetUniformLocationId (uniformName);
-    glUniform2fv (location, 1, &uniformValue[0]);
-
+    if (location != GL_INVALID_INDEX)
+    {
+        glUniform2fv (location, 1, &uniformValue[0]);
+    }
     return *this;
 }
 
 IShaderProgram& CGLShaderProgram::SetUniformVector3f (const std::string& uniformName, const Vector3f& uniformValue)
 {
     GLuint location = GetUniformLocationId (uniformName);
-    glUniform3fv (location, 1, &uniformValue[0]);
+    if (location != GL_INVALID_INDEX)
+    {
+        glUniform3fv (location, 1, &uniformValue[0]);
+    }
 
     return *this;
 }
@@ -62,7 +95,54 @@ IShaderProgram& CGLShaderProgram::SetUniformVector3f (const std::string& uniform
 IShaderProgram& CGLShaderProgram::SetUniformVector4f (const std::string& uniformName, const Vector4f& uniformValue)
 {
     GLuint location = GetUniformLocationId (uniformName);
-    glUniform4fv (location, 1, &uniformValue[0]);
+    if (location != GL_INVALID_INDEX)
+    {
+        glUniform4fv (location, 1, &uniformValue[0]);
+    }
+
+    return *this;
+}
+
+IShaderProgram& CGLShaderProgram::SetUniformMatrix3f (const std::string& uniformName, const Matrix3f& uniformValue)
+{
+    GLuint location = GetUniformLocationId (uniformName);
+    if (location != GL_INVALID_INDEX)
+    {
+        glUniformMatrix3fv (location, 1, GL_TRUE, uniformValue[0]);
+    }
+
+    return *this;
+}
+
+IShaderProgram& CGLShaderProgram::SetUniformMatrix4f (const std::string& uniformName, const Matrix4f& uniformValue)
+{
+    GLuint location = GetUniformLocationId (uniformName);
+    if (location != GL_INVALID_INDEX)
+    {
+        glUniformMatrix4fv (location, 1, GL_TRUE, uniformValue[0]);
+    }
+
+    return *this;
+}
+
+IShaderProgram& CGLShaderProgram::SetUniformMatrix3fv (const std::string& uniformName, const float* uniformValue, size_t count)
+{
+    GLuint location = GetUniformLocationId (uniformName);
+    if (location != GL_INVALID_INDEX)
+    {
+        glUniformMatrix3fv (location, count, GL_TRUE, uniformValue);
+    }
+
+    return *this;
+}
+
+IShaderProgram& CGLShaderProgram::SetUniformMatrix4fv (const std::string& uniformName, const float* uniformValue, size_t count)
+{
+    GLuint location = GetUniformLocationId (uniformName);
+    if (location != GL_INVALID_INDEX)
+    {
+        glUniformMatrix4fv (location, count, GL_TRUE, uniformValue);
+    }
 
     return *this;
 }

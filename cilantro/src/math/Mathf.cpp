@@ -762,6 +762,21 @@ Matrix4f Mathf::GenOrthographicProjectionMatrix (float aspect, float width, floa
     return m;
 }
 
+Matrix4f Mathf::GenOrthographicProjectionMatrix (float left, float right, float top, float bottom, float near, float far)
+{
+    Matrix4f m;
+
+    m.InitIdentity ();
+    m[0][0] = 2.0f / (right - left);
+    m[1][1] = 2.0f / (top - bottom);
+    m[2][2] = -2.0f / (far - near);
+    m[0][3] = -(right + left) / (right - left);
+    m[1][3] = -(top + bottom) / (top - bottom);
+    m[2][3] = -(far + near) / (far - near);
+
+    return m;
+}
+
 template <typename T>
 void Mathf::SolveSystemOfLinearEquations (std::vector<std::vector<float>>& A, std::vector<T>& b)
 {

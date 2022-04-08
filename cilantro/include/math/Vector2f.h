@@ -37,6 +37,7 @@ public:
 
     // operators
     __EAPI Vector2f& operator*= (float f);
+    __EAPI Vector2f& operator/= (float f);
     __EAPI Vector2f& operator+= (const Vector2f& other);
     __EAPI Vector2f& operator-= (const Vector2f& other);
     
@@ -50,6 +51,7 @@ private:
 
 __EAPI Vector2f operator* (Vector2f u, float f);
 __EAPI Vector2f operator* (float f, Vector2f u);
+__EAPI Vector2f operator/ (Vector2f u, float f);
 __EAPI Vector2f operator+ (Vector2f u, const Vector2f& v);
 __EAPI Vector2f operator- (Vector2f u, const Vector2f& v);
 __EAPI Vector2f operator- (Vector2f v);

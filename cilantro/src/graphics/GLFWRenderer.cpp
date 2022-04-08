@@ -5,13 +5,13 @@
 #include "system/Game.h"
 #include "system/LogMessage.h"
 
-CGLFWRenderer::CGLFWRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool isDeferred, std::string windowCaption, bool isFullscreen, bool isResizable, bool isVSync) 
-    : CGLRenderer (gameScene, width, height, isDeferred)
+CGLFWRenderer::CGLFWRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferred, std::string windowCaption, bool fullscreen, bool resizable, bool vSync) 
+    : CGLRenderer (gameScene, width, height, shadowMappingEnabled, deferred)
+    , m_windowCaption (windowCaption)
+    , m_isFullscreen (fullscreen)
+    , m_isResizable (resizable)
+    , m_isVSync (vSync)
 {
-    this->windowCaption = windowCaption;
-    this->isFullscreen = isFullscreen;
-    this->isResizable = isResizable;
-    this->isVSync = isVSync;
 }
 
 CGLFWRenderer::~CGLFWRenderer ()
@@ -21,13 +21,14 @@ CGLFWRenderer::~CGLFWRenderer ()
 
 void CGLFWRenderer::Initialize ()
 {
-    GLFWmonitor* monitor; 
+    GLFWmonitor* monitor;
+    GLint data;
     
     // initialize GLFW
     glfwInit ();
 
     // check fullscreen
-    if (isFullscreen)
+    if (m_isFullscreen)
     {
         monitor = glfwGetPrimaryMonitor ();
 
@@ -42,7 +43,7 @@ void CGLFWRenderer::Initialize ()
     // set up GL & window properties
     glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, CILANTRO_GL_VERSION_MAJOR);
 	glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, CILANTRO_GL_VERSION_MINOR);
-    glfwWindowHint (GLFW_RESIZABLE, isResizable);
+    glfwWindowHint (GLFW_RESIZABLE, m_isResizable);
     glfwWindowHint (GLFW_VISIBLE, 1);
 #if (CILANTRO_GL_VERSION < 150)
     glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_ANY_PROFILE);
@@ -53,7 +54,7 @@ void CGLFWRenderer::Initialize ()
     glfwWindowHint (GLFW_COCOA_RETINA_FRAMEBUFFER, GL_TRUE);
 
     // create window
-    window = glfwCreateWindow (m_width, m_height, windowCaption.c_str (), monitor, nullptr);
+    window = glfwCreateWindow (m_width, m_height, m_windowCaption.c_str (), monitor, nullptr);
 
     if (window == NULL)
     {
@@ -78,7 +79,7 @@ void CGLFWRenderer::Initialize ()
     glfwGetFramebufferSize (window, (int*)(&m_width), (int*)(&m_height));
 
     // set vsync on
-    glfwSwapInterval (isVSync);
+    glfwSwapInterval (m_isVSync);
 
     // load GL
     if (!gladLoadGL ())
@@ -90,6 +91,15 @@ void CGLFWRenderer::Initialize ()
     LogMessage (MSG_LOCATION) << "Version:" << (char*) glGetString (GL_VERSION);
     LogMessage (MSG_LOCATION) << "Shader language version:" << (char*) glGetString (GL_SHADING_LANGUAGE_VERSION);
     LogMessage (MSG_LOCATION) << "Renderer:" << (char*) glGetString (GL_RENDERER);
+
+    glGetIntegerv (GL_MAX_GEOMETRY_SHADER_INVOCATIONS, &data);
+    LogMessage (MSG_LOCATION) << "GL_MAX_GEOMETRY_SHADER_INVOCATIONS =" << std::to_string (data);
+
+    glGetIntegerv (GL_MAX_ARRAY_TEXTURE_LAYERS, &data);
+    LogMessage (MSG_LOCATION) << "GL_MAX_ARRAY_TEXTURE_LAYERS =" << std::to_string (data);
+
+    glGetIntegerv (GL_MAX_VERTEX_OUTPUT_COMPONENTS, &data);
+    LogMessage (MSG_LOCATION) << "GL_MAX_VERTEX_OUTPUT_COMPONENTS =" << std::to_string (data);
 
     LogMessage (MSG_LOCATION) << "GLFWRenderer started";
 

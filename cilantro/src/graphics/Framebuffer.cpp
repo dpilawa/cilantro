@@ -1,40 +1,57 @@
 #include "graphics/Framebuffer.h"
+#include "system/LogMessage.h"
 
-CFramebuffer::CFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount)
-    : m_BufferWidth (bufferWidth)
-    , m_BufferHeight (bufferHeight)
-    , m_RgbTextureCount (rgbTextureCount)
-    , m_RgbaTextureCount (rgbaTextureCount)
+CFramebuffer::CFramebuffer (uint32_t bufferWidth, uint32_t bufferHeight, size_t rgbTextureCount, size_t rgbaTextureCount, size_t depthBufferArrayLayerCount, bool depthStencilRenderbufferEnabled)
+    : m_bufferWidth (bufferWidth)
+    , m_bufferHeight (bufferHeight)
+    , m_rgbTextureCount (rgbTextureCount)
+    , m_rgbaTextureCount (rgbaTextureCount)
+    , m_depthBufferArrayLayerCount (depthBufferArrayLayerCount)
+    , m_depthStencilRenderbufferEnabled (depthStencilRenderbufferEnabled)
 {
+    if (depthBufferArrayLayerCount > 0 && depthStencilRenderbufferEnabled)
+    {
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Framebuffer should have either depth texture or renderbuffer";
+    }
 }
 
-unsigned int CFramebuffer::GetWidth () const 
+uint32_t CFramebuffer::GetWidth () const 
 {
-    return m_BufferWidth;
+    return m_bufferWidth;
 }
 
-unsigned int CFramebuffer::GetHeight () const 
+uint32_t CFramebuffer::GetHeight () const 
 {
-    return m_BufferHeight;
+    return m_bufferHeight;
 }
 
-unsigned int CFramebuffer::GetTextureCount () const
+size_t CFramebuffer::GetColorTextureCount () const
 {
-    return m_RgbTextureCount + m_RgbaTextureCount;
+    return m_rgbTextureCount + m_rgbaTextureCount;
 }
 
-unsigned int CFramebuffer::GetRGBTextureCount () const
+size_t CFramebuffer::GetRGBTextureCount () const
 {
-    return m_RgbTextureCount;
+    return m_rgbTextureCount;
 }
 
-unsigned int CFramebuffer::GetRGBATextureCount () const
+size_t CFramebuffer::GetRGBATextureCount () const
 {
-    return m_RgbaTextureCount;
+    return m_rgbaTextureCount;
 }
 
-void CFramebuffer::SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight)
+size_t CFramebuffer::GetDepthArrayLayerCount () const
 {
-    m_BufferWidth = bufferWidth;
-    m_BufferHeight = bufferHeight;
+    return m_depthBufferArrayLayerCount;
+}
+
+bool CFramebuffer::IsDepthStencilRenderbufferEnabled () const
+{
+    return m_depthStencilRenderbufferEnabled;
+}
+
+void CFramebuffer::SetFramebufferResolution (uint32_t bufferWidth, uint32_t bufferHeight)
+{
+    m_bufferWidth = bufferWidth;
+    m_bufferHeight = bufferHeight;
 }

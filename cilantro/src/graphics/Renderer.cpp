@@ -1,5 +1,6 @@
 #include "graphics/Renderer.h"
 #include "graphics/IRenderStage.h"
+#include "graphics/ShadowMapRenderStage.h"
 #include "graphics/DeferredGeometryRenderStage.h"
 #include "graphics/ForwardGeometryRenderStage.h"
 #include "graphics/IFramebuffer.h"
@@ -8,9 +9,10 @@
 #include "system/LogMessage.h"
 #include <cmath>
 
-CRenderer::CRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool isDeferred)
+CRenderer::CRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferred)
     : m_gameScene (gameScene)
-    , m_isDeferred (isDeferred)
+    , m_isDeferred (deferred)
+    , m_isShadowMapping (shadowMappingEnabled)
     , m_width (width)
     , m_height (height)
 {
@@ -152,6 +154,12 @@ void CRenderer::RenderFrame ()
 
 void CRenderer::InitializeRenderStages ()
 {
+    if (m_isShadowMapping == true)
+    {
+        IRenderStage& shadow = this->AddRenderStage<CShadowMapRenderStage> ("shadow_map");
+        shadow.Initialize ();
+    }
+
     if (m_isDeferred == true)
     {
         // geometry stage

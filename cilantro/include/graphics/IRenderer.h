@@ -6,6 +6,7 @@
 #include <vector>
 
 struct IFramebuffer;
+struct IShaderProgram;
 class CRenderStage;
 class CGameScene;
 class MeshObject;
@@ -60,6 +61,7 @@ struct IRenderer
     // geometry
     virtual void Draw (MeshObject& meshObject) = 0;
     virtual void DrawQuad () = 0;
+    virtual void DrawAllGeometryBuffers (IShaderProgram& shader) = 0;
 
     virtual void Update (MeshObject& meshObject) = 0;
     virtual void Update (Material& material, unsigned int textureUnit) = 0;
@@ -70,10 +72,19 @@ struct IRenderer
     virtual void Update (SpotLight& spotLight) = 0;
 
     virtual void UpdateCameraBuffers (Camera& camera) = 0;
+    virtual void UpdateLightViewBuffers () = 0;
+
+    // object counts
+    virtual size_t GetPointLightCount () const = 0;
+    virtual size_t GetDirectionalLightCount () const = 0;
+    virtual size_t GetSpotLightCount () const = 0;
 
     // framebuffer control
-    virtual IFramebuffer* CreateFramebuffer (unsigned int rgbTextures, unsigned int rgbaTextures, bool multisampleEnabled) = 0;
+    virtual IFramebuffer* CreateFramebuffer (size_t width, size_t height, size_t rgbTextureCount, size_t rgbaTextureCount, size_t depthBufferArrayTextureCount, bool depthStencilRenderbufferEnabled, bool multisampleEnabled) = 0;
     virtual void BindDefaultFramebuffer () = 0;
+    virtual void BindDefaultDepthBuffer () = 0;
+    virtual void BindDefaultStencilBuffer () = 0;
+    virtual void BindDefaultTextures () = 0;
 
     virtual void ClearColorBuffer (const Vector4f& rgba) = 0;
     virtual void ClearDepthBuffer () = 0;

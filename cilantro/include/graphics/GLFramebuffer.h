@@ -10,13 +10,14 @@ struct GLBuffers
     GLuint FBO;
     GLuint RBO;
     GLuint textureBuffer[CILANTRO_MAX_FRAMEBUFFER_TEXTURES];
-    GLuint attachments[CILANTRO_MAX_FRAMEBUFFER_TEXTURES];
+    GLuint colorAttachments[CILANTRO_MAX_FRAMEBUFFER_TEXTURES];
+    GLuint depthTextureArray;
 };
 
 class CGLFramebuffer : public CFramebuffer
 {
 public:
-    CGLFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount);
+    CGLFramebuffer (uint32_t bufferWidth, uint32_t bufferHeight, size_t rgbTextureCount, size_t rgbaTextureCount, size_t depthBufferArrayLayerCount, bool depthStencilRenderbufferEnabled);
     virtual ~CGLFramebuffer () {};
 
     ///////////////////////////////////////////////////////////////////////////
@@ -25,22 +26,25 @@ public:
     virtual void Deinitialize () override;
 
     virtual void BindFramebuffer () const override;
-    virtual void UnbindFramebuffer () const override;
-    virtual void BlitFramebuffer () const override;
-    void BindFramebufferTextures () const override;
-    void BindFramebufferRenderbuffer () const override;
+    virtual void BindFramebufferColorTextures () const override;
+    virtual void BindFramebufferDepthArrayTexture () const override;
+    virtual void BindFramebufferDSRenderbuffer () const override;
 
-    virtual void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight) override;
+    virtual void UnbindFramebuffer () const override;    
+
+    virtual void BlitFramebuffer () const override {};
+
+    virtual void SetFramebufferResolution (uint32_t bufferWidth, uint32_t bufferHeight) override;
 
     ///////////////////////////////////////////////////////////////////////////
 
     GLuint virtual GetFramebufferRenderbufferGLId () const;
-    GLuint virtual GetFramebufferTextureGLId (unsigned int textureNumber) const;
+    GLuint virtual GetFramebufferTextureGLId (size_t textureNumber) const;
     GLuint virtual GetFramebufferGLId () const;
 
 protected:
 
-    GLBuffers m_GlBuffers;
+    GLBuffers m_glBuffers;
 
 };
 

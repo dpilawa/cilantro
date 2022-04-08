@@ -12,5 +12,5 @@ uniform mat4 mModel;
     
 void main()
 {
-    gl_Position = mModel * vec4(vPosition, 1.0);
+    gl_Position = mModel * vec4 (vPosition, 1.0);
 }

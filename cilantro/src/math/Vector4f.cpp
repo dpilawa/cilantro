@@ -68,6 +68,16 @@ Vector4f& Vector4f::operator*=(float f)
     return *this;
 }
 
+Vector4f& Vector4f::operator/=(float f)
+{
+    v[0] /= f;
+    v[1] /= f;
+    v[2] /= f;
+    v[3] /= f;
+
+    return *this;
+}
+
 Vector4f& Vector4f::operator+=(const Vector4f& other)
 {
     v[0] += other.v[0];
@@ -102,6 +112,12 @@ Vector4f operator* (Vector4f u, float f)
 Vector4f operator* (float f, Vector4f u)
 {
     u *= f;
+    return u;
+}
+
+Vector4f operator/ (Vector4f u, float f)
+{
+    u /= f;
     return u;
 }
 

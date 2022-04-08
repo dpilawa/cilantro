@@ -23,10 +23,10 @@ int main (int argc, char* argv [])
     CGame::Initialize ();
 
     CGameScene& gameScene = CGame::CreateGameScene<CGameScene> ("scene");
-    CGLFWRenderer& renderer = gameScene.CreateRenderer<CGLFWRenderer> (960, 600, false, "Test 02", false, true, true);
+    CGLFWRenderer& renderer = gameScene.CreateRenderer<CGLFWRenderer> (960, 600, false, false, "Test 02", false, true, true);
     InputController& inputController = CGame::CreateInputController<GLFWInputController> ();
 
-    renderer.AddRenderStage<CQuadRenderStage> ("screen").SetShaderProgram ("flatquad_shader").SetFramebufferEnabled (false).SetPipelineFramebufferInputLink (EPipelineLink::LINK_PREVIOUS);
+    renderer.AddRenderStage<CQuadRenderStage> ("screen").SetShaderProgram ("flatquad_shader").SetFramebufferEnabled (false).SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);
     renderer.GetRenderStageManager ().GetByName<IRenderStage> ("base").SetMultisampleEnabled (true);
 
     inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});

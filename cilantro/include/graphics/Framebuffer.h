@@ -6,25 +6,30 @@
 class CFramebuffer : public IFramebuffer
 {
 public:
-    CFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount);
+    CFramebuffer (uint32_t bufferWidth, uint32_t bufferHeight, size_t rgbTextureCount, size_t rgbaTextureCount, size_t depthBufferArrayLayerCount, bool depthStencilRenderbufferEnabled);
     virtual ~CFramebuffer () {};
 
     ///////////////////////////////////////////////////////////////////////////
 
-    virtual unsigned int GetWidth () const override final;
-    virtual unsigned int GetHeight () const override final;
+    virtual uint32_t GetWidth () const override final;
+    virtual uint32_t GetHeight () const override final;
 
-    virtual unsigned int GetTextureCount() const override final;
-    virtual unsigned int GetRGBTextureCount () const override final;
-    virtual unsigned int GetRGBATextureCount () const override final;
+    virtual size_t GetColorTextureCount() const override final;
+    virtual size_t GetRGBTextureCount () const override final;
+    virtual size_t GetRGBATextureCount () const override final;
+    virtual size_t GetDepthArrayLayerCount () const override final;
 
-    void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight) override;
+    virtual bool IsDepthStencilRenderbufferEnabled () const override final;
+
+    void SetFramebufferResolution (uint32_t bufferWidth, uint32_t bufferHeight) override;
 
     ///////////////////////////////////////////////////////////////////////////
 
 protected:
-    unsigned int m_RgbTextureCount;
-    unsigned int m_RgbaTextureCount;
-    unsigned int m_BufferWidth;
-    unsigned int m_BufferHeight;
+    size_t      m_rgbTextureCount;
+    size_t      m_rgbaTextureCount;
+    size_t      m_depthBufferArrayLayerCount;
+    uint32_t    m_bufferWidth;
+    uint32_t    m_bufferHeight;
+    bool        m_depthStencilRenderbufferEnabled;
 };

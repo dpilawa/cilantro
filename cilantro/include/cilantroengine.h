@@ -2,15 +2,17 @@
 typedef unsigned int handle_t;
 
 // defines
-#define CILANTRO_VBO_COUNT 7
-#define CILANTRO_UBO_COUNT 4
-#define CILANTRO_MAX_TEXTURE_UNITS 16
-#define CILANTRO_MAX_POINT_LIGHTS 64
-#define CILANTRO_MAX_DIRECTIONAL_LIGHTS 64
-#define CILANTRO_MAX_SPOT_LIGHTS 64
-#define CILANTRO_MAX_FRAMEBUFFER_TEXTURES 8
-#define CILANTRO_MAX_BONES 128
-#define CILANTRO_MAX_BONE_INFLUENCES 4
+#define CILANTRO_VBO_COUNT                  7
+#define CILANTRO_UBO_COUNT                  5
+#define CILANTRO_MAX_TEXTURE_UNITS          16
+#define CILANTRO_MAX_POINT_LIGHTS           32
+#define CILANTRO_MAX_DIRECTIONAL_LIGHTS     32
+#define CILANTRO_MAX_SPOT_LIGHTS            32
+#define CILANTRO_MAX_FRAMEBUFFER_TEXTURES   8
+#define CILANTRO_MAX_BONES                  128
+#define CILANTRO_MAX_BONE_INFLUENCES        4
+#define CILANTRO_SHADOW_MAP_SIZE            1024
+#define CILANTRO_MULTISAMPLE                4
 
 // linking
 #if defined _WIN32 || defined __CYGWIN__

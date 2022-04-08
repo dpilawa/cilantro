@@ -67,6 +67,15 @@ Vector3f& Vector3f::operator*=(float f)
     return *this;
 }
 
+Vector3f& Vector3f::operator/=(float f)
+{
+    v[0] /= f;
+    v[1] /= f;
+    v[2] /= f;
+
+    return *this;
+}
+
 Vector3f& Vector3f::operator+=(const Vector3f& other)
 {
     v[0] += other.v[0];
@@ -99,6 +108,12 @@ Vector3f operator* (Vector3f u, float f)
 Vector3f operator* (float f, Vector3f u)
 {
     u *= f;
+    return u;
+}
+
+Vector3f operator/ (Vector3f u, float f)
+{
+    u /= f;
     return u;
 }
 

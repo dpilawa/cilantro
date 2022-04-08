@@ -40,6 +40,7 @@ public:
 
     // operators
     __EAPI Vector4f& operator*= (float f);
+    __EAPI Vector4f& operator/= (float f);
     __EAPI Vector4f& operator+= (const Vector4f& other);
     __EAPI Vector4f& operator-= (const Vector4f& other);
     
@@ -54,6 +55,7 @@ private:
 
 __EAPI Vector4f operator* (Vector4f u, float f);
 __EAPI Vector4f operator* (float f, Vector4f u);
+__EAPI Vector4f operator/ (Vector4f u, float f);
 __EAPI Vector4f operator+ (Vector4f u, const Vector4f& v);
 __EAPI Vector4f operator- (Vector4f u, const Vector4f& v);
 __EAPI Vector4f operator- (Vector4f v);

@@ -2,43 +2,68 @@
 #include "graphics/GLFramebuffer.h"
 #include "system/LogMessage.h"
 
-CGLFramebuffer::CGLFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount) 
-    : CFramebuffer (bufferWidth, bufferHeight, rgbTextureCount, rgbaTextureCount)
+CGLFramebuffer::CGLFramebuffer (uint32_t bufferWidth, uint32_t bufferHeight, size_t rgbTextureCount, size_t rgbaTextureCount, size_t depthBufferArrayLayerCount, bool depthStencilRenderbufferEnabled) 
+    : CFramebuffer (bufferWidth, bufferHeight, rgbTextureCount, rgbaTextureCount, depthBufferArrayLayerCount, depthStencilRenderbufferEnabled)
 {
-    for (int i = 0; i < CILANTRO_MAX_FRAMEBUFFER_TEXTURES; i++)
+    for (size_t i = 0; i < CILANTRO_MAX_FRAMEBUFFER_TEXTURES; ++i)
     {
-        m_GlBuffers.attachments[i] = GL_COLOR_ATTACHMENT0 + i;
+        m_glBuffers.colorAttachments[i] = GL_COLOR_ATTACHMENT0 + i;
     }
 }
 
 void CGLFramebuffer::Initialize ()
 {
     // create and bind framebuffer
-    glGenFramebuffers (1, &m_GlBuffers.FBO);
-    glBindFramebuffer (GL_FRAMEBUFFER, m_GlBuffers.FBO);
+    glGenFramebuffers (1, &m_glBuffers.FBO);
+    glBindFramebuffer (GL_FRAMEBUFFER, m_glBuffers.FBO);
 
     // create textures and attach to framebuffer as color attachments
-    glGenTextures (m_RgbTextureCount + m_RgbaTextureCount, m_GlBuffers.textureBuffer);
-    for (unsigned int i = 0; i < m_RgbTextureCount + m_RgbaTextureCount; i++)
+    glGenTextures (m_rgbTextureCount + m_rgbaTextureCount, m_glBuffers.textureBuffer);
+    for (unsigned int i = 0; i < m_rgbTextureCount + m_rgbaTextureCount; i++)
     {
-        glBindTexture (GL_TEXTURE_2D, m_GlBuffers.textureBuffer[i]);
-        glTexImage2D (GL_TEXTURE_2D, 0, (i < m_RgbTextureCount) ? GL_RGB16F : GL_RGBA16F, m_BufferWidth, m_BufferHeight, 0, (i < m_RgbTextureCount) ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+        glBindTexture (GL_TEXTURE_2D, m_glBuffers.textureBuffer[i]);
+        glTexImage2D (GL_TEXTURE_2D, 0, (i < m_rgbTextureCount) ? GL_RGB16F : GL_RGBA16F, m_bufferWidth, m_bufferHeight, 0, (i < m_rgbTextureCount) ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glBindTexture (GL_TEXTURE_2D, 0);
         
-        glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_GlBuffers.textureBuffer[i], 0);
+        glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_glBuffers.textureBuffer[i], 0);
     }
 
-    glDrawBuffers (m_RgbTextureCount + m_RgbaTextureCount, m_GlBuffers.attachments);
+    // specify color buffers to draw to
+    if (m_rgbTextureCount + m_rgbaTextureCount > 0)
+    {
+        glDrawBuffers (m_rgbTextureCount + m_rgbaTextureCount, m_glBuffers.colorAttachments);
+    }
+    else
+    {
+        glDrawBuffer (GL_NONE);
+    }
 
-    // create renderbuffer for a (combined) depth and stencil buffer
-    glGenRenderbuffers (1, &m_GlBuffers.RBO);
-    glBindRenderbuffer (GL_RENDERBUFFER, m_GlBuffers.RBO);
-    glRenderbufferStorage (GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_BufferWidth, m_BufferHeight);
-    glBindRenderbuffer (GL_RENDERBUFFER, 0);
+    if (m_depthBufferArrayLayerCount > 0)
+    {
+        // create depth buffer array (used by shadow maps)
+        glGenTextures(1, &m_glBuffers.depthTextureArray);
+        glBindTexture(GL_TEXTURE_2D_ARRAY, m_glBuffers.depthTextureArray);
+        glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_DEPTH_COMPONENT32F, m_bufferWidth, m_bufferHeight, m_depthBufferArrayLayerCount, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        glBindTexture (GL_TEXTURE_2D_ARRAY, 0);
 
-    glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_GlBuffers.RBO);
+        glFramebufferTexture (GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_glBuffers.depthTextureArray, 0);
+    }
+    else if (m_depthStencilRenderbufferEnabled)
+    {
+        // create renderbuffer for a (combined) depth and stencil buffer
+        glGenRenderbuffers (1, &m_glBuffers.RBO);
+        glBindRenderbuffer (GL_RENDERBUFFER, m_glBuffers.RBO);
+        glRenderbufferStorage (GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_bufferWidth, m_bufferHeight);
+        glBindRenderbuffer (GL_RENDERBUFFER, 0);
+
+        glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_glBuffers.RBO);
+    }
 
     // check status
     if (glCheckFramebufferStatus (GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -47,20 +72,39 @@ void CGLFramebuffer::Initialize ()
     }
     else
     {
-        LogMessage (MSG_LOCATION) << "Initialized framebuffer" << m_BufferWidth << m_BufferHeight;
+        LogMessage (MSG_LOCATION) << "Initialized framebuffer" << m_bufferWidth << m_bufferHeight;
     }
 }
 
 void CGLFramebuffer::Deinitialize ()
 {
-    glDeleteRenderbuffers (1, &m_GlBuffers.RBO);
-    glDeleteTextures (m_RgbTextureCount + m_RgbaTextureCount, m_GlBuffers.textureBuffer);
-    glDeleteFramebuffers (1, &m_GlBuffers.FBO);
+    glDeleteRenderbuffers (1, &m_glBuffers.RBO);
+    glDeleteTextures (m_rgbTextureCount + m_rgbaTextureCount, m_glBuffers.textureBuffer);
+    glDeleteFramebuffers (1, &m_glBuffers.FBO);
 }
 
 void CGLFramebuffer::BindFramebuffer () const
 {
-    glBindFramebuffer (GL_FRAMEBUFFER, m_GlBuffers.FBO);
+    glBindFramebuffer (GL_FRAMEBUFFER, m_glBuffers.FBO);
+}
+
+void CGLFramebuffer::BindFramebufferColorTextures () const
+{
+    for (unsigned int i = 0; i < GetColorTextureCount (); ++i)
+    {
+        glActiveTexture (GL_TEXTURE0 + i);
+        glBindTexture (GL_TEXTURE_2D, GetFramebufferTextureGLId (i));
+    }
+}
+
+void CGLFramebuffer::BindFramebufferDepthArrayTexture () const
+{
+    glFramebufferTexture (GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_glBuffers.depthTextureArray, 0);
+}
+
+void CGLFramebuffer::BindFramebufferDSRenderbuffer () const
+{
+    glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, GetFramebufferRenderbufferGLId ());
 }
 
 void CGLFramebuffer::UnbindFramebuffer () const
@@ -68,26 +112,7 @@ void CGLFramebuffer::UnbindFramebuffer () const
     glBindFramebuffer (GL_FRAMEBUFFER, (GLint) 0);
 }
 
-void CGLFramebuffer::BlitFramebuffer () const
-{
-    // no op
-}
-
-void CGLFramebuffer::BindFramebufferTextures () const
-{
-    for (unsigned int i = 0; i < GetTextureCount (); i++)
-    {
-        glActiveTexture (GL_TEXTURE0 + i);
-        glBindTexture (GL_TEXTURE_2D, GetFramebufferTextureGLId (i));
-    }
-}
-
-void CGLFramebuffer::BindFramebufferRenderbuffer () const
-{
-    glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, GetFramebufferRenderbufferGLId ());
-}
-
-void CGLFramebuffer::SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight)
+void CGLFramebuffer::SetFramebufferResolution (uint32_t bufferWidth, uint32_t bufferHeight)
 {
     // resize framebuffer texture and viewport
     CFramebuffer::SetFramebufferResolution (bufferWidth, bufferHeight);
@@ -97,16 +122,16 @@ void CGLFramebuffer::SetFramebufferResolution (unsigned int bufferWidth, unsigne
 
 GLuint CGLFramebuffer::GetFramebufferRenderbufferGLId () const
 {
-    return m_GlBuffers.RBO;
+    return m_glBuffers.RBO;
 }
 
-GLuint CGLFramebuffer::GetFramebufferTextureGLId (unsigned int textureNumber) const
+GLuint CGLFramebuffer::GetFramebufferTextureGLId (size_t textureNumber) const
 {
-    return m_GlBuffers.textureBuffer[textureNumber];
+    return m_glBuffers.textureBuffer[textureNumber];
 }
 
 GLuint CGLFramebuffer::GetFramebufferGLId () const
 {
-    return m_GlBuffers.FBO;
+    return m_glBuffers.FBO;
 }
 

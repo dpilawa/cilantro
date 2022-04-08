@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cilantroengine.h"
+#include "graphics/IRenderer.h"
 
 struct IFramebuffer;
 
@@ -39,8 +40,8 @@ struct IRenderStage
     virtual bool IsClearDepthOnFrameEnabled () const = 0;
     virtual bool IsClearStencilOnFrameEnabled () const = 0;
 
-    virtual IRenderStage& SetPipelineFramebufferInputLink (EPipelineLink link) = 0;
-    virtual IRenderStage& SetPipelineRenderbufferLink (EPipelineLink link) = 0;
-    virtual IRenderStage& SetPipelineFramebufferDrawLink (EPipelineLink link) = 0;
+    virtual IRenderStage& SetColorAttachmentsFramebufferLink (EPipelineLink link) = 0;
+    virtual IRenderStage& SetDepthStencilAttachmentsFramebufferLink (EPipelineLink link) = 0;
+    virtual IRenderStage& SetOutputFramebufferLink (EPipelineLink link) = 0;
 
 };

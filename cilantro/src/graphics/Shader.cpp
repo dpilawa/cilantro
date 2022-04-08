@@ -30,8 +30,7 @@ void CShader::SetParameter (const std::string& parameter, const std::string& val
 {
     std::size_t pos;
 
-    pos = m_shaderSource.find (parameter);
-    if (pos != std::string::npos)
+    while ((pos = m_shaderSource.find (parameter)) != std::string::npos)
     {
         m_shaderSource.replace (pos, parameter.length (), value);
     }
@@ -45,4 +44,6 @@ void CShader::SetDefaultParameters ()
     SetParameter ("%%CILANTRO_MAX_POINT_LIGHTS%%", std::to_string (CILANTRO_MAX_POINT_LIGHTS));
     SetParameter ("%%CILANTRO_MAX_SPOT_LIGHTS%%", std::to_string (CILANTRO_MAX_SPOT_LIGHTS));
     SetParameter ("%%CILANTRO_MAX_DIRECTIONAL_LIGHTS%%", std::to_string (CILANTRO_MAX_DIRECTIONAL_LIGHTS));
+
+    SetParameter ("%%ACTIVE_DIRECTIONAL_LIGHTS%%", "1");
 }
