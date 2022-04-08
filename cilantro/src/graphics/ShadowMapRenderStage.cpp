@@ -1,6 +1,9 @@
 #include "graphics/ShadowMapRenderStage.h"
 #include "graphics/IFramebuffer.h"
+#include "graphics/GLShader.h"
+#include "graphics/GLShaderProgram.h"
 #include "scene/GameScene.h"
+#include "system/Game.h"
 
 CShadowMapRenderStage::CShadowMapRenderStage ()
     : CRenderStage ()
@@ -11,6 +14,20 @@ CShadowMapRenderStage::CShadowMapRenderStage ()
 void CShadowMapRenderStage::Initialize ()
 {
     InitializeFramebuffer ();
+
+    // set callback for new or modified lights
+    m_renderer->GetGameScene ()->RegisterCallback ("OnUpdateLight", 
+        [&](unsigned int objectHandle, unsigned int) 
+        { 
+            if (m_framebuffer != nullptr)
+            {
+                m_framebuffer->Deinitialize ();
+                delete m_framebuffer;
+            }
+
+            InitializeFramebuffer ();
+        }
+    );
 }
 
 void CShadowMapRenderStage::OnFrame ()
@@ -34,6 +51,10 @@ void CShadowMapRenderStage::InitializeFramebuffer ()
     if (m_isFramebufferEnabled)
     {
         size_t numLights = m_renderer->GetDirectionalLightCount ();
-        m_framebuffer = m_renderer->CreateFramebuffer (CILANTRO_SHADOW_MAP_SIZE, CILANTRO_SHADOW_MAP_SIZE, 0, 0, numLights == 0 ? 1 : numLights , false, m_isMultisampleEnabled);
+
+        if (numLights > 0)
+        {
+            m_framebuffer = m_renderer->CreateFramebuffer (CILANTRO_SHADOW_MAP_SIZE, CILANTRO_SHADOW_MAP_SIZE, 0, 0, numLights, false, m_isMultisampleEnabled);
+        }
     }
 }

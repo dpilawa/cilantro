@@ -101,6 +101,11 @@ int main (int argc, char* argv [])
     light2.SetColor (Vector3f (2.7f, 2.7f, 2.7f));
     light2.SetEnabled (true);
 
+    DirectionalLight& light2a = gameScene.AddGameObject<DirectionalLight> ("light2a");
+    light2a.GetLocalTransform ().Rotate (45.0f, 135.0f, 0.0f);
+    light2a.SetColor (Vector3f (2.7f, 2.7f, 2.7f));
+    light2a.SetEnabled (true);
+
     SpotLight& light3 = gameScene.AddGameObject<SpotLight> ("light3");
     light3.GetLocalTransform ().Translate (2.0f, 10.0f, 0.0f).Rotate (90.0f, 0.0f, 0.0f);
     light3.SetColor (Vector3f (2.7f, 2.7f, 2.7f));

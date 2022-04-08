@@ -566,8 +566,12 @@ void CGLRenderer::Update (DirectionalLight& directionalLight)
 
     // update invocation count in shadow map geometry shader
     CGLShader shadowmapShader = CGame::GetResourceManager ().GetByName<CGLShader> ("shadowmap_directional_geometry_shader");
-    shadowmapShader.SetParameter ("%%ACTIVE_DIRECTIONAL_LIGHTS%%", std::to_string (m_uniformDirectionalLightBuffer->directionalLightCount));
+    shadowmapShader.SetParameter ("%%ACTIVE_DIRECTIONAL_LIGHTS%%", std::to_string (GetDirectionalLightCount ()));
     shadowmapShader.Compile ();
+
+    CGLShaderProgram shadowmapShaderProg = GetShaderProgramManager ().GetByName<CGLShaderProgram> ("shadowmap_directional_shader");
+    shadowmapShaderProg.Link ();    
+    shadowmapShaderProg.BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL);
 
     // copy direction
     Vector3f lightDirection = directionalLight.GetForward ();

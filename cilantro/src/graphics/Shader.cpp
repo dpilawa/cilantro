@@ -21,7 +21,8 @@ void CShader::Load (const std::string& path)
     }
 
     ss << f.rdbuf ();
-    m_shaderSource = ss.str ();
+    m_shaderSourceParametrized = ss.str ();
+    m_shaderSource = m_shaderSourceParametrized;
 
     this->SetDefaultParameters ();
 }
@@ -30,10 +31,17 @@ void CShader::SetParameter (const std::string& parameter, const std::string& val
 {
     std::size_t pos;
 
-    while ((pos = m_shaderSource.find (parameter)) != std::string::npos)
+    m_paramValMap.insert_or_assign (parameter, value);
+
+    m_shaderSource = m_shaderSourceParametrized;
+
+    for (auto& p : m_paramValMap)
     {
-        m_shaderSource.replace (pos, parameter.length (), value);
-    }
+        while ((pos = m_shaderSource.find (p.first)) != std::string::npos)
+        {
+            m_shaderSource.replace (pos, p.first.length (), p.second);
+        }
+    }    
 }
 
 void CShader::SetDefaultParameters ()

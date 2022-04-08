@@ -7,6 +7,7 @@ Light::Light (CGameScene* gameScene) : GameObject (gameScene)
     isEnabled = false;
     
     lightColor = Vector3f (1.0f, 1.0f, 1.0f);
+    InvokeOnUpdateCallbacks ();
 }
 
 Light::~Light ()

@@ -4,6 +4,9 @@
 #include "graphics/IShader.h"
 #include "resource/LoadableResource.h"
 #include <string>
+#include <map>
+
+typedef std::map<std::string, std::string> TParameterValueMap;
 
 class CShader : public IShader, public CLoadableResource
 {
@@ -29,6 +32,11 @@ protected:
 
     // source code
     std::string m_shaderSource;
+    std::string m_shaderSourceParametrized;
+
+    // parameter value map
+    TParameterValueMap m_paramValMap;
+
 };
 
 
