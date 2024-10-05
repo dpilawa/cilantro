@@ -104,7 +104,10 @@ IRenderer& CRenderer::RotateRenderPipelineRight ()
 
 IFramebuffer* CRenderer::GetPipelineFramebuffer (EPipelineLink link)
 {
-    if ((m_currentRenderStageIdx == 0 && link == EPipelineLink::LINK_PREVIOUS) || (m_renderPipeline.size () < 2 && link == EPipelineLink::LINK_SECOND))
+    if ((m_currentRenderStageIdx == 0 && link == EPipelineLink::LINK_PREVIOUS) || 
+        (m_currentRenderStageIdx < 2 && link == EPipelineLink::LINK_PREVIOUS_MINUS_1) ||
+        (m_renderPipeline.size () < 2 && link == EPipelineLink::LINK_SECOND) || 
+        (m_renderPipeline.size () < 3 && link == EPipelineLink::LINK_THIRD))
     {
         LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Pipeline index out of bounds";
     }
@@ -117,9 +120,17 @@ IFramebuffer* CRenderer::GetPipelineFramebuffer (EPipelineLink link)
     {
         return GetRenderStageManager ().GetByHandle<IRenderStage> (m_renderPipeline[1]).GetFramebuffer ();
     }
+    else if (link == EPipelineLink::LINK_THIRD)
+    {
+        return GetRenderStageManager ().GetByHandle<IRenderStage> (m_renderPipeline[2]).GetFramebuffer ();
+    }
     else if (link == EPipelineLink::LINK_PREVIOUS)
     {
         return GetRenderStageManager ().GetByHandle<IRenderStage> (m_renderPipeline[m_currentRenderStageIdx - 1]).GetFramebuffer ();
+    }
+    else if (link == EPipelineLink::LINK_PREVIOUS_MINUS_1)
+    {
+        return GetRenderStageManager ().GetByHandle<IRenderStage> (m_renderPipeline[m_currentRenderStageIdx - 2]).GetFramebuffer ();
     }
     else if (link == EPipelineLink::LINK_LAST)
     {
@@ -141,7 +152,7 @@ void CRenderer::RenderFrame ()
         m_gameScene->GetTimer ()->ResetSplitTime ();
     }
 
-    // run post-processing
+    // run stages
     for (handle_t stageHandle : m_renderPipeline)
     {
         m_currentRenderStage = &m_renderStageManager.GetByHandle<IRenderStage> (stageHandle);
@@ -169,7 +180,7 @@ void CRenderer::InitializeRenderStages ()
     if (m_isDeferredRendering == true)
     {
         // geometry stage
-        IRenderStage& baseDeferred = this->AddRenderStage<CDeferredGeometryRenderStage> ("base");
+        IRenderStage& baseDeferred = this->AddRenderStage<CDeferredGeometryRenderStage> ("deferred_geometry");
         baseDeferred.SetDepthTestEnabled (true);
         baseDeferred.SetStencilTestEnabled (true);
         baseDeferred.SetClearColorOnFrameEnabled (true);
@@ -185,10 +196,10 @@ void CRenderer::InitializeRenderStages ()
     }
     else
     {
-        IRenderStage& baseForward = this->AddRenderStage<CForwardGeometryRenderStage> ("base");
+        IRenderStage& baseForward = this->AddRenderStage<CForwardGeometryRenderStage> ("forward");
         if (m_isShadowMapping == true)
         {
-            baseForward.SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);
+            baseForward.SetDepthArrayFramebufferLink (EPipelineLink::LINK_FIRST);
         }
         baseForward.Initialize ();
     }

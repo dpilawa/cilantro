@@ -19,7 +19,7 @@ class Mathf
 {
 public:
     // static constants
-    __EAPI static float Pi () { return cPI; }
+    static float Pi () { return cPI; }
 
     // float comparison
     __EAPI static bool VeryClose (const float a, const float b, int ulp);

@@ -14,7 +14,7 @@ class AnimationProperty
 {
 public:
     __EAPI AnimationProperty (std::function<void (P)> updateFunction, std::function<P (P, P, float)> interpolateFunction);
-    __EAPI virtual ~AnimationProperty (){};
+    virtual ~AnimationProperty (){};
 
     __EAPI bool AddKeyframe (float time, P propertyValue);
     __EAPI P GetFrame (float time);

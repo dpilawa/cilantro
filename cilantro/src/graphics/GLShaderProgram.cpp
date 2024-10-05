@@ -164,7 +164,7 @@ GLuint CGLShaderProgram::GetUniformLocationId (const std::string& uniformName) c
 
     if (paramUniformLocation == GL_INVALID_INDEX)
     {
-        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Uniform not found in stage shader:" << uniformName;
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Uniform" << uniformName << "not found in stage shader" << this->GetName ();
     }
 
     return paramUniformLocation;
@@ -180,7 +180,7 @@ void CGLShaderProgram::BindUniformBlock (const std::string& blockName, EBindingP
     }	
     else
     {
-        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Shader" << this->GetName () << "has no uniform" << blockName;
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Uniform block" << blockName << "not found in stage shader" << this->GetName ();
     }
     
 }

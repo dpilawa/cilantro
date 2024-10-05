@@ -1,4 +1,7 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.5)
+if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
+    cmake_policy(SET CMP0135 NEW)
+endif()
 include(ExternalProject)
 
 include_directories ("${PROJECT_SOURCE_DIR}/cilantro/include")
@@ -55,3 +58,21 @@ add_custom_command (TARGET deps PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy_direc
 externalproject_get_property(cerberus SOURCE_DIR)
 add_custom_command (TARGET cerberus POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${SOURCE_DIR} $<TARGET_FILE_DIR:cilantro>/assets/)
 add_custom_command (TARGET cerberus POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${SOURCE_DIR}/Textures $<TARGET_FILE_DIR:cilantro>/textures/)
+
+if (DEFINED EMSCRIPTEN)
+set_target_properties(test01
+        PROPERTIES SUFFIX ".html"
+        LINK_FLAGS " --bind -s USE_GLFW=3 -sERROR_ON_UNDEFINED_SYMBOLS=0 -s SINGLE_FILE -s WASM=1 -gsource-map")
+
+        set_target_properties(test02
+        PROPERTIES SUFFIX ".html"
+        LINK_FLAGS " --bind -s USE_GLFW=3 -sERROR_ON_UNDEFINED_SYMBOLS=0 -s SINGLE_FILE -s WASM=1 -gsource-map")
+
+        set_target_properties(test03
+        PROPERTIES SUFFIX ".html"
+        LINK_FLAGS " --bind -s USE_GLFW=3 -sERROR_ON_UNDEFINED_SYMBOLS=0 -s SINGLE_FILE -s WASM=1 -gsource-map")
+
+        set_target_properties(test04
+        PROPERTIES SUFFIX ".html"
+        LINK_FLAGS " --bind -s USE_GLFW=3 -sERROR_ON_UNDEFINED_SYMBOLS=0 -s SINGLE_FILE -s WASM=1 -gsource-map")
+endif (DEFINED EMSCRIPTEN)

@@ -15,7 +15,8 @@ struct IRenderStage
     virtual void InitializeFramebuffer () = 0;
     virtual IFramebuffer* GetFramebuffer () const = 0;
     virtual IFramebuffer* GetLinkedColorAttachmentsFramebuffer () const = 0;
-    virtual IFramebuffer* GetLinkedDSAttachmentsFramebuffer () const = 0;
+    virtual IFramebuffer* GetLinkedDepthStencilFramebuffer () const = 0;
+    virtual IFramebuffer* GetLinkedDepthArrayFramebuffer () const = 0;
     virtual IFramebuffer* GetLinkedDrawFramebuffer () const = 0;
 
     virtual void OnFrame () = 0;
@@ -44,7 +45,8 @@ struct IRenderStage
     virtual bool IsClearStencilOnFrameEnabled () const = 0;
 
     virtual IRenderStage& SetColorAttachmentsFramebufferLink (EPipelineLink link) = 0;
-    virtual IRenderStage& SetDepthStencilAttachmentsFramebufferLink (EPipelineLink link) = 0;
+    virtual IRenderStage& SetDepthStencilFramebufferLink (EPipelineLink link) = 0;
+    virtual IRenderStage& SetDepthArrayFramebufferLink (EPipelineLink link) = 0;
     virtual IRenderStage& SetOutputFramebufferLink (EPipelineLink link) = 0;
 
 };

@@ -10,7 +10,7 @@ class CGLFWRenderer : public CGLRenderer
 {
 public:
 
-    __EAPI CGLFWRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferred, std::string windowCaption, bool fullscreen, bool resizable, bool vSync);
+    __EAPI CGLFWRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled, std::string windowCaption, bool fullscreen, bool resizable, bool vSync);
     __EAPI ~CGLFWRenderer ();
 
     __EAPI virtual void Initialize ();

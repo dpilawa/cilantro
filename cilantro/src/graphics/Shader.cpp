@@ -46,7 +46,11 @@ void CShader::SetParameter (const std::string& parameter, const std::string& val
 
 void CShader::SetDefaultParameters ()
 {
+#ifdef CILANTRO_BUILDING_GLES    
+    SetParameter ("%%CILANTRO_GL_VERSION%%", CILANTRO_GLES_VERSION);
+#else
     SetParameter ("%%CILANTRO_GL_VERSION%%", std::to_string (CILANTRO_GL_VERSION));
+#endif    
     SetParameter ("%%CILANTRO_MAX_BONES%%", std::to_string (CILANTRO_MAX_BONES));
     SetParameter ("%%CILANTRO_MAX_BONE_INFLUENCES%%", std::to_string (CILANTRO_MAX_BONE_INFLUENCES));
     SetParameter ("%%CILANTRO_MAX_POINT_LIGHTS%%", std::to_string (CILANTRO_MAX_POINT_LIGHTS));

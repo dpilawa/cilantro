@@ -22,8 +22,8 @@
 #include <cmath>
 #include <cstring>
 
-CGLRenderer::CGLRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferred) 
-    : CRenderer (gameScene, width, height, shadowMappingEnabled, deferred)
+CGLRenderer::CGLRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled) 
+    : CRenderer (gameScene, width, height, shadowMappingEnabled, deferredRenderingEnabled)
 {
     m_quadGeometryBuffer = new SGlGeometryBuffers ();
     m_uniformBuffers = new SGlUniformBuffers ();
@@ -144,7 +144,7 @@ void CGLRenderer::Draw (MeshObject& meshObject)
     geometryShaderProgram.Use ();
     shaderProgramId = geometryShaderProgram.GetProgramId ();
 
-    // bind textures for active material and shadow map
+    // bind textures for active material and bind a shadow map
     if (m_materialTextureUnits.find(meshObject.GetMaterial ().GetHandle ()) != m_materialTextureUnits.end ())
     {
         SGlMaterialTextureUnits* u = m_materialTextureUnits[meshObject.GetMaterial ().GetHandle ()];
@@ -155,8 +155,14 @@ void CGLRenderer::Draw (MeshObject& meshObject)
             glBindTexture (GL_TEXTURE_2D, u->textureUnits[i]);
         }
 
-        // bind shadow map on next available texture slot
-        GetCurrentRenderStage ()->GetLinkedColorAttachmentsFramebuffer ()->BindFramebufferDepthArrayTextureAsColor (u->unitsCount);
+        // bind shadow map (if exists) on next available texture slot
+        if (m_isShadowMapping && (GetCurrentRenderStage ()->GetLinkedDepthArrayFramebuffer ()) != nullptr)
+        {
+            if (GetCurrentRenderStage ()->GetLinkedDepthArrayFramebuffer ()->IsDepthArrayEnabled ())
+            {
+                GetCurrentRenderStage ()->GetLinkedDepthArrayFramebuffer ()->BindFramebufferDepthArrayTextureAsColor (u->unitsCount);
+            }
+        }
 
     }
     else
@@ -195,7 +201,10 @@ void CGLRenderer::Draw (MeshObject& meshObject)
     geometryShaderProgram.SetUniformMatrix3f ("mNormal", Mathf::Invert (Mathf::Transpose (Matrix3f (meshObject.GetModelTransformMatrix ()))));
 
     // get camera position in world space and set uniform value
-    geometryShaderProgram.SetUniformVector3f ("eyePosition", m_gameScene->GetActiveCamera ()->GetPosition ());
+    if (!m_isDeferredRendering)
+    {
+        geometryShaderProgram.SetUniformVector3f ("eyePosition", m_gameScene->GetActiveCamera ()->GetPosition ());
+    }
 
     // set bone transformation matrix array uniform
     geometryShaderProgram.SetUniformMatrix4fv ("mBoneTransformations", meshObject.GetBoneTransformationsMatrixArray (), CILANTRO_MAX_BONES);
@@ -449,31 +458,41 @@ void CGLRenderer::Update (Material& material)
         {
             // first rotate the pipeline to the left so that geometry stage is last
             RotateRenderPipelineLeft ();
+            if (m_isShadowMapping)
+            {
+                RotateRenderPipelineLeft ();
+            }
 
+            // create and append new lighting stage
             m_lightingShaderStagesCount++;
             m_lightingShaders.insert (shaderProgramHandle);
-            CQuadRenderStage& p = AddRenderStage <CQuadRenderStage> ("deferredLightingStage_" + shaderProgramName);
+            CQuadRenderStage& p = AddRenderStage <CQuadRenderStage> ("deferred_lighting_" + shaderProgramName);
             p.SetShaderProgram (shaderProgramName);
             p.SetStencilTestEnabled (true).SetStencilTest (EStencilTestFunction::FUNCTION_EQUAL, shaderProgramHandle);
             p.SetClearColorOnFrameEnabled (true);
-            p.SetClearDepthOnFrameEnabled (false);
+            p.SetClearDepthOnFrameEnabled (true);
             p.SetClearStencilOnFrameEnabled (false);
             p.SetDepthTestEnabled (false);
-            p.SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_FIRST);
-            p.SetDepthStencilAttachmentsFramebufferLink (EPipelineLink::LINK_FIRST);
-            p.SetOutputFramebufferLink (EPipelineLink::LINK_SECOND);
+            p.SetColorAttachmentsFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_SECOND : EPipelineLink::LINK_FIRST);
+            p.SetDepthStencilFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_SECOND : EPipelineLink::LINK_FIRST);
+            p.SetDepthArrayFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_FIRST : EPipelineLink::LINK_CURRENT);
+            p.SetOutputFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_THIRD : EPipelineLink::LINK_SECOND);
             p.SetFramebufferEnabled (true);
 
             p.Initialize ();
 
-            // rotate pipeline twice to the right, so that ultimately geometry stage is first and newly added stage is second
+            // rotate pipeline to the right, so that ultimately geometry stage is first and newly added stage is second
             RotateRenderPipelineRight ();
             RotateRenderPipelineRight ();
+            if (m_isShadowMapping)
+            {
+                RotateRenderPipelineRight ();
+            }
             
             // update flags of other deferred lighting stages (if present)
             if (m_lightingShaderStagesCount > 1)
             {
-                handle_t stageHandle = GetRenderPipeline ()[2];
+                handle_t stageHandle = GetRenderPipeline ()[2 + (m_isShadowMapping ? 1 : 0)];
 
                 CQuadRenderStage& stage = m_renderStageManager.GetByHandle<CQuadRenderStage> (stageHandle);
                 stage.SetClearColorOnFrameEnabled (false);
@@ -481,13 +500,13 @@ void CGLRenderer::Update (Material& material)
             }
 
             // update pipeline links of 1st stage following deferred lighting stages
-            if (m_renderPipeline.size () > m_lightingShaderStagesCount + 1)
+            if (m_renderPipeline.size () > m_lightingShaderStagesCount + 1 + (m_isShadowMapping ? 1 : 0))
             {
-                handle_t stageHandle = m_renderPipeline[m_lightingShaderStagesCount + 1];
+                handle_t stageHandle = m_renderPipeline[m_lightingShaderStagesCount + 1 + (m_isShadowMapping ? 1 : 0)];
 
                 IRenderStage& stage = m_renderStageManager.GetByHandle<IRenderStage> (stageHandle);
-                stage.SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_SECOND);
-                stage.SetDepthStencilAttachmentsFramebufferLink (EPipelineLink::LINK_CURRENT);
+                stage.SetColorAttachmentsFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_THIRD : EPipelineLink::LINK_SECOND);
+                stage.SetDepthStencilFramebufferLink (EPipelineLink::LINK_CURRENT);
                 stage.SetOutputFramebufferLink (EPipelineLink::LINK_CURRENT);
             }
         }
@@ -687,7 +706,7 @@ IFramebuffer* CGLRenderer::CreateFramebuffer (size_t width, size_t height, size_
 
     if (multisampleEnabled)
     {
-#if (CILANTRO_GL_VERSION <= 140)
+#if (CILANTRO_GL_VERSION <= 150)
         LogMessage (MSG_LOCATION, EXIT_FAILURE) << "OpenGL 3.2 required for multisample framebuffers";
 #else
         framebuffer = new CGLMultisampleFramebuffer (width, height, rgbTextureCount, rgbaTextureCount, depthBufferArrayTextureCount, depthStencilRenderbufferEnabled);
@@ -923,7 +942,10 @@ void CGLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tNormal"), 1);
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tAlbedo"), 2);
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tMetallicRoughnessAO"), 3);
+    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tUnused"), 4);
+    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 4);
 #endif
+    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL);
     p->BindUniformBlock ("UniformPointLightsBlock", EBindingPoint::BP_POINTLIGHTS);
     p->BindUniformBlock ("UniformDirectionalLightsBlock", EBindingPoint::BP_DIRECTIONALLIGHTS);
     p->BindUniformBlock ("UniformSpotLightsBlock", EBindingPoint::BP_SPOTLIGHTS);
@@ -935,11 +957,11 @@ void CGLRenderer::InitializeShaderLibrary ()
     p->Link ();
     p->Use ();
 #if (CILANTRO_GL_VERSION < 330)	
-    glBindAttribLocation(p->GetProgramId ()0, "vPosition");
-    glBindAttribLocation(p->GetProgramId ()1, "vNormal");
-    glBindAttribLocation(p->GetProgramId ()2, "vUV");
-    glBindAttribLocation(p->GetProgramId ()3, "vTangent");
-    glBindAttribLocation(p->GetProgramId ()4, "vBitangent");
+    glBindAttribLocation(p->GetProgramId (), 0, "vPosition");
+    glBindAttribLocation(p->GetProgramId (), 1, "vNormal");
+    glBindAttribLocation(p->GetProgramId (), 2, "vUV");
+    glBindAttribLocation(p->GetProgramId (), 3, "vTangent");
+    glBindAttribLocation(p->GetProgramId (), 4, "vBitangent");
 #endif
 #if (CILANTRO_GL_VERSION < 420)
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDiffuse"), 0);
@@ -991,7 +1013,9 @@ void CGLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDiffuse"), 2);
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tEmissive"), 3);
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tSpecular"), 4);
+    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 5);
 #endif
+    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL);
     p->BindUniformBlock ("UniformPointLightsBlock", EBindingPoint::BP_POINTLIGHTS);
     p->BindUniformBlock ("UniformDirectionalLightsBlock", EBindingPoint::BP_DIRECTIONALLIGHTS);
     p->BindUniformBlock ("UniformSpotLightsBlock", EBindingPoint::BP_SPOTLIGHTS);    

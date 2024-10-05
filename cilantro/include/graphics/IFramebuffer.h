@@ -30,6 +30,7 @@ struct IFramebuffer
     virtual size_t GetDepthArrayLayerCount () const = 0;
 
     virtual bool IsDepthStencilRenderbufferEnabled () const = 0;
+    virtual bool IsDepthArrayEnabled () const = 0;
 
     virtual void SetFramebufferResolution (uint32_t bufferWidth, uint32_t bufferHeight) = 0;
 };

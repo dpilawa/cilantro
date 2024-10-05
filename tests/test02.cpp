@@ -27,7 +27,7 @@ int main (int argc, char* argv [])
     InputController& inputController = CGame::CreateInputController<GLFWInputController> ();
 
     renderer.AddRenderStage<CQuadRenderStage> ("screen").SetShaderProgram ("flatquad_shader").SetFramebufferEnabled (false).SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);
-    renderer.GetRenderStageManager ().GetByName<IRenderStage> ("base").SetMultisampleEnabled (true);
+    renderer.GetRenderStageManager ().GetByName<IRenderStage> ("forward").SetMultisampleEnabled (true);
 
     inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
     inputController.BindInputEvent ("exit", [ & ]() { CGame::Stop (); });

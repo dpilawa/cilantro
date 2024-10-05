@@ -7,7 +7,7 @@ in vec2 fTextureCoordinates;
 uniform sampler2D fScreenTexture;
 
 /* gamma value */
-uniform float fGamma = 2.0f;
+uniform float fGamma;
 
 /* output color */
 out vec4 color;

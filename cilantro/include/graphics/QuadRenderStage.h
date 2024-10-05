@@ -12,7 +12,7 @@ class CQuadRenderStage : public CRenderStage
 {
 public:
     __EAPI CQuadRenderStage ();
-    __EAPI virtual ~CQuadRenderStage () {};
+    virtual ~CQuadRenderStage () {};
 
     ///////////////////////////////////////////////////////////////////////////
 

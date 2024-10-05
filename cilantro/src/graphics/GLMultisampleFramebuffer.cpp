@@ -8,6 +8,8 @@ CGLMultisampleFramebuffer::CGLMultisampleFramebuffer (uint32_t bufferWidth, uint
 
 void CGLMultisampleFramebuffer::Initialize ()
 {
+    GLint fbStatus;
+
     CGLFramebuffer::Initialize ();
 
     // create and bind framebuffer
@@ -61,9 +63,26 @@ void CGLMultisampleFramebuffer::Initialize ()
     }
 
     // check status
-    if (glCheckFramebufferStatus (GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    if ((fbStatus = glCheckFramebufferStatus (GL_FRAMEBUFFER)) != GL_FRAMEBUFFER_COMPLETE)
     {
-        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Multisample framebuffer is not complete";
+        switch (fbStatus)
+        {
+        case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+            LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Framebuffer is not complete (incomplete attachment)";
+            break;
+        case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+            LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Framebuffer is not complete (incomplete missing attachment)";
+            break;
+        case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
+            LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Framebuffer is not complete (incomplete layer targets)";
+            break;
+        case GL_FRAMEBUFFER_UNSUPPORTED:
+            LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Framebuffer is not complete (unsupported)";
+            break;
+        default:
+            LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Framebuffer is not complete (unknown error)";
+            break;
+        }
     }
     else
     {

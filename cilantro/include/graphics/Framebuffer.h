@@ -20,6 +20,7 @@ public:
     virtual size_t GetDepthArrayLayerCount () const override final;
 
     virtual bool IsDepthStencilRenderbufferEnabled () const override final;
+    virtual bool IsDepthArrayEnabled () const override final;
 
     void SetFramebufferResolution (uint32_t bufferWidth, uint32_t bufferHeight) override;
 

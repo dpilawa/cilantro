@@ -18,11 +18,20 @@ layout (binding=0) uniform sampler2D tPosition;
 layout (binding=1) uniform sampler2D tNormal;
 layout (binding=2) uniform sampler2D tAlbedo;
 layout (binding=3) uniform sampler2D tMetallicRoughnessAO;
+layout (binding=4) uniform sampler2D tUnused;
 #else
 uniform sampler2D tPosition;
 uniform sampler2D tNormal;
 uniform sampler2D tAlbedo;
 uniform sampler2D tMetallicRoughnessAO;
+uniform sampler2D tUnused;
+#endif
+
+/* shadow maps */
+#if (__VERSION__ >= 420)
+layout (binding = 5) uniform sampler2DArray tDirectionalShadowMap;
+#else
+uniform sampler2DArray tDirectionalShadowMap;
 #endif
 
 vec3 fPosition;
@@ -79,6 +88,11 @@ layout(std140) uniform UniformSpotLightsBlock
 {
     int spotLightCount;
     SpotLightStruct spotLights[MAX_SPOT_LIGHTS];
+};
+
+layout (std140) uniform UniformDirectionalLightViewMatricesBlock
+{
+    mat4 mDirectionalLightSpace[MAX_DIRECTIONAL_LIGHTS];
 };
 
 /* output color */
@@ -147,6 +161,17 @@ vec3 CalculatePointLightRadiance (PointLightStruct light)
     return attenuationFactor * light.lightColor;
 }
 
+/* calculate directional light shadow */
+float CalculateDirectionalLightShadow (int directionalLightIdx)
+{
+    vec4 fragmentLightSpace = mDirectionalLightSpace[directionalLightIdx] * vec4 (fPosition, 1.0);
+    vec3 depthMapCoords = vec3 (fragmentLightSpace / fragmentLightSpace.w) * 0.5 + 0.5;
+    float fragmentDepth = abs (depthMapCoords.z);
+    float lightmapDepth = texture (tDirectionalShadowMap, vec3 (depthMapCoords.x, depthMapCoords.y, directionalLightIdx)).r;
+
+    return ((lightmapDepth > fragmentDepth) || (fragmentDepth > 1.0)) ? 1.0 : 0.0;
+}
+
 /* calculate directional light radiance */
 vec3 CalculateDirectionalLightRadiance (DirectionalLightStruct light)
 {
@@ -208,6 +233,7 @@ void main()
         vec3 lightDirection = normalize (-directionalLights[i].lightDirection);
         vec3 halfwayDirection = normalize (viewDirection + lightDirection);
 
+        float shadow = CalculateDirectionalLightShadow (i);
         vec3 radiance = CalculateDirectionalLightRadiance (directionalLights[i]);
         vec3 specular = CalculateCookTorranceSpecularBRDF (fNormal, lightDirection, viewDirection, halfwayDirection);
         
@@ -219,7 +245,7 @@ void main()
         kD = kD * (1.0 - fMetallic);	
 
         float NdotL = max (dot (fNormal, lightDirection), 0.0);        
-        Lo += (kD * fAlbedo / PI + specular) * radiance * NdotL + vec3(0.01) * fAlbedo * fAO;
+        Lo += ((kD * fAlbedo / PI + specular) * radiance * NdotL + vec3(0.01) * fAlbedo * fAO) * shadow;
     }
 
     for (int i = 0; i < spotLightCount; i++)

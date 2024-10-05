@@ -10,8 +10,8 @@ class CResource
     friend class CResourceManager;
 
 public:
-    __EAPI CResource () {};
-    __EAPI virtual ~CResource () {};
+    CResource () {};
+    virtual ~CResource () {};
 
     __EAPI handle_t GetHandle () const;
     __EAPI std::string GetName () const;

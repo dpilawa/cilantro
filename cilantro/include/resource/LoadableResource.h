@@ -9,7 +9,7 @@ class CLoadableResource : public CResource
 public:
     __EAPI CLoadableResource ();
     __EAPI CLoadableResource (const std::string& path);
-    __EAPI virtual ~CLoadableResource () {};
+    virtual ~CLoadableResource () {};
 
 protected:
     std::string path;

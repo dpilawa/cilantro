@@ -11,6 +11,7 @@ struct GLBuffers
     GLuint RBO;
     GLuint textureBuffer[CILANTRO_MAX_FRAMEBUFFER_TEXTURES];
     GLuint colorAttachments[CILANTRO_MAX_FRAMEBUFFER_TEXTURES];
+    GLuint colorNone;
     GLuint depthTextureArray;
 };
 

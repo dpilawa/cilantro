@@ -98,7 +98,7 @@ layout(std140) uniform UniformSpotLightsBlock
 
 layout (std140) uniform UniformDirectionalLightViewMatricesBlock
 {
-    mat4 mLightSpace[MAX_DIRECTIONAL_LIGHTS];
+    mat4 mDirectionalLightSpace[MAX_DIRECTIONAL_LIGHTS];
 };
 
 /* output color */
@@ -167,6 +167,17 @@ vec3 CalculatePointLightRadiance (PointLightStruct light)
     return attenuationFactor * light.lightColor;
 }
 
+/* calculate directional light shadow */
+float CalculateDirectionalLightShadow (int directionalLightIdx)
+{
+    vec4 fragmentLightSpace = mDirectionalLightSpace[directionalLightIdx] * vec4 (fPosition, 1.0);
+    vec3 depthMapCoords = vec3 (fragmentLightSpace / fragmentLightSpace.w) * 0.5 + 0.5;
+    float fragmentDepth = abs (depthMapCoords.z);
+    float lightmapDepth = texture (tDirectionalShadowMap, vec3 (depthMapCoords.x, depthMapCoords.y, directionalLightIdx)).r;
+
+    return ((lightmapDepth > fragmentDepth) || (fragmentDepth > 1.0)) ? 1.0 : 0.0;
+}
+
 /* calculate directional light radiance */
 vec3 CalculateDirectionalLightRadiance (DirectionalLightStruct light)
 {
@@ -230,18 +241,7 @@ void main()
         vec3 lightDirection = normalize (-directionalLights[i].lightDirection);
         vec3 halfwayDirection = normalize (viewDirection + lightDirection);
 
-        vec4 fragmentLightSpace = mLightSpace[i] * vec4 (fPosition, 1.0);
-        vec3 depthMapCoords = vec3 (fragmentLightSpace / fragmentLightSpace.w) * 0.5 + 0.5;
-
-        float shadow;
-        float fragmentDepth = abs (depthMapCoords.z);
-        float lightmapDepth = texture (tDirectionalShadowMap, vec3 (depthMapCoords.x, depthMapCoords.y, i)).r;
-        shadow = (lightmapDepth < fragmentDepth) ? 0.0 : 1.0;
-        if (fragmentDepth > 1.0)
-        {
-            shadow = 1.0;
-        }
-
+        float shadow = CalculateDirectionalLightShadow (i);
         vec3 radiance = CalculateDirectionalLightRadiance (directionalLights[i]);
         vec3 specular = CalculateCookTorranceSpecularBRDF (fNormal, lightDirection, viewDirection, halfwayDirection);
         

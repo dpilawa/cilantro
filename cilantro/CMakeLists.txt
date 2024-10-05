@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.5)
 
 include_directories ("${PROJECT_SOURCE_DIR}/ext/glfw/include")
 include_directories ("${PROJECT_SOURCE_DIR}/ext/stb")
@@ -8,9 +8,16 @@ include_directories ("${PROJECT_SOURCE_DIR}/cilantro/include")
 add_compile_definitions(CILANTRO_GL_VERSION=${CILANTRO_GL_VERSION})
 add_compile_definitions(CILANTRO_GL_VERSION_MAJOR=${CILANTRO_GL_VERSION_MAJOR})
 add_compile_definitions(CILANTRO_GL_VERSION_MINOR=${CILANTRO_GL_VERSION_MINOR})
+add_compile_definitions(CILANTRO_GLES_VERSION="${CILANTRO_GLES_VERSION}")
+add_compile_definitions(CILANTRO_GLES_VERSION_MAJOR=${CILANTRO_GLES_VERSION_MAJOR})
+add_compile_definitions(CILANTRO_GLES_VERSION_MINOR=${CILANTRO_GLES_VERSION_MINOR})
 
 if(CILANTRO_BUILD_DLL)
     add_compile_definitions(CILANTRO_BUILDING_DLL)
+endif()
+
+if(CILANTRO_BUILD_GLES)
+    add_compile_definitions(CILANTRO_BUILDING_GLES)
 endif()
 
 if(CILANTRO_WITH_GLFW)
@@ -22,7 +29,7 @@ if(CILANTRO_WITH_GLFW)
     )
 endif()
 
-if(CILANTRO_GL_VERSION GREATER 140)
+if(CILANTRO_GL_VERSION GREATER 150)
     set(CILANTRO_FILES ${CILANTRO_FILES}
         include/graphics/GLMultisampleFramebuffer.h
         src/graphics/GLMultisampleFramebuffer.cpp
@@ -178,3 +185,8 @@ shaders/shadowmap.vs
 add_library(cilantro SHARED ${CILANTRO_FILES})
 target_link_libraries (cilantro glfw glad assimp)
 
+if (DEFINED EMSCRIPTEN)
+set_target_properties(cilantro
+        PROPERTIES
+        LINK_FLAGS " --bind -s USE_GLFW=3 -s WASM=1 -gsource-map")
+endif (DEFINED EMSCRIPTEN)

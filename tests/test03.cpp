@@ -26,7 +26,7 @@ int main (int argc, char* argv[])
     CGame::Initialize ();
 
     CGameScene& gameScene = CGame::CreateGameScene<CGameScene> ("scene");
-    CGLFWRenderer& renderer = gameScene.CreateRenderer<CGLFWRenderer> (1920, 1080, true, false, "Test 03", false, true, true);
+    CGLFWRenderer& renderer = gameScene.CreateRenderer<CGLFWRenderer> (1920, 1080, true, true, "Test 03", false, true, true);
     InputController& inputController = CGame::CreateInputController<GLFWInputController> ();
 
     AssimpModelLoader modelLoader;

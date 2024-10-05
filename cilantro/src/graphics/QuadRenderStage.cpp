@@ -17,11 +17,17 @@ void CQuadRenderStage::Initialize ()
 void CQuadRenderStage::OnFrame ()
 {
     CRenderStage::OnFrame ();
-      
+
     // bind textures of framebuffer linked as previous (input) and draw
     m_shaderProgram->Use ();
     m_linkedColorAttachmentsFramebuffer->BindFramebufferColorTexturesAsColor ();
-    
+
+    // bind shadow map (if exists) on next available texture slot
+    if (m_linkedDepthArrayFramebuffer != nullptr && m_linkedDepthArrayFramebuffer->IsDepthArrayEnabled ())
+    {
+        m_linkedDepthArrayFramebuffer->BindFramebufferDepthArrayTextureAsColor (m_linkedColorAttachmentsFramebuffer->GetColorTextureCount ());
+    }
+
     // draw quad
     m_renderer->DrawQuad ();
 
@@ -42,6 +48,7 @@ CQuadRenderStage& CQuadRenderStage::SetShaderProgram (const std::string& shaderP
 CQuadRenderStage& CQuadRenderStage::SetRenderStageParameterFloat (const std::string& parameterName, float parameterValue)
 {
     m_shaderProgram->SetUniformFloat (parameterName, parameterValue);
+
     return *this;
 }
 

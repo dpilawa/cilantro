@@ -9,10 +9,13 @@ CGLFramebuffer::CGLFramebuffer (uint32_t bufferWidth, uint32_t bufferHeight, siz
     {
         m_glBuffers.colorAttachments[i] = GL_COLOR_ATTACHMENT0 + i;
     }
+    m_glBuffers.colorNone = GL_NONE;
 }
 
 void CGLFramebuffer::Initialize ()
 {
+    GLint fbStatus;
+
     // create and bind framebuffer
     glGenFramebuffers (1, &m_glBuffers.FBO);
     glBindFramebuffer (GL_FRAMEBUFFER, m_glBuffers.FBO);
@@ -22,11 +25,11 @@ void CGLFramebuffer::Initialize ()
     for (unsigned int i = 0; i < m_rgbTextureCount + m_rgbaTextureCount; i++)
     {
         glBindTexture (GL_TEXTURE_2D, m_glBuffers.textureBuffer[i]);
-        glTexImage2D (GL_TEXTURE_2D, 0, (i < m_rgbTextureCount) ? GL_RGB16F : GL_RGBA16F, m_bufferWidth, m_bufferHeight, 0, (i < m_rgbTextureCount) ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexImage2D (GL_TEXTURE_2D, 0, (i < m_rgbTextureCount) ? GL_RGB16F : GL_RGBA16F, m_bufferWidth, m_bufferHeight, 0, (i < m_rgbTextureCount) ? GL_RGB : GL_RGBA, GL_FLOAT, nullptr);
+        glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glBindTexture (GL_TEXTURE_2D, 0);
-        
+     
         glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_glBuffers.textureBuffer[i], 0);
     }
 
@@ -37,7 +40,9 @@ void CGLFramebuffer::Initialize ()
     }
     else
     {
-        glDrawBuffer (GL_NONE);
+        glDrawBuffers (1, &m_glBuffers.colorNone);
+        glFramebufferParameteri (GL_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_WIDTH, m_bufferWidth);
+        glFramebufferParameteri (GL_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_HEIGHT, m_bufferHeight);
     }
 
     if (m_depthBufferArrayLayerCount > 0)
@@ -48,11 +53,11 @@ void CGLFramebuffer::Initialize ()
         glGenTextures(1, &m_glBuffers.depthTextureArray);
         glBindTexture(GL_TEXTURE_2D_ARRAY, m_glBuffers.depthTextureArray);
         glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_DEPTH_COMPONENT32F, m_bufferWidth, m_bufferHeight, m_depthBufferArrayLayerCount, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
-        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);        
-        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor); 
+        glTexParameteri (GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri (GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri (GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        glTexParameteri (GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);        
+        glTexParameterfv (GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor); 
         glBindTexture (GL_TEXTURE_2D_ARRAY, 0);
 
         glFramebufferTexture (GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_glBuffers.depthTextureArray, 0);
@@ -69,9 +74,26 @@ void CGLFramebuffer::Initialize ()
     }
 
     // check status
-    if (glCheckFramebufferStatus (GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    if ((fbStatus = glCheckFramebufferStatus (GL_FRAMEBUFFER)) != GL_FRAMEBUFFER_COMPLETE)
     {
-        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Framebuffer is not complete";
+        switch (fbStatus)
+        {
+            case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+                LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Framebuffer is not complete (incomplete attachment)";
+                break;
+            case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+                LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Framebuffer is not complete (incomplete missing attachment)";
+                break;                
+            case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
+                LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Framebuffer is not complete (incomplete layer targets)";
+                break;                 
+            case GL_FRAMEBUFFER_UNSUPPORTED:
+                LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Framebuffer is not complete (unsupported)";
+                break;           
+            default:
+                LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Framebuffer is not complete (unknown error)";
+                break;
+        }
     }
     else
     {

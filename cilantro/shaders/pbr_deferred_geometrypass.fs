@@ -27,9 +27,6 @@ uniform sampler2D tRoughness;
 uniform sampler2D tAO;
 #endif
 
-/* eye position in world space */
-uniform vec3 eyePosition;
-
 /* output g-buffer */
 layout (location=0) out vec4 gPosition;
 layout (location=1) out vec4 gNormal;

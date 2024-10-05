@@ -118,7 +118,7 @@ struct SGlUniformSpotLightBuffer
 class CGLRenderer : public CRenderer
 {
 public:
-    CGLRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferred);
+    CGLRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled);
     virtual ~CGLRenderer ();
 
     ///////////////////////////////////////////////////////////////////////////

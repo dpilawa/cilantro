@@ -16,7 +16,8 @@ public:
 
     virtual IFramebuffer* GetFramebuffer () const override final;
     virtual IFramebuffer* GetLinkedColorAttachmentsFramebuffer () const override final;
-    virtual IFramebuffer* GetLinkedDSAttachmentsFramebuffer () const override final;
+    virtual IFramebuffer* GetLinkedDepthStencilFramebuffer () const override final;
+    virtual IFramebuffer* GetLinkedDepthArrayFramebuffer () const override final;
     virtual IFramebuffer* GetLinkedDrawFramebuffer () const override final;
 
     virtual void OnFrame () override;
@@ -45,7 +46,8 @@ public:
     __EAPI bool IsClearStencilOnFrameEnabled () const override final;
 
     __EAPI virtual IRenderStage& SetColorAttachmentsFramebufferLink (EPipelineLink link) override final;
-    __EAPI virtual IRenderStage& SetDepthStencilAttachmentsFramebufferLink (EPipelineLink link) override final;
+    __EAPI virtual IRenderStage& SetDepthStencilFramebufferLink (EPipelineLink link) override final;
+    __EAPI virtual IRenderStage& SetDepthArrayFramebufferLink (EPipelineLink link) override final;
     __EAPI virtual IRenderStage& SetOutputFramebufferLink (EPipelineLink link) override final;
 
     ///////////////////////////////////////////////////////////////////////////
@@ -77,12 +79,14 @@ protected:
     // these indicate which framebuffer and which render buffer should be current stage's input
     // and where to write to
     EPipelineLink m_colorAttachmentsFramebufferLink;
-    EPipelineLink m_dsAttachmentsFramebufferLink;
+    EPipelineLink m_depthStencilFramebufferLink;
+    EPipelineLink m_depthArrayFramebufferLink;
     EPipelineLink m_drawFramebufferLink;
 
     // linked framebuffers
     IFramebuffer* m_linkedColorAttachmentsFramebuffer;
-    IFramebuffer* m_linkedDSAttachmentsFramebuffer;
+    IFramebuffer* m_linkedDepthStencilFramebuffer;
+    IFramebuffer* m_linkedDepthArrayFramebuffer;
     IFramebuffer* m_linkedDrawFramebuffer;
 
     // stencil testing parameters

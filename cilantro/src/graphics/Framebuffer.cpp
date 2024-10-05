@@ -50,6 +50,11 @@ bool CFramebuffer::IsDepthStencilRenderbufferEnabled () const
     return m_depthStencilRenderbufferEnabled;
 }
 
+bool CFramebuffer::IsDepthArrayEnabled () const
+{
+    return (m_depthBufferArrayLayerCount > 0);
+}
+
 void CFramebuffer::SetFramebufferResolution (uint32_t bufferWidth, uint32_t bufferHeight)
 {
     m_bufferWidth = bufferWidth;

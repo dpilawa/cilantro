@@ -12,8 +12,8 @@ uniform sampler2D fScreenTexture;
 uniform vec2 vInvResolution;
 
 /* blur control parameters */
-uniform float fMaxSpan = 4.0;
-uniform float fBlurStrength = 1.0 / 8.0;
+uniform float fMaxSpan;
+uniform float fBlurStrength;
 
 /* output color */
 out vec4 color;

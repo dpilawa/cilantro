@@ -93,7 +93,7 @@ layout(std140) uniform UniformSpotLightsBlock
 
 layout (std140) uniform UniformDirectionalLightViewMatricesBlock
 {
-    mat4 mLightSpace[MAX_DIRECTIONAL_LIGHTS];
+    mat4 mDirectionalLightSpace[MAX_DIRECTIONAL_LIGHTS];
 };
 
 /* output color */
@@ -135,6 +135,17 @@ vec4 CalculatePointLight (PointLightStruct light)
 
     /* aggregate output */
     return vec4 (CalculateOutputColor (diffuseCoefficient, attenuationFactor, specularCoefficient, light.lightColor), 1.0);
+}
+
+/* calculate directional light shadow */
+highp float CalculateDirectionalLightShadow (int directionalLightIdx)
+{
+    highp vec4 fragmentLightSpace = mDirectionalLightSpace[directionalLightIdx] * vec4 (fPosition, 1.0);
+    highp vec3 depthMapCoords = vec3 (fragmentLightSpace / fragmentLightSpace.w) * 0.5 + 0.5;
+    highp float fragmentDepth = abs (depthMapCoords.z);
+    highp float lightmapDepth = texture (tDirectionalShadowMap, vec3 (depthMapCoords.x, depthMapCoords.y, directionalLightIdx)).r;
+
+    return ((lightmapDepth > fragmentDepth) || (fragmentDepth > 1.0)) ? 1.0 : 0.0;
 }
 
 /* calculate contribution of one directional light */
@@ -200,19 +211,7 @@ void main()
 
     for (int i=0; i < directionalLightCount; i++)
     {
-        vec4 fragmentLightSpace = mLightSpace[i] * vec4 (fPosition, 1.0);
-        vec3 depthMapCoords = vec3 (fragmentLightSpace / fragmentLightSpace.w) * 0.5 + 0.5;
-
-        float shadow;
-        float fragmentDepth = abs (depthMapCoords.z);
-        float lightmapDepth = texture (tDirectionalShadowMap, vec3 (depthMapCoords.x, depthMapCoords.y, i)).r;
-        shadow = (lightmapDepth < fragmentDepth) ? 0.0 : 1.0;
-        if (fragmentDepth > 1.0)
-        {
-            shadow = 1.0;
-        }        
-
-        color += CalculateDirectionalLight (directionalLights[i]) * shadow;
+        color += CalculateDirectionalLight (directionalLights[i]) * CalculateDirectionalLightShadow (i);
     }
 
     for (int i=0; i < spotLightCount; i++)

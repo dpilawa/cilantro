@@ -5,8 +5,8 @@
 #include "system/Game.h"
 #include "system/LogMessage.h"
 
-CGLFWRenderer::CGLFWRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferred, std::string windowCaption, bool fullscreen, bool resizable, bool vSync) 
-    : CGLRenderer (gameScene, width, height, shadowMappingEnabled, deferred)
+CGLFWRenderer::CGLFWRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled, std::string windowCaption, bool fullscreen, bool resizable, bool vSync) 
+    : CGLRenderer (gameScene, width, height, shadowMappingEnabled, deferredRenderingEnabled)
     , m_windowCaption (windowCaption)
     , m_isFullscreen (fullscreen)
     , m_isResizable (resizable)
@@ -41,8 +41,14 @@ void CGLFWRenderer::Initialize ()
     }
 
     // set up GL & window properties
+#ifdef CILANTRO_BUILDING_GLES
+    glfwWindowHint (GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+    glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, CILANTRO_GLES_VERSION_MAJOR);
+	glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, CILANTRO_GLES_VERSION_MINOR);
+#else
     glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, CILANTRO_GL_VERSION_MAJOR);
 	glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, CILANTRO_GL_VERSION_MINOR);
+#endif    
     glfwWindowHint (GLFW_RESIZABLE, m_isResizable);
     glfwWindowHint (GLFW_VISIBLE, 1);
 #if (CILANTRO_GL_VERSION < 150)
@@ -82,7 +88,11 @@ void CGLFWRenderer::Initialize ()
     glfwSwapInterval (m_isVSync);
 
     // load GL
+#ifdef CILANTRO_BUILD_GLES
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+#else
     if (!gladLoadGL ())
+#endif    
     {
         LogMessage (MSG_LOCATION, EXIT_FAILURE) << "GL context initialization failed";
     }
@@ -100,6 +110,15 @@ void CGLFWRenderer::Initialize ()
 
     glGetIntegerv (GL_MAX_VERTEX_OUTPUT_COMPONENTS, &data);
     LogMessage (MSG_LOCATION) << "GL_MAX_VERTEX_OUTPUT_COMPONENTS =" << std::to_string (data);
+
+    glGetIntegerv (GL_MAX_FRAMEBUFFER_LAYERS, &data);
+    LogMessage (MSG_LOCATION) << "GL_MAX_FRAMEBUFFER_LAYERS =" << std::to_string (data); 
+
+    glGetIntegerv (GL_MAX_FRAMEBUFFER_WIDTH, &data);
+    LogMessage (MSG_LOCATION) << "GL_MAX_FRAMEBUFFER_WIDTH =" << std::to_string (data); 
+
+    glGetIntegerv (GL_MAX_FRAMEBUFFER_HEIGHT, &data);
+    LogMessage (MSG_LOCATION) << "GL_MAX_FRAMEBUFFER_HEIGHT =" << std::to_string (data); 
 
     LogMessage (MSG_LOCATION) << "GLFWRenderer started";
 
