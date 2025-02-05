@@ -33,6 +33,7 @@ struct IRenderStage
     virtual IRenderStage& SetClearStencilOnFrameEnabled (bool value) = 0;
 
     virtual IRenderStage& SetStencilTest (EStencilTestFunction stencilTestFunction, int stencilTestValue) = 0;
+    virtual IRenderStage& SetFaceCullingMode (EFaceCullingFace faceCullingFace, EFaceCullingDirection faceCullingDirection) = 0;
 
     virtual bool IsMultisampleEnabled () const = 0;
     virtual bool IsStencilTestEnabled () const = 0;

@@ -34,6 +34,7 @@ public:
     __EAPI virtual IRenderStage& SetClearStencilOnFrameEnabled (bool value) override final;
 
     __EAPI virtual IRenderStage& SetStencilTest (EStencilTestFunction stencilTestFunction, int stencilTestValue) override final;
+    __EAPI virtual IRenderStage& SetFaceCullingMode (EFaceCullingFace faceCullingFace, EFaceCullingDirection faceCullingDirection) override final;
 
     __EAPI bool IsMultisampleEnabled () const override final;
     __EAPI bool IsStencilTestEnabled () const override final;
@@ -92,4 +93,8 @@ protected:
     // stencil testing parameters
     EStencilTestFunction m_stencilTestFunction;
     int m_stencilTestValue;
+
+    // depth culling parameter
+    EFaceCullingFace m_faceCullingFace;
+    EFaceCullingDirection m_faceCullingDirection;
 };

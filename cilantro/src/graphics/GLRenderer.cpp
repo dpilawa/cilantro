@@ -780,12 +780,32 @@ void CGLRenderer::SetFaceCullingEnabled (bool value)
 {
     if (value == true)
     {        
-        glFrontFace (GL_CCW);
         glEnable (GL_CULL_FACE);
     }
     else
     {   
         glDisable (GL_CULL_FACE);
+    }    
+}
+
+void CGLRenderer::SetFaceCullingMode (EFaceCullingFace face, EFaceCullingDirection direction)
+{
+    if (face == EFaceCullingFace::FACE_FRONT)
+    {
+        glCullFace (GL_FRONT);
+    }
+    else 
+    {
+        glCullFace (GL_BACK);
+    }
+
+    if (direction == EFaceCullingDirection::DIR_CW)
+    {        
+        glFrontFace (GL_CW);
+    }
+    else
+    {   
+        glFrontFace (GL_CCW);
     }    
 }
 
@@ -1178,30 +1198,12 @@ void CGLRenderer::LoadLightViewUniformBuffers ()
         {
             Vector4f lv = lightView * v;
 
-            minX = std::min(minX, lv[0]);
-            maxX = std::max(maxX, lv[0]);
-            minY = std::min(minY, lv[1]);
-            maxY = std::max(maxY, lv[1]);
-            minZ = std::min(minZ, lv[2]);
-            maxZ = std::max(maxZ, lv[2]);
-        }
-
-        constexpr float zMult = 1.0f;
-        if (minZ < 0)
-        {
-            minZ *= zMult;
-        }
-        else
-        {
-            minZ /= zMult;
-        }
-        if (maxZ < 0)
-        {
-            maxZ /= zMult;
-        }
-        else
-        {
-            maxZ *= zMult;
+            minX = std::min (minX, lv[0]);
+            maxX = std::max (maxX, lv[0]);
+            minY = std::min (minY, lv[1]);
+            maxY = std::max (maxY, lv[1]);
+            minZ = std::min (minZ, lv[2]);
+            maxZ = std::max (maxZ, lv[2]);
         }
 
         lightViewProjection = Mathf::GenOrthographicProjectionMatrix (minX, maxX, minY, maxY, minZ, maxZ) * lightView;

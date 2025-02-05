@@ -12,7 +12,7 @@ layout (std140) uniform UniformDirectionalLightViewMatricesBlock
     
 void main()
 {          
-    for (int i = 0; i < 3; ++i)
+    for (int i = 2; i >= 0; --i)
     {
         gl_Position = mLightSpace[gl_InvocationID] * gl_in[i].gl_Position;
         gl_Layer = gl_InvocationID;

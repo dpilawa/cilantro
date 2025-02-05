@@ -69,6 +69,7 @@ struct SGlDirectionalLightStruct
     GLfloat lightDirection[3];
     GLfloat pad1;
     GLfloat lightColor[3];
+    GLfloat pad2;
 };
 
 struct SGlSpotLightStruct
@@ -161,6 +162,7 @@ public:
 
     virtual void SetDepthTestEnabled (bool value) override;
     virtual void SetFaceCullingEnabled (bool value) override;
+    virtual void SetFaceCullingMode (EFaceCullingFace face, EFaceCullingDirection direction) override;
     virtual void SetMultisamplingEnabled (bool value) override;
     
     virtual void SetStencilTestEnabled (bool value) override;

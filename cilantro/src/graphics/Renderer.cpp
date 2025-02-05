@@ -174,6 +174,8 @@ void CRenderer::InitializeRenderStages ()
     if (m_isShadowMapping == true)
     {
         IRenderStage& shadow = this->AddRenderStage<CShadowMapRenderStage> ("shadow_map");
+        shadow.SetFaceCullingEnabled (true);
+        shadow.SetFaceCullingMode (EFaceCullingFace::FACE_FRONT, EFaceCullingDirection::DIR_CCW);
         shadow.Initialize ();
     }
 
