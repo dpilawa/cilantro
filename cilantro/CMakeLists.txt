@@ -185,6 +185,8 @@ shaders/shadowmap.vs
 add_library(cilantro SHARED ${CILANTRO_FILES})
 target_link_libraries (cilantro glfw glad assimp)
 
+set_target_properties(cilantro PROPERTY POSITION_INDEPENDENT_CODE TRUE)
+
 if (DEFINED EMSCRIPTEN)
 set_target_properties(cilantro
         PROPERTIES
