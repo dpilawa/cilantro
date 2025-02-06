@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.5)
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD 17)
 
+add_compile_options(-fPIC)
+
 project (cilantro)
 
 set(CILANTRO_GL_VERSION_MAJOR 4)
