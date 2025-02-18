@@ -49,7 +49,7 @@ CGLRenderer::~CGLRenderer ()
 }
 
 void CGLRenderer::Initialize ()
-{
+{    
     CRenderer::Initialize ();
 
     InitializeShaderLibrary ();
@@ -900,10 +900,11 @@ void CGLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 5);
 #endif
     p->BindUniformBlock ("UniformMatricesBlock", EBindingPoint::BP_MATRICES);
-    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL);
     p->BindUniformBlock ("UniformPointLightsBlock", EBindingPoint::BP_POINTLIGHTS);
     p->BindUniformBlock ("UniformDirectionalLightsBlock", EBindingPoint::BP_DIRECTIONALLIGHTS);
     p->BindUniformBlock ("UniformSpotLightsBlock", EBindingPoint::BP_SPOTLIGHTS);
+    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL);
+    CheckGLError (MSG_LOCATION);
 
     // PBR model (deferred, geometry pass)
     p = &AddShaderProgram<CGLShaderProgram> ("pbr_deferred_geometrypass_shader");
@@ -926,6 +927,7 @@ void CGLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tAO"), 4);
 #endif
     p->BindUniformBlock ("UniformMatricesBlock", EBindingPoint::BP_MATRICES);
+    CheckGLError (MSG_LOCATION);
 
     // PBR model (deferred, lighting pass)
     p = &AddShaderProgram<CGLShaderProgram> ("pbr_deferred_lightingpass_shader");
@@ -945,10 +947,11 @@ void CGLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tUnused"), 4);
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 4);
 #endif
-    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL);
     p->BindUniformBlock ("UniformPointLightsBlock", EBindingPoint::BP_POINTLIGHTS);
     p->BindUniformBlock ("UniformDirectionalLightsBlock", EBindingPoint::BP_DIRECTIONALLIGHTS);
     p->BindUniformBlock ("UniformSpotLightsBlock", EBindingPoint::BP_SPOTLIGHTS);
+    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL);
+    CheckGLError (MSG_LOCATION);
 
     // Blinn-Phong model (forward)
     p = &AddShaderProgram<CGLShaderProgram> ("blinnphong_forward_shader");
@@ -971,10 +974,11 @@ void CGLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 4);
 #endif
     p->BindUniformBlock ("UniformMatricesBlock", EBindingPoint::BP_MATRICES);
-    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL);
     p->BindUniformBlock ("UniformPointLightsBlock", EBindingPoint::BP_POINTLIGHTS);
     p->BindUniformBlock ("UniformDirectionalLightsBlock", EBindingPoint::BP_DIRECTIONALLIGHTS);
     p->BindUniformBlock ("UniformSpotLightsBlock", EBindingPoint::BP_SPOTLIGHTS); 
+    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL);
+    CheckGLError (MSG_LOCATION);
     
     // Blinn-Phong model (deferred, geometry pass)
     p = &AddShaderProgram<CGLShaderProgram> ("blinnphong_deferred_geometrypass_shader");
@@ -996,6 +1000,7 @@ void CGLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tEmissive"), 3);
 #endif    
     p->BindUniformBlock ("UniformMatricesBlock", EBindingPoint::BP_MATRICES);
+    CheckGLError (MSG_LOCATION);
 
     // Blinn-Phong model (deferred, lighting pass)
     p = &AddShaderProgram<CGLShaderProgram> ("blinnphong_deferred_lightingpass_shader");
@@ -1015,11 +1020,12 @@ void CGLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tSpecular"), 4);
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 5);
 #endif
-    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL);
     p->BindUniformBlock ("UniformPointLightsBlock", EBindingPoint::BP_POINTLIGHTS);
     p->BindUniformBlock ("UniformDirectionalLightsBlock", EBindingPoint::BP_DIRECTIONALLIGHTS);
-    p->BindUniformBlock ("UniformSpotLightsBlock", EBindingPoint::BP_SPOTLIGHTS);    
- 
+    p->BindUniformBlock ("UniformSpotLightsBlock", EBindingPoint::BP_SPOTLIGHTS);   
+    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL); 
+    CheckGLError (MSG_LOCATION);
+
     // Screen quad rendering
     p = &AddShaderProgram<CGLShaderProgram> ("flatquad_shader");
     p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("flatquad_vertex_shader"));
@@ -1033,6 +1039,7 @@ void CGLRenderer::InitializeShaderLibrary ()
 #if (CILANTRO_GL_VERSION < 420)
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "fScreenTexture"), 0);
 #endif
+    CheckGLError (MSG_LOCATION);
 
     // Post-processing HDR
     p = &AddShaderProgram<CGLShaderProgram> ("post_hdr_shader");
@@ -1047,6 +1054,7 @@ void CGLRenderer::InitializeShaderLibrary ()
 #if (CILANTRO_GL_VERSION < 420)
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "fScreenTexture"), 0);
 #endif
+    CheckGLError (MSG_LOCATION);
 
     // Post-processing gamma
     p = &AddShaderProgram<CGLShaderProgram> ("post_gamma_shader");
@@ -1061,6 +1069,7 @@ void CGLRenderer::InitializeShaderLibrary ()
 #if (CILANTRO_GL_VERSION < 420)
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "fScreenTexture"), 0);
 #endif
+    CheckGLError (MSG_LOCATION);
 
     // Post-processing fxaa
     p = &AddShaderProgram<CGLShaderProgram> ("post_fxaa_shader");
@@ -1075,6 +1084,7 @@ void CGLRenderer::InitializeShaderLibrary ()
 #if (CILANTRO_GL_VERSION < 420)
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "fScreenTexture"), 0);
 #endif
+    CheckGLError (MSG_LOCATION);
 
     // Shadow map (directional)
     p = &AddShaderProgram<CGLShaderProgram> ("shadowmap_directional_shader");
@@ -1089,7 +1099,6 @@ void CGLRenderer::InitializeShaderLibrary ()
 #if (CILANTRO_GL_VERSION < 420)
 #endif
     p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL);
-
     CheckGLError (MSG_LOCATION);
 
 }
