@@ -9,7 +9,7 @@
 PYBIND11_MODULE(pycilantro, m) {
     
     pybind11::class_<CGame>(m, "CGame")
-        .def("Initialize", &CGame::Initialize)
-        .def("CreateGameScene", &CGame::CreateGameScene<CGameScene>);
+        .def("Initialize", &CGame::Initialize);
+        //.def("CreateGameScene", &CGame::CreateGameScene<CGameScene>);
         
 }

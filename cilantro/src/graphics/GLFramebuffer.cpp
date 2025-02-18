@@ -41,8 +41,8 @@ void CGLFramebuffer::Initialize ()
     else
     {
         glDrawBuffers (1, &m_glBuffers.colorNone);
-        //glFramebufferParameteri (GL_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_WIDTH, m_bufferWidth);
-        //glFramebufferParameteri (GL_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_HEIGHT, m_bufferHeight);
+        glFramebufferParameteri (GL_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_WIDTH, m_bufferWidth);
+        glFramebufferParameteri (GL_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_HEIGHT, m_bufferHeight);
     }
 
     if (m_depthBufferArrayLayerCount > 0)
