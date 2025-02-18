@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.14)
 
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD 17)
@@ -40,7 +40,9 @@ set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 add_subdirectory (ext/glfw)
 add_subdirectory (ext/glad)
 add_subdirectory (ext/assimp)
+add_subdirectory (ext/pybind11)
 add_subdirectory (cilantro)
+add_subdirectory (python)
 add_subdirectory (tests)
 
 
