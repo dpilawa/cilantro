@@ -4,13 +4,8 @@
 #include "math/Vector4f.h"
 
 CRenderStage::CRenderStage ()
-    : m_viewportU (0.0f)
-    , m_viewportV (0.0f)
-    , m_viewportSizeU (1.0f)
-    , m_viewportSizeV (1.0f)
-
-    , m_framebuffer (nullptr)
-    , m_isMultisampleEnabled (false)
+    
+    : m_isMultisampleEnabled (false)
     , m_isStencilTestEnabled (false)
     , m_isDepthTestEnabled (true)
     , m_isFaceCullingEnabled (true)
@@ -20,13 +15,30 @@ CRenderStage::CRenderStage ()
     , m_isClearDepthOnFrameEnabled (true)
     , m_isClearStencilOnFrameEnabled (true)
 
-    , m_stencilTestFunction (EStencilTestFunction::FUNCTION_ALWAYS)
-    , m_stencilTestValue (0)
+    , m_viewportU (0.0f)
+    , m_viewportV (0.0f)
+    , m_viewportSizeU (1.0f)
+    , m_viewportSizeV (1.0f)
+
+    , m_renderer (nullptr)
+    , m_framebuffer (nullptr)
 
     , m_colorAttachmentsFramebufferLink (EPipelineLink::LINK_CURRENT)
     , m_depthStencilFramebufferLink (EPipelineLink::LINK_CURRENT)
     , m_depthArrayFramebufferLink (EPipelineLink::LINK_CURRENT)
     , m_drawFramebufferLink (EPipelineLink::LINK_CURRENT)
+
+    , m_linkedColorAttachmentsFramebuffer (nullptr)
+    , m_linkedDepthStencilFramebuffer (nullptr)
+    , m_linkedDepthArrayFramebuffer (nullptr)
+    , m_linkedDrawFramebuffer (nullptr)
+
+    , m_stencilTestFunction (EStencilTestFunction::FUNCTION_ALWAYS)
+    , m_stencilTestValue (0)
+
+    , m_faceCullingFace (EFaceCullingFace::FACE_BACK)
+    , m_faceCullingDirection (EFaceCullingDirection::DIR_CCW)
+    
 {
 }
 
@@ -128,6 +140,10 @@ void CRenderStage::OnFrame ()
 
     // optionally enable face culling
     m_renderer->SetFaceCullingEnabled (m_isFaceCullingEnabled);
+    if (m_isFaceCullingEnabled)
+    {
+        m_renderer->SetFaceCullingMode (m_faceCullingFace, m_faceCullingDirection);
+    }
 
     // optionally enable multisampling
     m_renderer->SetMultisamplingEnabled (m_isMultisampleEnabled);
@@ -274,8 +290,16 @@ IRenderStage& CRenderStage::SetClearStencilOnFrameEnabled (bool value)
 
 IRenderStage& CRenderStage::SetStencilTest (EStencilTestFunction stencilTestFunction, int stencilTestValue)
 {
-    this->m_stencilTestFunction = stencilTestFunction;
-    this->m_stencilTestValue = stencilTestValue;
+    m_stencilTestFunction = stencilTestFunction;
+    m_stencilTestValue = stencilTestValue;
+
+    return *this;
+}
+
+IRenderStage& CRenderStage::SetFaceCullingMode (EFaceCullingFace faceCullingFace, EFaceCullingDirection faceCullingDirection)
+{
+    m_faceCullingFace = faceCullingFace;
+    m_faceCullingDirection = faceCullingDirection;
 
     return *this;
 }

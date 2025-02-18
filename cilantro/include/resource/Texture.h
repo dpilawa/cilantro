@@ -5,6 +5,7 @@
 #include "math/Vector3f.h"
 #include "resource/LoadableResource.h"
 #include <string>
+#include <cstdint>
 
 class Texture : public CLoadableResource
 {

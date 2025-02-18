@@ -48,7 +48,7 @@ int main (int argc, char* argv[])
     Mesh& floorMesh = CGame::GetResourceManager ().Create<Mesh> ("floorMesh");
     Primitives::GenerateCube (floorMesh);
     MeshObject& floor = gameScene.AddGameObject<MeshObject> ("floor", "floorMesh", "floorMaterial");
-    floor.GetLocalTransform ().Scale (1000.0f, 0.05f, 1000.0f).Translate (0.0f, -0.05f, 0.0f);
+    floor.GetLocalTransform ().Scale (1000.0f, 0.1f, 1000.0f).Translate (0.0f, -0.05f, 0.0f);
 
     ControlledCamera& cam = gameScene.AddGameObject<ControlledCamera> ("camera", 60.0f, 10.0f, 600.0f, 5.0f, 0.1f);
     cam.Initialize ();
