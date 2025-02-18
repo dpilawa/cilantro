@@ -96,29 +96,47 @@ void CGLFWRenderer::Initialize ()
     {
         LogMessage (MSG_LOCATION, EXIT_FAILURE) << "GL context initialization failed";
     }
-
+    glGetError(	);
     // display GL version information
     LogMessage (MSG_LOCATION) << "Version:" << (char*) glGetString (GL_VERSION);
     LogMessage (MSG_LOCATION) << "Shader language version:" << (char*) glGetString (GL_SHADING_LANGUAGE_VERSION);
     LogMessage (MSG_LOCATION) << "Renderer:" << (char*) glGetString (GL_RENDERER);
 
     glGetIntegerv (GL_MAX_GEOMETRY_SHADER_INVOCATIONS, &data);
-    LogMessage (MSG_LOCATION) << "GL_MAX_GEOMETRY_SHADER_INVOCATIONS =" << std::to_string (data);
+    if (glGetError() == GL_NO_ERROR)
+    {
+        LogMessage (MSG_LOCATION) << "GL_MAX_GEOMETRY_SHADER_INVOCATIONS =" << std::to_string (data);
+    }
 
     glGetIntegerv (GL_MAX_ARRAY_TEXTURE_LAYERS, &data);
-    LogMessage (MSG_LOCATION) << "GL_MAX_ARRAY_TEXTURE_LAYERS =" << std::to_string (data);
+    if (glGetError() == GL_NO_ERROR)
+    {
+        LogMessage (MSG_LOCATION) << "GL_MAX_ARRAY_TEXTURE_LAYERS =" << std::to_string (data);
+    }
 
     glGetIntegerv (GL_MAX_VERTEX_OUTPUT_COMPONENTS, &data);
-    LogMessage (MSG_LOCATION) << "GL_MAX_VERTEX_OUTPUT_COMPONENTS =" << std::to_string (data);
+    if (glGetError() == GL_NO_ERROR)
+    {
+        LogMessage (MSG_LOCATION) << "GL_MAX_VERTEX_OUTPUT_COMPONENTS =" << std::to_string (data);
+    }
 
     glGetIntegerv (GL_MAX_FRAMEBUFFER_LAYERS, &data);
-    LogMessage (MSG_LOCATION) << "GL_MAX_FRAMEBUFFER_LAYERS =" << std::to_string (data); 
+    if (glGetError() == GL_NO_ERROR)
+    {
+        LogMessage (MSG_LOCATION) << "GL_MAX_FRAMEBUFFER_LAYERS =" << std::to_string (data); 
+    }
 
     glGetIntegerv (GL_MAX_FRAMEBUFFER_WIDTH, &data);
-    LogMessage (MSG_LOCATION) << "GL_MAX_FRAMEBUFFER_WIDTH =" << std::to_string (data); 
+    if (glGetError() == GL_NO_ERROR)
+    {
+        LogMessage (MSG_LOCATION) << "GL_MAX_FRAMEBUFFER_WIDTH =" << std::to_string (data); 
+    }
 
     glGetIntegerv (GL_MAX_FRAMEBUFFER_HEIGHT, &data);
-    LogMessage (MSG_LOCATION) << "GL_MAX_FRAMEBUFFER_HEIGHT =" << std::to_string (data); 
+    if (glGetError() == GL_NO_ERROR)
+    {
+        LogMessage (MSG_LOCATION) << "GL_MAX_FRAMEBUFFER_HEIGHT =" << std::to_string (data); 
+    }
 
     LogMessage (MSG_LOCATION) << "GLFWRenderer started";
 

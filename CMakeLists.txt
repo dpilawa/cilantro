@@ -8,8 +8,8 @@ add_compile_options(-fPIC)
 project (cilantro)
 
 set(CILANTRO_GL_VERSION_MAJOR 4)
-set(CILANTRO_GL_VERSION_MINOR 6)
-set(CILANTRO_GL_VERSION 460) # 140=3.1, 150=3.2, 330=3.3, ..., 460=4.6
+set(CILANTRO_GL_VERSION_MINOR 1)
+set(CILANTRO_GL_VERSION 410) # 140=3.1, 150=3.2, 330=3.3, ..., 460=4.6
 set(CILANTRO_GLES_VERSION_MAJOR 3)
 set(CILANTRO_GLES_VERSION_MINOR 2)
 set(CILANTRO_GLES_VERSION "300 es")
@@ -32,6 +32,9 @@ set(GLAD_PROFILE "core")
 
 if(CILANTRO_BUILD_GLES)
     set(GLAD_EXTENSIONS "GL_EXT_geometry_shader")
+    set(GLAD_EXTENSIONS "GL_ARB_tessellation_shader")
+    set(GLAD_EXTENSIONS "GL_ARB_geometry_shader4")
+    set(GLAD_EXTENSIONS "GL_ARB_gpu_shader5")
 endif()
 
 set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
