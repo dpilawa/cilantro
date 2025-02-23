@@ -35,6 +35,7 @@ if(CILANTRO_BUILD_GLES)
     set(GLAD_EXTENSIONS "GL_ARB_tessellation_shader")
     set(GLAD_EXTENSIONS "GL_ARB_geometry_shader4")
     set(GLAD_EXTENSIONS "GL_ARB_gpu_shader5")
+    set(GLAD_EXTENSIONS "GL_ARB_framebuffer_no_attachments")
 endif()
 
 set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})

@@ -41,8 +41,6 @@ void CGLFramebuffer::Initialize ()
     else
     {
         glDrawBuffers (1, &m_glBuffers.colorNone);
-        glFramebufferParameteri (GL_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_WIDTH, m_bufferWidth);
-        glFramebufferParameteri (GL_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_HEIGHT, m_bufferHeight);
     }
 
     if (m_depthBufferArrayLayerCount > 0)
@@ -50,9 +48,9 @@ void CGLFramebuffer::Initialize ()
         // create depth buffer array (used by shadow maps)
         GLfloat borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-        glGenTextures(1, &m_glBuffers.depthTextureArray);
-        glBindTexture(GL_TEXTURE_2D_ARRAY, m_glBuffers.depthTextureArray);
-        glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_DEPTH_COMPONENT32F, m_bufferWidth, m_bufferHeight, m_depthBufferArrayLayerCount, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+        glGenTextures (1, &m_glBuffers.depthTextureArray);
+        glBindTexture (GL_TEXTURE_2D_ARRAY, m_glBuffers.depthTextureArray);
+        glTexImage3D (GL_TEXTURE_2D_ARRAY, 0, GL_DEPTH_COMPONENT32F, m_bufferWidth, m_bufferHeight, m_depthBufferArrayLayerCount, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
         glTexParameteri (GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri (GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri (GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);

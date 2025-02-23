@@ -965,12 +965,12 @@ void CGLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tAlbedo"), 2);
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tMetallicRoughnessAO"), 3);
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tUnused"), 4);
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 4);
+    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 5);
 #endif
     p->BindUniformBlock ("UniformPointLightsBlock", EBindingPoint::BP_POINTLIGHTS);
     p->BindUniformBlock ("UniformDirectionalLightsBlock", EBindingPoint::BP_DIRECTIONALLIGHTS);
     p->BindUniformBlock ("UniformSpotLightsBlock", EBindingPoint::BP_SPOTLIGHTS);
-    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL);
+    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL);  
     CheckGLError (MSG_LOCATION);
 
     // Blinn-Phong model (forward)
