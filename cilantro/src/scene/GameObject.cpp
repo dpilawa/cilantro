@@ -7,7 +7,7 @@
 #include "scene/GameObject.h"
 #include "scene/Transform.h"
 #include "system/Game.h"
-#include "system/CallbackProvider.h"
+#include "system/HookProvider.h"
 #include <string>
 
 GameObject::GameObject (CGameScene* gameScene)
@@ -19,10 +19,10 @@ GameObject::GameObject (CGameScene* gameScene)
 
     // set callbacks on transform modification
     // this is just a passthrough of callbacks to subscribers (Scene)
-    localTransform.RegisterCallback ("OnUpdateTransform", [&](handle_t objectHandle) 
+    localTransform.SubscribeHook ("OnUpdateTransform", [&]() 
     {
         CalculateModelTransformMatrix (); 
-        InvokeCallbacks ("OnUpdateTransform", this->GetHandle (), 0); 
+        CGame::GetMessageBus ().Publish<TransformUpdateMessage> (std::make_shared<TransformUpdateMessage> (this->GetHandle ()));
     });
 }
 
@@ -36,7 +36,7 @@ GameObject& GameObject::SetParentObject (const std::string& name)
 
     parentObject = &parent;
     parent.childObjects.push_back (this);
-    InvokeCallbacks ("OnUpdateSceneGraph", this->GetHandle (), 0);
+    CGame::GetMessageBus ().Publish<SceneGraphUpdateMessage> (std::make_shared<SceneGraphUpdateMessage> (this->GetHandle ()));
 
     return *this;
 }

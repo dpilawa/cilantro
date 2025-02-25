@@ -7,6 +7,9 @@
 #include "graphics/Renderer.h"
 #include "input/InputController.h"
 #include "system/Timer.h"
+#include "system/MessageBus.h"
+#include "system/Message.h"
+#include "system/Game.h"
 #include "scene/GameObject.h"
 #include "scene/MeshObject.h"
 #include "scene/Material.h"
@@ -16,7 +19,7 @@
 
 // This class represents a game world (a.k.a scene or level)
 // It contains all visible and invisible objects in a game
-class CGameScene : public CResource, public CallbackProvider<std::string, handle_t, unsigned int>
+class CGameScene : public CResource
 {
 public:
 
@@ -77,24 +80,15 @@ T& CGameScene::AddGameObject (const std::string& name, Params&&... params)
     T& gameObject = gameObjects.Create<T> (name, this, params...);
     handle_t handle = gameObject.GetHandle ();
 
-    // set callbacks on object modification
-    // this is just a passthrough of callbacks to subscribers (e.g. Renderer)
-    gameObject.RegisterCallback ("OnUpdateMeshObject", [ & ](unsigned int objectHandle, unsigned int) { InvokeCallbacks ("OnUpdateMeshObject", objectHandle, 0); });
-    gameObject.RegisterCallback ("OnUpdateLight", [ & ](unsigned int objectHandle, unsigned int) { InvokeCallbacks ("OnUpdateLight", objectHandle, 0); });
-    gameObject.RegisterCallback ("OnUpdateSceneGraph", [ & ](unsigned int objectHandle, unsigned int) { InvokeCallbacks ("OnUpdateSceneGraph", objectHandle, 0); });
-    gameObject.RegisterCallback ("OnUpdateTransform", [&](unsigned int objectHandle, unsigned int) { 
-        InvokeCallbacks ("OnUpdateTransform", objectHandle, 0);
-    });
-
     // update renderer data
     if constexpr (std::is_base_of<MeshObject, T>::value)
     {
-        InvokeCallbacks ("OnUpdateMeshObject", handle, 0);
-        InvokeCallbacks ("OnUpdateSceneGraph", handle, 0);
+        CGame::GetMessageBus ().Publish<MeshObjectUpdateMessage> (std::make_shared<MeshObjectUpdateMessage> (handle));
+        CGame::GetMessageBus ().Publish<SceneGraphUpdateMessage> (std::make_shared<SceneGraphUpdateMessage> (handle));
     }
     else if constexpr (std::is_base_of<Light, T>::value)
     {
-        InvokeCallbacks ("OnUpdateLight", handle, 0);
+        CGame::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (handle));
     }
 
     // return object reference
@@ -107,12 +101,8 @@ T& CGameScene::AddMaterial (const std::string& name, Params&&... params)
     T& material = materials.Create<T> (name, params...);
     handle_t handle = material.GetHandle ();
 
-    // register callbacks
-    material.RegisterCallback ("OnUpdateMaterialTexture", [ & ](unsigned int materialHandle, unsigned int textureUnit) { InvokeCallbacks ("OnUpdateMaterialTexture", materialHandle, textureUnit); });
-    material.RegisterCallback ("OnUpdateMaterial", [ & ](unsigned int materialHandle, unsigned int) { InvokeCallbacks ("OnUpdateMaterial", materialHandle, 0); });
-
     // update renderer data
-    InvokeCallbacks("OnUpdateMaterial", handle, 0);
+    CGame::GetMessageBus ().Publish<MaterialUpdateMessage> (std::make_shared<MaterialUpdateMessage> (handle));
 
     // return material reference
     return material;

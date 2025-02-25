@@ -7,15 +7,15 @@
 
 PBRMaterial::PBRMaterial () : Material ()
 {
-    SetForwardShaderProgram ("pbr_forward_shader");
-    SetDeferredGeometryPassShaderProgram ("pbr_deferred_geometrypass_shader");
-    SetDeferredLightingPassShaderProgram ("pbr_deferred_lightingpass_shader");
-
-    SetTexture (static_cast<int>(PBRTexture::Albedo), "tAlbedo", albedo);
-    SetTexture (static_cast<int>(PBRTexture::Normal), "tNormal", normal);
-    SetTexture (static_cast<int>(PBRTexture::Metallic), "tMetallic", metallic);
-    SetTexture (static_cast<int>(PBRTexture::Roughness), "tRoughness", roughness);
-    SetTexture (static_cast<int>(PBRTexture::AO), "tAO", ao);
+    forwardShaderProgram = "pbr_forward_shader";
+    deferredGeometryPassShaderProgram = "pbr_deferred_geometrypass_shader";
+    deferredLightingPassShaderProgram = "pbr_deferred_lightingpass_shader";
+    
+    textures[static_cast<int>(PBRTexture::Albedo)] = std::pair ("tAlbedo", &albedo);
+    textures[static_cast<int>(PBRTexture::Normal)] = std::pair ("tNormal", &normal);
+    textures[static_cast<int>(PBRTexture::Metallic)] = std::pair ("tMetallic", &metallic);
+    textures[static_cast<int>(PBRTexture::Roughness)] = std::pair ("tRoughness", &roughness);
+    textures[static_cast<int>(PBRTexture::AO)] = std::pair ("tAO", &ao);
 }
 
 PBRMaterial::~PBRMaterial ()

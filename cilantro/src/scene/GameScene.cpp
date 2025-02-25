@@ -5,7 +5,6 @@
 #include "scene/Material.h"
 #include "scene/PBRMaterial.h"
 #include "scene/PhongMaterial.h"
-#include "system/CallbackProvider.h"
 #include "system/LogMessage.h"
 
 #include <vector>

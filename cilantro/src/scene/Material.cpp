@@ -15,7 +15,7 @@ Material::~Material ()
 Material& Material::SetForwardShaderProgram (const std::string& name)
 {
     forwardShaderProgram = name;
-    InvokeCallbacks ("OnUpdateMaterial", this->GetHandle (), 0);
+    CGame::GetMessageBus ().Publish<MaterialUpdateMessage> (std::make_shared<MaterialUpdateMessage> (this->GetHandle ()));
 
     return *this;
 }
@@ -23,15 +23,15 @@ Material& Material::SetForwardShaderProgram (const std::string& name)
 Material& Material::SetDeferredGeometryPassShaderProgram (const std::string& name)
 {
     deferredGeometryPassShaderProgram = name;
-    InvokeCallbacks ("OnUpdateMaterial", this->GetHandle (), 0);
-
+    CGame::GetMessageBus ().Publish<MaterialUpdateMessage> (std::make_shared<MaterialUpdateMessage> (this->GetHandle ()));
+    
     return *this;
 }
 
 Material& Material::SetDeferredLightingPassShaderProgram (const std::string& name)
 {
     deferredLightingPassShaderProgram = name;
-    InvokeCallbacks ("OnUpdateMaterial", this->GetHandle (), 0);
+    CGame::GetMessageBus ().Publish<MaterialUpdateMessage> (std::make_shared<MaterialUpdateMessage> (this->GetHandle ()));
 
     return *this;
 }
@@ -64,7 +64,7 @@ property_map_t& Material::GetPropertiesMap ()
 Material& Material::SetTexture (unsigned int textureUnit, const std::string& label, Texture& texture)
 {
     textures[textureUnit] = std::pair (label, &texture);
-    InvokeCallbacks ("OnUpdateMaterialTexture", this->GetHandle (), textureUnit);
+    CGame::GetMessageBus ().Publish<MaterialTextureUpdateMessage> (std::make_shared<MaterialTextureUpdateMessage> (this->GetHandle (), textureUnit));
 
     return *this;
 }
@@ -72,9 +72,11 @@ Material& Material::SetTexture (unsigned int textureUnit, const std::string& lab
 Material& Material::SetProperty (const std::string& propertyName, float propertyValue)
 {
     properties[propertyName] = {propertyValue};
+    CGame::GetMessageBus ().Publish<MaterialUpdateMessage> (std::make_shared<MaterialUpdateMessage> (this->GetHandle ()));
 
     return *this;
 }
+
 
 Material& Material::SetProperty (const std::string& propertyName, Vector3f propertyValue)
 {

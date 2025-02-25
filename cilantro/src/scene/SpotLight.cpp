@@ -1,7 +1,7 @@
 #include "cilantroengine.h"
 #include "scene/SpotLight.h"
 #include "graphics/Renderer.h"
-#include "system/CallbackProvider.h"
+#include "system/Game.h"
 
 SpotLight::SpotLight (CGameScene* gameScene) : PointLight (gameScene)
 {
@@ -16,7 +16,7 @@ SpotLight::~SpotLight ()
 SpotLight& SpotLight::SetInnerCutoff (const float cutoff)
 {
     innerCutoff = cutoff;
-    InvokeOnUpdateCallbacks ();
+    CGame::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
 
     return *this;
 }
@@ -24,7 +24,7 @@ SpotLight& SpotLight::SetInnerCutoff (const float cutoff)
 SpotLight& SpotLight::SetOuterCutoff (const float cutOff)
 {
     outerCutoff = cutOff;
-    InvokeOnUpdateCallbacks ();
+    CGame::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
 
     return *this;
 }

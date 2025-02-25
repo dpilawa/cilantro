@@ -7,7 +7,8 @@ CResourceManager<CResource> CGame::m_resourceManager;
 CResourceManager<CGameScene> CGame::m_gameSceneManager;
 
 CGameScene* CGame::m_currentGameScene;
-InputController* CGame::inputController;
+InputController* CGame::m_inputController;
+MessageBus* CGame::m_messageBus;
 
 bool CGame::m_shouldStop;
 bool CGame::m_isRunning;
@@ -19,16 +20,21 @@ void CGame::Initialize ()
     // set flags
     m_shouldStop = false;
     m_isRunning = false;
+
+    // create message bus
+    m_messageBus = new MessageBus ();
 }
 
 void CGame::Deinitialize ()
 {
-    if (inputController != nullptr)
+    if (m_inputController != nullptr)
     {
-        inputController->Deinitialize ();
-        delete inputController;
+        m_inputController->Deinitialize ();
+        delete m_inputController;
     }
     
+    delete m_messageBus;
+
     LogMessage () << "Engine stopping";
 }
 
@@ -54,7 +60,12 @@ void CGame::SetCurrentGameScene (const std::string sceneName)
 
 InputController& CGame::GetInputController ()
 {
-    return *inputController;
+    return *m_inputController;
+}
+
+MessageBus& CGame::GetMessageBus ()
+{
+    return *m_messageBus;
 }
 
 void CGame::Run ()
@@ -93,7 +104,7 @@ void CGame::Step ()
     m_currentGameScene->OnFrame ();
 
     // process input
-    inputController->OnFrame ();
+    m_inputController->OnFrame ();
 }
 
 

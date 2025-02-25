@@ -16,8 +16,8 @@ void CShadowMapRenderStage::Initialize ()
     InitializeFramebuffer ();
 
     // set callback for new or modified lights
-    m_renderer->GetGameScene ()->RegisterCallback ("OnUpdateLight", 
-        [&](unsigned int objectHandle, unsigned int) 
+    CGame::GetMessageBus ().Subscribe<LightUpdateMessage> (
+        [&](const std::shared_ptr<LightUpdateMessage>& message) 
         { 
             if (m_framebuffer != nullptr)
             {
@@ -28,6 +28,7 @@ void CShadowMapRenderStage::Initialize ()
             InitializeFramebuffer ();
         }
     );
+
 }
 
 void CShadowMapRenderStage::OnFrame ()

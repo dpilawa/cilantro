@@ -59,49 +59,48 @@ void CGLRenderer::Initialize ()
     InitializeLightUniformBuffers ();
 
     // set callback for new MeshObjects
-    m_gameScene->RegisterCallback ("OnUpdateMeshObject", 
-        [&](unsigned int objectHandle, unsigned int) 
+    CGame::GetMessageBus ().Subscribe<MeshObjectUpdateMessage> (
+        [&](const std::shared_ptr<MeshObjectUpdateMessage>& message) 
         { 
-            m_gameScene->GetGameObjectManager ().GetByHandle<GameObject> (objectHandle).OnUpdate (*this); 
+            Update (m_gameScene->GetGameObjectManager ().GetByHandle<MeshObject> (message->GetHandle ()));
         }
     );
 
     // set callback for new or modified materials
-    m_gameScene->RegisterCallback ("OnUpdateMaterialTexture", 
-        [&](unsigned int materialHandle, unsigned int textureUnit) 
+    CGame::GetMessageBus ().Subscribe<MaterialTextureUpdateMessage> (
+        [&](const std::shared_ptr<MaterialTextureUpdateMessage>& message) 
         { 
-            Update (m_gameScene->GetMaterialManager ().GetByHandle<Material> (materialHandle), textureUnit); 
+            Update (m_gameScene->GetMaterialManager ().GetByHandle<Material> (message->GetHandle ()), message->GetTextureUnit ());
         }
     );
-
-    m_gameScene->RegisterCallback ("OnUpdateMaterial", 
-        [&](unsigned int materialHandle, unsigned int) 
+    CGame::GetMessageBus ().Subscribe<MaterialUpdateMessage> (
+        [&](const std::shared_ptr<MaterialUpdateMessage>& message) 
         { 
-            Update (m_gameScene->GetMaterialManager ().GetByHandle<Material> (materialHandle)); 
+            Update (m_gameScene->GetMaterialManager ().GetByHandle<Material> (message->GetHandle ()));
         }
     );
     
     // set callback for new or modified lights
-    m_gameScene->RegisterCallback ("OnUpdateLight", 
-        [&](unsigned int objectHandle, unsigned int) 
+    CGame::GetMessageBus ().Subscribe<LightUpdateMessage> (
+        [&](const std::shared_ptr<LightUpdateMessage>& message) 
         { 
-            m_gameScene->GetGameObjectManager ().GetByHandle<GameObject> (objectHandle).OnUpdate (*this); 
+            m_gameScene->GetGameObjectManager ().GetByHandle<GameObject> (message->GetHandle ()).OnUpdate (*this); 
         }
     );
 
     // set callback for modified scene graph (currently this only requires to reload light buffers)
-    m_gameScene->RegisterCallback ("OnUpdateSceneGraph", 
-        [&](unsigned int objectHandle, unsigned int) 
+    CGame::GetMessageBus ().Subscribe<SceneGraphUpdateMessage> (
+        [&](const std::shared_ptr<SceneGraphUpdateMessage>& message) 
         { 
-            UpdateLightBufferRecursive (objectHandle);
+            UpdateLightBufferRecursive (message->GetHandle ());
         }
     );
 
     // set callback for modified transforms (currently this only requires to reload light buffers)
-    m_gameScene->RegisterCallback ("OnUpdateTransform", 
-        [&](unsigned int objectHandle, unsigned int) 
+    CGame::GetMessageBus ().Subscribe<TransformUpdateMessage> (
+        [&](const std::shared_ptr<TransformUpdateMessage>& message) 
         { 
-            UpdateLightBufferRecursive (objectHandle); 
+            UpdateLightBufferRecursive (message->GetHandle ());
         }
     );
     

@@ -2,13 +2,13 @@
 #define _TRANSFORM_H_
 
 #include "cilantroengine.h"
-#include "system/CallbackProvider.h"
+#include "system/HookProvider.h"
 #include "math/Vector3f.h"
 #include "math/Matrix4f.h"
 #include "math/Quaternion.h"
 #include <string>
 
-class Transform : public CallbackProvider<std::string, unsigned int>
+class Transform : public HookProvider<std::string>
 {
 public:
 

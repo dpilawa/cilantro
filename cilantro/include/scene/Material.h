@@ -6,7 +6,6 @@
 #include "resource/Resource.h"
 #include "resource/Texture.h"
 #include "math/Vector3f.h"
-#include "system/CallbackProvider.h"
 #include <vector>
 #include <string>
 #include <map>
@@ -17,7 +16,7 @@ struct IRenderer;
 typedef std::map<unsigned int, std::pair<std::string, Texture*>> texture_map_t;
 typedef std::unordered_map<std::string, std::vector<float>> property_map_t;
 
-class Material : public CResource, public CallbackProvider<std::string, unsigned int, unsigned int>
+class Material : public CResource
 {
 public:
     __EAPI Material ();
@@ -44,8 +43,6 @@ protected:
 
     // properties map
     property_map_t properties;
-
-private:
 
     // shader programs defined in renderer
     std::string forwardShaderProgram;

@@ -1,5 +1,5 @@
 #include "cilantroengine.h"
-#include "system/CallbackProvider.h"
+#include "system/HookProvider.h"
 #include "scene/Transform.h"
 #include "math/Matrix4f.h"
 #include "math/Vector3f.h"
@@ -49,7 +49,7 @@ Transform& Transform::SetTransformMatrix (const Matrix4f& m)
     rotate = Mathf::GetRotationFromTransformationMatrix (m);
     rotationMatrix = Mathf::GenRotationMatrix (rotate);
 
-    InvokeCallbacks ("OnUpdateTransform", 0u);
+    InvokeHook ("OnUpdateTransform");
 
     return *this;
 }
@@ -81,7 +81,7 @@ Transform& Transform::Translate (const Vector3f & t)
     translate = t;
     translationMatrix = Mathf::GenTranslationMatrix (translate);
 
-    InvokeCallbacks ("OnUpdateTransform", 0u);
+    InvokeHook ("OnUpdateTransform");
 
     return *this;
 }
@@ -119,7 +119,7 @@ Transform& Transform::Scale (const Vector3f& s)
     scale = s;
     scalingMatrix = Mathf::GenScalingMatrix (scale);
 
-    InvokeCallbacks ("OnUpdateTransform", 0u);
+    InvokeHook ("OnUpdateTransform");
 
     return *this;
 }
@@ -175,7 +175,7 @@ Transform& Transform::Rotate (const Vector3f& euler)
     rotate = Mathf::EulerToQuaterion (Mathf::Deg2Rad (euler));
     rotationMatrix = Mathf::GenRotationMatrix (rotate);
 
-    InvokeCallbacks ("OnUpdateTransform", 0u);
+    InvokeHook ("OnUpdateTransform");
 
     return *this;
 }
@@ -187,7 +187,7 @@ Transform& Transform::Rotate (const Quaternion& q)
     rotate = q;
     rotationMatrix = Mathf::GenRotationMatrix (rotate);
 
-    InvokeCallbacks ("OnUpdateTransform", 0u);
+    InvokeHook ("OnUpdateTransform");
 
     return *this;
 }
@@ -199,7 +199,7 @@ Transform& Transform::Rotate (const Vector3f& axis, float theta)
     rotate = Mathf::GenRotationQuaternion (axis, Mathf::Deg2Rad (theta));
     rotationMatrix = Mathf::GenRotationMatrix (rotate);
 
-    InvokeCallbacks ("OnUpdateTransform", 0u);
+    InvokeHook ("OnUpdateTransform");
 
     return *this;
 }

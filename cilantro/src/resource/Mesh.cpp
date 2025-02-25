@@ -4,7 +4,7 @@
 #include "scene/Bone.h"
 #include "math/Vector3f.h"
 #include "math/Mathf.h"
-#include "system/CallbackProvider.h"
+#include "system/HookProvider.h"
 #include "system/LogMessage.h"
 #include "system/Game.h"
 
@@ -38,7 +38,7 @@ Mesh& Mesh::Clear ()
     boneInfluenceIndices.clear ();
     boneInfluenceWeights.clear ();
 
-    InvokeCallbacks ("OnUpdateMesh", this->GetHandle ());
+    InvokeHook ("OnUpdateMesh");
 
     return *this;
 }
@@ -189,7 +189,7 @@ Mesh& Mesh::SetSmoothNormals (bool smoothNormals)
 {
     this->smoothNormals = smoothNormals;
     this->CalculateVertexNormals ();
-    InvokeCallbacks ("OnUpdateMesh", this->GetHandle ());
+    InvokeHook ("OnUpdateMesh");
 
     return *this;
 }

@@ -6,7 +6,7 @@
 #include "math/Vector3f.h"
 #include "math/Mathf.h"
 #include "system/Game.h"
-#include "system/CallbackProvider.h"
+#include "system/HookProvider.h"
 #include "system/LogMessage.h"
 
 #include <vector>
@@ -18,7 +18,7 @@ MeshObject::MeshObject (CGameScene* gameScene, const std::string& meshName, cons
     , mesh (CGame::GetResourceManager ().GetByName<Mesh> (meshName))
     , material (gameScene->GetMaterialManager ().GetByName<Material> (materialName))
 {
-    mesh.RegisterCallback ("OnUpdateMesh", [&] (handle_t objectHandle) { InvokeCallbacks ("OnUpdateMeshObject", this->GetHandle (), 0); });
+    mesh.SubscribeHook ("OnUpdateMesh", [&] () { CGame::GetMessageBus ().Publish<MeshObjectUpdateMessage> (std::make_shared<MeshObjectUpdateMessage> (this->GetHandle ())); });
 }
 
 MeshObject::~MeshObject ()

@@ -4,6 +4,7 @@
 #include "cilantroengine.h"
 #include "resource/ResourceManager.h"
 #include "input/InputController.h"
+#include "system/MessageBus.h"
 
 class CResource;
 class CGameScene;
@@ -37,12 +38,16 @@ public:
     static T& CreateInputController (Params&&... params);
     static __EAPI InputController& GetInputController ();
 
+    // message bus
+    static __EAPI MessageBus& GetMessageBus ();
+
 private:
     
     static __EAPI CResourceManager<CResource> m_resourceManager;
     static __EAPI CResourceManager<CGameScene> m_gameSceneManager;
     static __EAPI CGameScene* m_currentGameScene;
-    static __EAPI InputController* inputController;
+    static __EAPI InputController* m_inputController;
+    static __EAPI MessageBus* m_messageBus;
 
     // game state
     static bool m_shouldStop;
@@ -71,8 +76,8 @@ T& CGame::CreateInputController (Params&&... params)
     static_assert (std::is_base_of<InputController, T>::value, "Input controller object must inherit from InputController");
     T* newInputController = new T (params...);
 
-    CGame::inputController = static_cast<InputController*> (newInputController);
-    CGame::inputController->Initialize ();
+    CGame::m_inputController = static_cast<InputController*> (newInputController);
+    CGame::m_inputController->Initialize ();
 
     return *newInputController;
 }

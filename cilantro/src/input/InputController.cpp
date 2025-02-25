@@ -1,6 +1,8 @@
 #include "input/InputController.h"
-#include "system/CallbackProvider.h"
 #include "system/LogMessage.h"
+#include "system/Game.h"
+#include "system/MessageBus.h"
+#include "system/Message.h"
 
 #include <string>
 
@@ -21,7 +23,7 @@ void InputController::OnFrame ()
     {
         if (event->Read ()) 
         {
-            InvokeCallbacks (event->GetName (), event->GetScale ());
+            CGame::GetMessageBus ().Publish<InputEventMessage> (std::make_shared<InputEventMessage> (event->GetName (), event->GetScale ()));
             event->Set (false);
         }
     }
@@ -34,7 +36,7 @@ void InputController::OnFrame ()
         {
             axisCompound += axis->Read () * axis->GetScale ();
         }
-        InvokeCallbacks (axisvector.first, axisCompound);
+        CGame::GetMessageBus ().Publish<InputAxisMessage> (std::make_shared<InputAxisMessage> (axisvector.first, axisCompound));
     }
 }
 
@@ -54,18 +56,25 @@ Input<float>* InputController::CreateInputAxis (const std::string& name, float s
 
 void InputController::BindInputEvent (const std::string& name, std::function<void ()> function)
 {
-    auto functionCallback = [function](float scale)
-    {
-        function ();
-    };
-
-    RegisterCallback (name, functionCallback);
+    CGame::GetMessageBus ().Subscribe<InputEventMessage> ([name, function](const std::shared_ptr<InputEventMessage>& message) 
+    { 
+        if (message->GetEvent () == name)
+        {
+            function ();
+        }
+    });
 }
 
 
 void InputController::BindInputAxis (const std::string& name, std::function<void (float)> function)
 {
-    RegisterCallback (name, function);
+    CGame::GetMessageBus ().Subscribe<InputAxisMessage> ([name, function](const std::shared_ptr<InputAxisMessage>& message) 
+    { 
+        if (message->GetEvent () == name)
+        {
+            function (message->GetValue ());
+        }
+    });
 }
 
 bool InputController::IsGameMode ()

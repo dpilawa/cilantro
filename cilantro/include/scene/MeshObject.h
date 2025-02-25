@@ -2,7 +2,6 @@
 #define _MESHOBJECT_H_
 
 #include "cilantroengine.h"
-
 #include "scene/GameObject.h"
 #include "scene/Material.h"
 #include "resource/Mesh.h"

@@ -1,7 +1,6 @@
 #include "cilantroengine.h"
 #include "scene/DirectionalLight.h"
 #include "graphics/Renderer.h"
-#include "system/CallbackProvider.h"
 
 DirectionalLight::DirectionalLight (CGameScene* gameScene) : Light (gameScene)
 {

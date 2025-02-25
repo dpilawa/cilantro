@@ -7,16 +7,16 @@
 
 PhongMaterial::PhongMaterial () : Material ()
 {
-    SetForwardShaderProgram ("blinnphong_forward_shader");
-    SetDeferredGeometryPassShaderProgram ("blinnphong_deferred_geometrypass_shader");
-    SetDeferredLightingPassShaderProgram ("blinnphong_deferred_lightingpass_shader");
+    forwardShaderProgram = "blinnphong_forward_shader";
+    deferredGeometryPassShaderProgram = "blinnphong_deferred_geometrypass_shader";
+    deferredLightingPassShaderProgram = "blinnphong_deferred_lightingpass_shader";
 
-    SetSpecularShininess (32.0f);
+    properties["fSpecularShininess"] = {32.0f};
 
-    SetTexture (static_cast<int>(PhongTexture::Diffuse), "tDiffuse", diffuse);
-    SetTexture (static_cast<int>(PhongTexture::Normal), "tNormal", normal);
-    SetTexture (static_cast<int>(PhongTexture::Specular), "tSpecular", specular);
-    SetTexture (static_cast<int>(PhongTexture::Emissive), "tEmissive", emissive);
+    textures[static_cast<int>(PhongTexture::Diffuse)] = std::pair ("tDiffuse", &diffuse);
+    textures[static_cast<int>(PhongTexture::Normal)] = std::pair ("tNormal", &normal);
+    textures[static_cast<int>(PhongTexture::Specular)] = std::pair ("tSpecular", &specular);
+    textures[static_cast<int>(PhongTexture::Emissive)] = std::pair ("tEmissive", &emissive);
 }
 
 PhongMaterial::~PhongMaterial ()

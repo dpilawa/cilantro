@@ -100,10 +100,12 @@ include/scene/Primitives.h
 include/scene/SplinePath.h
 include/scene/SpotLight.h
 include/scene/Transform.h
-include/system/CallbackProvider.h
+include/system/HookProvider.h
 include/system/Game.h
 include/system/LogMessage.h
 include/system/Timer.h
+include/system/Message.h
+include/system/MessageBus.h
 
 src/graphics/Framebuffer.cpp
 src/graphics/GLFramebuffer.cpp
@@ -163,6 +165,7 @@ src/scene/Transform.cpp
 src/system/Game.cpp
 src/system/LogMessage.cpp
 src/system/Timer.cpp
+src/system/MessageBus.cpp
 
 shaders/blinnphong_deferred_geometrypass.fs
 shaders/blinnphong_deferred_lightingpass.fs

@@ -4,14 +4,13 @@
 #include "cilantroengine.h"
 #include "resource/Resource.h"
 #include "scene/Transform.h"
-#include "system/CallbackProvider.h"
 #include <string>
 #include <vector>
 
 class CGameScene;
 struct IRenderer;
 
-class GameObject : public CResource, public CallbackProvider<std::string, handle_t, unsigned int>
+class GameObject : public CResource
 {
 public:
     __EAPI GameObject (CGameScene* gameScene);

@@ -27,11 +27,6 @@ public:
     // invoked by game loop on update	
     void OnUpdate (IRenderer& renderStage);
 
-protected:
-
-    // callback on light update to notify rendered
-    virtual void InvokeOnUpdateCallbacks ();
-
 private:
 
     bool isEnabled;

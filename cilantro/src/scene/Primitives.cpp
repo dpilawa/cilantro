@@ -30,7 +30,7 @@ void Primitives::GeneratePlane (Mesh& m)
     m.CalculateVertexNormals ();
     m.CalculateTangentsBitangents ();
 
-    m.InvokeCallbacks ("OnUpdateMesh", m.GetHandle ());
+    m.InvokeHook ("OnUpdateMesh");
     
 }
 
@@ -95,7 +95,7 @@ void Primitives::GenerateCube (Mesh& m)
     m.CalculateVertexNormals ();
     m.CalculateTangentsBitangents ();
 
-    m.InvokeCallbacks ("OnUpdateMesh", m.GetHandle ());
+    m.InvokeHook ("OnUpdateMesh");
     
 }
 
@@ -185,7 +185,7 @@ void Primitives::GenerateSphere (Mesh& m, unsigned int subdivisions)
     m.CalculateVertexNormals ();
     m.CalculateTangentsBitangents ();
 
-    m.InvokeCallbacks ("OnUpdateMesh", m.GetHandle ());
+    m.InvokeHook ("OnUpdateMesh");
 
 }
 
@@ -240,7 +240,7 @@ void Primitives::GenerateCone (Mesh& m, unsigned int subdivisions)
     m.CalculateVertexNormals ();
     m.CalculateTangentsBitangents ();
 
-    m.InvokeCallbacks ("OnUpdateMesh", m.GetHandle ());
+    m.InvokeHook ("OnUpdateMesh");
 
 }
 
@@ -315,7 +315,7 @@ void Primitives::GenerateCylinder (Mesh& m, unsigned int subdivisions)
     m.CalculateVertexNormals ();
     m.CalculateTangentsBitangents ();
 
-    m.InvokeCallbacks ("OnUpdateMesh", m.GetHandle ());
+    m.InvokeHook ("OnUpdateMesh");
 
 }
 

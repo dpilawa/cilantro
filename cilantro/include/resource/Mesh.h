@@ -3,7 +3,7 @@
 
 #include "cilantroengine.h"
 #include "resource/Resource.h"
-#include "system/CallbackProvider.h"
+#include "system/HookProvider.h"
 #include "math/Vector2f.h"
 #include "math/Vector3f.h"
 
@@ -17,7 +17,7 @@ struct Vector3Hash
     }
 };
 
-class Mesh : public CResource, public CallbackProvider<std::string, handle_t>
+class Mesh : public CResource, public HookProvider<std::string>
 {
 
 public:

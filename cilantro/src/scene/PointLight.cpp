@@ -1,7 +1,7 @@
 #include "cilantroengine.h"
 #include "scene/PointLight.h"
 #include "graphics/Renderer.h"
-#include "system/CallbackProvider.h"
+#include "system/Game.h"
 
 PointLight::PointLight (CGameScene* gameScene) : Light (gameScene)
 {
@@ -17,21 +17,21 @@ PointLight::~PointLight ()
 PointLight& PointLight::SetConstantAttenuationFactor (const float attenuation)
 {
     attenuationConst = attenuation;
-    InvokeOnUpdateCallbacks ();
+    CGame::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
     return *this;
 }
 
 PointLight& PointLight::SetLinearAttenuationFactor (const float attenuation)
 {
     attenuationLinear = attenuation;
-    InvokeOnUpdateCallbacks ();
+    CGame::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
     return *this;
 }
 
 PointLight& PointLight::SetQuadraticAttenuationFactor (const float attenuation)
 {
     attenuationQuadratic = attenuation;
-    InvokeOnUpdateCallbacks ();
+    CGame::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
     return *this;
 }
 
