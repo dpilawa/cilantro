@@ -39,11 +39,12 @@ endif()
 set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
+add_subdirectory (ext/pybind11)
 add_subdirectory (ext/glfw)
 add_subdirectory (ext/glad)
 add_subdirectory (ext/assimp)
 add_subdirectory (cilantro)
 add_subdirectory (python)
 add_subdirectory (tests)
-add_subdirectory (ext/pybind11)
+
 
