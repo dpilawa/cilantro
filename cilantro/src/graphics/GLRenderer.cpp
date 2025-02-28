@@ -18,7 +18,6 @@
 #include "scene/PointLight.h"
 #include "scene/DirectionalLight.h"
 #include "scene/SpotLight.h"
-#include "glad/glad.h"
 #include <cmath>
 #include <cstring>
 

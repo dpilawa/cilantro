@@ -25,9 +25,6 @@ option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
 option(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
 option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
 
-set(GLAD_API "gl=${CILANTRO_GL_VERSION_MAJOR}.${CILANTRO_GL_VERSION_MINOR},gles2=${CILANTRO_GLES_VERSION_MAJOR}.${CILANTRO_GLES_VERSION_MINOR}")
-set(GLAD_PROFILE "core")
-
 if(CILANTRO_BUILD_GLES)
     set(GLAD_EXTENSIONS "GL_EXT_geometry_shader")
     set(GLAD_EXTENSIONS "GL_ARB_tessellation_shader")
@@ -41,7 +38,7 @@ set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 add_subdirectory (ext/pybind11)
 add_subdirectory (ext/glfw)
-add_subdirectory (ext/glad)
+add_subdirectory (ext/glad/cmake)
 add_subdirectory (ext/assimp)
 add_subdirectory (cilantro)
 add_subdirectory (python)

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "cilantroengine.h"
-#include "glad/glad.h"
+#include "glad/gl.h"
 #include "graphics/ShaderProgram.h"
 
 struct IShaderProgram;

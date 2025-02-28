@@ -2,7 +2,7 @@
 #define _GLMULTISAMPLEFRAMEBUFFER_H_
 
 #include "cilantroengine.h"
-#include "glad/glad.h"
+#include "glad/gl.h"
 #include "graphics/GLFramebuffer.h"
 
 class CGLMultisampleFramebuffer : public CGLFramebuffer 

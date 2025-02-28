@@ -91,7 +91,7 @@ void CGLFWRenderer::Initialize ()
 #ifdef CILANTRO_BUILD_GLES
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 #else
-    if (!gladLoadGL ())
+    if (!gladLoadGL (glfwGetProcAddress))
 #endif    
     {
         LogMessage (MSG_LOCATION, EXIT_FAILURE) << "GL context initialization failed";

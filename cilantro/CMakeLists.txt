@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 
+glad_add_library(glad REPRODUCIBLE API gl:core=${CILANTRO_GL_VERSION_MAJOR}.${CILANTRO_GL_VERSION_MINOR})
+
 include_directories ("${PROJECT_SOURCE_DIR}/ext/glfw/include")
 include_directories ("${PROJECT_SOURCE_DIR}/ext/stb")
 include_directories ("${PROJECT_SOURCE_DIR}/ext/assimp/include")
