@@ -48,9 +48,9 @@ NURBS<T, d>& NURBS<T, d>::SetWeights (const std::vector<float>& weightVector)
 template <typename T, int d>
 bool NURBS<T, d>::Validate ()
 {
-    unsigned int m = knots.size ();
-    unsigned int n = controlPoints.size ();
-    unsigned int w = weights.size ();
+    size_t m = knots.size ();
+    size_t n = controlPoints.size ();
+    size_t w = weights.size ();
     unsigned int p = degree;
 
     if ((n == m - p - 1) && (n == w))
@@ -70,12 +70,12 @@ T EvaluateCurvePoint (unsigned int degree, const std::vector<T>& controlPoints, 
 
     float rationalWeight = 0.0f;
 
-    for (unsigned int i = 0; i < controlPoints.size (); i++)
+    for (size_t i = 0; i < controlPoints.size (); i++)
     {
         rationalWeight += Nip (i, degree, knots, u) * weights[i];
     }
 
-    for (unsigned int i = 0; i < controlPoints.size (); i++)
+    for (size_t i = 0; i < controlPoints.size (); i++)
     {
         point = point + controlPoints[i] * (Nip (i, degree, knots, u) * weights[i] / rationalWeight);
     }

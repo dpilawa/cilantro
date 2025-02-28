@@ -48,11 +48,11 @@ Mesh& Mesh::CalculateVertexNormals ()
     Vector3f normal;
     Vector3f va;
     Vector3f v0, v1, v2;
-    std::unordered_map<Vector3f, std::vector<unsigned int>, Vector3Hash> facesForVertex;
+    std::unordered_map<Vector3f, std::vector<size_t>, Vector3Hash> facesForVertex;
 
     // zero normals
     normals.clear ();
-    for (unsigned int v = 0; v < GetVertexCount () * 3; v++)
+    for (size_t v = 0; v < GetVertexCount () * 3; v++)
     {
         normals.push_back (0.0f);
     }
@@ -60,7 +60,7 @@ Mesh& Mesh::CalculateVertexNormals ()
     if (!smoothNormals)
     {
         // loop through all faces
-        for (unsigned int f = 0; f < GetFaceCount (); f++)
+        for (size_t f = 0; f < GetFaceCount (); f++)
         {
             // get face vertices
             v0 = GetVertex (GetFaceVertexIndex (f, 0));
@@ -80,7 +80,7 @@ Mesh& Mesh::CalculateVertexNormals ()
     else
     {
         // loop through all faces
-        for (unsigned int f = 0; f < GetFaceCount (); f++)
+        for (size_t f = 0; f < GetFaceCount (); f++)
         {
             // get face vertices
             v0 = GetVertex (GetFaceVertexIndex (f, 0));
@@ -93,7 +93,7 @@ Mesh& Mesh::CalculateVertexNormals ()
         }
 
         // loop through all faces
-        for (unsigned int f = 0; f < GetFaceCount (); f++)
+        for (size_t f = 0; f < GetFaceCount (); f++)
         {
             // get face vertices
             v0 = GetVertex (GetFaceVertexIndex (f, 0));
@@ -124,7 +124,7 @@ Mesh& Mesh::CalculateVertexNormals ()
     }
 
     // normalize normals
-    for (unsigned int v = 0; v < GetVertexCount (); v++)
+    for (size_t v = 0; v < GetVertexCount (); v++)
     {
         normal = GetNormal (v);
         SetNormal (v, Mathf::Normalize (normal));
@@ -149,7 +149,7 @@ Mesh& Mesh::CalculateTangentsBitangents ()
     bitangents.resize (GetVertexCount () * 3);
 
     // loop through all faces
-    for (unsigned int f = 0; f < GetFaceCount (); f++)
+    for (size_t f = 0; f < GetFaceCount (); f++)
     {
         // get face vertices
         v0 = GetVertex (GetFaceVertexIndex (f, 0));
@@ -194,19 +194,19 @@ Mesh& Mesh::SetSmoothNormals (bool smoothNormals)
     return *this;
 }
 
-unsigned int Mesh::GetVertexCount () const
+size_t Mesh::GetVertexCount () const
 {
-    return (unsigned int) (vertices.size () / 3);
+    return (vertices.size () / 3);
 }
 
-unsigned int Mesh::GetFaceCount () const
+size_t Mesh::GetFaceCount () const
 {
-    return (unsigned int) (indices.size () / 3);
+    return (indices.size () / 3);
 }
 
-unsigned int Mesh::GetIndexCount () const
+size_t Mesh::GetIndexCount () const
 {
-    return (unsigned int) indices.size ();
+    return indices.size ();
 }
 
 float* Mesh::GetVerticesData ()
@@ -234,7 +234,7 @@ float* Mesh::GetBitangentData ()
     return bitangents.data ();
 }
 
-unsigned int* Mesh::GetBoneIndicesData ()
+uint32_t* Mesh::GetBoneIndicesData ()
 {
     return boneInfluenceIndices.data ();
 }
@@ -244,7 +244,7 @@ float* Mesh::GetBoneWeightsData ()
     return boneInfluenceWeights.data ();
 }
 
-unsigned int* Mesh::GetFacesData ()
+uint32_t* Mesh::GetFacesData ()
 {
     return indices.data ();
 }
@@ -273,11 +273,11 @@ Mesh& Mesh::AddVertex (const Vector3f& vertex, const Vector2f& uv)
     return *this;
 }
 
-Mesh& Mesh::AddFace (unsigned int v1, unsigned int v2, unsigned int v3)
+Mesh& Mesh::AddFace (size_t v1, size_t v2, size_t v3)
 {
-    indices.push_back (v1);
-    indices.push_back (v2);
-    indices.push_back (v3);
+    indices.push_back ((uint32_t) v1);
+    indices.push_back ((uint32_t) v2);
+    indices.push_back ((uint32_t) v3);
 
     return *this;
 }
@@ -304,10 +304,10 @@ Mesh& Mesh::AddTangentBitangent (const Vector3f& tangent, const Vector3f& bitang
     return *this;
 }
 
-Mesh& Mesh::AddVertexBoneInfluence (unsigned int v, float weight, handle_t boneHandle)
+Mesh& Mesh::AddVertexBoneInfluence (size_t v, float weight, handle_t boneHandle)
 {
-    unsigned int offset = boneInfluenceCounts[v];
-    unsigned int index;
+    size_t offset = boneInfluenceCounts[v];
+    size_t index;
 
     auto it = std::find (meshBones.begin (), meshBones.end (), boneHandle);
 
@@ -323,7 +323,7 @@ Mesh& Mesh::AddVertexBoneInfluence (unsigned int v, float weight, handle_t boneH
         index = it - meshBones.begin () + 1;
     }
 
-    boneInfluenceIndices[v * CILANTRO_MAX_BONE_INFLUENCES + offset] = index;
+    boneInfluenceIndices[v * CILANTRO_MAX_BONE_INFLUENCES + offset] = (uint32_t) index;
     boneInfluenceWeights[v * CILANTRO_MAX_BONE_INFLUENCES + offset] = weight;
 
     boneInfluenceCounts[v] = boneInfluenceCounts[v] + 1;
@@ -337,37 +337,37 @@ Mesh& Mesh::AddVertexBoneInfluence (unsigned int v, float weight, handle_t boneH
 }
 
 
-unsigned int Mesh::GetFaceVertexIndex (unsigned int face, unsigned int faceVertex) const
+uint32_t Mesh::GetFaceVertexIndex (size_t face, unsigned int faceVertex) const
 {
     return indices[face * 3 + faceVertex];
 }
 
-Vector3f Mesh::GetVertex (unsigned int index) const
+Vector3f Mesh::GetVertex (size_t index) const
 {
     return Vector3f (vertices[index * 3], vertices[index * 3 + 1], vertices[index * 3 + 2]);
 }
 
-Vector2f Mesh::GetUV (unsigned int index) const
+Vector2f Mesh::GetUV (size_t index) const
 {
     return Vector2f (uvs[index * 2], uvs[index * 2 + 1]);
 }
 
-Vector3f Mesh::GetNormal (unsigned int index) const
+Vector3f Mesh::GetNormal (size_t index) const
 {
     return Vector3f (normals[index * 3], normals[index * 3 + 1], normals[index * 3 + 2]);
 }
 
-Vector3f Mesh::GetTangent (unsigned int index) const
+Vector3f Mesh::GetTangent (size_t index) const
 {
     return Vector3f (tangents[index * 3], tangents[index * 3 + 1], tangents[index * 3 + 2]);
 }
 
-Vector3f Mesh::GetBitangent (unsigned int index) const
+Vector3f Mesh::GetBitangent (size_t index) const
 {
     return Vector3f (bitangents[index * 3], bitangents[index * 3 + 1], bitangents[index * 3 + 2]);
 }
 
-Mesh& Mesh::SetNormal (unsigned int index, const Vector3f& normal)
+Mesh& Mesh::SetNormal (size_t index, const Vector3f& normal)
 {
     normals[index * 3] = normal[0];
     normals[index * 3 + 1] = normal[1];
@@ -376,7 +376,7 @@ Mesh& Mesh::SetNormal (unsigned int index, const Vector3f& normal)
     return *this;
 }
 
-Mesh& Mesh::SetTangent (unsigned int index, const Vector3f& tangent)
+Mesh& Mesh::SetTangent (size_t index, const Vector3f& tangent)
 {
     tangents[index * 3] = tangent[0];
     tangents[index * 3 + 1] = tangent[1];
@@ -385,7 +385,7 @@ Mesh& Mesh::SetTangent (unsigned int index, const Vector3f& tangent)
     return *this;
 }
 
-Mesh& Mesh::SetBitangent (unsigned int index, const Vector3f& bitangent)
+Mesh& Mesh::SetBitangent (size_t index, const Vector3f& bitangent)
 {
     bitangents[index * 3] = bitangent[0];
     bitangents[index * 3 + 1] = bitangent[1];

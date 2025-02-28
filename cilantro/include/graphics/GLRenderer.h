@@ -15,13 +15,13 @@ struct SGlGeometryBuffers;
 struct SGlMaterialTextureUnits;
 
 typedef std::unordered_map <handle_t, SGlGeometryBuffers*> TObjectGeometryBufferMap;
-typedef std::unordered_map <unsigned int, SGlMaterialTextureUnits*> TMaterialTextureUnitsMap;
-typedef std::unordered_map<unsigned int, unsigned int> TLightHandleIdxMap;
+typedef std::unordered_map <handle_t, SGlMaterialTextureUnits*> TMaterialTextureUnitsMap;
+typedef std::unordered_map<handle_t, size_t> TLightHandleIdxMap;
 
 struct SGlGeometryBuffers
 {
     // number of vertices
-    unsigned int indexCount;
+    size_t indexCount;
     // Vertex Buffer Objects (vertices, normals, uvs, tangents, bitangents, bone indices, bone weights)
     GLuint VBO[CILANTRO_VBO_COUNT];
     // Element Buffer Object (face indices)
@@ -150,7 +150,7 @@ public:
     virtual size_t GetDirectionalLightCount () const override;
     virtual size_t GetSpotLightCount () const override;
 
-    virtual IFramebuffer* CreateFramebuffer (size_t width, size_t height, size_t rgbTextureCount, size_t rgbaTextureCount, size_t depthBufferArrayTextureCount, bool depthStencilRenderbufferEnabled, bool multisampleEnabled) override;
+    virtual IFramebuffer* CreateFramebuffer (unsigned int width, unsigned int height, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayTextureCount, bool depthStencilRenderbufferEnabled, bool multisampleEnabled) override;
     virtual void BindDefaultFramebuffer () override;
     virtual void BindDefaultDepthBuffer () override;
     virtual void BindDefaultStencilBuffer () override;
@@ -187,7 +187,7 @@ private:
     
     void InitializeLightUniformBuffers ();
     void DeinitializeLightUniformBuffers ();
-    void UpdateLightBufferRecursive (unsigned int objectHandle);
+    void UpdateLightBufferRecursive (handle_t objectHandle);
 
     void RenderGeometryBuffer (SGlGeometryBuffers* buffer); 
   

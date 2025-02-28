@@ -85,7 +85,7 @@ struct IRenderer
     virtual size_t GetSpotLightCount () const = 0;
 
     // framebuffer control
-    virtual IFramebuffer* CreateFramebuffer (size_t width, size_t height, size_t rgbTextureCount, size_t rgbaTextureCount, size_t depthBufferArrayTextureCount, bool depthStencilRenderbufferEnabled, bool multisampleEnabled) = 0;
+    virtual IFramebuffer* CreateFramebuffer (unsigned int width, unsigned int height, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayTextureCount, bool depthStencilRenderbufferEnabled, bool multisampleEnabled) = 0;
     virtual void BindDefaultFramebuffer () = 0;
     virtual void BindDefaultDepthBuffer () = 0;
     virtual void BindDefaultStencilBuffer () = 0;

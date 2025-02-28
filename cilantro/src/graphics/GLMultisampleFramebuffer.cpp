@@ -1,7 +1,7 @@
 #include "graphics/GLMultisampleFramebuffer.h"
 #include "system/LogMessage.h"
 
-CGLMultisampleFramebuffer::CGLMultisampleFramebuffer (uint32_t bufferWidth, uint32_t bufferHeight, size_t rgbTextureCount, size_t rgbaTextureCount, size_t depthBufferArrayLayerCount, bool depthStencilRenderbufferEnabled) 
+CGLMultisampleFramebuffer::CGLMultisampleFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayLayerCount, bool depthStencilRenderbufferEnabled) 
     : CGLFramebuffer (bufferWidth, bufferHeight, rgbTextureCount, rgbaTextureCount, depthBufferArrayLayerCount, depthStencilRenderbufferEnabled)
 {
 }
@@ -17,7 +17,7 @@ void CGLMultisampleFramebuffer::Initialize ()
     glBindFramebuffer (GL_FRAMEBUFFER, m_glMultisampleBuffers.FBO);
 
     // create texture and attach to framebuffer as color attachment
-    glGenTextures (m_rgbTextureCount + m_rgbaTextureCount, m_glMultisampleBuffers.textureBuffer);
+    glGenTextures (static_cast<GLsizei> (m_rgbTextureCount + m_rgbaTextureCount), m_glMultisampleBuffers.textureBuffer);
     for (unsigned int i = 0; i < m_rgbTextureCount + m_rgbaTextureCount; i++)
     {
         glBindTexture (GL_TEXTURE_2D_MULTISAMPLE, m_glMultisampleBuffers.textureBuffer[i]);
@@ -30,7 +30,7 @@ void CGLMultisampleFramebuffer::Initialize ()
     // specify color buffers to draw to
     if (m_rgbTextureCount + m_rgbaTextureCount > 0)
     {
-        glDrawBuffers (m_rgbTextureCount + m_rgbaTextureCount, m_glMultisampleBuffers.colorAttachments);
+        glDrawBuffers (static_cast<GLsizei> (m_rgbTextureCount + m_rgbaTextureCount), m_glMultisampleBuffers.colorAttachments);
     }
     else
     {
@@ -42,7 +42,7 @@ void CGLMultisampleFramebuffer::Initialize ()
         // create depth buffer array (used by shadow maps)
         glGenTextures(1, &m_glBuffers.depthTextureArray);
         glBindTexture(GL_TEXTURE_2D_MULTISAMPLE_ARRAY, m_glBuffers.depthTextureArray);
-        glTexImage3DMultisample(GL_TEXTURE_2D_MULTISAMPLE_ARRAY, CILANTRO_MULTISAMPLE, GL_DEPTH_COMPONENT32F, CILANTRO_SHADOW_MAP_SIZE, CILANTRO_SHADOW_MAP_SIZE, m_depthBufferArrayLayerCount, GL_TRUE);
+        glTexImage3DMultisample(GL_TEXTURE_2D_MULTISAMPLE_ARRAY, CILANTRO_MULTISAMPLE, GL_DEPTH_COMPONENT32F, CILANTRO_SHADOW_MAP_SIZE, CILANTRO_SHADOW_MAP_SIZE, static_cast<GLsizei> (m_depthBufferArrayLayerCount), GL_TRUE);
         glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
@@ -94,7 +94,7 @@ void CGLMultisampleFramebuffer::Initialize ()
 void CGLMultisampleFramebuffer::Deinitialize ()
 {
     glDeleteRenderbuffers (1, &m_glMultisampleBuffers.RBO);
-    glDeleteTextures (m_rgbTextureCount + m_rgbaTextureCount, m_glMultisampleBuffers.textureBuffer);
+    glDeleteTextures (static_cast<GLsizei> (m_rgbTextureCount + m_rgbaTextureCount), m_glMultisampleBuffers.textureBuffer);
     glDeleteFramebuffers (1, &m_glMultisampleBuffers.FBO);
 
     CGLFramebuffer::Deinitialize ();
@@ -115,7 +115,7 @@ void CGLMultisampleFramebuffer::BlitFramebuffer () const
     glBindFramebuffer (GL_DRAW_FRAMEBUFFER, 0);
 }
 
-void CGLMultisampleFramebuffer::SetFramebufferResolution (uint32_t bufferWidth, uint32_t bufferHeight)
+void CGLMultisampleFramebuffer::SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight)
 {
     // resize framebuffer texture and viewport
     CGLFramebuffer::SetFramebufferResolution (bufferWidth, bufferHeight);

@@ -66,8 +66,8 @@ protected:
     size_t m_lightingShaderStagesCount;
 
     // dimensions
-    size_t m_width;
-    size_t m_height;
+    unsigned int m_width;
+    unsigned int m_height;
 
     // flags
     bool m_isDeferredRendering;

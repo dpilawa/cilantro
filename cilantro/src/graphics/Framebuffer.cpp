@@ -1,7 +1,7 @@
 #include "graphics/Framebuffer.h"
 #include "system/LogMessage.h"
 
-CFramebuffer::CFramebuffer (uint32_t bufferWidth, uint32_t bufferHeight, size_t rgbTextureCount, size_t rgbaTextureCount, size_t depthBufferArrayLayerCount, bool depthStencilRenderbufferEnabled)
+CFramebuffer::CFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayLayerCount, bool depthStencilRenderbufferEnabled)
     : m_bufferWidth (bufferWidth)
     , m_bufferHeight (bufferHeight)
     , m_rgbTextureCount (rgbTextureCount)
@@ -15,32 +15,32 @@ CFramebuffer::CFramebuffer (uint32_t bufferWidth, uint32_t bufferHeight, size_t 
     }
 }
 
-uint32_t CFramebuffer::GetWidth () const 
+unsigned int CFramebuffer::GetWidth () const
 {
     return m_bufferWidth;
 }
 
-uint32_t CFramebuffer::GetHeight () const 
+unsigned int CFramebuffer::GetHeight () const
 {
     return m_bufferHeight;
 }
 
-size_t CFramebuffer::GetColorTextureCount () const
+unsigned int CFramebuffer::GetColorTextureCount () const
 {
     return m_rgbTextureCount + m_rgbaTextureCount;
 }
 
-size_t CFramebuffer::GetRGBTextureCount () const
+unsigned int CFramebuffer::GetRGBTextureCount () const
 {
     return m_rgbTextureCount;
 }
 
-size_t CFramebuffer::GetRGBATextureCount () const
+unsigned int CFramebuffer::GetRGBATextureCount () const
 {
     return m_rgbaTextureCount;
 }
 
-size_t CFramebuffer::GetDepthArrayLayerCount () const
+unsigned int CFramebuffer::GetDepthArrayLayerCount () const
 {
     return m_depthBufferArrayLayerCount;
 }
@@ -55,7 +55,7 @@ bool CFramebuffer::IsDepthArrayEnabled () const
     return (m_depthBufferArrayLayerCount > 0);
 }
 
-void CFramebuffer::SetFramebufferResolution (uint32_t bufferWidth, uint32_t bufferHeight)
+void CFramebuffer::SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight)
 {
     m_bufferWidth = bufferWidth;
     m_bufferHeight = bufferHeight;

@@ -67,6 +67,8 @@ GLFWInputController::GLFWInputController () : InputController ()
     axisMouseScrollY = nullptr;
 
     isGameMode = false;
+
+    Initialize ();
 }
 
 GLFWInputController::~GLFWInputController ()

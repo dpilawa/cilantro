@@ -782,8 +782,8 @@ void Mathf::SolveSystemOfLinearEquations (std::vector<std::vector<float>>& A, st
 {
     float max_abs;
     int max_abs_row;
-    int m = b.size ();
-    int n;
+    size_t m = b.size ();
+    size_t n;
 
     // check matrix and vector sizes
     if ((A.size () != m) || (m == 0))

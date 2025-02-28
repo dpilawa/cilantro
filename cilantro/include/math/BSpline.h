@@ -26,8 +26,8 @@ public:
 
     __EAPI BSpline<T, d>& AddControlPoint (const T& point);
     __EAPI BSpline<T, d>& AddControlPoints (const std::vector<T>& points);
-    __EAPI unsigned int GetControlPointsCount () const;
-    __EAPI T GetControlPoint(unsigned int i) const;
+    __EAPI size_t GetControlPointsCount () const;
+    __EAPI T GetControlPoint (size_t i) const;
 
     __EAPI virtual bool Validate ();
 
@@ -37,7 +37,7 @@ protected:
     std::vector<float> knots;
 };
 
-float Nip (int i, int p, const std::vector<float>& knots, float u);
+float Nip (size_t i, size_t p, const std::vector<float>& knots, float u);
 
 template <typename T>
 T EvaluateCurvePoint (unsigned int degree, const std::vector<T>& controlPoints, const std::vector<float>& knots, float u);

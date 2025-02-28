@@ -1,5 +1,7 @@
+#include <cstddef>
+
 // typedefs
-typedef unsigned int handle_t;
+typedef size_t handle_t;
 
 // defines
 #define CILANTRO_VBO_COUNT                  7

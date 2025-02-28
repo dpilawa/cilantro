@@ -60,7 +60,7 @@ void CGLFWRenderer::Initialize ()
     glfwWindowHint (GLFW_COCOA_RETINA_FRAMEBUFFER, GL_TRUE);
 
     // create window
-    window = glfwCreateWindow (m_width, m_height, m_windowCaption.c_str (), monitor, nullptr);
+    window = glfwCreateWindow (static_cast<int> (m_width), static_cast<int> (m_height), m_windowCaption.c_str (), monitor, nullptr);
 
     if (window == NULL)
     {

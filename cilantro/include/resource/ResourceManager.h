@@ -31,7 +31,7 @@ public:
     T& Create (const std::string& name, Params&&... params);
 
     template <typename T>
-    T& GetByHandle (unsigned int handle) const;
+    T& GetByHandle (handle_t handle) const;
 
     template <typename T>
     T& GetByName (const std::string& name) const;

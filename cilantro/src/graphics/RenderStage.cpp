@@ -188,11 +188,11 @@ IRenderStage& CRenderStage::SetViewport (float u, float v, float su, float sv)
 
 IRenderStage& CRenderStage::SetMultisampleEnabled (bool value)
 {
-    size_t rgbTextureCount;
-    size_t rgbaTextureCount;
-    size_t dsArraySize;
-    size_t width;
-    size_t height;
+    unsigned int rgbTextureCount;
+    unsigned int rgbaTextureCount;
+    unsigned int dsArraySize;
+    unsigned int width;
+    unsigned int height;
     bool hasDSRenderbuffer;
 
     if (value != m_isMultisampleEnabled)

@@ -8,7 +8,7 @@
 class CGLMultisampleFramebuffer : public CGLFramebuffer 
 {
 public:
-    CGLMultisampleFramebuffer (uint32_t bufferWidth, uint32_t bufferHeight, size_t rgbTextureCount, size_t rgbaTextureCount, size_t dsBufferArraySize, bool hasDepthStencilRB);
+    CGLMultisampleFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int dsBufferArraySize, bool hasDepthStencilRB);
     virtual ~CGLMultisampleFramebuffer () {};
 
     ///////////////////////////////////////////////////////////////////////////
@@ -19,7 +19,7 @@ public:
     virtual void BindFramebuffer () const override;
     virtual void BlitFramebuffer () const override;
 
-    virtual void SetFramebufferResolution (uint32_t bufferWidth, uint32_t bufferHeight) override;
+    virtual void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight) override;
 
     ///////////////////////////////////////////////////////////////////////////
 

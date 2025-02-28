@@ -10,7 +10,7 @@ class CResource
     friend class CResourceManager;
 
 public:
-    CResource () {};
+    CResource () { m_handle = -1; };
     virtual ~CResource () {};
 
     __EAPI handle_t GetHandle () const;

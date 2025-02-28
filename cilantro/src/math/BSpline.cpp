@@ -34,7 +34,7 @@ T BSpline<T, d>::GetCurveTangent (float t) const
 template <typename T, int d>
 BSpline<T, d>& BSpline<T, d>::CalculateKnotVector (KnotVectorType type)
 {
-    unsigned int n = controlPoints.size ();
+    size_t n = controlPoints.size ();
     unsigned int p = degree;
 
     knots.clear ();
@@ -42,24 +42,24 @@ BSpline<T, d>& BSpline<T, d>::CalculateKnotVector (KnotVectorType type)
 
     if (type == KnotVectorType::Clamped)
     {
-        for (unsigned int m = 0; m < p + 1; m++)
+        for (size_t m = 0; m < p + 1; m++)
         {
             knots[m] = 0.0f;
         }
 
-        for (unsigned int m = p + 1; m < n; m++)
+        for (size_t m = p + 1; m < n; m++)
         {
             knots[m] = static_cast<float>(m - p) / static_cast<float>(n - p);
         }
 
-        for (unsigned int m = n; m < n + p + 1; m++)
+        for (size_t m = n; m < n + p + 1; m++)
         {
             knots[m] = 1.0f;
         }
     }
     else
     {
-        for (unsigned int m = 0; m < n + p + 1; m++)
+        for (size_t m = 0; m < n + p + 1; m++)
         {
             knots[m] = static_cast<float>(m + 1) / static_cast<float>(n + p + 1);
         }
@@ -73,7 +73,7 @@ BSpline<T, d>& BSpline<T, d>::SetKnotVector (const std::vector<float>& knotVecto
 {
     knots.clear ();
 
-    for (unsigned int i = 0; i < knotVector.size (); i++)
+    for (size_t i = 0; i < knotVector.size (); i++)
     {
         knots.push_back (knotVector[i]);
     }
@@ -98,13 +98,13 @@ BSpline<T, d>& BSpline<T, d>::AddControlPoints (const std::vector<T>& points)
 }
 
 template <typename T, int d>
-unsigned int BSpline<T, d>::GetControlPointsCount () const
+size_t BSpline<T, d>::GetControlPointsCount () const
 {
     return controlPoints.size ();
 }
 
 template <typename T, int d>
-T BSpline<T, d>::GetControlPoint (unsigned int i) const
+T BSpline<T, d>::GetControlPoint (size_t i) const
 {
     return controlPoints[i];
 }
@@ -112,8 +112,8 @@ T BSpline<T, d>::GetControlPoint (unsigned int i) const
 template <typename T, int d>
 bool BSpline<T, d>::Validate ()
 {
-    unsigned int m = knots.size ();
-    unsigned int n = controlPoints.size ();
+    size_t m = knots.size ();
+    size_t n = controlPoints.size ();
     unsigned int p = degree;
 
     if (n == m - p - 1)
@@ -127,12 +127,12 @@ bool BSpline<T, d>::Validate ()
 }
 
 // the original de Boor algorithm (source: "The BURBS Book")
-float Nip (int i, int p, const std::vector<float>& U, float u)
+float Nip (size_t i, size_t p, const std::vector<float>& U, float u)
 {
     std::vector<float> N;
     N.resize (p + 1);
 
-    int m = U.size () - 1;
+    size_t m = U.size () - 1;
 
     // handle special case (convention)
     if ((i == 0 && u == U[0]) || (i == (m - p - 1) && u == U[m]))

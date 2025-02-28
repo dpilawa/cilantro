@@ -55,7 +55,7 @@ void CShadowMapRenderStage::InitializeFramebuffer ()
 
         if (numLights > 0)
         {
-            m_framebuffer = m_renderer->CreateFramebuffer (CILANTRO_SHADOW_MAP_SIZE, CILANTRO_SHADOW_MAP_SIZE, 0, 0, numLights, false, m_isMultisampleEnabled);
+            m_framebuffer = m_renderer->CreateFramebuffer (CILANTRO_SHADOW_MAP_SIZE, CILANTRO_SHADOW_MAP_SIZE, 0, 0, (unsigned int) numLights, false, m_isMultisampleEnabled);
         }
     }
 }

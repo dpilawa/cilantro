@@ -252,7 +252,7 @@ void CGLRenderer::DrawAllGeometryBuffers (IShaderProgram& shader)
 
 void CGLRenderer::Update (MeshObject& meshObject)
 {
-    unsigned int objectHandle = meshObject.GetHandle ();
+    handle_t objectHandle = meshObject.GetHandle ();
 
     // check of object's buffers are already initialized
     auto find = m_sceneGeometryBuffers.find (objectHandle);
@@ -355,7 +355,7 @@ void CGLRenderer::Update (MeshObject& meshObject)
 
     // load bone index buffer
     glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVboType::VBO_BONES]);
-    glBufferData (GL_ARRAY_BUFFER, meshObject.GetMesh ().GetVertexCount () * sizeof (int) * CILANTRO_MAX_BONE_INFLUENCES, meshObject.GetMesh ().GetBoneIndicesData (), GL_STATIC_DRAW);
+    glBufferData (GL_ARRAY_BUFFER, meshObject.GetMesh ().GetVertexCount () * sizeof (uint32_t) * CILANTRO_MAX_BONE_INFLUENCES, meshObject.GetMesh ().GetBoneIndicesData (), GL_STATIC_DRAW);
 
     // load bone weight buffer
     glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVboType::VBO_BONEWEIGHTS]);
@@ -363,7 +363,7 @@ void CGLRenderer::Update (MeshObject& meshObject)
 
     // load index buffer
     glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, b->EBO);
-    glBufferData (GL_ELEMENT_ARRAY_BUFFER, meshObject.GetMesh ().GetIndexCount () * sizeof (unsigned int), meshObject.GetMesh ().GetFacesData (), GL_STATIC_DRAW);
+    glBufferData (GL_ELEMENT_ARRAY_BUFFER, meshObject.GetMesh ().GetIndexCount () * sizeof (uint32_t), meshObject.GetMesh ().GetFacesData (), GL_STATIC_DRAW);
 
     // unbind VAO
     glBindVertexArray (0);
@@ -372,7 +372,7 @@ void CGLRenderer::Update (MeshObject& meshObject)
 
 void CGLRenderer::Update (Material& material, unsigned int textureUnit)
 {
-    unsigned int materialHandle = material.GetHandle ();
+    handle_t materialHandle = material.GetHandle ();
     GLuint texture;
     GLuint format;
 
@@ -422,7 +422,7 @@ void CGLRenderer::Update (Material& material, unsigned int textureUnit)
             m_materialTextureUnits[materialHandle]->textureUnits[unit] = texture;
         }
 
-        m_materialTextureUnits[materialHandle]->unitsCount = textures.size ();
+        m_materialTextureUnits[materialHandle]->unitsCount = (unsigned int) textures.size ();
 
     }
     else
@@ -467,7 +467,7 @@ void CGLRenderer::Update (Material& material)
             m_lightingShaders.insert (shaderProgramHandle);
             CQuadRenderStage& p = AddRenderStage <CQuadRenderStage> ("deferred_lighting_" + shaderProgramName);
             p.SetShaderProgram (shaderProgramName);
-            p.SetStencilTestEnabled (true).SetStencilTest (EStencilTestFunction::FUNCTION_EQUAL, shaderProgramHandle);
+            p.SetStencilTestEnabled (true).SetStencilTest (EStencilTestFunction::FUNCTION_EQUAL, static_cast<int> (shaderProgramHandle));
             p.SetClearColorOnFrameEnabled (true);
             p.SetClearDepthOnFrameEnabled (true);
             p.SetClearStencilOnFrameEnabled (false);
@@ -514,9 +514,9 @@ void CGLRenderer::Update (Material& material)
 
 void CGLRenderer::Update (PointLight& pointLight)
 {
-    unsigned int objectHandle = pointLight.GetHandle ();
-    unsigned int lightId;
-    unsigned int uniformBufferOffset;
+    handle_t objectHandle = pointLight.GetHandle ();
+    size_t lightId;
+    size_t uniformBufferOffset;
 
     // check if light is already in collection
     auto find = m_pointLights.find (objectHandle);
@@ -564,9 +564,9 @@ void CGLRenderer::Update (PointLight& pointLight)
 
 void CGLRenderer::Update (DirectionalLight& directionalLight)
 {
-    unsigned int objectHandle = directionalLight.GetHandle ();
-    unsigned int lightId;
-    unsigned int uniformBufferOffset;
+    handle_t objectHandle = directionalLight.GetHandle ();
+    size_t lightId;
+    size_t uniformBufferOffset;
 
     // check if light is already in collection
     auto find = m_directionalLights.find (objectHandle);
@@ -617,9 +617,9 @@ void CGLRenderer::Update (DirectionalLight& directionalLight)
 
 void CGLRenderer::Update (SpotLight& spotLight)
 {
-    unsigned int objectHandle = spotLight.GetHandle ();
-    unsigned int lightId;
-    unsigned int uniformBufferOffset;
+    handle_t objectHandle = spotLight.GetHandle ();
+    size_t lightId;
+    size_t uniformBufferOffset;
 
     // check if light is already in collection
     auto find = m_spotLights.find (objectHandle);
@@ -699,7 +699,7 @@ size_t CGLRenderer::GetSpotLightCount () const
     return m_uniformSpotLightBuffer->spotLightCount;
 }
 
-IFramebuffer* CGLRenderer::CreateFramebuffer (size_t width, size_t height, size_t rgbTextureCount, size_t rgbaTextureCount, size_t depthBufferArrayTextureCount, bool depthStencilRenderbufferEnabled, bool multisampleEnabled)
+IFramebuffer* CGLRenderer::CreateFramebuffer (unsigned int width, unsigned int height, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayTextureCount, bool depthStencilRenderbufferEnabled, bool multisampleEnabled)
 {
     IFramebuffer* framebuffer;
 
@@ -1356,7 +1356,7 @@ void CGLRenderer::DeinitializeLightUniformBuffers ()
     glDeleteBuffers (1, &m_uniformBuffers->UBO[UBO_SPOTLIGHTS]);
 }
 
-void CGLRenderer::UpdateLightBufferRecursive (unsigned int objectHandle)
+void CGLRenderer::UpdateLightBufferRecursive (handle_t objectHandle)
 {
     GameObject* light = &m_gameScene->GetGameObjectManager ().GetByHandle<GameObject> (objectHandle);
 
@@ -1378,7 +1378,7 @@ void CGLRenderer::RenderGeometryBuffer (SGlGeometryBuffers* buffer)
     glBindVertexArray (buffer->VAO);
     
     // draw
-    glDrawElements (GL_TRIANGLES, buffer->indexCount * sizeof (GLuint), GL_UNSIGNED_INT, 0);
+    glDrawElements (GL_TRIANGLES, static_cast<GLsizei> (buffer->indexCount) * sizeof (GLuint), GL_UNSIGNED_INT, 0);
     
     // unbind
     glBindVertexArray (0);

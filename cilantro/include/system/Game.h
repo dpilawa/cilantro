@@ -3,7 +3,6 @@
 
 #include "cilantroengine.h"
 #include "resource/ResourceManager.h"
-#include "input/InputController.h"
 #include "system/MessageBus.h"
 
 class CResource;
@@ -77,7 +76,6 @@ T& CGame::CreateInputController (Params&&... params)
     T* newInputController = new T (params...);
 
     CGame::m_inputController = static_cast<InputController*> (newInputController);
-    CGame::m_inputController->Initialize ();
 
     return *newInputController;
 }

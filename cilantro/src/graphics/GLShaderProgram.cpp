@@ -65,7 +65,7 @@ IShaderProgram& CGLShaderProgram::SetUniformFloatv (const std::string& uniformNa
     GLuint location = GetUniformLocationId (uniformName);
     if (location != GL_INVALID_INDEX)
     {
-        glUniform1fv (location, count, uniformValue);
+        glUniform1fv (location, static_cast<GLsizei> (count), uniformValue);
     }
 
     return *this;
@@ -130,7 +130,7 @@ IShaderProgram& CGLShaderProgram::SetUniformMatrix3fv (const std::string& unifor
     GLuint location = GetUniformLocationId (uniformName);
     if (location != GL_INVALID_INDEX)
     {
-        glUniformMatrix3fv (location, count, GL_TRUE, uniformValue);
+        glUniformMatrix3fv (location, static_cast<GLsizei> (count), GL_TRUE, uniformValue);
     }
 
     return *this;
@@ -141,7 +141,7 @@ IShaderProgram& CGLShaderProgram::SetUniformMatrix4fv (const std::string& unifor
     GLuint location = GetUniformLocationId (uniformName);
     if (location != GL_INVALID_INDEX)
     {
-        glUniformMatrix4fv (location, count, GL_TRUE, uniformValue);
+        glUniformMatrix4fv (location, static_cast<GLsizei> (count), GL_TRUE, uniformValue);
     }
 
     return *this;

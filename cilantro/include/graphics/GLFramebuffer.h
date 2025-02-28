@@ -18,7 +18,7 @@ struct GLBuffers
 class CGLFramebuffer : public CFramebuffer
 {
 public:
-    CGLFramebuffer (uint32_t bufferWidth, uint32_t bufferHeight, size_t rgbTextureCount, size_t rgbaTextureCount, size_t depthBufferArrayLayerCount, bool depthStencilRenderbufferEnabled);
+    CGLFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayLayerCount, bool depthStencilRenderbufferEnabled);
     virtual ~CGLFramebuffer () {};
 
     ///////////////////////////////////////////////////////////////////////////
@@ -28,7 +28,7 @@ public:
 
     virtual void BindFramebuffer () const override;
     virtual void BindFramebufferColorTexturesAsColor () const override;
-    virtual void BindFramebufferDepthArrayTextureAsColor (size_t index) const override;
+    virtual void BindFramebufferDepthArrayTextureAsColor (unsigned int index) const override;
     virtual void BindFramebufferDepthArrayTextureAsDepth () const override;
     virtual void BindFramebufferRenderbuffer () const override;
 
@@ -36,12 +36,12 @@ public:
 
     virtual void BlitFramebuffer () const override {};
 
-    virtual void SetFramebufferResolution (uint32_t bufferWidth, uint32_t bufferHeight) override;
+    virtual void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight) override;
 
     ///////////////////////////////////////////////////////////////////////////
 
     GLuint virtual GetFramebufferRenderbufferGLId () const;
-    GLuint virtual GetFramebufferTextureGLId (size_t textureNumber) const;
+    GLuint virtual GetFramebufferTextureGLId (unsigned int textureNumber) const;
     GLuint virtual GetFramebufferGLId () const;
 
 protected:

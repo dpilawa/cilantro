@@ -6,6 +6,7 @@
 #include "system/HookProvider.h"
 #include "math/Vector2f.h"
 #include "math/Vector3f.h"
+#include <cstdint>
 
 class Material;
 
@@ -36,9 +37,9 @@ public:
     __EAPI Mesh& CalculateTangentsBitangents ();
 
     // get mesh counts
-    __EAPI unsigned int GetVertexCount () const;
-    __EAPI unsigned int GetFaceCount () const;
-    __EAPI unsigned int GetIndexCount () const;
+    __EAPI size_t GetVertexCount () const;
+    __EAPI size_t GetFaceCount () const;
+    __EAPI size_t GetIndexCount () const;
 
     // get raw data
     __EAPI float* GetVerticesData ();
@@ -46,33 +47,33 @@ public:
     __EAPI float* GetUVData ();
     __EAPI float* GetTangentData ();
     __EAPI float* GetBitangentData ();
-    __EAPI unsigned int* GetBoneIndicesData ();
+    __EAPI uint32_t* GetBoneIndicesData ();
     __EAPI float* GetBoneWeightsData ();
     __EAPI std::vector<handle_t>& GetMeshBones ();
 
     // get faces raw data
-    __EAPI unsigned int* GetFacesData ();
+    __EAPI uint32_t* GetFacesData ();
 
     // add vertices and primitives
     __EAPI Mesh& AddVertex (const Vector3f& vertex, const Vector2f& uv);
-    __EAPI Mesh& AddFace (unsigned int v1, unsigned int v2, unsigned int v3);
+    __EAPI Mesh& AddFace (size_t v1, size_t v2, size_t v3);
     __EAPI Mesh& AddNormal (const Vector3f& normal);
     __EAPI Mesh& AddTangentBitangent (const Vector3f& tangent, const Vector3f& bitangent);
-    __EAPI Mesh& AddVertexBoneInfluence (unsigned int v, float weight, handle_t boneHandle);
+    __EAPI Mesh& AddVertexBoneInfluence (size_t v, float weight, handle_t boneHandle);
 
 
 private:
-    unsigned int GetFaceVertexIndex (unsigned int face, unsigned int faceVertex) const;
+    uint32_t GetFaceVertexIndex (size_t face, unsigned int faceVertex) const;
 
-    Vector3f GetVertex (unsigned int index) const;
-    Vector2f GetUV (unsigned int index) const;
-    Vector3f GetNormal (unsigned int index) const;
-    Vector3f GetTangent (unsigned int index) const;
-    Vector3f GetBitangent (unsigned int index) const;
+    Vector3f GetVertex (size_t index) const;
+    Vector2f GetUV (size_t index) const;
+    Vector3f GetNormal (size_t index) const;
+    Vector3f GetTangent (size_t index) const;
+    Vector3f GetBitangent (size_t index) const;
 
-    Mesh& SetNormal (unsigned int index, const Vector3f& normal);
-    Mesh& SetTangent (unsigned int index, const Vector3f& tangent);
-    Mesh& SetBitangent (unsigned int index, const Vector3f& bitangent);
+    Mesh& SetNormal (size_t index, const Vector3f& normal);
+    Mesh& SetTangent (size_t index, const Vector3f& tangent);
+    Mesh& SetBitangent (size_t index, const Vector3f& bitangent);
 
     bool smoothNormals;
 
@@ -80,14 +81,14 @@ private:
     std::vector<handle_t> meshBones;
 
     std::vector<float> vertices;
-    std::vector<unsigned int> indices;
+    std::vector<uint32_t> indices;
     std::vector<float> normals;
     std::vector<float> uvs;
     std::vector<float> tangents;
     std::vector<float> bitangents;
 
-    std::vector<unsigned int> boneInfluenceCounts;
-    std::vector<unsigned int> boneInfluenceIndices;
+    std::vector<size_t> boneInfluenceCounts;
+    std::vector<uint32_t> boneInfluenceIndices;
     std::vector<float> boneInfluenceWeights;
 
 };
