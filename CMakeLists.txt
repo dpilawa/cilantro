@@ -35,6 +35,7 @@ endif()
 
 set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set (CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 add_subdirectory (ext/pybind11)
 add_subdirectory (ext/glfw)
