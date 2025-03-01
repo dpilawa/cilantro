@@ -18,6 +18,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y libwayland-dev libxkbcommon-dev xorg-dev
+        subo pip install Jinja2
 
     - name: Create Build Environment
       run: cmake -E make_directory ${{github.workspace}}/build
