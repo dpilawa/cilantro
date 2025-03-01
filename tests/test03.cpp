@@ -25,9 +25,9 @@ int main (int argc, char* argv[])
 {
     CGame::Initialize ();
 
-    CGameScene& gameScene = CGame::CreateGameScene<CGameScene> ("scene");
-    CGLFWRenderer& renderer = gameScene.CreateRenderer<CGLFWRenderer> (1920, 1080, true, true, "Test 03", false, true, true);
-    InputController& inputController = CGame::CreateInputController<GLFWInputController> ();
+    CGameScene& gameScene = CGame::Create<CGameScene> ("scene");
+    CGLFWRenderer& renderer = gameScene.Create<CGLFWRenderer> (1920, 1080, true, true, "Test 03", false, true, true);
+    InputController& inputController = CGame::Create<GLFWInputController> ();
 
     AssimpModelLoader modelLoader;
 
@@ -43,24 +43,24 @@ int main (int argc, char* argv[])
 
     modelLoader.Load ("scene", "assets/Drunk Idle.fbx");
 
-    gameScene.AddMaterial<PBRMaterial> ("floorMaterial").SetAlbedo (Vector3f (0.3f, 0.2f, 0.2f)).SetRoughness (0.1f).SetMetallic (0.6f);
+    gameScene.Add<PBRMaterial> ("floorMaterial").SetAlbedo (Vector3f (0.3f, 0.2f, 0.2f)).SetRoughness (0.1f).SetMetallic (0.6f);
 
     Mesh& floorMesh = CGame::GetResourceManager ().Create<Mesh> ("floorMesh");
     Primitives::GenerateCube (floorMesh);
-    MeshObject& floor = gameScene.AddGameObject<MeshObject> ("floor", "floorMesh", "floorMaterial");
+    MeshObject& floor = gameScene.Add<MeshObject> ("floor", "floorMesh", "floorMaterial");
     floor.GetLocalTransform ().Scale (1000.0f, 0.1f, 1000.0f).Translate (0.0f, -0.05f, 0.0f);
 
-    ControlledCamera& cam = gameScene.AddGameObject<ControlledCamera> ("camera", 60.0f, 10.0f, 600.0f, 5.0f, 0.1f);
+    ControlledCamera& cam = gameScene.Add<ControlledCamera> ("camera", 60.0f, 10.0f, 600.0f, 5.0f, 0.1f);
     cam.Initialize ();
     cam.GetLocalTransform ().Translate (0.0f, 100.0f, 250.0f);
     gameScene.SetActiveCamera ("camera");
 
-    PointLight& light = gameScene.AddGameObject<PointLight> ("light");
+    PointLight& light = gameScene.Add<PointLight> ("light");
     light.GetLocalTransform ().Translate (100.0f, 100.0f, 100.0f);
     light.SetColor (Vector3f (1.0f, 1.0f, 1.0f));
     light.SetEnabled (true);
 
-    DirectionalLight& light2 = gameScene.AddGameObject<DirectionalLight> ("light2");
+    DirectionalLight& light2 = gameScene.Add<DirectionalLight> ("light2");
     light2.GetLocalTransform ().Rotate (60.0f, 180.0f, 0.0f);
     light2.SetColor (Vector3f (1.0f, 1.0f, 1.0f));
     light2.SetEnabled (true);

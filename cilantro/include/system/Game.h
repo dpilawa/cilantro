@@ -28,13 +28,15 @@ public:
 
     // scene control
     template <typename T, typename ...Params> 
-    static T& CreateGameScene (Params&&... params);
+    static T& Create (Params&&... params)
+    requires (std::is_base_of_v<CGameScene,T>);
     static __EAPI CGameScene& GetCurrentGameScene ();
     static __EAPI void SetCurrentGameScene (const std::string sceneName);
 
     // input control
     template <typename T, typename ...Params>
-    static T& CreateInputController (Params&&... params);
+    static T& Create (Params&&... params)
+    requires (std::is_base_of_v<InputController,T>);
     static __EAPI InputController& GetInputController ();
 
     // message bus
@@ -55,9 +57,9 @@ private:
 };
 
 template <typename T, typename ...Params> 
-T& CGame::CreateGameScene (Params&&... params)
+T& CGame::Create (Params&&... params)
+    requires (std::is_base_of_v<CGameScene,T>)
 {
-    static_assert (std::is_base_of<CGameScene, T>::value, "Game scene object must inherit from CGameScene");
     T& gameScene = m_gameSceneManager.Create<T> (params...);
 
     if (m_currentGameScene == nullptr)
@@ -70,9 +72,9 @@ T& CGame::CreateGameScene (Params&&... params)
 
 
 template <typename T, typename ...Params> 
-T& CGame::CreateInputController (Params&&... params)
+T& CGame::Create (Params&&... params)
+    requires (std::is_base_of_v<InputController,T>)
 {
-    static_assert (std::is_base_of<InputController, T>::value, "Input controller object must inherit from InputController");
     T* newInputController = new T (params...);
 
     CGame::m_inputController = static_cast<InputController*> (newInputController);

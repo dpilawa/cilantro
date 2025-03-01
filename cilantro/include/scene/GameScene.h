@@ -33,12 +33,14 @@ public:
     // add GameObject to a scene
     // returns reference to that added object
     template <typename T, typename ...Params>
-    T& AddGameObject (const std::string& name, Params&&... params);
+    T& Add (const std::string& name, Params&&... params)
+    requires (std::is_base_of_v<GameObject,T>);
 
     // add material to the scene 
     // returns reference to that material
     template <typename T, typename ...Params>
-    T& AddMaterial (const std::string& name, Params&&... params);
+    T& Add (const std::string& name, Params&&... params)
+    requires (std::is_base_of_v<Material,T>);
 
     // return reference to map
     __EAPI CResourceManager<GameObject>& GetGameObjectManager ();
@@ -46,7 +48,8 @@ public:
 
     // renderer control
     template <typename T, typename ...Params> 
-    T& CreateRenderer (Params&&... params);
+    T& Create (Params&&... params)
+    requires (std::is_base_of_v<IRenderer,T>);
 
     __EAPI IRenderer* GetRenderer () const;
 
@@ -75,7 +78,8 @@ private:
 };
 
 template <typename T, typename ...Params>
-T& CGameScene::AddGameObject (const std::string& name, Params&&... params)
+T& CGameScene::Add (const std::string& name, Params&&... params)
+    requires (std::is_base_of_v<GameObject,T>)
 {
     T& gameObject = gameObjects.Create<T> (name, this, params...);
     handle_t handle = gameObject.GetHandle ();
@@ -96,7 +100,8 @@ T& CGameScene::AddGameObject (const std::string& name, Params&&... params)
 }
 
 template <typename T, typename ...Params>
-T& CGameScene::AddMaterial (const std::string& name, Params&&... params)
+T& CGameScene::Add (const std::string& name, Params&&... params)
+    requires (std::is_base_of_v<Material,T>)
 {
     T& material = materials.Create<T> (name, params...);
     handle_t handle = material.GetHandle ();
@@ -109,9 +114,9 @@ T& CGameScene::AddMaterial (const std::string& name, Params&&... params)
 }
 
 template <typename T, typename ...Params> 
-T& CGameScene::CreateRenderer (Params&&... params)
+T& CGameScene::Create (Params&&... params)
+    requires (std::is_base_of_v<IRenderer,T>)
 {
-    static_assert (std::is_base_of<IRenderer, T>::value, "Renderer object must inherit from Renderer");
     T* newRenderer = new T (this, params...);
 
     this->renderer = static_cast<IRenderer*> (newRenderer);

@@ -19,9 +19,9 @@ int main (int argc, char* argv [])
 {
     CGame::Initialize ();
 
-    CGameScene& gameScene = CGame::CreateGameScene<CGameScene> ("scene");
-    CGLFWRenderer& renderer = gameScene.CreateRenderer<CGLFWRenderer> (800, 600, true, false, "Test 04", false, true, true);
-    InputController& inputController = CGame::CreateInputController<GLFWInputController> ();
+    CGameScene& gameScene = CGame::Create<CGameScene> ("scene");
+    CGLFWRenderer& renderer = gameScene.Create<CGLFWRenderer> (800, 600, true, false, "Test 04", false, true, true);
+    InputController& inputController = CGame::Create<GLFWInputController> ();
 
     AssimpModelLoader modelLoader;
 
@@ -41,19 +41,19 @@ int main (int argc, char* argv [])
     inputController.CreateInputEvent ("mousemode", InputKey::KeySpace, InputTrigger::Release, {});
     inputController.BindInputEvent ("mousemode", [ & ]() { inputController.SetMouseGameMode (!inputController.IsGameMode ()); });
 
-    PBRMaterial& m = gameScene.AddMaterial<PBRMaterial> ("gunMaterial");
+    PBRMaterial& m = gameScene.Add<PBRMaterial> ("gunMaterial");
     m.SetAlbedo ("tAlbedo").SetNormal ("tNormal").SetMetallic ("tMetalness").SetRoughness ("tRoughness");
 
     MeshObject& gun = gameScene.GetGameObjectManager ().GetByName<MeshObject> ("Cerberus00_Fixed");
     gun.SetMaterial ("gunMaterial");
     gun.GetLocalTransform ().Rotate (0.0f, 0.0f, 135.0f);
 
-    ControlledCamera& cam = gameScene.AddGameObject<ControlledCamera> ("camera", 60.0f, 10.0f, 250.0f, 1.5f, 0.1f);
+    ControlledCamera& cam = gameScene.Add<ControlledCamera> ("camera", 60.0f, 10.0f, 250.0f, 1.5f, 0.1f);
     cam.Initialize ();
     cam.GetLocalTransform ().Translate (0.0f, 0.0f, 50.0f);
     gameScene.SetActiveCamera ("camera");
 
-    DirectionalLight& light = gameScene.AddGameObject<DirectionalLight> ("light");
+    DirectionalLight& light = gameScene.Add<DirectionalLight> ("light");
     light.GetLocalTransform ().Rotate (45.0f, -120.0f, 0.0f);
     light.SetColor (Vector3f (2.5f, 2.1f, 1.7f));
     light.SetEnabled (true);

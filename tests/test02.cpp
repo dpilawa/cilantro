@@ -22,9 +22,9 @@ int main (int argc, char* argv [])
 {
     CGame::Initialize ();
 
-    CGameScene& gameScene = CGame::CreateGameScene<CGameScene> ("scene");
-    CGLFWRenderer& renderer = gameScene.CreateRenderer<CGLFWRenderer> (960, 600, true, false, "Test 02", false, true, true);
-    InputController& inputController = CGame::CreateInputController<GLFWInputController> ();
+    CGameScene& gameScene = CGame::Create<CGameScene> ("scene");
+    CGLFWRenderer& renderer = gameScene.Create<CGLFWRenderer> (960, 600, true, false, "Test 02", false, true, true);
+    InputController& inputController = CGame::Create<GLFWInputController> ();
 
     renderer.AddRenderStage<CQuadRenderStage> ("screen").SetShaderProgram ("flatquad_shader").SetFramebufferEnabled (false).SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);
     renderer.GetRenderStageManager ().GetByName<IRenderStage> ("forward").SetMultisampleEnabled (true);
@@ -38,44 +38,44 @@ int main (int argc, char* argv [])
     CGame::GetResourceManager().Load<Texture> ("tMoon", "textures/2k_moon.jpg");
     CGame::GetResourceManager().Load<Texture> ("tSun", "textures/2k_sun.jpg");
 
-    gameScene.AddMaterial<PhongMaterial> ("mSun").SetEmissive ("tSun");
-    gameScene.AddMaterial<PhongMaterial> ("mEarth").SetDiffuse ("tEarthDiffuse").SetSpecular ("tEarthSpec").SetNormal("tEarthNormal").SetSpecularShininess (32.0f);
-    gameScene.AddMaterial<PhongMaterial> ("mMoon").SetDiffuse ("tMoon").SetSpecularShininess (1.0f).SetSpecular (Vector3f(0.2f, 0.2f, 0.2f));
+    gameScene.Add<PhongMaterial> ("mSun").SetEmissive ("tSun");
+    gameScene.Add<PhongMaterial> ("mEarth").SetDiffuse ("tEarthDiffuse").SetSpecular ("tEarthSpec").SetNormal("tEarthNormal").SetSpecularShininess (32.0f);
+    gameScene.Add<PhongMaterial> ("mMoon").SetDiffuse ("tMoon").SetSpecularShininess (1.0f).SetSpecular (Vector3f(0.2f, 0.2f, 0.2f));
 
-    PerspectiveCamera& cam = gameScene.AddGameObject<PerspectiveCamera> ("camera", 25.0f, 1.0f, 500.0f);
+    PerspectiveCamera& cam = gameScene.Add<PerspectiveCamera> ("camera", 25.0f, 1.0f, 500.0f);
     cam.GetLocalTransform ().Translate (0.0f, 0.0f, 160.0f);
     gameScene.SetActiveCamera ("camera");
 
     Mesh& sunMesh = CGame::GetResourceManager().Create<Mesh> ("sunMesh");
-    MeshObject& sun = gameScene.AddGameObject<MeshObject> ("sun", "sunMesh", "mSun");
+    MeshObject& sun = gameScene.Add<MeshObject> ("sun", "sunMesh", "mSun");
     Primitives::GenerateSphere (sunMesh, 8);
     sun.GetLocalTransform ().Scale (10.0f);
 
-    Orbiter& earthOrbit = gameScene.AddGameObject<Orbiter> ("earthOrbit", gameScene.GetGameObjectManager ().GetByName<GameObject> ("sun"), 1.0f, 23.5f, 365.256f, 50.0f, 0.0f);
+    Orbiter& earthOrbit = gameScene.Add<Orbiter> ("earthOrbit", gameScene.GetGameObjectManager ().GetByName<GameObject> ("sun"), 1.0f, 23.5f, 365.256f, 50.0f, 0.0f);
     Mesh& earthMesh = CGame::GetResourceManager().Create<Mesh> ("earthMesh").SetSmoothNormals (true);
-    MeshObject& earth = gameScene.AddGameObject<MeshObject> ("earth", "earthMesh", "mEarth");
+    MeshObject& earth = gameScene.Add<MeshObject> ("earth", "earthMesh", "mEarth");
     Primitives::GenerateSphere (earthMesh, 8);
     earth.SetParentObject ("earthOrbit");
     earth.GetLocalTransform ().Scale (3.0f);
 
-    Orbiter& moonOrbit = gameScene.AddGameObject<Orbiter> ("moonOrbit", gameScene.GetGameObjectManager ().GetByName<GameObject> ("earth"), 27.321f, -6.68f, 27.321f, 20.0f, -5.14f);
+    Orbiter& moonOrbit = gameScene.Add<Orbiter> ("moonOrbit", gameScene.GetGameObjectManager ().GetByName<GameObject> ("earth"), 27.321f, -6.68f, 27.321f, 20.0f, -5.14f);
     Mesh& moonMesh = CGame::GetResourceManager().Create<Mesh> ("moonMesh").SetSmoothNormals (true);
-    MeshObject& moon = gameScene.AddGameObject<MeshObject> ("moon", "moonMesh", "mMoon");
+    MeshObject& moon = gameScene.Add<MeshObject> ("moon", "moonMesh", "mMoon");
     Primitives::GenerateSphere (moonMesh, 8);
     moon.GetLocalTransform ().Scale (0.273f * 5.0f);
     moon.SetParentObject ("moonOrbit");
 
-    PointLight& sunLight = gameScene.AddGameObject<PointLight> ("sunLight");
+    PointLight& sunLight = gameScene.Add<PointLight> ("sunLight");
     sunLight.SetParentObject ("sun");
     sunLight.SetColor (Vector3f (1.1f, 1.0f, 1.0f)).SetEnabled (true);
 
-    SplinePath& path = gameScene.AddGameObject<SplinePath> ("path");
+    SplinePath& path = gameScene.Add<SplinePath> ("path");
     path.AddWaypoint({0.0f, 80.0f, 260.0f}, Mathf::EulerToQuaterion(Mathf::Deg2Rad ({-15.0f, 0.0f, 0.0f})));
     path.AddWaypoint({0.0f, 0.0f, 140.0f}, Mathf::EulerToQuaterion(Mathf::Deg2Rad ({0.0f, 0.0f, 0.0f})));
     path.SetStartTangent({0.0f, -2.0f, -1.0f});
     path.SetEndTangent({0.0f, 0.0f, -1.0f});
 
-    AnimationObject& animation = gameScene.AddGameObject<AnimationObject> ("animation");
+    AnimationObject& animation = gameScene.Add<AnimationObject> ("animation");
     animation.AddAnimationProperty<float> ("u", 0.0f, 
         [&](float u) 
         {
