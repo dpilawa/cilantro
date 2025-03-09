@@ -9,7 +9,6 @@ struct IShader
 {
     virtual ~IShader () {};
 
-    virtual void Load (const std::string& path) = 0;
     virtual void Compile () = 0;
 
     virtual void SetParameter (const std::string& parameter, const std::string& value) = 0;

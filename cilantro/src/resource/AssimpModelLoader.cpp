@@ -30,7 +30,7 @@ AssimpModelLoader::~AssimpModelLoader ()
 
 void AssimpModelLoader::Load (std::string sceneName, std::string path)
 {
-    const aiScene* scene = importer.ReadFile (path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_LimitBoneWeights);
+    const aiScene* scene = importer.ReadFile (CGame::GetPath() + "/" + path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_LimitBoneWeights);
     gameScene = &CGame::GetGameSceneManager ().GetByName<CGameScene> (sceneName);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) 

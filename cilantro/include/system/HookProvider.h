@@ -7,11 +7,11 @@
 
 // Class template to enable object hooks
 template<typename Key, typename... Params>
-class HookProvider
+class Hook
 {
 public:
-    HookProvider () = default;
-    ~HookProvider () = default;
+    Hook () = default;
+    ~Hook () = default;
 
     // Registers a new hook and subscribes a callback function
     void SubscribeHook (Key hook, std::function<void (Params... params)> function);
@@ -25,14 +25,14 @@ private:
 };
 
 template<typename Key, typename... Params>
-inline void HookProvider<Key, Params...>::SubscribeHook (Key hook, std::function<void (Params... params)> function)
+inline void Hook<Key, Params...>::SubscribeHook (Key hook, std::function<void (Params... params)> function)
 {
     // push new hook at the end of callbacks vector
     hooks[hook].push_back (function);
 }
 
 template<typename Key, typename... Params>
-inline void HookProvider<Key, Params...>::InvokeHook (Key hook, Params... params)
+inline void Hook<Key, Params...>::InvokeHook (Key hook, Params... params)
 {
     // invoke all registered callbacks of given hook
     for (auto&& callback : hooks[hook])

@@ -1,5 +1,6 @@
 #include "resource/Texture.h"
 #include "system/LogMessage.h"
+#include "system/Game.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -93,7 +94,7 @@ int Texture::GetChannels () const
 void Texture::Load (const std::string& path)
 {
     stbi_set_flip_vertically_on_load (true);
-    data = stbi_load (path.c_str (), &this->width, &this->height, &this->numChannels, STBI_default);
+    data = stbi_load ((CGame::GetPath() + "/" + path).c_str (), &this->width, &this->height, &this->numChannels, STBI_default);
 
     if (data == nullptr)
     {

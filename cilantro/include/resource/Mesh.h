@@ -18,7 +18,7 @@ struct Vector3Hash
     }
 };
 
-class Mesh : public CResource, public HookProvider<std::string>
+class Mesh : public CResource, public Hook<std::string>
 {
 
 public:

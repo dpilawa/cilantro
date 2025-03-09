@@ -4,6 +4,7 @@
 #include "cilantroengine.h"
 #include "resource/ResourceManager.h"
 #include "system/MessageBus.h"
+#include <string>
 
 class CResource;
 class CGameScene;
@@ -14,13 +15,17 @@ class CGame
 public:
 
     // initialize and deinitialize
-    static __EAPI void Initialize ();
+    static __EAPI void Initialize (std::string path);
     static __EAPI void Deinitialize ();
 
     // run a game loop
     static __EAPI void Run ();
     static __EAPI void Stop ();	
     static __EAPI void Step ();
+
+    // get global parameters
+    static __EAPI std::string GetPath ();
+    static __EAPI bool IsRunning ();
 
     // managers
     static __EAPI CResourceManager<CResource>& GetResourceManager ();
@@ -30,6 +35,7 @@ public:
     template <typename T, typename ...Params> 
     static T& Create (Params&&... params)
     requires (std::is_base_of_v<CGameScene,T>);
+    
     static __EAPI CGameScene& GetCurrentGameScene ();
     static __EAPI void SetCurrentGameScene (const std::string sceneName);
 
@@ -51,6 +57,7 @@ private:
     static __EAPI MessageBus* m_messageBus;
 
     // game state
+    static std::string m_path;
     static bool m_shouldStop;
     static bool m_isRunning;
 

@@ -1,8 +1,10 @@
 #include "graphics/Shader.h"
 #include "system/LogMessage.h"
+#include "system/Game.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <filesystem>
 
 CShader::CShader (const std::string& path, EShaderType shaderType) : CLoadableResource (path)
 {
@@ -12,12 +14,13 @@ CShader::CShader (const std::string& path, EShaderType shaderType) : CLoadableRe
 
 void CShader::Load (const std::string& path)
 {
-    std::ifstream f (path, std::ios::binary);
+    std::string absolutePath = CGame::GetPath() + "/" + path;
+    std::ifstream f (absolutePath, std::ios::binary);
     std::ostringstream ss;
    
     if (!f.is_open ())
     {
-        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to read shader file" << path;
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to read shader file" << absolutePath;
     }
 
     ss << f.rdbuf ();

@@ -173,7 +173,7 @@ void CRenderer::InitializeRenderStages ()
 {
     if (m_isShadowMapping == true)
     {
-        IRenderStage& shadow = this->AddRenderStage<CShadowMapRenderStage> ("shadow_map");
+        IRenderStage& shadow = this->Create<CShadowMapRenderStage> ("shadow_map");
         shadow.SetFaceCullingEnabled (true);
         shadow.SetFaceCullingMode (EFaceCullingFace::FACE_FRONT, EFaceCullingDirection::DIR_CCW);
         shadow.Initialize ();
@@ -182,7 +182,7 @@ void CRenderer::InitializeRenderStages ()
     if (m_isDeferredRendering == true)
     {
         // geometry stage
-        IRenderStage& baseDeferred = this->AddRenderStage<CDeferredGeometryRenderStage> ("deferred_geometry");
+        IRenderStage& baseDeferred = this->Create<CDeferredGeometryRenderStage> ("deferred_geometry");
         baseDeferred.SetDepthTestEnabled (true);
         baseDeferred.SetStencilTestEnabled (true);
         baseDeferred.SetClearColorOnFrameEnabled (true);
@@ -198,7 +198,7 @@ void CRenderer::InitializeRenderStages ()
     }
     else
     {
-        IRenderStage& baseForward = this->AddRenderStage<CForwardGeometryRenderStage> ("forward");
+        IRenderStage& baseForward = this->Create<CForwardGeometryRenderStage> ("forward");
         if (m_isShadowMapping == true)
         {
             baseForward.SetDepthArrayFramebufferLink (EPipelineLink::LINK_FIRST);

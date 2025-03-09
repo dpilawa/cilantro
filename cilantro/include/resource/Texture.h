@@ -26,7 +26,7 @@ public:
 
 private:
 
-    void Load (const std::string& path);
+    void Load (const std::string& path) override;
 
     std::uint8_t* data;
     int width;

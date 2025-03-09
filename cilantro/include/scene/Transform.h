@@ -8,7 +8,7 @@
 #include "math/Quaternion.h"
 #include <string>
 
-class Transform : public HookProvider<std::string>
+class Transform : public Hook<std::string>
 {
 public:
 

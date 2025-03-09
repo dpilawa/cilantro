@@ -11,6 +11,8 @@ public:
     __EAPI CLoadableResource (const std::string& path);
     virtual ~CLoadableResource () {};
 
+    virtual void Load (const std::string& path) = 0;
+
 protected:
     std::string path;
 };

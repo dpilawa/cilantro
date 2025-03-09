@@ -464,7 +464,7 @@ void CGLRenderer::Update (Material& material)
             // create and append new lighting stage
             m_lightingShaderStagesCount++;
             m_lightingShaders.insert (shaderProgramHandle);
-            CQuadRenderStage& p = AddRenderStage <CQuadRenderStage> ("deferred_lighting_" + shaderProgramName);
+            CQuadRenderStage& p = Create <CQuadRenderStage> ("deferred_lighting_" + shaderProgramName);
             p.SetShaderProgram (shaderProgramName);
             p.SetStencilTestEnabled (true).SetStencilTest (EStencilTestFunction::FUNCTION_EQUAL, static_cast<int> (shaderProgramHandle));
             p.SetClearColorOnFrameEnabled (true);
@@ -897,7 +897,7 @@ void CGLRenderer::InitializeShaderLibrary ()
     CGame::GetResourceManager ().Load<CGLShader> ("shadowmap_fragment_shader", "shaders/shadowmap.fs", EShaderType::FRAGMENT_SHADER);
 
     // PBR model (forward)
-    p = &AddShaderProgram<CGLShaderProgram> ("pbr_forward_shader");
+    p = &Create<CGLShaderProgram> ("pbr_forward_shader");
     p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("default_vertex_shader"));
     p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("pbr_forward_fragment_shader"));
     p->Link ();
@@ -925,7 +925,7 @@ void CGLRenderer::InitializeShaderLibrary ()
     CheckGLError (MSG_LOCATION);
 
     // PBR model (deferred, geometry pass)
-    p = &AddShaderProgram<CGLShaderProgram> ("pbr_deferred_geometrypass_shader");
+    p = &Create<CGLShaderProgram> ("pbr_deferred_geometrypass_shader");
     p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("default_vertex_shader"));
     p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("pbr_deferred_geometrypass_fragment_shader"));
     p->Link ();
@@ -948,7 +948,7 @@ void CGLRenderer::InitializeShaderLibrary ()
     CheckGLError (MSG_LOCATION);
 
     // PBR model (deferred, lighting pass)
-    p = &AddShaderProgram<CGLShaderProgram> ("pbr_deferred_lightingpass_shader");
+    p = &Create<CGLShaderProgram> ("pbr_deferred_lightingpass_shader");
     p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("flatquad_vertex_shader"));
     p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("pbr_deferred_lightingpass_fragment_shader"));
     p->Link ();
@@ -972,7 +972,7 @@ void CGLRenderer::InitializeShaderLibrary ()
     CheckGLError (MSG_LOCATION);
 
     // Blinn-Phong model (forward)
-    p = &AddShaderProgram<CGLShaderProgram> ("blinnphong_forward_shader");
+    p = &Create<CGLShaderProgram> ("blinnphong_forward_shader");
     p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("default_vertex_shader"));
     p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("blinnphong_forward_fragment_shader"));
     p->Link ();
@@ -999,7 +999,7 @@ void CGLRenderer::InitializeShaderLibrary ()
     CheckGLError (MSG_LOCATION);
     
     // Blinn-Phong model (deferred, geometry pass)
-    p = &AddShaderProgram<CGLShaderProgram> ("blinnphong_deferred_geometrypass_shader");
+    p = &Create<CGLShaderProgram> ("blinnphong_deferred_geometrypass_shader");
     p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("default_vertex_shader"));
     p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("blinnphong_deferred_geometrypass_fragment_shader"));
     p->Link ();
@@ -1021,7 +1021,7 @@ void CGLRenderer::InitializeShaderLibrary ()
     CheckGLError (MSG_LOCATION);
 
     // Blinn-Phong model (deferred, lighting pass)
-    p = &AddShaderProgram<CGLShaderProgram> ("blinnphong_deferred_lightingpass_shader");
+    p = &Create<CGLShaderProgram> ("blinnphong_deferred_lightingpass_shader");
     p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("flatquad_vertex_shader"));
     p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("blinnphong_deferred_lightingpass_fragment_shader"));
     p->Link ();
@@ -1045,7 +1045,7 @@ void CGLRenderer::InitializeShaderLibrary ()
     CheckGLError (MSG_LOCATION);
 
     // Screen quad rendering
-    p = &AddShaderProgram<CGLShaderProgram> ("flatquad_shader");
+    p = &Create<CGLShaderProgram> ("flatquad_shader");
     p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("flatquad_vertex_shader"));
     p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("flatquad_fragment_shader"));   
 #if (CILANTRO_GL_VERSION < 330)	
@@ -1060,7 +1060,7 @@ void CGLRenderer::InitializeShaderLibrary ()
     CheckGLError (MSG_LOCATION);
 
     // Post-processing HDR
-    p = &AddShaderProgram<CGLShaderProgram> ("post_hdr_shader");
+    p = &Create<CGLShaderProgram> ("post_hdr_shader");
     p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("flatquad_vertex_shader"));
     p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("post_hdr_fragment_shader"));
 #if (CILANTRO_GL_VERSION < 330)	
@@ -1075,7 +1075,7 @@ void CGLRenderer::InitializeShaderLibrary ()
     CheckGLError (MSG_LOCATION);
 
     // Post-processing gamma
-    p = &AddShaderProgram<CGLShaderProgram> ("post_gamma_shader");
+    p = &Create<CGLShaderProgram> ("post_gamma_shader");
     p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("flatquad_vertex_shader"));
     p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("post_gamma_fragment_shader"));   
 #if (CILANTRO_GL_VERSION < 330)	
@@ -1090,7 +1090,7 @@ void CGLRenderer::InitializeShaderLibrary ()
     CheckGLError (MSG_LOCATION);
 
     // Post-processing fxaa
-    p = &AddShaderProgram<CGLShaderProgram> ("post_fxaa_shader");
+    p = &Create<CGLShaderProgram> ("post_fxaa_shader");
     p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("flatquad_vertex_shader"));
     p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("post_fxaa_fragment_shader"));   
 #if (CILANTRO_GL_VERSION < 330)	
@@ -1105,7 +1105,7 @@ void CGLRenderer::InitializeShaderLibrary ()
     CheckGLError (MSG_LOCATION);
 
     // Shadow map (directional)
-    p = &AddShaderProgram<CGLShaderProgram> ("shadowmap_directional_shader");
+    p = &Create<CGLShaderProgram> ("shadowmap_directional_shader");
     p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("shadowmap_vertex_shader"));
     p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("shadowmap_directional_geometry_shader"));
     p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("shadowmap_fragment_shader"));

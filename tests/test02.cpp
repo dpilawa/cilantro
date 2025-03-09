@@ -15,18 +15,19 @@
 #include "math/Mathf.h"
 #include "system/Game.h"
 #include "system/Timer.h"
+#include <filesystem>
 
 #include "Orbiter.h"
 
 int main (int argc, char* argv [])
 {
-    CGame::Initialize ();
+    CGame::Initialize (std::filesystem::current_path ().string ());
 
     CGameScene& gameScene = CGame::Create<CGameScene> ("scene");
     CGLFWRenderer& renderer = gameScene.Create<CGLFWRenderer> (960, 600, true, false, "Test 02", false, true, true);
     InputController& inputController = CGame::Create<GLFWInputController> ();
 
-    renderer.AddRenderStage<CQuadRenderStage> ("screen").SetShaderProgram ("flatquad_shader").SetFramebufferEnabled (false).SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);
+    renderer.Create<CQuadRenderStage> ("screen").SetShaderProgram ("flatquad_shader").SetFramebufferEnabled (false).SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);
     renderer.GetRenderStageManager ().GetByName<IRenderStage> ("forward").SetMultisampleEnabled (true);
 
     inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});

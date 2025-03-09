@@ -43,10 +43,12 @@ public:
     ///////////////////////////////////////////////////////////////////////////
 
     template <typename T, typename ...Params>
-    T& AddRenderStage (const std::string& name, Params&&... params);
+    T& Create (const std::string& name, Params&&... params)
+    requires (std::is_base_of_v<IRenderStage,T>);
     
     template <typename T, typename ...Params>
-    T& AddShaderProgram (const std::string& name, Params&&... params);        
+    T& Create (const std::string& name, Params&&... params)
+    requires (std::is_base_of_v<IShaderProgram,T>);        
 
 protected:
     // game scene being rendered
@@ -85,7 +87,8 @@ private:
 };
 
 template <typename T, typename ...Params>
-T& CRenderer::AddRenderStage (const std::string& name, Params&&... params)
+T& CRenderer::Create (const std::string& name, Params&&... params)
+    requires (std::is_base_of_v<IRenderStage,T>)
 {
     T& renderStage = m_renderStageManager.Create<T> (name, params...);
     renderStage.m_renderer = this;
@@ -99,7 +102,8 @@ T& CRenderer::AddRenderStage (const std::string& name, Params&&... params)
 }
 
 template <typename T, typename ...Params>
-T& CRenderer::AddShaderProgram (const std::string& name, Params&&... params)
+T& CRenderer::Create (const std::string& name, Params&&... params)
+    requires (std::is_base_of_v<IShaderProgram,T>)
 {
     T& shaderProgram = m_shaderProgramManager.Create<T> (name, params...);
 

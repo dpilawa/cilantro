@@ -12,10 +12,14 @@ MessageBus* CGame::m_messageBus;
 
 bool CGame::m_shouldStop;
 bool CGame::m_isRunning;
+std::string CGame::m_path;
 
-void CGame::Initialize ()
+void CGame::Initialize (std::string path)
 {
     LogMessage () << "Engine starting";
+
+    // set path
+    m_path = path;
 
     // set flags
     m_shouldStop = false;
@@ -107,5 +111,12 @@ void CGame::Step ()
     m_inputController->OnFrame ();
 }
 
+std::string CGame::GetPath ()
+{
+    return m_path;
+}
 
-
+bool CGame::IsRunning ()
+{
+    return m_isRunning;
+}
