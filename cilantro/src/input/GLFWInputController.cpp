@@ -6,59 +6,59 @@
 
 namespace cilantro {
 
-std::unordered_map<InputKey, int, InputKeyHash> GLFWInputController::glfwKeyMap {
-        {InputKey::KeyA, GLFW_KEY_A},
-        {InputKey::KeyB, GLFW_KEY_B},
-        {InputKey::KeyC, GLFW_KEY_C},
-        {InputKey::KeyD, GLFW_KEY_D},
-        {InputKey::KeyE, GLFW_KEY_E},
-        {InputKey::KeyF, GLFW_KEY_F},
-        {InputKey::KeyG, GLFW_KEY_G},
-        {InputKey::KeyH, GLFW_KEY_H},
-        {InputKey::KeyI, GLFW_KEY_I},
-        {InputKey::KeyJ, GLFW_KEY_J},
-        {InputKey::KeyK, GLFW_KEY_K},
-        {InputKey::KeyL, GLFW_KEY_L},
-        {InputKey::KeyM, GLFW_KEY_M},
-        {InputKey::KeyN, GLFW_KEY_N},
-        {InputKey::KeyO, GLFW_KEY_O},
-        {InputKey::KeyP, GLFW_KEY_P},
-        {InputKey::KeyQ, GLFW_KEY_Q},
-        {InputKey::KeyR, GLFW_KEY_R},
-        {InputKey::KeyS, GLFW_KEY_S},
-        {InputKey::KeyT, GLFW_KEY_T},
-        {InputKey::KeyU, GLFW_KEY_U},
-        {InputKey::KeyV, GLFW_KEY_V},
-        {InputKey::KeyW, GLFW_KEY_W},
-        {InputKey::KeyX, GLFW_KEY_X},
-        {InputKey::KeyY, GLFW_KEY_Y},
-        {InputKey::KeyZ, GLFW_KEY_Z},
-        {InputKey::Key1, GLFW_KEY_1},
-        {InputKey::Key2, GLFW_KEY_2},
-        {InputKey::Key3, GLFW_KEY_3},
-        {InputKey::Key4, GLFW_KEY_4},
-        {InputKey::Key5, GLFW_KEY_5},
-        {InputKey::Key6, GLFW_KEY_6},
-        {InputKey::Key7, GLFW_KEY_7},
-        {InputKey::Key8, GLFW_KEY_8},
-        {InputKey::Key9, GLFW_KEY_9},
-        {InputKey::Key0,  GLFW_KEY_0},
-        {InputKey::KeyUp, GLFW_KEY_UP},
-        {InputKey::KeyDown, GLFW_KEY_DOWN},
-        {InputKey::KeyLeft, GLFW_KEY_LEFT},
-        {InputKey::KeyRight, GLFW_KEY_RIGHT},
-        {InputKey::KeyEsc, GLFW_KEY_ESCAPE},
-        {InputKey::KeyEnter, GLFW_KEY_ENTER},
-        {InputKey::KeySpace, GLFW_KEY_SPACE},
-        {InputKey::KeyLeftControl, GLFW_KEY_LEFT_CONTROL},
-        {InputKey::KeyRightControl, GLFW_KEY_RIGHT_CONTROL},
-        {InputKey::KeyLeftShift, GLFW_KEY_LEFT_SHIFT},
-        {InputKey::KeyRightShift, GLFW_KEY_RIGHT_SHIFT},
-        {InputKey::KeyLeftAlt, GLFW_KEY_LEFT_ALT},
-        {InputKey::KeyRightAlt,  GLFW_KEY_RIGHT_ALT},
-        {InputKey::MouseLeft, GLFW_MOUSE_BUTTON_LEFT},
-        {InputKey::MouseMiddle, GLFW_MOUSE_BUTTON_MIDDLE},
-        {InputKey::MouseRight, GLFW_MOUSE_BUTTON_RIGHT}
+std::unordered_map<EInputKey, int, InputKeyHash> GLFWInputController::glfwKeyMap {
+        {EInputKey::KeyA, GLFW_KEY_A},
+        {EInputKey::KeyB, GLFW_KEY_B},
+        {EInputKey::KeyC, GLFW_KEY_C},
+        {EInputKey::KeyD, GLFW_KEY_D},
+        {EInputKey::KeyE, GLFW_KEY_E},
+        {EInputKey::KeyF, GLFW_KEY_F},
+        {EInputKey::KeyG, GLFW_KEY_G},
+        {EInputKey::KeyH, GLFW_KEY_H},
+        {EInputKey::KeyI, GLFW_KEY_I},
+        {EInputKey::KeyJ, GLFW_KEY_J},
+        {EInputKey::KeyK, GLFW_KEY_K},
+        {EInputKey::KeyL, GLFW_KEY_L},
+        {EInputKey::KeyM, GLFW_KEY_M},
+        {EInputKey::KeyN, GLFW_KEY_N},
+        {EInputKey::KeyO, GLFW_KEY_O},
+        {EInputKey::KeyP, GLFW_KEY_P},
+        {EInputKey::KeyQ, GLFW_KEY_Q},
+        {EInputKey::KeyR, GLFW_KEY_R},
+        {EInputKey::KeyS, GLFW_KEY_S},
+        {EInputKey::KeyT, GLFW_KEY_T},
+        {EInputKey::KeyU, GLFW_KEY_U},
+        {EInputKey::KeyV, GLFW_KEY_V},
+        {EInputKey::KeyW, GLFW_KEY_W},
+        {EInputKey::KeyX, GLFW_KEY_X},
+        {EInputKey::KeyY, GLFW_KEY_Y},
+        {EInputKey::KeyZ, GLFW_KEY_Z},
+        {EInputKey::Key1, GLFW_KEY_1},
+        {EInputKey::Key2, GLFW_KEY_2},
+        {EInputKey::Key3, GLFW_KEY_3},
+        {EInputKey::Key4, GLFW_KEY_4},
+        {EInputKey::Key5, GLFW_KEY_5},
+        {EInputKey::Key6, GLFW_KEY_6},
+        {EInputKey::Key7, GLFW_KEY_7},
+        {EInputKey::Key8, GLFW_KEY_8},
+        {EInputKey::Key9, GLFW_KEY_9},
+        {EInputKey::Key0,  GLFW_KEY_0},
+        {EInputKey::KeyUp, GLFW_KEY_UP},
+        {EInputKey::KeyDown, GLFW_KEY_DOWN},
+        {EInputKey::KeyLeft, GLFW_KEY_LEFT},
+        {EInputKey::KeyRight, GLFW_KEY_RIGHT},
+        {EInputKey::KeyEsc, GLFW_KEY_ESCAPE},
+        {EInputKey::KeyEnter, GLFW_KEY_ENTER},
+        {EInputKey::KeySpace, GLFW_KEY_SPACE},
+        {EInputKey::KeyLeftControl, GLFW_KEY_LEFT_CONTROL},
+        {EInputKey::KeyRightControl, GLFW_KEY_RIGHT_CONTROL},
+        {EInputKey::KeyLeftShift, GLFW_KEY_LEFT_SHIFT},
+        {EInputKey::KeyRightShift, GLFW_KEY_RIGHT_SHIFT},
+        {EInputKey::KeyLeftAlt, GLFW_KEY_LEFT_ALT},
+        {EInputKey::KeyRightAlt,  GLFW_KEY_RIGHT_ALT},
+        {EInputKey::MouseLeft, GLFW_MOUSE_BUTTON_LEFT},
+        {EInputKey::MouseMiddle, GLFW_MOUSE_BUTTON_MIDDLE},
+        {EInputKey::MouseRight, GLFW_MOUSE_BUTTON_RIGHT}
 };
 
 GLFWInputController::GLFWInputController () : InputController ()
@@ -84,7 +84,7 @@ void GLFWInputController::OnFrame ()
     InputController::OnFrame ();
 }
 
-Input<bool>* GLFWInputController::CreateInputEvent (const std::string& name, InputKey key, InputTrigger trigger, std::set<InputModifier> modifiers)
+Input<bool>* GLFWInputController::CreateInputEvent (const std::string& name, EInputKey key, EInputTrigger trigger, std::set<EInputModifier> modifiers)
 {
     Input<bool>* inputevent = InputController::CreateInputEvent (name);
 
@@ -98,7 +98,7 @@ Input<bool>* GLFWInputController::CreateInputEvent (const std::string& name, Inp
 }
 
 
-Input<float>* GLFWInputController::CreateInputAxis (const std::string& name, InputKey key, std::set<InputModifier> modifiers, float scale) 
+Input<float>* GLFWInputController::CreateInputAxis (const std::string& name, EInputKey key, std::set<EInputModifier> modifiers, float scale) 
 {
     Input<float>* inputaxis = InputController::CreateInputAxis (name, scale);
 
@@ -111,7 +111,7 @@ Input<float>* GLFWInputController::CreateInputAxis (const std::string& name, Inp
     return inputaxis;
 }
 
-Input<float>* GLFWInputController::CreateInputAxis (const std::string& name, InputAxis axis, float scale) 
+Input<float>* GLFWInputController::CreateInputAxis (const std::string& name, EInputAxis axis, float scale) 
 {
     Input<float>* inputaxis = InputController::CreateInputAxis (name, scale);
 
@@ -119,19 +119,19 @@ Input<float>* GLFWInputController::CreateInputAxis (const std::string& name, Inp
     {
         switch (axis)
         {
-            case InputAxis::MouseX :
+            case EInputAxis::MouseX :
                 axisMouseX = inputaxis;
                 break;
 
-            case InputAxis::MouseY :
+            case EInputAxis::MouseY :
                 axisMouseY = inputaxis;
                 break;
 
-            case InputAxis::MouseScrollX :
+            case EInputAxis::MouseScrollX :
                 axisMouseScrollX = inputaxis;
                 break;
 
-            case InputAxis::MouseScrollY :
+            case EInputAxis::MouseScrollY :
                 axisMouseScrollY = inputaxis;
                 break;
 
@@ -207,7 +207,7 @@ void GLFWInputController::Deinitialize ()
     glfwSetKeyCallback (window, NULL);
 }
 
-int GLFWInputController::GetGLFWKey (InputKey key)
+int GLFWInputController::GetGLFWKey (EInputKey key)
 {
     auto find = glfwKeyMap.find (key);
     if (find == glfwKeyMap.end())
@@ -221,12 +221,12 @@ int GLFWInputController::GetGLFWKey (InputKey key)
     }
 };
 
-int GLFWInputController::GetGLFWTrigger (InputTrigger trigger)
+int GLFWInputController::GetGLFWTrigger (EInputTrigger trigger)
 {
-    return trigger == InputTrigger::Press ? GLFW_PRESS : GLFW_RELEASE;
+    return trigger == EInputTrigger::Press ? GLFW_PRESS : GLFW_RELEASE;
 };
 
-int GLFWInputController::GetGLFWModifiers (std::set<InputModifier> modifiers)
+int GLFWInputController::GetGLFWModifiers (std::set<EInputModifier> modifiers)
 {
     int mods = 0;
 
@@ -234,11 +234,11 @@ int GLFWInputController::GetGLFWModifiers (std::set<InputModifier> modifiers)
     {
         switch (m) 
         {
-            case InputModifier::Alt : mods |= GLFW_MOD_ALT;
+            case EInputModifier::Alt : mods |= GLFW_MOD_ALT;
                 break;
-            case InputModifier::Control : mods |= GLFW_MOD_CONTROL;
+            case EInputModifier::Control : mods |= GLFW_MOD_CONTROL;
                 break;
-            case InputModifier::Shift : mods |= GLFW_MOD_SHIFT;
+            case EInputModifier::Shift : mods |= GLFW_MOD_SHIFT;
                 break;
             default :
                 break;

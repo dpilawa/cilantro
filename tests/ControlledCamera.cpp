@@ -17,14 +17,14 @@ void ControlledCamera::Initialize ()
 {
     GLFWInputController& c = dynamic_cast<GLFWInputController&> (Game::GetInputController ());
 
-    c.CreateInputAxis ("moveforward", InputKey::KeyW, {}, 1.0f);
-    c.CreateInputAxis ("moveforward", InputKey::KeyS, {}, -1.0f);	
+    c.CreateInputAxis ("moveforward", EInputKey::KeyW, {}, 1.0f);
+    c.CreateInputAxis ("moveforward", EInputKey::KeyS, {}, -1.0f);	
 
-    c.CreateInputAxis ("moveright", InputKey::KeyD, {}, 1.0f);
-    c.CreateInputAxis ("moveright", InputKey::KeyA, {}, -1.0f);
+    c.CreateInputAxis ("moveright", EInputKey::KeyD, {}, 1.0f);
+    c.CreateInputAxis ("moveright", EInputKey::KeyA, {}, -1.0f);
 
-    c.CreateInputAxis ("camerapitch", InputAxis::MouseY, 1.0f);
-    c.CreateInputAxis ("camerayaw", InputAxis::MouseX, 1.0f);
+    c.CreateInputAxis ("camerapitch", EInputAxis::MouseY, 1.0f);
+    c.CreateInputAxis ("camerayaw", EInputAxis::MouseX, 1.0f);
 
     c.BindInputAxis ("moveright", [&](float a) { MoveRight (a); });
     c.BindInputAxis ("moveforward", [&](float a) { MoveForward (a); });

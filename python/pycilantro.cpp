@@ -77,12 +77,12 @@ PYBIND11_MODULE(pycilantro, m) {
         .value("LINK_CURRENT", c::EPipelineLink::LINK_CURRENT)
         .value("LINK_LAST", c::EPipelineLink::LINK_LAST);
  
-    py::enum_<c::InputKey>(m, "InputKey")
-        .value("KeyEsc", c::InputKey::KeyEsc)
-        .value("KeySpace", c::InputKey::KeySpace);
+    py::enum_<c::EInputKey>(m, "InputKey")
+        .value("KeyEsc", c::EInputKey::KeyEsc)
+        .value("KeySpace", c::EInputKey::KeySpace);
 
-    py::enum_<c::InputTrigger>(m, "InputTrigger")
-        .value("Press", c::InputTrigger::Press)
-        .value("Release", c::InputTrigger::Release);
+    py::enum_<c::EInputTrigger>(m, "InputTrigger")
+        .value("Press", c::EInputTrigger::Press)
+        .value("Release", c::EInputTrigger::Release);
 
 }

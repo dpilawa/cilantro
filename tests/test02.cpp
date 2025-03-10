@@ -32,7 +32,7 @@ int main (int argc, char* argv [])
     renderer.Create<QuadRenderStage> ("screen").SetShaderProgram ("flatquad_shader").SetFramebufferEnabled (false).SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);
     renderer.GetRenderStageManager ().GetByName<IRenderStage> ("forward").SetMultisampleEnabled (true);
 
-    inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
+    inputController.CreateInputEvent ("exit", EInputKey::KeyEsc, EInputTrigger::Press, {});
     inputController.BindInputEvent ("exit", [ & ]() { Game::Stop (); });
 
     Game::GetResourceManager().Load<Texture> ("tEarthDiffuse", "textures/2k_earth_daymap.jpg");

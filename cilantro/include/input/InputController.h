@@ -24,11 +24,11 @@ public:
     virtual void OnFrame ();
 
     virtual Input<bool>* CreateInputEvent (const std::string& name);
-    virtual Input<bool>* CreateInputEvent (const std::string& name, InputKey key, InputTrigger trigger, std::set<InputModifier> modifiers) = 0;
+    virtual Input<bool>* CreateInputEvent (const std::string& name, EInputKey key, EInputTrigger trigger, std::set<EInputModifier> modifiers) = 0;
 
     virtual Input<float>*  CreateInputAxis (const std::string& name, float scale);
-    virtual Input<float>*  CreateInputAxis (const std::string& name, InputKey key, std::set<InputModifier> modifiers, float scale) = 0;
-    virtual Input<float>*  CreateInputAxis (const std::string& name, InputAxis value, float scale) = 0;
+    virtual Input<float>*  CreateInputAxis (const std::string& name, EInputKey key, std::set<EInputModifier> modifiers, float scale) = 0;
+    virtual Input<float>*  CreateInputAxis (const std::string& name, EInputAxis value, float scale) = 0;
 
     __EAPI void BindInputEvent (const std::string& name, std::function<void ()>);
     __EAPI void BindInputAxis (const std::string& name, std::function<void (float)>);

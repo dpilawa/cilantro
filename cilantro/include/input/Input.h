@@ -5,7 +5,7 @@
 
 namespace cilantro {
 
-enum class InputKey: unsigned 
+enum class EInputKey: unsigned 
 {
     /* keyboard events */
     KeyA,
@@ -63,7 +63,7 @@ enum class InputKey: unsigned
     MouseRight
 };
 
-enum class InputAxis : unsigned
+enum class EInputAxis : unsigned
 {
     /* mouse axes */
     MouseX,
@@ -73,13 +73,13 @@ enum class InputAxis : unsigned
     MouseScrollY
 };
 
-enum class InputTrigger : unsigned 
+enum class EInputTrigger : unsigned 
 {
     Press,
     Release
 };
 
-enum class InputModifier : unsigned
+enum class EInputModifier : unsigned
 {
     Control,
     Alt,

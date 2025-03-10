@@ -31,7 +31,7 @@ struct PairHash
 
 struct InputKeyHash
 {
-    std::size_t operator() (const InputKey& k) const noexcept
+    std::size_t operator() (const EInputKey& k) const noexcept
     {
         return static_cast<std::size_t>(k);
     }
@@ -45,9 +45,9 @@ public:
 
     __EAPI void OnFrame ();
 
-    __EAPI Input<bool>* CreateInputEvent (const std::string& name, InputKey key, InputTrigger trigger, std::set<InputModifier> modifiers); 
-    __EAPI Input<float>* CreateInputAxis (const std::string& name, InputKey key, std::set<InputModifier> modifiers, float scale);
-    __EAPI Input<float>* CreateInputAxis (const std::string& name, InputAxis axis, float scale);
+    __EAPI Input<bool>* CreateInputEvent (const std::string& name, EInputKey key, EInputTrigger trigger, std::set<EInputModifier> modifiers); 
+    __EAPI Input<float>* CreateInputAxis (const std::string& name, EInputKey key, std::set<EInputModifier> modifiers, float scale);
+    __EAPI Input<float>* CreateInputAxis (const std::string& name, EInputAxis axis, float scale);
 
     __EAPI void SetMouseGameMode(bool value);
 
@@ -56,9 +56,9 @@ private:
     void Initialize ();
     void Deinitialize ();
 
-    int GetGLFWKey (InputKey key);
-    int GetGLFWTrigger (InputTrigger trigger);
-    int GetGLFWModifiers (std::set<InputModifier> modifiers);
+    int GetGLFWKey (EInputKey key);
+    int GetGLFWTrigger (EInputTrigger trigger);
+    int GetGLFWModifiers (std::set<EInputModifier> modifiers);
 
     void KeyCallback (int key, int scancode, int action, int mods);
     void MouseCursorCallback (double xPos, double yPos);      
@@ -77,7 +77,7 @@ private:
     std::unordered_map<std::tuple<int, int, int>, Input<bool>*, TupleHash> glfwKeyEventMap;
     std::unordered_map<std::pair<int, int>, Input<float>*, PairHash> glfwKeyAxisMap;
 
-    static std::unordered_map<InputKey, int, InputKeyHash> glfwKeyMap;
+    static std::unordered_map<EInputKey, int, InputKeyHash> glfwKeyMap;
 
 };
 

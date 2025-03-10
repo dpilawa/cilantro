@@ -38,10 +38,10 @@ int main (int argc, char* argv [])
     Game::GetResourceManager ().Load<Texture> ("tMetalness", "assets/Textures/Cerberus_M.tga");
     Game::GetResourceManager ().Load<Texture> ("tRoughness", "assets/Textures/Cerberus_R.tga");
   
-    inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
+    inputController.CreateInputEvent ("exit", EInputKey::KeyEsc, EInputTrigger::Press, {});
     inputController.BindInputEvent ("exit", [ & ]() { Game::Stop (); });
 
-    inputController.CreateInputEvent ("mousemode", InputKey::KeySpace, InputTrigger::Release, {});
+    inputController.CreateInputEvent ("mousemode", EInputKey::KeySpace, EInputTrigger::Release, {});
     inputController.BindInputEvent ("mousemode", [ & ]() { inputController.SetMouseGameMode (!inputController.IsGameMode ()); });
 
     PBRMaterial& m = gameScene.Add<PBRMaterial> ("gunMaterial");
