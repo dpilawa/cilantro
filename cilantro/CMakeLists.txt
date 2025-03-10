@@ -14,14 +14,6 @@ add_compile_definitions(CILANTRO_GLES_VERSION="${CILANTRO_GLES_VERSION}")
 add_compile_definitions(CILANTRO_GLES_VERSION_MAJOR=${CILANTRO_GLES_VERSION_MAJOR})
 add_compile_definitions(CILANTRO_GLES_VERSION_MINOR=${CILANTRO_GLES_VERSION_MINOR})
 
-if(CILANTRO_BUILD_DLL)
-    add_compile_definitions(CILANTRO_BUILDING_DLL)
-endif()
-
-if(CILANTRO_BUILD_GLES)
-    add_compile_definitions(CILANTRO_BUILDING_GLES)
-endif()
-
 if(CILANTRO_WITH_GLFW)
     set(CILANTRO_FILES ${CILANTRO_FILES}
         include/graphics/GLFWRenderer.h
@@ -188,7 +180,16 @@ shaders/shadowmap.vs
 )
 
 add_library(cilantro SHARED ${CILANTRO_FILES})
-target_link_libraries (cilantro glfw glad assimp)
+
+if(CILANTRO_BUILD_DLL)
+    target_compile_definitions(cilantro PRIVATE CILANTRO_BUILDING_DLL)
+endif()
+
+if(CILANTRO_BUILD_GLES)
+    target_compile_definitions(cilantro PRIVATE CILANTRO_BUILDING_GLES)
+endif()
+
+target_link_libraries (cilantro PRIVATE glfw glad assimp)
 
 if (DEFINED EMSCRIPTEN)
 set_target_properties(cilantro
