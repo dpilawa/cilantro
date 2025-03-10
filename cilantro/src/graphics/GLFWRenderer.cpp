@@ -5,6 +5,8 @@
 #include "system/Game.h"
 #include "system/LogMessage.h"
 
+namespace cilantro {
+
 CGLFWRenderer::CGLFWRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled, std::string windowCaption, bool fullscreen, bool resizable, bool vSync) 
     : CGLRenderer (gameScene, width, height, shadowMappingEnabled, deferredRenderingEnabled)
     , m_windowCaption (windowCaption)
@@ -165,3 +167,5 @@ void CGLFWRenderer::RenderFrame ()
         CGame::Stop ();
     }
 }
+
+} // namespace cilantro

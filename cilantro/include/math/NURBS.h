@@ -5,6 +5,8 @@
 #include "math/BSpline.h"
 #include <vector>
 
+namespace cilantro {
+
 template <typename T, int d>
 class NURBS : public BSpline<T, d>
 {
@@ -32,5 +34,7 @@ __EAPI T EvaluateCurvePoint (unsigned int degree, const std::vector<T>& controlP
 
 template <typename T>
 __EAPI T EvaluateCurveDerivative (unsigned int degree, const std::vector<T>& controlPoints, const std::vector<float>& knots, const std::vector<float>& weights, float u);
+
+} // namespace cilantro
 
 #endif

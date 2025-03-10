@@ -4,6 +4,8 @@
 #include <cmath>
 #include <limits>
 
+namespace cilantro {
+
 template <int n> class GaussLegendreIntegrator;
 
 template <int n>
@@ -70,3 +72,6 @@ std::tuple<float, float> GaussLegendreIntegrator<n>::PolynomialEvaluate (float x
 
 // template instantiations
 template class GaussLegendreIntegrator<INTEGRATOR_DEGREE>;
+
+
+} // namespace cilantro

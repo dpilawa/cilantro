@@ -26,6 +26,8 @@
 #include <iostream>
 #include <filesystem>
 
+using namespace cilantro;
+
 int main (int argc, char* argv [])
 {
     CGame::Initialize (std::filesystem::current_path ().string ());

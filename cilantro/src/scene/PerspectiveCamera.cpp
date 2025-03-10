@@ -4,6 +4,9 @@
 #include "math/Matrix4f.h"
 #include "math/Mathf.h"
 
+namespace cilantro
+{
+
 PerspectiveCamera::PerspectiveCamera (CGameScene* gameScene, float fov, float near, float far) :
     Camera (gameScene),
     cameraFOV (fov), nearPlane (near), farPlane (far)
@@ -19,5 +22,5 @@ Matrix4f PerspectiveCamera::GetProjectionMatrix (unsigned int xRes, unsigned int
     return Mathf::GenPerspectiveProjectionMatrix (float (xRes) / float (yRes), Mathf::Deg2Rad (cameraFOV), nearPlane, farPlane);
 }
 
-
+} // namespace cilantro
 

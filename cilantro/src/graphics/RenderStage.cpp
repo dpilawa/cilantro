@@ -3,6 +3,8 @@
 #include "graphics/IFramebuffer.h"
 #include "math/Vector4f.h"
 
+namespace cilantro {
+
 CRenderStage::CRenderStage ()
     
     : m_isMultisampleEnabled (false)
@@ -371,3 +373,5 @@ IRenderStage& CRenderStage::SetOutputFramebufferLink (EPipelineLink link)
 
     return *this;
 }
+
+} // namespace cilantro

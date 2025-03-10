@@ -8,6 +8,8 @@
 #include <typeindex>
 #include "system/Message.h"
 
+namespace cilantro {
+
 class MessageBus 
 {
 public:
@@ -45,5 +47,7 @@ private:
     std::unordered_map <std::type_index, std::vector <std::function <void (const std::shared_ptr<Message>&)>>> subscribers;
 
 };
+
+} // namespace cilantro
 
 #endif

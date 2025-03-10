@@ -5,6 +5,8 @@
 #include "scene/Camera.h"
 #include "math/Matrix4f.h"
 
+namespace cilantro {
+
 class PerspectiveCamera : public Camera
 {
 public:
@@ -19,6 +21,8 @@ private:
     float nearPlane;
     float farPlane;
 };
+
+} // namespace cilantro
 
 #endif
 

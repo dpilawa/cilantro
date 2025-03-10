@@ -17,6 +17,8 @@
 #include "scene/Light.h"
 #include <string>
 
+namespace cilantro {
+
 // This class represents a game world (a.k.a scene or level)
 // It contains all visible and invisible objects in a game
 class CGameScene : public CResource
@@ -124,6 +126,8 @@ T& CGameScene::Create (Params&&... params)
 
     return *newRenderer;
 }
+
+} // namespace cilantro
 
 #endif
 

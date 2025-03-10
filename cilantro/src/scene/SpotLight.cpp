@@ -3,6 +3,8 @@
 #include "graphics/Renderer.h"
 #include "system/Game.h"
 
+namespace cilantro {
+
 SpotLight::SpotLight (CGameScene* gameScene) : PointLight (gameScene)
 {
     innerCutoff = 45.0f;
@@ -44,3 +46,5 @@ void SpotLight::OnUpdate (IRenderer& renderer)
     Light::OnUpdate (renderer);
     renderer.Update (*this);
 }
+
+} // namespace cilantro

@@ -1,6 +1,8 @@
 #include "scene/LinearPath.h"
 #include "math/Mathf.h"
 
+namespace cilantro {
+
 LinearPath::LinearPath (CGameScene* gameScene) : Path (gameScene)
 {
 
@@ -60,3 +62,5 @@ void LinearPath::UpdatePathAtWaypoint (std::size_t wIndex)
         }
     }
 }
+
+} // namespace cilantro

@@ -4,6 +4,8 @@
 #include <cstddef>
 #include <cstdint>
 
+namespace cilantro {
+
 struct IFramebuffer 
 {
     virtual ~IFramebuffer () {};
@@ -34,3 +36,5 @@ struct IFramebuffer
 
     virtual void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight) = 0;
 };
+
+} // namespace cilantro

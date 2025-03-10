@@ -1,6 +1,9 @@
 #include "cilantroengine.h"
 #include "system/Timer.h"
 
+namespace cilantro
+{
+
 Timer::Timer ()
 {
     ResetSplitTime ();
@@ -42,3 +45,5 @@ void Timer::Tock ()
     timeOfFrameEnd = std::chrono::high_resolution_clock::now ();
     frameRenderTime = timeOfFrameEnd - timeOfFrameStart;
 }
+
+} // namespace cilantro

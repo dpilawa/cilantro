@@ -7,6 +7,8 @@
 #include <string>
 #include <cstdint>
 
+namespace cilantro {
+
 class Texture : public CLoadableResource
 {
 public:
@@ -34,5 +36,7 @@ private:
     int numChannels;
 
 };
+
+} // namespace cilantro
 
 #endif

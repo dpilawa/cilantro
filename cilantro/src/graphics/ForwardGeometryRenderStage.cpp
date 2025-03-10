@@ -5,6 +5,8 @@
 #include "scene/MeshObject.h"
 #include <string>
 
+namespace cilantro {
+
 CForwardGeometryRenderStage::CForwardGeometryRenderStage () 
     : CRenderStage ()
 {
@@ -42,3 +44,4 @@ void CForwardGeometryRenderStage::InitializeFramebuffer ()
     }
 }
 
+} // namespace cilantro

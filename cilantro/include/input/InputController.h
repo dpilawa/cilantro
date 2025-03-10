@@ -10,6 +10,7 @@
 #include <set>
 #include <vector>
 
+namespace cilantro {
 
 class InputController
 {
@@ -45,5 +46,7 @@ protected:
     bool isGameMode;
 
 };
+
+} // namespace cilantro
 
 #endif // _INPUTCONTROLLER_H_

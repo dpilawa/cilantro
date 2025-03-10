@@ -9,6 +9,8 @@
 
 struct IRenderer;
 
+namespace cilantro {
+
 // Represents a 3d mesh, inherits from GameObject
 // 3d mesh has a collection of vertices and a collection of vertex indices to represent mesh faces (polygons)
 // 3d mesh may have only one material assigned to it
@@ -39,5 +41,7 @@ private:
 
     float boneTransformationMatrixArray[CILANTRO_MAX_BONES * 16];
 };
+
+} // namespace cilantro
 
 #endif

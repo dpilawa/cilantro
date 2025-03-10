@@ -1,6 +1,8 @@
 #include "graphics/Framebuffer.h"
 #include "system/LogMessage.h"
 
+namespace cilantro {
+
 CFramebuffer::CFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayLayerCount, bool depthStencilRenderbufferEnabled)
     : m_bufferWidth (bufferWidth)
     , m_bufferHeight (bufferHeight)
@@ -60,3 +62,5 @@ void CFramebuffer::SetFramebufferResolution (unsigned int bufferWidth, unsigned 
     m_bufferWidth = bufferWidth;
     m_bufferHeight = bufferHeight;
 }
+
+} // namespace cilantro

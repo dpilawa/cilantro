@@ -4,6 +4,8 @@
 #include "math/Mathf.h"
 #include "math/Matrix4f.h"
 
+namespace cilantro {
+
 Camera::Camera (CGameScene* gameScene) : GameObject (gameScene)
 {
 }
@@ -16,5 +18,7 @@ Matrix4f Camera::GetViewMatrix ()
 {
     return Mathf::Invert (GetModelTransformMatrix ());
 }
+
+} // namespace cilantro
 
 

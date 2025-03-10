@@ -1,6 +1,8 @@
 #include "math/Vector4f.h"
 #include <initializer_list>
 
+namespace cilantro {
+
 // constructors
 Vector4f::Vector4f () : v { 0.0f, 0.0f, 0.0f, 0.0f } {};
 Vector4f::Vector4f (float x, float y, float z, float w) : v { x, y, z, w } {};
@@ -142,3 +144,5 @@ Vector4f operator- (Vector4f v)
 
     return v;
 }
+
+} // namespace cilantro

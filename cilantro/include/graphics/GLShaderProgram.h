@@ -4,6 +4,8 @@
 #include "glad/gl.h"
 #include "graphics/ShaderProgram.h"
 
+namespace cilantro {
+
 struct IShaderProgram;
 
 class CGLShaderProgram : public CShaderProgram
@@ -43,5 +45,7 @@ private:
     // ID of a shader program
     GLuint m_glShaderProgramId;
 };
+
+} // namespace cilantro
 
 

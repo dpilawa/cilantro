@@ -4,6 +4,8 @@
 #include "resource/Resource.h"
 #include <string>
 
+namespace cilantro {
+
 class CLoadableResource : public CResource
 {
 public:
@@ -16,3 +18,5 @@ public:
 protected:
     std::string path;
 };
+
+} // namespace cilantro

@@ -8,6 +8,8 @@
 #include "math/Quaternion.h"
 #include <string>
 
+namespace cilantro {
+
 class Transform : public Hook<std::string>
 {
 public:
@@ -70,5 +72,7 @@ private:
     Matrix4f rotationMatrix;
 
 };
+
+} // namespace cilantro
 
 #endif

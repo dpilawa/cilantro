@@ -7,6 +7,8 @@
 
 struct IRenderer;
 
+namespace cilantro {
+
 class Light : public GameObject
 {
 public:
@@ -32,6 +34,8 @@ private:
     bool isEnabled;
     Vector3f lightColor;
 };
+
+} // namespace cilantro
 
 #endif
 

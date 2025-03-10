@@ -4,6 +4,8 @@
 #include "math/Vector3f.h"
 #include "math/Mathf.h"
 
+namespace cilantro {
+
 void Primitives::GeneratePlane (Mesh& m)
 {
     m.Clear ();
@@ -335,3 +337,5 @@ void Primitives::GenerateMeshFromArrays (Mesh& m, const std::vector<Vector3f>& v
     }
 
 }
+
+} // namespace cilantro

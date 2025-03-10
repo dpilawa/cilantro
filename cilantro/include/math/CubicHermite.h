@@ -5,6 +5,8 @@
 #include "math/Curve.h"
 #include <vector>
 
+namespace cilantro {
+
 template <typename T>
 class CubicHermite : public Curve<T, 3>
 {
@@ -25,5 +27,7 @@ private:
     std::vector<std::vector<float>> hMatrix;
     std::vector<T> vCoefficients;
 };
+
+} // namespace cilantro
 
 #endif

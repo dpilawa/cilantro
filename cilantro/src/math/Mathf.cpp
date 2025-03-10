@@ -10,6 +10,8 @@
 #include <cmath>
 #include <vector>
 
+namespace cilantro {
+
 // template instantiations
 template void Mathf::SolveSystemOfLinearEquations<float> (std::vector<std::vector<float>>& A, std::vector<float>& b);
 template void Mathf::SolveSystemOfLinearEquations<Vector3f> (std::vector<std::vector<float>>& A, std::vector<Vector3f>& b);
@@ -863,3 +865,5 @@ void Mathf::SolveSystemOfLinearEquations (std::vector<std::vector<float>>& A, st
 
    
 }
+
+} // namespace cilantro

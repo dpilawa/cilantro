@@ -6,6 +6,8 @@
 #include <sstream>
 #include <filesystem>
 
+namespace cilantro {
+
 CShader::CShader (const std::string& path, EShaderType shaderType) : CLoadableResource (path)
 {
     this->m_shaderType = shaderType;
@@ -62,3 +64,5 @@ void CShader::SetDefaultParameters ()
 
     SetParameter ("%%ACTIVE_DIRECTIONAL_LIGHTS%%", "1");
 }
+
+} // namespace cilantro

@@ -11,6 +11,8 @@
 #include "math/GaussLegendreIntegrator.h"
 #include <vector>
 
+namespace cilantro {
+
 // Math constants
 #define cPI 3.14159265358979323846f
 
@@ -134,6 +136,8 @@ public:
 private:
     static GaussLegendreIntegrator<INTEGRATOR_DEGREE> integrator;
 };
+
+} // namespace cilantro
 
 #endif
 

@@ -5,6 +5,8 @@
 #include "graphics/IRenderStage.h"
 #include "resource/Resource.h"
 
+namespace cilantro {
+
 class CRenderStage : public IRenderStage, public CResource
 {
     friend class CRenderer;
@@ -98,3 +100,5 @@ protected:
     EFaceCullingFace m_faceCullingFace;
     EFaceCullingDirection m_faceCullingDirection;
 };
+
+} // namespace cilantro

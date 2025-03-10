@@ -4,6 +4,8 @@
 #include "cilantroengine.h"
 #include "scene/Path.h"
 
+namespace cilantro {
+
 class LinearPath : public Path
 {
 public:
@@ -16,5 +18,7 @@ public:
 private:
     void UpdatePathAtWaypoint (std::size_t wIndex);
 };
+
+} // namespace cilantro
 
 #endif

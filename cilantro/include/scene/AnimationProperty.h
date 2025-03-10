@@ -9,6 +9,8 @@
 #include <string>
 #include <map>
 
+namespace cilantro {
+
 template<typename P>
 class AnimationProperty 
 {
@@ -31,5 +33,7 @@ private:
     std::map<float, P> keyframes;
 
 };
+
+} // namespace cilantro
 
 #endif

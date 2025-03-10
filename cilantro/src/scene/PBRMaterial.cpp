@@ -5,6 +5,9 @@
 #include "system/Game.h"
 #include "math/Vector3f.h"
 
+namespace cilantro
+{
+
 PBRMaterial::PBRMaterial () : Material ()
 {
     forwardShaderProgram = "pbr_forward_shader";
@@ -118,3 +121,5 @@ Texture& PBRMaterial::GetAO ()
 {
     return *(textures[static_cast<int>(PBRTexture::AO)].second);
 }
+
+} // namespace cilantro

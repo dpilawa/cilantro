@@ -4,6 +4,8 @@
 #include "cilantroengine.h"
 #include "math/Vector3f.h"
 
+namespace cilantro {
+
 class Quaternion
 {
 public:
@@ -43,6 +45,8 @@ __EAPI Quaternion operator* (float f, Quaternion q);
 __EAPI Quaternion operator+ (Quaternion q, const Quaternion& r);
 __EAPI Quaternion operator- (Quaternion q, const Quaternion& r);
 __EAPI Quaternion operator- (Quaternion q);
+
+} // namespace cilantro
 
 #endif
 

@@ -4,6 +4,8 @@
 #include "cilantroengine.h"
 #include "scene/PointLight.h"
 
+namespace cilantro {
+
 struct IRenderer;
 
 class SpotLight : public PointLight
@@ -28,5 +30,7 @@ private:
     float innerCutoff;
     float outerCutoff;
 };
+
+} // namespace cilantro
 
 #endif

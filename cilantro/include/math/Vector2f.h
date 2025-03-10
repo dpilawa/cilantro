@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <initializer_list>
 
+namespace cilantro {
+
 // Represents 2-dimensional float vector
 class Vector2f
 {
@@ -55,6 +57,8 @@ __EAPI Vector2f operator/ (Vector2f u, float f);
 __EAPI Vector2f operator+ (Vector2f u, const Vector2f& v);
 __EAPI Vector2f operator- (Vector2f u, const Vector2f& v);
 __EAPI Vector2f operator- (Vector2f v);
+
+} // namespace cilantro
 
 #endif
 

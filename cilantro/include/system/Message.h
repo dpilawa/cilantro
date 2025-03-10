@@ -4,6 +4,8 @@
 #include "cilantroengine.h"
 #include <string>
 
+namespace cilantro {
+
 class Message 
 {
 public:
@@ -80,5 +82,7 @@ class InputAxisMessage : public InputEventMessage
 public:
     InputAxisMessage (std::string event, float value) : InputEventMessage (event, value) {}
 };
+
+} // namespace cilantro
 
 #endif

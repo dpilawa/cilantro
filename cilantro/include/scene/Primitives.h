@@ -4,6 +4,8 @@
 #include "cilantroengine.h"
 #include <vector>
 
+namespace cilantro {
+
 class Mesh;
 class Vector2f;
 class Vector3f;
@@ -19,5 +21,7 @@ public:
 private:
     static void GenerateMeshFromArrays (Mesh& m, const std::vector<Vector3f>& vertices, const std::vector<Vector2f>& uv, const std::vector<std::size_t> varray);
 };
+
+} // namespace cilantro
 
 #endif

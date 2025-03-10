@@ -13,6 +13,8 @@
 #include <algorithm>
 #include <unordered_map>
 
+namespace cilantro {
+
 Mesh::Mesh () : CResource ()
 {
     this->smoothNormals = false;
@@ -393,3 +395,5 @@ Mesh& Mesh::SetBitangent (size_t index, const Vector3f& bitangent)
 
     return *this;
 }
+
+} // namespace cilantro

@@ -4,6 +4,8 @@
 #include "cilantroengine.h"
 #include <string>
 
+namespace cilantro {
+
 class ModelLoader
 {
 public:
@@ -13,5 +15,7 @@ public:
     virtual void Load (std::string sceneName, std::string path) = 0;
  
 };
+
+} // namespace cilantro
 
 #endif

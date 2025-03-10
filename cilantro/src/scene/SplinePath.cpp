@@ -3,14 +3,14 @@
 #include "math/GaussLegendreIntegrator.h"
 #include "math/Vector3f.h"
 
+namespace cilantro {
+
 SplinePath::SplinePath (CGameScene* gameScene) : Path (gameScene)
 {
-
 }
 
 SplinePath::~SplinePath ()
 {
-
 }
 
 Vector3f SplinePath::GetPositionAtDistance (float distance) const
@@ -63,7 +63,6 @@ SplinePath& SplinePath::SetEndTangent (const Vector3f& tangent)
     return *this;
 }
 
-
 void SplinePath::UpdatePathAtWaypoint (const std::size_t wIndex)
 {
     // create new curve if needed
@@ -112,3 +111,5 @@ void SplinePath::UpdatePathAtWaypoint (const std::size_t wIndex)
         }
     }
 }
+
+} // namespace cilantro

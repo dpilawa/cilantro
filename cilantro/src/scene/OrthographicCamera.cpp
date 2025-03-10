@@ -4,6 +4,9 @@
 #include "math/Matrix4f.h"
 #include "math/Mathf.h"
 
+namespace cilantro
+{
+
 OrthographicCamera::OrthographicCamera (CGameScene* gameScene, float width, float near, float far) :
     Camera (gameScene),
     cameraWidth (width), nearPlane (near), farPlane (far)
@@ -19,5 +22,5 @@ Matrix4f OrthographicCamera::GetProjectionMatrix (unsigned int xRes, unsigned in
     return Mathf::GenOrthographicProjectionMatrix (float (xRes) / float (yRes), cameraWidth, nearPlane, farPlane);
 }
 
-
+} // namespace cilantro
 

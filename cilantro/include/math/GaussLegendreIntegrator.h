@@ -8,6 +8,8 @@
 #include <vector>
 #include <functional>
 
+namespace cilantro {
+
 template<int n>
 class GaussLegendreIntegrator
 {
@@ -23,5 +25,7 @@ private:
 
     std::tuple<float, float> PolynomialEvaluate (float x);
 };
+
+} // namespace cilantro
 
 #endif

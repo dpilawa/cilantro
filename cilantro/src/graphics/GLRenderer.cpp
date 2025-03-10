@@ -21,6 +21,8 @@
 #include <cmath>
 #include <cstring>
 
+namespace cilantro {
+
 CGLRenderer::CGLRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled) 
     : CRenderer (gameScene, width, height, shadowMappingEnabled, deferredRenderingEnabled)
 {
@@ -1392,3 +1394,5 @@ void CGLRenderer::CheckGLError (const std::string& location)
         LogMessage (location, EXIT_FAILURE) << "glError:" << std::hex << std::showbase << errorCode;
     }
 }
+
+} // namespace cilantro

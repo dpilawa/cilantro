@@ -4,6 +4,8 @@
 #include "system/Game.h"
 #include <string>
 
+namespace cilantro {
+
 Material::Material () : CResource ()
 {
 }
@@ -85,4 +87,5 @@ Material& Material::SetProperty (const std::string& propertyName, Vector3f prope
     return *this;
 }
 
-   
+} // namespace cilantro
+

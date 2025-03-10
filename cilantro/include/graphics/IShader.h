@@ -3,6 +3,8 @@
 #include "cilantroengine.h"
 #include <string>
 
+namespace cilantro {
+
 enum class EShaderType { VERTEX_SHADER, GEOMETRY_SHADER, FRAGMENT_SHADER };
 
 struct IShader 
@@ -13,3 +15,5 @@ struct IShader
 
     virtual void SetParameter (const std::string& parameter, const std::string& value) = 0;
 };
+
+} // namespace cilantro

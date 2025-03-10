@@ -6,6 +6,8 @@
 #include "math/CubicHermite.h"
 #include <vector>
 
+namespace cilantro {
+
 // Catmull-Rom Spline
 class SplinePath : public Path 
 {
@@ -24,5 +26,7 @@ private:
 
     void UpdatePathAtWaypoint (const std::size_t wIndex);
 };
+
+} // namespace cilantro
 
 #endif

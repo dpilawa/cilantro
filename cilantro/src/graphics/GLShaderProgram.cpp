@@ -7,6 +7,8 @@
 #include "math/Matrix3f.h"
 #include "math/Matrix4f.h"
 
+namespace cilantro {
+
 CGLShaderProgram::CGLShaderProgram () 
     : CShaderProgram ()
 {
@@ -184,6 +186,8 @@ void CGLShaderProgram::BindUniformBlock (const std::string& blockName, EBindingP
     }
     
 }
+
+} // namespace cilantro
 
 
 

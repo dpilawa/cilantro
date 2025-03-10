@@ -9,6 +9,8 @@
 #include <vector>
 #include <set>
 
+namespace cilantro {
+
 class CGameScene;
 
 class CRenderer : public IRenderer
@@ -110,5 +112,7 @@ T& CRenderer::Create (const std::string& name, Params&&... params)
     // return program
     return shaderProgram;
 }
+
+} // namespace cilantro
 
 #endif

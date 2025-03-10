@@ -5,6 +5,8 @@
 #include "graphics/Shader.h"
 #include <string>
 
+namespace cilantro {
+
 class CGLShader : public CShader
 {
 public:
@@ -25,4 +27,6 @@ private:
     GLuint m_glShaderId;
 
 };
+
+} // namespace cilantro
 

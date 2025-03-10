@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 
+namespace cilantro {
+
 class CGameScene;
 struct IRenderer;
 
@@ -69,5 +71,7 @@ private:
     // transform matrix in model space
     Matrix4f modelTransformMatrix;
 };
+
+} // namespace cilantro
 
 #endif

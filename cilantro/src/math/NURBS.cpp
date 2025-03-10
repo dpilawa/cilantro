@@ -4,6 +4,8 @@
 #include "math/Vector4f.h"
 #include "math/Mathf.h"
 
+namespace cilantro {
+
 template <typename T, int d> class NURBS;
 
 template <typename T, int d>
@@ -100,4 +102,6 @@ T EvaluateCurveDerivative (unsigned int degree, const std::vector<T>& controlPoi
 // template instantiations
 template class NURBS<Vector3f, 2>;
 template class NURBS<Vector3f, 3>;
+
+} // namespace cilantro
 

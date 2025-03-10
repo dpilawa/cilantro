@@ -9,6 +9,8 @@
 
 #include <vector>
 
+namespace cilantro {
+
 CGameScene::CGameScene()
 { 
     this->timer = new Timer();
@@ -92,4 +94,6 @@ Camera* CGameScene::GetActiveCamera () const
 
     return activeCamera;
 }
+
+} // namespace cilantro
 

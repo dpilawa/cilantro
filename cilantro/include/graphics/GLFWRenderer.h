@@ -6,6 +6,8 @@
 #include "GLFW/glfw3.h"
 #include "graphics/GLRenderer.h"
 
+namespace cilantro {
+
 class CGLFWRenderer : public CGLRenderer
 {
 public:
@@ -30,5 +32,7 @@ private:
     bool m_isVSync;
 
 };
+
+} // namespace cilantro
 
 #endif

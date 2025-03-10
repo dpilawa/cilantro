@@ -3,6 +3,8 @@
 
 #include "scene/PerspectiveCamera.h"
 
+using namespace cilantro;
+
 class ControlledCamera : public PerspectiveCamera
 {
 public:

@@ -6,6 +6,8 @@
 
 struct IRenderer;
 
+namespace cilantro {
+
 class PointLight : public Light
 {
 public:
@@ -31,5 +33,7 @@ private:
     float attenuationLinear;
     float attenuationQuadratic;
 };
+
+} // namespace cilantro
 
 #endif

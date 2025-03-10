@@ -18,6 +18,8 @@
 #include <assimp/postprocess.h>
 #include <string>
 
+namespace cilantro {
+
 AssimpModelLoader::AssimpModelLoader ()
 {
 
@@ -487,3 +489,5 @@ Quaternion AssimpModelLoader::ConvertQuaterion (const aiQuaternion& q)
 {
     return Quaternion (q.w, q.x, q.y, q.z);
 }
+
+} // namespace cilantro

@@ -11,6 +11,8 @@
 #include <string>
 #include <set>
 
+namespace cilantro {
+
 struct TupleHash
 {
     std::size_t operator() (const std::tuple<int, int, int>& k) const noexcept
@@ -79,5 +81,6 @@ private:
 
 };
 
+} // namespace cilantro
 
 #endif // _GLFWINPUTCONTROLLER_H_

@@ -4,6 +4,8 @@
 #include "scene/GameObject.h"
 #include "math/Vector3f.h"
 
+using namespace cilantro;
+
 class Orbiter : public GameObject
 {
 public:

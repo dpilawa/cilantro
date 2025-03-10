@@ -3,6 +3,8 @@
 #include "cilantroengine.h"
 #include <string>
 
+namespace cilantro {
+
 enum EBindingPoint { BP_MATRICES = 1, BP_POINTLIGHTS, BP_DIRECTIONALLIGHTS, BP_SPOTLIGHTS, BP_LIGHTVIEW_DIRECTIONAL };
 
 struct IShader;
@@ -35,3 +37,5 @@ struct IShaderProgram
     // use program
     virtual void Use () const = 0;      
 };
+
+} // namespace cilantro

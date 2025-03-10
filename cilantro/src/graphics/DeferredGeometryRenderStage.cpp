@@ -5,6 +5,8 @@
 #include "scene/MeshObject.h"
 #include <string>
 
+namespace cilantro {
+
 CDeferredGeometryRenderStage::CDeferredGeometryRenderStage () 
     : CRenderStage ()
 {
@@ -50,4 +52,6 @@ void CDeferredGeometryRenderStage::InitializeFramebuffer ()
         m_framebuffer = m_renderer->CreateFramebuffer (m_renderer->GetWidth (), m_renderer->GetHeight (), 0, 5, 0, true, m_isMultisampleEnabled);
     }
 }
+
+} // namespace cilantro
 

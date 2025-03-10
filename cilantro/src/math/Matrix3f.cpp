@@ -5,6 +5,8 @@
 
 #define M3(i, j) m[i * 3 + j]
 
+namespace cilantro {
+
 // constructor
 Matrix3f::Matrix3f () { };
 
@@ -171,4 +173,6 @@ Matrix3f operator* (float f, Matrix3f m)
     m *= f;
     return m;
 }
+
+} // namespace cilantro
 

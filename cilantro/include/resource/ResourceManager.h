@@ -9,6 +9,8 @@
 #include <string>
 #include <type_traits>
 
+namespace cilantro {
+
 class CResource;
 class CLoadableResource;
 
@@ -144,5 +146,7 @@ bool CResourceManager<Base>::HasName (const std::string& name) const
 
 // deduction guide for clang (c++17)
 CResourceManager () -> CResourceManager<CResource>;
+
+} // namespace cilantro
 
 #endif

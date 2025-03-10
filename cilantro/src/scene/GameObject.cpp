@@ -10,6 +10,8 @@
 #include "system/HookProvider.h"
 #include <string>
 
+namespace cilantro {
+
 GameObject::GameObject (CGameScene* gameScene)
 {
     parentObject = nullptr;
@@ -163,4 +165,6 @@ Vector3f GameObject::GetForward () const
 
     return Mathf::Normalize (Vector3f (modelTransforMatrix[0][2], modelTransforMatrix[1][2], modelTransforMatrix[2][2]));
 }
+
+} // namespace cilantro
 

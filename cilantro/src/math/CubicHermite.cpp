@@ -3,6 +3,8 @@
 #include "math/Mathf.h"
 #include <vector>
 
+namespace cilantro {
+
 template <typename T> class CubicHermite;
 
 template <typename T>
@@ -61,4 +63,6 @@ T CubicHermite<T>::GetCurveTangent (float t) const
 
 // template instantiations
 template class CubicHermite<Vector3f>;
+
+} // namespace cilantro
 

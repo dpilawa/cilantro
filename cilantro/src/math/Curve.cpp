@@ -3,6 +3,8 @@
 #include "math/Vector4f.h"
 #include "math/Mathf.h"
 
+namespace cilantro {
+
 template <typename T, int d> class Curve;
 
 template <typename T, int d>
@@ -22,8 +24,9 @@ float Curve<T, d>::GetCurveLength ()
     return Mathf::Integral (0.0f, 1.0f, [&](float t) { return Mathf::Length (GetCurveTangent (t)); });
 }
 
-
 // template instantiations
 template class Curve<Vector3f, 2>;
 template class Curve<Vector3f, 3>;
+
+} // namespace cilantro
 

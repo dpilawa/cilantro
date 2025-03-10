@@ -3,6 +3,8 @@
 #include "input/GLFWInputController.h"
 #include "system/Game.h"
 
+using namespace cilantro;
+
 ControlledCamera::ControlledCamera (CGameScene* gameScene, float fov, float near, float far, float speed, float sensitivity) : PerspectiveCamera (gameScene, fov, near, far), speed (speed), sensitivity (sensitivity)
 {
 }

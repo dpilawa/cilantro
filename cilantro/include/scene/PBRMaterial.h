@@ -8,6 +8,8 @@
 
 struct IRenderer;
 
+namespace cilantro {
+
 enum class PBRTexture : int
 {
     Albedo = 0,
@@ -52,5 +54,7 @@ protected:
     Texture ao {1, 1, 1.0f};
 
 };
+
+} // namespace cilantro
 
 #endif

@@ -8,6 +8,8 @@
 #include <string>
 #include <set>
 
+namespace cilantro {
+
 class CGameScene;
 class GameObject;
 class AnimationObject;
@@ -62,5 +64,7 @@ private:
     Vector3f ConvertVector3f (const aiVector3D& v);
     Quaternion ConvertQuaterion (const aiQuaternion& q);
 };
+
+} // namespace cilantro
 
 #endif

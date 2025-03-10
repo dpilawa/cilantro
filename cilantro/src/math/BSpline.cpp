@@ -3,6 +3,8 @@
 #include "math/Vector4f.h"
 #include "math/Mathf.h"
 
+namespace cilantro {
+
 template <typename T, int d> class BSpline;
 
 template <typename T, int d>
@@ -211,5 +213,7 @@ template Vector3f EvaluateCurvePoint<Vector3f> (unsigned int degree, const std::
 template Vector3f EvaluateCurveDerivative<Vector3f> (unsigned int degree, const std::vector<Vector3f>& controlPoints, const std::vector<float>& knots, float u);
 template Vector4f EvaluateCurvePoint<Vector4f> (unsigned int degree, const std::vector<Vector4f>& controlPoints, const std::vector<float>& knots, float u);
 template Vector4f EvaluateCurveDerivative<Vector4f> (unsigned int degree, const std::vector<Vector4f>& controlPoints, const std::vector<float>& knots, float u);
+
+} // namespace cilantro
 
 

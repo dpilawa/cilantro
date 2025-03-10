@@ -3,6 +3,8 @@
 #include "cilantroengine.h"
 #include "graphics/IRenderer.h"
 
+namespace cilantro {
+
 struct IFramebuffer;
 
 struct IRenderStage
@@ -51,3 +53,5 @@ struct IRenderStage
     virtual IRenderStage& SetOutputFramebufferLink (EPipelineLink link) = 0;
 
 };
+
+} // namespace cilantro

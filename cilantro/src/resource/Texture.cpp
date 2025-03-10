@@ -5,6 +5,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+namespace cilantro {
+
 Texture::Texture (const int width, const int height, float channel) : CLoadableResource ()
 {
     data = nullptr;
@@ -101,4 +103,6 @@ void Texture::Load (const std::string& path)
         LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to load texture" << path << "[" << stbi_failure_reason () << "]";
     }
 }
+
+} // namespace cilantro
 

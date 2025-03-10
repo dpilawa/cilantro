@@ -5,6 +5,8 @@
 #include <set>
 #include <vector>
 
+namespace cilantro {
+
 struct IRenderStage;
 struct IFramebuffer;
 struct IShaderProgram;
@@ -104,3 +106,5 @@ struct IRenderer
     virtual void SetStencilTestFunction (EStencilTestFunction testFunction, int testValue) = 0;
     virtual void SetStencilTestOperation (EStencilTestOperation sFail, EStencilTestOperation dpFail, EStencilTestOperation dpPass) = 0;
 };
+
+} // namespace cilantro

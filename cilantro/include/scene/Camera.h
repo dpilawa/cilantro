@@ -5,6 +5,8 @@
 #include "scene/GameObject.h"
 #include "math/Matrix4f.h"
 
+namespace cilantro {
+
 class Camera : public GameObject
 {
 public:
@@ -15,6 +17,8 @@ public:
     virtual Matrix4f GetProjectionMatrix (unsigned int xRes, unsigned int yRes) const = 0;
 
 };
+
+} // namespace cilantro
 
 #endif
 

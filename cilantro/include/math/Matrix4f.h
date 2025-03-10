@@ -4,6 +4,8 @@
 #include "cilantroengine.h"
 #include "Vector4f.h"
 
+namespace cilantro {
+
 class Matrix4f
 {
 public:
@@ -51,5 +53,7 @@ __EAPI Matrix4f operator* (Matrix4f m, const Matrix4f& n);
 // binary operator for matrix by float multiplication
 __EAPI Matrix4f operator* (Matrix4f m, float f);
 __EAPI Matrix4f operator* (float f, Matrix4f m);
+
+} // namespace cilantro
 
 #endif

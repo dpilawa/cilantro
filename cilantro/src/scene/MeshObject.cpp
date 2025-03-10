@@ -13,6 +13,9 @@
 #include <unordered_map>
 #include <cstring>
 
+namespace cilantro
+{
+
 MeshObject::MeshObject (CGameScene* gameScene, const std::string& meshName, const std::string& materialName)
     : GameObject (gameScene)
     , mesh (CGame::GetResourceManager ().GetByName<Mesh> (meshName))
@@ -81,3 +84,5 @@ void MeshObject::OnUpdate (IRenderer& renderer)
     GameObject::OnUpdate (renderer);
     renderer.Update (*this);
 }
+
+} // namespace cilantro

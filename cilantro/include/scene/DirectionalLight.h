@@ -6,6 +6,8 @@
 
 struct IRenderer;
 
+namespace cilantro {
+
 class DirectionalLight : public Light
 {
 public:
@@ -18,5 +20,7 @@ public:
 private:
 
 };
+
+} // namespace cilantro
 
 #endif

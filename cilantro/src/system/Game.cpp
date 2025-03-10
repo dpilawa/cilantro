@@ -3,6 +3,8 @@
 #include "input/InputController.h"
 #include "system/LogMessage.h"
 
+namespace cilantro {
+
 CResourceManager<CResource> CGame::m_resourceManager;
 CResourceManager<CGameScene> CGame::m_gameSceneManager;
 
@@ -120,3 +122,5 @@ bool CGame::IsRunning ()
 {
     return m_isRunning;
 }
+
+} // namespace cilantro

@@ -6,6 +6,8 @@
 #include <string>
 #include <map>
 
+namespace cilantro {
+
 typedef std::map<std::string, std::string> TParameterValueMap;
 
 class CShader : public IShader, public CLoadableResource
@@ -38,5 +40,7 @@ protected:
     TParameterValueMap m_paramValMap;
 
 };
+
+} // namespace cilantro
 
 

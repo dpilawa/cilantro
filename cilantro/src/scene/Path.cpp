@@ -1,6 +1,9 @@
 #include "scene/Path.h"
 #include "math/Mathf.h"
 
+namespace cilantro
+{
+
 Path::Path (CGameScene* gameScene) : GameObject (gameScene)
 {
 }
@@ -91,3 +94,5 @@ float Path::CalculateInterpolationParameter (std::size_t wIndex, float distance)
 
     return 0.0f;
 }
+
+} // namespace cilantro

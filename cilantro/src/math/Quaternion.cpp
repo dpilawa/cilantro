@@ -1,5 +1,7 @@
 #include "math/Quaternion.h"
 
+namespace cilantro {
+
 // constructors
 Quaternion::Quaternion () : s (1.0f), v{0.0f, 0.0f, 0.0f} {};
 Quaternion::Quaternion (float a, float b, float c, float d) : s (a), v{b, c, d} {};
@@ -86,3 +88,5 @@ Quaternion operator- (Quaternion q)
 
     return q;
 }
+
+} // namespace cilantro

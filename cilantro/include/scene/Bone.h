@@ -5,6 +5,8 @@
 #include "scene/GameObject.h"
 #include "math/Matrix4f.h"
 
+namespace cilantro {
+
 class Bone : public GameObject
 {
 public:
@@ -17,5 +19,7 @@ public:
 private:
     Matrix4f offsetMatrix;
 };
+
+} // namespace cilantro
 
 #endif

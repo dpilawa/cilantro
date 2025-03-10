@@ -7,6 +7,9 @@
 
 #include <string>
 
+namespace cilantro
+{
+
 Transform::Transform ()
 {
     isValid = true;
@@ -232,3 +235,5 @@ Transform& Transform::RotateBy (const Quaternion& q)
 
     return Rotate (newRotation);
 }
+
+} // namespace cilantro

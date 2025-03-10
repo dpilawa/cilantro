@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <vector>
 
+namespace cilantro {
+
 // Class template to enable object hooks
 template<typename Key, typename... Params>
 class Hook
@@ -40,6 +42,8 @@ inline void Hook<Key, Params...>::InvokeHook (Key hook, Params... params)
         callback (params...);
     }
 }
+
+} // namespace cilantro
 
 #endif
 

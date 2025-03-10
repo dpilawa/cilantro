@@ -3,6 +3,8 @@
 #include "cilantroengine.h"
 #include "graphics/RenderStage.h"
 
+namespace cilantro {
+
 class MeshObject;
 
 class CDeferredGeometryRenderStage : public CRenderStage
@@ -23,4 +25,6 @@ public:
 protected:
     virtual void InitializeFramebuffer () override;
 };
+
+} // namespace cilantro
 

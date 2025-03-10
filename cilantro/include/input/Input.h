@@ -3,6 +3,8 @@
 
 #include <string>
 
+namespace cilantro {
+
 enum class InputKey: unsigned 
 {
     /* keyboard events */
@@ -178,5 +180,7 @@ inline void Input<float>::Clear ()
 {
     inputValue = 0.0f;
 }
+
+} // namespace cilantro
 
 #endif // _INPUT_H_

@@ -8,6 +8,8 @@
 #include "math/Quaternion.h"
 #include <vector>
 
+namespace cilantro {
+
 class Waypoint
 {
 public:
@@ -48,5 +50,7 @@ private:
     /* rebuild path distances and tangents */
     virtual void UpdatePathAtWaypoint (std::size_t wIndex) = 0;
 };
+
+} // namespace cilantro
 
 #endif

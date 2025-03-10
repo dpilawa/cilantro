@@ -13,6 +13,8 @@
 
 struct IRenderer;
 
+namespace cilantro {
+
 typedef std::map<unsigned int, std::pair<std::string, Texture*>> texture_map_t;
 typedef std::unordered_map<std::string, std::vector<float>> property_map_t;
 
@@ -50,5 +52,7 @@ protected:
     std::string deferredLightingPassShaderProgram;
 
 };
+
+} // namespace cilantro
 
 #endif

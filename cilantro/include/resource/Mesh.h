@@ -8,6 +8,8 @@
 #include "math/Vector3f.h"
 #include <cstdint>
 
+namespace cilantro {
+
 class Material;
 
 struct Vector3Hash
@@ -92,5 +94,7 @@ private:
     std::vector<float> boneInfluenceWeights;
 
 };
+
+} // namespace cilantro
 
 #endif

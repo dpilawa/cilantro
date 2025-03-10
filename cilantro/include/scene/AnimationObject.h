@@ -7,6 +7,8 @@
 #include "math/Vector3f.h"
 #include "math/Quaternion.h"
 
+namespace cilantro {
+
 class AnimationObject : public GameObject
 {
 public:
@@ -45,5 +47,7 @@ private:
     std::unordered_map<std::string, std::shared_ptr<AnimationProperty<Vector3f>>> vectorProperties;
     std::unordered_map<std::string, std::shared_ptr<AnimationProperty<Quaternion>>> quaternionProperties;
 };
+
+} // namespace cilantro
 
 #endif

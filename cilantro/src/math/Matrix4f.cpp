@@ -4,6 +4,8 @@
 
 #define M4(i, j) m[i * 4 + j]
 
+namespace cilantro {
+
 // constructor
 Matrix4f::Matrix4f () { };
 
@@ -187,3 +189,5 @@ Matrix4f operator* (float f, Matrix4f m)
     m *= f;
     return m;
 }
+
+} // namespace cilantro

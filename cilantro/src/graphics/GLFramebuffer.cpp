@@ -2,6 +2,8 @@
 #include "graphics/GLFramebuffer.h"
 #include "system/LogMessage.h"
 
+namespace cilantro {
+
 CGLFramebuffer::CGLFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayLayerCount, bool depthStencilRenderbufferEnabled) 
     : CFramebuffer (bufferWidth, bufferHeight, rgbTextureCount, rgbaTextureCount, depthBufferArrayLayerCount, depthStencilRenderbufferEnabled)
 {
@@ -163,4 +165,6 @@ GLuint CGLFramebuffer::GetFramebufferGLId () const
 {
     return m_glBuffers.FBO;
 }
+
+} // namespace cilantro
 

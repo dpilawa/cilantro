@@ -4,9 +4,13 @@
 #include "graphics/IShaderProgram.h"
 #include "resource/Resource.h"
 
+namespace cilantro {
+
 class CShaderProgram : public IShaderProgram, public CResource
 {
 public:
     CShaderProgram () : CResource () {}; 
     virtual ~CShaderProgram () {};
 };
+
+} // namespace cilantro

@@ -1,7 +1,9 @@
 #include "math/Vector3f.h"
 #include "math/Vector4f.h"
 #include <initializer_list>
-    
+
+namespace cilantro {
+
 // constructors
 Vector3f::Vector3f () : v { 0.0f, 0.0f, 0.0f } { };
 Vector3f::Vector3f (float x, float y, float z) : v { x, y, z } { };
@@ -137,3 +139,5 @@ Vector3f operator- (Vector3f v)
 
     return v;
 }
+
+} // namespace cilantro

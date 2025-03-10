@@ -3,6 +3,8 @@
 #include "cilantroengine.h"
 #include "graphics/IFramebuffer.h"
 
+namespace cilantro {
+
 class CFramebuffer : public IFramebuffer
 {
 public:
@@ -34,3 +36,5 @@ protected:
     unsigned int    m_bufferHeight;
     bool            m_depthStencilRenderbufferEnabled;
 };
+
+} // namespace cilantro

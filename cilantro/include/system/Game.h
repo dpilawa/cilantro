@@ -6,6 +6,8 @@
 #include "system/MessageBus.h"
 #include <string>
 
+namespace cilantro {
+
 class CResource;
 class CGameScene;
 class InputController;
@@ -88,6 +90,8 @@ T& CGame::Create (Params&&... params)
 
     return *newInputController;
 }
+
+} // namespace cilantro
 
 #endif
 

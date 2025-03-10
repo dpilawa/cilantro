@@ -4,6 +4,8 @@
 #include <vector>
 #include <cmath>
 
+namespace cilantro {
+
 template <typename T, int d> class Bezier;
 
 template <typename T, int d>
@@ -21,7 +23,6 @@ template <typename T, int d>
 Bezier<T,d>::~Bezier ()
 {
 }
-
 
 template <typename T, int d>
 Bezier<T,d>& Bezier<T,d>::SetPoints (const std::vector<T>& p)
@@ -69,3 +70,5 @@ T Bezier<T,d>::GetCurveTangent (float t) const
 // template instantiations
 template class Bezier<Vector3f, 2>;
 template class Bezier<Vector3f, 3>;
+
+} // namespace cilantro

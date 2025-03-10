@@ -1,6 +1,9 @@
 #include "cilantroengine.h"
 #include "system/LogMessage.h"
 
+namespace cilantro
+{
+
 LogMessage::LogMessage ()
 {
     didPrint = false;
@@ -32,3 +35,5 @@ LogMessage::~LogMessage ()
         std::exit (errorCode);
     }
 }
+
+} // namespace cilantro

@@ -3,6 +3,8 @@
 #include "graphics/IFramebuffer.h"
 #include "graphics/ShaderProgram.h"
 
+namespace cilantro {
+
 CQuadRenderStage::CQuadRenderStage () 
     : CRenderStage ()
     , m_shaderProgram (nullptr)
@@ -80,3 +82,5 @@ void CQuadRenderStage::InitializeFramebuffer ()
         m_framebuffer = m_renderer->CreateFramebuffer (m_renderer->GetWidth (), m_renderer->GetHeight (), 0, 1, 0, true, m_isMultisampleEnabled);
     }
 }
+
+} // namespace cilantro

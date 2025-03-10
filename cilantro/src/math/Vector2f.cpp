@@ -1,6 +1,8 @@
 #include "math/Vector2f.h"
 #include <initializer_list>
-    
+
+namespace cilantro {
+
 // constructors
 Vector2f::Vector2f () : v { 0.0f, 0.0f } { };
 Vector2f::Vector2f (float x, float y) : v { x, y } { };
@@ -130,3 +132,5 @@ Vector2f operator- (Vector2f v)
 
     return v;
 }
+
+} // namespace cilantro

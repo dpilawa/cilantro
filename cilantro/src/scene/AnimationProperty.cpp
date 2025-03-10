@@ -2,6 +2,8 @@
 #include "math/Vector3f.h"
 #include "math/Quaternion.h"
 
+namespace cilantro {
+
 template <typename P> class AnimationProperty;
 
 template<typename P>
@@ -73,3 +75,5 @@ std::function<P(P, P, float)> AnimationProperty<P>::GetInterpolateFunction ()
 template class AnimationProperty<float>;
 template class AnimationProperty<Vector3f>;
 template class AnimationProperty<Quaternion>;
+
+} // namespace cilantro

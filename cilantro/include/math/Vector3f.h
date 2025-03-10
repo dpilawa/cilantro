@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <initializer_list>
 
+namespace cilantro {
+
 class Vector4f;
 
 // Represents 3-dimensional float vector
@@ -58,6 +60,8 @@ __EAPI Vector3f operator/ (Vector3f u, float f);
 __EAPI Vector3f operator+ (Vector3f u, const Vector3f& v);
 __EAPI Vector3f operator- (Vector3f u, const Vector3f& v);
 __EAPI Vector3f operator- (Vector3f v);
+
+} // namespace cilantro
 
 #endif
 

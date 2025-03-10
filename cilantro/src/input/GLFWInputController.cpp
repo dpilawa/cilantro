@@ -4,6 +4,8 @@
 #include "system/LogMessage.h"
 #include "input/Input.h"
 
+namespace cilantro {
+
 std::unordered_map<InputKey, int, InputKeyHash> GLFWInputController::glfwKeyMap {
         {InputKey::KeyA, GLFW_KEY_A},
         {InputKey::KeyB, GLFW_KEY_B},
@@ -309,3 +311,5 @@ void GLFWInputController::MouseScrollCallback(double xOffset, double yOffset)
         }
     }
 }
+
+} // namespace cilantro

@@ -4,6 +4,8 @@
 #include "resource/ResourceManager.h"
 #include <string>
 
+namespace cilantro {
+
 class CResource
 {
     template <typename Base>
@@ -21,3 +23,5 @@ protected:
     std::string m_name;
  
 };
+
+} // namespace cilantro

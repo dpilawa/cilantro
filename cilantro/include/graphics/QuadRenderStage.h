@@ -3,6 +3,8 @@
 #include "cilantroengine.h"
 #include "graphics/RenderStage.h"
 
+namespace cilantro {
+
 class CShaderProgram;
 class Vector2f;
 class Vector3f;
@@ -38,3 +40,5 @@ protected:
     CShaderProgram* m_shaderProgram;
 
 };
+
+} // namespace cilantro

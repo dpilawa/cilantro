@@ -8,6 +8,8 @@
 #include <unordered_map>
 #include <memory>
 
+namespace cilantro {
+
 // template instantiations
 template __EAPI void AnimationObject::AddAnimationProperty<float> (const std::string& propertyName, float startValue, std::function<void (float)> updateFunction, std::function<float (float, float, float)> interpolateFunction);
 template __EAPI void AnimationObject::AddAnimationProperty<Vector3f> (const std::string& propertyName, Vector3f startValue, std::function<void (Vector3f)> updateFunction, std::function<Vector3f (Vector3f, Vector3f, float)> interpolateFunction);
@@ -152,4 +154,6 @@ std::unordered_map<std::string, std::shared_ptr<AnimationProperty<Quaternion>>>&
 {
     return quaternionProperties;
 };
+
+} // namespace cilantro
 

@@ -3,6 +3,8 @@
 
 #include <string>
 
+namespace cilantro {
+
 CGLShader::CGLShader (const std::string& path, EShaderType shaderType) : CShader (path, shaderType)
 {
     GLint success;
@@ -48,4 +50,6 @@ GLuint CGLShader::GetShaderId () const
 {
     return m_glShaderId;
 }
+
+} // namespace cilantro
 

@@ -3,6 +3,8 @@
 #include "scene/Light.h"
 #include "system/Game.h"
 
+namespace cilantro {
+
 Light::Light (CGameScene* gameScene) : GameObject (gameScene)
 {
     isEnabled = false;
@@ -48,4 +50,6 @@ void Light::OnUpdate (IRenderer& renderer)
 {
     GameObject::OnUpdate (renderer);
 }
+
+} // namespace cilantro
 

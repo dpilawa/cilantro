@@ -4,6 +4,8 @@
 #include "glad/gl.h"
 #include "graphics/Renderer.h"
 
+namespace cilantro {
+
 class CGameScene;
 class MeshObject;
 class Camera;
@@ -219,3 +221,5 @@ private:
     TLightHandleIdxMap m_spotLights;
 
 };
+
+} // namespace cilantro

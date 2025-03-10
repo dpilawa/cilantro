@@ -7,6 +7,8 @@
 
 #define MSG_LOCATION typeid (*this).name () + std::string (": ") + std::string (__func__)
 
+namespace cilantro {
+
 class LogMessage
 {
 public:
@@ -37,5 +39,7 @@ inline LogMessage& LogMessage::operator<<(const P & message)
 
     return *this;
 }
+
+} // namespace cilantro
 
 #endif

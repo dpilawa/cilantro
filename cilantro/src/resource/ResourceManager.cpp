@@ -6,6 +6,8 @@
 #include "graphics/ShaderProgram.h"
 #include "graphics/RenderStage.h"
 
+namespace cilantro {
+
 template <typename Base>
 CResourceManager<Base>::CResourceManager ()
 {
@@ -136,3 +138,5 @@ template __EAPI CResourceManager<CRenderStage>::const_iterator CResourceManager<
 template __EAPI CResourceManager<CRenderStage>::const_iterator CResourceManager<CRenderStage>::cbegin () const;
 template __EAPI CResourceManager<CRenderStage>::const_iterator CResourceManager<CRenderStage>::cend () const;
 template __EAPI std::shared_ptr<CRenderStage> CResourceManager<CRenderStage>::Push (const std::string& name, std::shared_ptr<CRenderStage> resource);
+
+} // namespace cilantro

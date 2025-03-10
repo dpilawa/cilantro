@@ -5,6 +5,8 @@
 #include "glad/gl.h"
 #include "graphics/GLFramebuffer.h"
 
+namespace cilantro {
+
 class CGLMultisampleFramebuffer : public CGLFramebuffer 
 {
 public:
@@ -31,5 +33,7 @@ protected:
     GLBuffers m_glMultisampleBuffers;
 
 };
+
+} // namespace cilantro
 
 #endif

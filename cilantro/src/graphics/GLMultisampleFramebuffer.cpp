@@ -1,6 +1,8 @@
 #include "graphics/GLMultisampleFramebuffer.h"
 #include "system/LogMessage.h"
 
+namespace cilantro {
+
 CGLMultisampleFramebuffer::CGLMultisampleFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayLayerCount, bool depthStencilRenderbufferEnabled) 
     : CGLFramebuffer (bufferWidth, bufferHeight, rgbTextureCount, rgbaTextureCount, depthBufferArrayLayerCount, depthStencilRenderbufferEnabled)
 {
@@ -132,6 +134,8 @@ GLuint CGLMultisampleFramebuffer::GetFramebufferGLId () const
 {
     return m_glMultisampleBuffers.FBO;
 }
+
+} // namespace cilantro
 
 
 

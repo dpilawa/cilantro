@@ -5,6 +5,9 @@
 #include "system/Game.h"
 #include "math/Vector3f.h"
 
+namespace cilantro
+{
+
 PhongMaterial::PhongMaterial () : Material ()
 {
     forwardShaderProgram = "blinnphong_forward_shader";
@@ -111,3 +114,4 @@ Texture& PhongMaterial::GetEmissive ()
     return *(textures[static_cast<int>(PhongTexture::Emissive)].second);
 }
 
+} // namespace cilantro

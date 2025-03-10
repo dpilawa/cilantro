@@ -9,6 +9,8 @@
 #include "system/LogMessage.h"
 #include <cmath>
 
+namespace cilantro {
+
 CRenderer::CRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled)
     : m_gameScene (gameScene)
     , m_isDeferredRendering (deferredRenderingEnabled)
@@ -214,3 +216,5 @@ void CRenderer::DeinitializeRenderStages ()
         stage->Deinitialize ();
     }
 }
+
+} // namespace cilantro

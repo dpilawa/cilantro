@@ -5,6 +5,8 @@
 #include "math/Curve.h"
 #include <vector>
 
+namespace cilantro {
+
 enum class KnotVectorType
 {
     Clamped,
@@ -44,5 +46,7 @@ T EvaluateCurvePoint (unsigned int degree, const std::vector<T>& controlPoints, 
 
 template <typename T>
 T EvaluateCurveDerivative (unsigned int degree, const std::vector<T>& controlPoints, const std::vector<float>& knots, float u);
+
+} // namespace cilantro
 
 #endif

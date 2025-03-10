@@ -5,6 +5,8 @@
 #include "scene/GameScene.h"
 #include "system/Game.h"
 
+namespace cilantro {
+
 CShadowMapRenderStage::CShadowMapRenderStage ()
     : CRenderStage ()
 {
@@ -59,3 +61,5 @@ void CShadowMapRenderStage::InitializeFramebuffer ()
         }
     }
 }
+
+} // namespace cilantro

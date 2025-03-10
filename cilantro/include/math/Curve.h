@@ -4,6 +4,8 @@
 #include "cilantroengine.h"
 #include "math/Vector3f.h"
 
+namespace cilantro {
+
 template <typename T, int d>
 class Curve
 {
@@ -19,5 +21,7 @@ public:
 protected:
     unsigned int degree;
 };
+
+} // namespace cilantro
 
 #endif

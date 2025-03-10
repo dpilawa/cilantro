@@ -3,6 +3,9 @@
 #include "graphics/Renderer.h"
 #include "system/Game.h"
 
+namespace cilantro
+{
+
 PointLight::PointLight (CGameScene* gameScene) : Light (gameScene)
 {
     attenuationConst = 1.0f;
@@ -55,3 +58,6 @@ void PointLight::OnUpdate (IRenderer& renderer)
     Light::OnUpdate (renderer);
     renderer.Update (*this);
 }
+
+} // namespace cilantro
+

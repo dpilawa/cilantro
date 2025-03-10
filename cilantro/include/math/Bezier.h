@@ -5,6 +5,8 @@
 #include "math/Curve.h"
 #include <vector>
 
+namespace cilantro {
+
 template <typename T, int d>
 class Bezier : public Curve<T, d>
 {
@@ -24,5 +26,7 @@ private:
 
     std::vector<T> points;
 };
+
+} // namespace cilantro
 
 #endif

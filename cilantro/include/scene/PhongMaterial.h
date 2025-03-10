@@ -8,6 +8,8 @@
 
 struct IRenderer;
 
+namespace cilantro {
+
 enum class PhongTexture : int
 {
     Diffuse = 0,
@@ -50,5 +52,7 @@ protected:
     Texture emissive {1, 1, Vector3f (0.0f, 0.0f, 0.0f)};
 
 };
+
+} // namespace cilantro
 
 #endif

@@ -5,6 +5,8 @@
 #include "glad/gl.h"
 #include "graphics/Framebuffer.h"
 
+namespace cilantro {
+
 struct GLBuffers
 {
     GLuint FBO;
@@ -49,5 +51,7 @@ protected:
     GLBuffers m_glBuffers;
 
 };
+
+} // namespace cilantro
 
 #endif

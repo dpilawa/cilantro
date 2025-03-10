@@ -4,6 +4,8 @@
 #include "cilantroengine.h"
 #include <chrono>
 
+namespace cilantro {
+
 class Timer
 {
 public:
@@ -35,5 +37,7 @@ private:
     // saved split time
     std::chrono::high_resolution_clock::time_point splitTime;
 };
+
+} // namespace cilantro
 
 #endif

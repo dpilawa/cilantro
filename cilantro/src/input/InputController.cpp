@@ -6,6 +6,8 @@
 
 #include <string>
 
+namespace cilantro {
+
 InputController::InputController ()
 {
 }
@@ -65,7 +67,6 @@ void InputController::BindInputEvent (const std::string& name, std::function<voi
     });
 }
 
-
 void InputController::BindInputAxis (const std::string& name, std::function<void (float)> function)
 {
     CGame::GetMessageBus ().Subscribe<InputAxisMessage> ([name, function](const std::shared_ptr<InputAxisMessage>& message) 
@@ -81,3 +82,5 @@ bool InputController::IsGameMode ()
 {
     return isGameMode;
 }
+
+} // namespace cilantro
