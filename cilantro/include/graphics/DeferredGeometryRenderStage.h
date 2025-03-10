@@ -7,11 +7,11 @@ namespace cilantro {
 
 class MeshObject;
 
-class CDeferredGeometryRenderStage : public CRenderStage
+class DeferredGeometryRenderStage : public RenderStage
 {
 public:
-    __EAPI CDeferredGeometryRenderStage ();
-    __EAPI virtual ~CDeferredGeometryRenderStage () {};
+    __EAPI DeferredGeometryRenderStage ();
+    __EAPI virtual ~DeferredGeometryRenderStage () {};
 
     ///////////////////////////////////////////////////////////////////////////
 

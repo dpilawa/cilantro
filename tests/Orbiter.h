@@ -9,7 +9,7 @@ using namespace cilantro;
 class Orbiter : public GameObject
 {
 public:
-    Orbiter (CGameScene* gameScene, GameObject& parent, float axisPeriod, float axisAngle, float orbitingPeriod, float orbitingDistance, float orbitInclination);
+    Orbiter (GameScene* gameScene, GameObject& parent, float axisPeriod, float axisAngle, float orbitingPeriod, float orbitingDistance, float orbitInclination);
     ~Orbiter ();
 
     void OnFrame ();

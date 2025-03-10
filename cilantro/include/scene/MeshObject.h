@@ -17,7 +17,7 @@ namespace cilantro {
 class MeshObject : public GameObject
 {
 public:
-    __EAPI MeshObject (CGameScene* gameScene, const std::string& meshName, const std::string& materialName);
+    __EAPI MeshObject (GameScene* gameScene, const std::string& meshName, const std::string& materialName);
     __EAPI virtual ~MeshObject ();
 
     // access mesh

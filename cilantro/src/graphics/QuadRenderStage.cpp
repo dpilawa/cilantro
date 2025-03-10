@@ -5,20 +5,20 @@
 
 namespace cilantro {
 
-CQuadRenderStage::CQuadRenderStage () 
-    : CRenderStage ()
+QuadRenderStage::QuadRenderStage () 
+    : RenderStage ()
     , m_shaderProgram (nullptr)
 {
 }
 
-void CQuadRenderStage::Initialize ()
+void QuadRenderStage::Initialize ()
 {
     InitializeFramebuffer ();
 }
 
-void CQuadRenderStage::OnFrame ()
+void QuadRenderStage::OnFrame ()
 {
-    CRenderStage::OnFrame ();
+    RenderStage::OnFrame ();
 
     // bind textures of framebuffer linked as previous (input) and draw
     m_shaderProgram->Use ();
@@ -40,42 +40,42 @@ void CQuadRenderStage::OnFrame ()
     }
 }
 
-CQuadRenderStage& CQuadRenderStage::SetShaderProgram (const std::string& shaderProgramName)
+QuadRenderStage& QuadRenderStage::SetShaderProgram (const std::string& shaderProgramName)
 {
     m_shaderProgram = &(m_renderer->GetShaderProgramManager ().GetByName<CShaderProgram> (shaderProgramName));
 
     return *this;
 }
 
-CQuadRenderStage& CQuadRenderStage::SetRenderStageParameterFloat (const std::string& parameterName, float parameterValue)
+QuadRenderStage& QuadRenderStage::SetRenderStageParameterFloat (const std::string& parameterName, float parameterValue)
 {
     m_shaderProgram->SetUniformFloat (parameterName, parameterValue);
 
     return *this;
 }
 
-CQuadRenderStage& CQuadRenderStage::SetRenderStageParameterVector2f (const std::string& parameterName, const Vector2f& parameterValue)
+QuadRenderStage& QuadRenderStage::SetRenderStageParameterVector2f (const std::string& parameterName, const Vector2f& parameterValue)
 {
     m_shaderProgram->SetUniformVector2f (parameterName, parameterValue);
     
     return *this;
 }
 
-CQuadRenderStage& CQuadRenderStage::SetRenderStageParameterVector3f (const std::string& parameterName, const Vector3f& parameterValue)
+QuadRenderStage& QuadRenderStage::SetRenderStageParameterVector3f (const std::string& parameterName, const Vector3f& parameterValue)
 {    
     m_shaderProgram->SetUniformVector3f (parameterName, parameterValue);
     
     return *this;
 }
 
-CQuadRenderStage& CQuadRenderStage::SetRenderStageParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue)
+QuadRenderStage& QuadRenderStage::SetRenderStageParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue)
 {
     m_shaderProgram->SetUniformVector4f (parameterName, parameterValue);
     
     return *this;
 }
 
-void CQuadRenderStage::InitializeFramebuffer ()
+void QuadRenderStage::InitializeFramebuffer ()
 {   
     if (m_isFramebufferEnabled)
     {

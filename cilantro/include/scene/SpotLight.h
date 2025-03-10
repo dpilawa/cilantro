@@ -11,7 +11,7 @@ struct IRenderer;
 class SpotLight : public PointLight
 {
 public:
-    __EAPI SpotLight (CGameScene* gameScene);
+    __EAPI SpotLight (GameScene* gameScene);
     __EAPI virtual ~SpotLight ();
 
     // set attenuation factors

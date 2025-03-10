@@ -12,7 +12,7 @@ namespace cilantro {
 class Light : public GameObject
 {
 public:
-    Light (CGameScene* gameScene);
+    Light (GameScene* gameScene);
     virtual ~Light ();
 
     // enable or disable light

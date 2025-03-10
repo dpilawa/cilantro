@@ -6,12 +6,12 @@
 
 namespace cilantro {
 
-class CLoadableResource : public CResource
+class LoadableResource : public Resource
 {
 public:
-    __EAPI CLoadableResource ();
-    __EAPI CLoadableResource (const std::string& path);
-    virtual ~CLoadableResource () {};
+    __EAPI LoadableResource ();
+    __EAPI LoadableResource (const std::string& path);
+    virtual ~LoadableResource () {};
 
     virtual void Load (const std::string& path) = 0;
 

@@ -11,7 +11,7 @@ namespace cilantro {
 class PointLight : public Light
 {
 public:
-    __EAPI PointLight (CGameScene* gameScene);
+    __EAPI PointLight (GameScene* gameScene);
     __EAPI virtual ~PointLight ();
 
     // set attenuation factors

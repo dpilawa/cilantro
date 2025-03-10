@@ -5,7 +5,7 @@
 
 namespace cilantro {
 
-SplinePath::SplinePath (CGameScene* gameScene) : Path (gameScene)
+SplinePath::SplinePath (GameScene* gameScene) : Path (gameScene)
 {
 }
 

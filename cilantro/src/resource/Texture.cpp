@@ -7,19 +7,19 @@
 
 namespace cilantro {
 
-Texture::Texture (const int width, const int height, float channel) : CLoadableResource ()
+Texture::Texture (const int width, const int height, float channel) : LoadableResource ()
 {
     data = nullptr;
     GenerateSolid (width, height, channel);
 }
 
-Texture::Texture (const int width, const int height, const Vector3f& channels) : CLoadableResource ()
+Texture::Texture (const int width, const int height, const Vector3f& channels) : LoadableResource ()
 {
     data = nullptr;
     GenerateSolid (width, height, channels);
 }
 
-Texture::Texture (const std::string& path) : CLoadableResource (path)
+Texture::Texture (const std::string& path) : LoadableResource (path)
 {
     Load (path.c_str ());
 }
@@ -96,7 +96,7 @@ int Texture::GetChannels () const
 void Texture::Load (const std::string& path)
 {
     stbi_set_flip_vertically_on_load (true);
-    data = stbi_load ((CGame::GetPath() + "/" + path).c_str (), &this->width, &this->height, &this->numChannels, STBI_default);
+    data = stbi_load ((Game::GetPath() + "/" + path).c_str (), &this->width, &this->height, &this->numChannels, STBI_default);
 
     if (data == nullptr)
     {

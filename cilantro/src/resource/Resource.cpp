@@ -3,12 +3,12 @@
 
 namespace cilantro {
 
-handle_t CResource::GetHandle () const
+handle_t Resource::GetHandle () const
 {
     return m_handle;
 }
 
-std::string CResource::GetName () const
+std::string Resource::GetName () const
 {
     return m_name;
 }

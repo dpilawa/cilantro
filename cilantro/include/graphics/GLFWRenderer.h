@@ -8,12 +8,12 @@
 
 namespace cilantro {
 
-class CGLFWRenderer : public CGLRenderer
+class GLFWRenderer : public GLRenderer
 {
 public:
 
-    __EAPI CGLFWRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled, std::string windowCaption, bool fullscreen, bool resizable, bool vSync);
-    __EAPI ~CGLFWRenderer ();
+    __EAPI GLFWRenderer (GameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled, std::string windowCaption, bool fullscreen, bool resizable, bool vSync);
+    __EAPI ~GLFWRenderer ();
 
     __EAPI virtual void Initialize ();
     __EAPI virtual void Deinitialize ();

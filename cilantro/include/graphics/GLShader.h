@@ -7,11 +7,11 @@
 
 namespace cilantro {
 
-class CGLShader : public CShader
+class GLShader : public Shader
 {
 public:
-    CGLShader (const std::string& path, EShaderType type);
-    ~CGLShader () {};
+    GLShader (const std::string& path, EShaderType type);
+    ~GLShader () {};
 
     ///////////////////////////////////////////////////////////////////////////
 

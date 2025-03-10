@@ -17,11 +17,11 @@ struct GLBuffers
     GLuint depthTextureArray;
 };
 
-class CGLFramebuffer : public CFramebuffer
+class GLFramebuffer : public Framebuffer
 {
 public:
-    CGLFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayLayerCount, bool depthStencilRenderbufferEnabled);
-    virtual ~CGLFramebuffer () {};
+    GLFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayLayerCount, bool depthStencilRenderbufferEnabled);
+    virtual ~GLFramebuffer () {};
 
     ///////////////////////////////////////////////////////////////////////////
 

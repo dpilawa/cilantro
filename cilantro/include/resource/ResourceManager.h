@@ -11,11 +11,11 @@
 
 namespace cilantro {
 
-class CResource;
-class CLoadableResource;
+class Resource;
+class LoadableResource;
 
-template <typename Base = CResource>
-class CResourceManager
+template <typename Base = Resource>
+class ResourceManager
 {
     using TResourcesVec = std::vector<std::shared_ptr<Base>>;
     using TResourceNameMap = std::unordered_map<std::string, handle_t>;
@@ -23,8 +23,8 @@ class CResourceManager
     using const_iterator = typename TResourcesVec::const_iterator;
 
 public:
-    __EAPI CResourceManager();
-    __EAPI virtual ~CResourceManager();
+    __EAPI ResourceManager();
+    __EAPI virtual ~ResourceManager();
 
     template <typename T, typename ...Params>
     T& Load (const std::string& name, const std::string& path, Params&&... params);
@@ -59,10 +59,10 @@ private:
 
 template <typename Base>
 template <typename T, typename ...Params>
-T& CResourceManager<Base>::Load (const std::string& name, const std::string& path, Params&&... params)
+T& ResourceManager<Base>::Load (const std::string& name, const std::string& path, Params&&... params)
 {
     static_assert (std::is_base_of<Base, T>::value, "Invalid base class for resource");
-    static_assert (std::is_base_of<CLoadableResource, T>::value, "Resource is not derived from LoadableResource");
+    static_assert (std::is_base_of<LoadableResource, T>::value, "Resource is not derived from LoadableResource");
     std::shared_ptr<T> newResource;
 
     newResource = std::make_shared<T> (path, std::forward<Params>(params)...);
@@ -75,7 +75,7 @@ T& CResourceManager<Base>::Load (const std::string& name, const std::string& pat
 
 template <typename Base>
 template <typename T, typename ...Params>
-T& CResourceManager<Base>::Create (const std::string& name, Params&&... params)
+T& ResourceManager<Base>::Create (const std::string& name, Params&&... params)
 {
     static_assert (std::is_base_of<Base, T>::value, "Invalid base class for resource");
     std::shared_ptr<T> newResource;
@@ -90,7 +90,7 @@ T& CResourceManager<Base>::Create (const std::string& name, Params&&... params)
 
 template <typename Base>
 template <typename T>
-T& CResourceManager<Base>::GetByHandle (handle_t handle) const
+T& ResourceManager<Base>::GetByHandle (handle_t handle) const
 {
     if (handle >= this->m_nextHandle)
     {
@@ -110,7 +110,7 @@ T& CResourceManager<Base>::GetByHandle (handle_t handle) const
 
 template <typename Base>
 template <typename T>
-T& CResourceManager<Base>::GetByName (const std::string& name) const
+T& ResourceManager<Base>::GetByName (const std::string& name) const
 {
     auto resourceName = resourceNames.find (name);
 
@@ -124,7 +124,7 @@ T& CResourceManager<Base>::GetByName (const std::string& name) const
 
 template <typename Base>
 template <typename T>
-bool CResourceManager<Base>::HasName (const std::string& name) const
+bool ResourceManager<Base>::HasName (const std::string& name) const
 {
     auto resourceName = resourceNames.find (name);
 
@@ -145,7 +145,7 @@ bool CResourceManager<Base>::HasName (const std::string& name) const
 }
 
 // deduction guide for clang (c++17)
-CResourceManager () -> CResourceManager<CResource>;
+ResourceManager () -> ResourceManager<Resource>;
 
 } // namespace cilantro
 

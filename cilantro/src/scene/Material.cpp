@@ -6,7 +6,7 @@
 
 namespace cilantro {
 
-Material::Material () : CResource ()
+Material::Material () : Resource ()
 {
 }
 
@@ -17,7 +17,7 @@ Material::~Material ()
 Material& Material::SetForwardShaderProgram (const std::string& name)
 {
     forwardShaderProgram = name;
-    CGame::GetMessageBus ().Publish<MaterialUpdateMessage> (std::make_shared<MaterialUpdateMessage> (this->GetHandle ()));
+    Game::GetMessageBus ().Publish<MaterialUpdateMessage> (std::make_shared<MaterialUpdateMessage> (this->GetHandle ()));
 
     return *this;
 }
@@ -25,7 +25,7 @@ Material& Material::SetForwardShaderProgram (const std::string& name)
 Material& Material::SetDeferredGeometryPassShaderProgram (const std::string& name)
 {
     deferredGeometryPassShaderProgram = name;
-    CGame::GetMessageBus ().Publish<MaterialUpdateMessage> (std::make_shared<MaterialUpdateMessage> (this->GetHandle ()));
+    Game::GetMessageBus ().Publish<MaterialUpdateMessage> (std::make_shared<MaterialUpdateMessage> (this->GetHandle ()));
     
     return *this;
 }
@@ -33,7 +33,7 @@ Material& Material::SetDeferredGeometryPassShaderProgram (const std::string& nam
 Material& Material::SetDeferredLightingPassShaderProgram (const std::string& name)
 {
     deferredLightingPassShaderProgram = name;
-    CGame::GetMessageBus ().Publish<MaterialUpdateMessage> (std::make_shared<MaterialUpdateMessage> (this->GetHandle ()));
+    Game::GetMessageBus ().Publish<MaterialUpdateMessage> (std::make_shared<MaterialUpdateMessage> (this->GetHandle ()));
 
     return *this;
 }
@@ -66,7 +66,7 @@ property_map_t& Material::GetPropertiesMap ()
 Material& Material::SetTexture (unsigned int textureUnit, const std::string& label, Texture& texture)
 {
     textures[textureUnit] = std::pair (label, &texture);
-    CGame::GetMessageBus ().Publish<MaterialTextureUpdateMessage> (std::make_shared<MaterialTextureUpdateMessage> (this->GetHandle (), textureUnit));
+    Game::GetMessageBus ().Publish<MaterialTextureUpdateMessage> (std::make_shared<MaterialTextureUpdateMessage> (this->GetHandle (), textureUnit));
 
     return *this;
 }
@@ -74,7 +74,7 @@ Material& Material::SetTexture (unsigned int textureUnit, const std::string& lab
 Material& Material::SetProperty (const std::string& propertyName, float propertyValue)
 {
     properties[propertyName] = {propertyValue};
-    CGame::GetMessageBus ().Publish<MaterialUpdateMessage> (std::make_shared<MaterialUpdateMessage> (this->GetHandle ()));
+    Game::GetMessageBus ().Publish<MaterialUpdateMessage> (std::make_shared<MaterialUpdateMessage> (this->GetHandle ()));
 
     return *this;
 }

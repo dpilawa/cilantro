@@ -10,9 +10,9 @@ namespace cilantro {
 struct IRenderStage;
 struct IFramebuffer;
 struct IShaderProgram;
-class CRenderStage;
+class RenderStage;
 class CShaderProgram;
-class CGameScene;
+class GameScene;
 class MeshObject;
 class Material;
 class PointLight;
@@ -28,8 +28,8 @@ enum EStencilTestOperation { OP_KEEP, OP_ZERO, OP_REPLACE, OP_INC, OP_INC_WRAP, 
 enum EFaceCullingFace { FACE_FRONT, FACE_BACK };
 enum EFaceCullingDirection { DIR_CW, DIR_CCW };
 
-typedef CResourceManager<CShaderProgram> TShaderProgramManager;
-typedef CResourceManager<CRenderStage> TRenderStageManager;
+typedef ResourceManager<CShaderProgram> TShaderProgramManager;
+typedef ResourceManager<RenderStage> TRenderStageManager;
 typedef std::vector<handle_t> TRenderPipeline;
 typedef std::set<handle_t> TLightingShaderSet;
 
@@ -48,7 +48,7 @@ struct IRenderer
     virtual IRenderer& SetViewport (unsigned int x, unsigned int y, unsigned int sx, unsigned int sy) = 0;
 
     // access scene
-    virtual CGameScene* GetGameScene () = 0;
+    virtual GameScene* GetGameScene () = 0;
 
     // shader library manipulation
     virtual TShaderProgramManager& GetShaderProgramManager () = 0;

@@ -25,7 +25,7 @@ void InputController::OnFrame ()
     {
         if (event->Read ()) 
         {
-            CGame::GetMessageBus ().Publish<InputEventMessage> (std::make_shared<InputEventMessage> (event->GetName (), event->GetScale ()));
+            Game::GetMessageBus ().Publish<InputEventMessage> (std::make_shared<InputEventMessage> (event->GetName (), event->GetScale ()));
             event->Set (false);
         }
     }
@@ -38,7 +38,7 @@ void InputController::OnFrame ()
         {
             axisCompound += axis->Read () * axis->GetScale ();
         }
-        CGame::GetMessageBus ().Publish<InputAxisMessage> (std::make_shared<InputAxisMessage> (axisvector.first, axisCompound));
+        Game::GetMessageBus ().Publish<InputAxisMessage> (std::make_shared<InputAxisMessage> (axisvector.first, axisCompound));
     }
 }
 
@@ -58,7 +58,7 @@ Input<float>* InputController::CreateInputAxis (const std::string& name, float s
 
 void InputController::BindInputEvent (const std::string& name, std::function<void ()> function)
 {
-    CGame::GetMessageBus ().Subscribe<InputEventMessage> ([name, function](const std::shared_ptr<InputEventMessage>& message) 
+    Game::GetMessageBus ().Subscribe<InputEventMessage> ([name, function](const std::shared_ptr<InputEventMessage>& message) 
     { 
         if (message->GetEvent () == name)
         {
@@ -69,7 +69,7 @@ void InputController::BindInputEvent (const std::string& name, std::function<voi
 
 void InputController::BindInputAxis (const std::string& name, std::function<void (float)> function)
 {
-    CGame::GetMessageBus ().Subscribe<InputAxisMessage> ([name, function](const std::shared_ptr<InputAxisMessage>& message) 
+    Game::GetMessageBus ().Subscribe<InputAxisMessage> ([name, function](const std::shared_ptr<InputAxisMessage>& message) 
     { 
         if (message->GetEvent () == name)
         {

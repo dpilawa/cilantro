@@ -5,11 +5,11 @@
 
 namespace cilantro {
 
-class CShadowMapRenderStage : public CRenderStage
+class ShadowMapRenderStage : public RenderStage
 {
 public:
-    CShadowMapRenderStage ();
-    virtual ~CShadowMapRenderStage () {};
+    ShadowMapRenderStage ();
+    virtual ~ShadowMapRenderStage () {};
 
     ///////////////////////////////////////////////////////////////////////////
 

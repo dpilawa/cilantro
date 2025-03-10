@@ -5,7 +5,7 @@
 
 namespace cilantro {
 
-Light::Light (CGameScene* gameScene) : GameObject (gameScene)
+Light::Light (GameScene* gameScene) : GameObject (gameScene)
 {
     isEnabled = false;
     
@@ -19,7 +19,7 @@ Light::~Light ()
 void Light::SetEnabled (bool value)
 {
     isEnabled = value;
-    CGame::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
+    Game::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
 }
 
 bool Light::IsEnabled () const
@@ -30,7 +30,7 @@ bool Light::IsEnabled () const
 Light& Light::SetColor (Vector3f color)
 {
     lightColor = color;
-    CGame::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
+    Game::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
     return *this;
 }
 

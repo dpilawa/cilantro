@@ -5,18 +5,18 @@
 
 namespace cilantro {
 
-CResourceManager<CResource> CGame::m_resourceManager;
-CResourceManager<CGameScene> CGame::m_gameSceneManager;
+ResourceManager<Resource> Game::m_resourceManager;
+ResourceManager<GameScene> Game::m_gameSceneManager;
 
-CGameScene* CGame::m_currentGameScene;
-InputController* CGame::m_inputController;
-MessageBus* CGame::m_messageBus;
+GameScene* Game::m_currentGameScene;
+InputController* Game::m_inputController;
+MessageBus* Game::m_messageBus;
 
-bool CGame::m_shouldStop;
-bool CGame::m_isRunning;
-std::string CGame::m_path;
+bool Game::m_shouldStop;
+bool Game::m_isRunning;
+std::string Game::m_path;
 
-void CGame::Initialize (std::string path)
+void Game::Initialize (std::string path)
 {
     LogMessage () << "Engine starting";
 
@@ -31,7 +31,7 @@ void CGame::Initialize (std::string path)
     m_messageBus = new MessageBus ();
 }
 
-void CGame::Deinitialize ()
+void Game::Deinitialize ()
 {
     if (m_inputController != nullptr)
     {
@@ -44,37 +44,37 @@ void CGame::Deinitialize ()
     LogMessage () << "Engine stopping";
 }
 
-CResourceManager<CResource>& CGame::GetResourceManager ()
+ResourceManager<Resource>& Game::GetResourceManager ()
 {
     return m_resourceManager;
 }
 
-CResourceManager<CGameScene>& CGame::GetGameSceneManager ()
+ResourceManager<GameScene>& Game::GetGameSceneManager ()
 {
     return m_gameSceneManager;
 }
 
-CGameScene& CGame::GetCurrentGameScene ()
+GameScene& Game::GetCurrentGameScene ()
 {
     return *m_currentGameScene;
 }
 
-void CGame::SetCurrentGameScene (const std::string sceneName)
+void Game::SetCurrentGameScene (const std::string sceneName)
 {
-    m_currentGameScene = &m_gameSceneManager.GetByName<CGameScene>(sceneName);
+    m_currentGameScene = &m_gameSceneManager.GetByName<GameScene>(sceneName);
 }
 
-InputController& CGame::GetInputController ()
+InputController& Game::GetInputController ()
 {
     return *m_inputController;
 }
 
-MessageBus& CGame::GetMessageBus ()
+MessageBus& Game::GetMessageBus ()
 {
     return *m_messageBus;
 }
 
-void CGame::Run ()
+void Game::Run ()
 {	
     // initialize all game scenes
     for (auto gameScene : m_gameSceneManager)
@@ -98,13 +98,13 @@ void CGame::Run ()
     }
 }
 
-void CGame::Stop ()
+void Game::Stop ()
 {
     // stop game loop
     m_shouldStop = true;
 }
 
-void CGame::Step ()
+void Game::Step ()
 {
     // step current scene
     m_currentGameScene->OnFrame ();
@@ -113,12 +113,12 @@ void CGame::Step ()
     m_inputController->OnFrame ();
 }
 
-std::string CGame::GetPath ()
+std::string Game::GetPath ()
 {
     return m_path;
 }
 
-bool CGame::IsRunning ()
+bool Game::IsRunning ()
 {
     return m_isRunning;
 }

@@ -32,8 +32,8 @@ AssimpModelLoader::~AssimpModelLoader ()
 
 void AssimpModelLoader::Load (std::string sceneName, std::string path)
 {
-    const aiScene* scene = importer.ReadFile (CGame::GetPath() + "/" + path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_LimitBoneWeights);
-    gameScene = &CGame::GetGameSceneManager ().GetByName<CGameScene> (sceneName);
+    const aiScene* scene = importer.ReadFile (Game::GetPath() + "/" + path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_LimitBoneWeights);
+    gameScene = &Game::GetGameSceneManager ().GetByName<GameScene> (sceneName);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) 
     {
@@ -132,7 +132,7 @@ void AssimpModelLoader::ImportBone (const aiNode* node, const aiNode* parent, co
 
 void AssimpModelLoader::ImportMesh (const aiScene* scene, const aiMesh* mesh, const aiNode* parent, const aiMatrix4x4& transform)
 {
-    Mesh& myMesh = CGame::GetResourceManager ().Create<Mesh> (mesh->mName.C_Str ());
+    Mesh& myMesh = Game::GetResourceManager ().Create<Mesh> (mesh->mName.C_Str ());
 
     ImportMeshPositions (myMesh, scene, mesh);
     ImportMeshFaces (myMesh, scene, mesh);
@@ -459,9 +459,9 @@ Texture& AssimpModelLoader::ImportMeshMaterialTexture (aiMaterial* material, aiT
 #endif
 
     // if texture already exists, return it
-    if (CGame::GetResourceManager ().HasName<Texture> (sysPath))
+    if (Game::GetResourceManager ().HasName<Texture> (sysPath))
     {
-        return CGame::GetResourceManager ().GetByName<Texture> (sysPath);
+        return Game::GetResourceManager ().GetByName<Texture> (sysPath);
     }
     else 
     {
@@ -470,7 +470,7 @@ Texture& AssimpModelLoader::ImportMeshMaterialTexture (aiMaterial* material, aiT
             LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Stacked textures not supported" << sysPath;
         }
 
-        return CGame::GetResourceManager ().Load<Texture> (sysPath, sysPath);
+        return Game::GetResourceManager ().Load<Texture> (sysPath, sysPath);
 
     }
 }

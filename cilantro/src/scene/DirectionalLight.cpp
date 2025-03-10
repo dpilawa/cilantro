@@ -4,7 +4,7 @@
 
 namespace cilantro {
 
-DirectionalLight::DirectionalLight (CGameScene* gameScene) : Light (gameScene)
+DirectionalLight::DirectionalLight (GameScene* gameScene) : Light (gameScene)
 {
 }
 

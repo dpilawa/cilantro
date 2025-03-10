@@ -28,15 +28,15 @@ PYBIND11_MODULE(pycilantro, m) {
 
 // classes
 
-    py::class_<c::CGame>(m, "Game")
-        .def("Run", &c::CGame::Run)
-        .def("Initialize", &c::CGame::Initialize)
-        .def("Deinitialize", &c::CGame::Deinitialize)
-        .def("CreateGameScene", &c::CGame::Create<c::CGameScene, std::string>)
-        .def("CreateGLFWInputController", &c::CGame::Create<c::GLFWInputController>);
+    py::class_<c::Game>(m, "Game")
+        .def("Run", &c::Game::Run)
+        .def("Initialize", &c::Game::Initialize)
+        .def("Deinitialize", &c::Game::Deinitialize)
+        .def("CreateGameScene", &c::Game::Create<c::GameScene, std::string>)
+        .def("CreateGLFWInputController", &c::Game::Create<c::GLFWInputController>);
 
-    py::class_<c::CGameScene>(m, "GameScene")
-        .def("CreateGLFWRenderer", &c::CGameScene::Create<c::CGLFWRenderer, unsigned int, unsigned int, bool, bool, std::string, bool, bool, bool>);
+    py::class_<c::GameScene>(m, "GameScene")
+        .def("CreateGLFWRenderer", &c::GameScene::Create<c::GLFWRenderer, unsigned int, unsigned int, bool, bool, std::string, bool, bool, bool>);
         
     py::class_<c::Input<bool>>(m, "InputBool");
     py::class_<c::Input<float>>(m, "InputFloat");
@@ -45,26 +45,26 @@ PYBIND11_MODULE(pycilantro, m) {
         .def("CreateInputEvent", &c::GLFWInputController::CreateInputEvent)
         .def("BindInputEvent", &c::GLFWInputController::BindInputEvent);
 
-    py::class_<c::CRenderStage>(m, "RenderStage")
-        .def("SetFramebufferEnabled", &c::CRenderStage::SetFramebufferEnabled)
-        .def("SetColorAttachmentsFramebufferLink", &c::CRenderStage::SetColorAttachmentsFramebufferLink)
-        .def("SetMultisampleEnabled", &c::CRenderStage::SetMultisampleEnabled);
+    py::class_<c::RenderStage>(m, "RenderStage")
+        .def("SetFramebufferEnabled", &c::RenderStage::SetFramebufferEnabled)
+        .def("SetColorAttachmentsFramebufferLink", &c::RenderStage::SetColorAttachmentsFramebufferLink)
+        .def("SetMultisampleEnabled", &c::RenderStage::SetMultisampleEnabled);
 
-    py::class_<c::CQuadRenderStage, c::CRenderStage>(m, "QuadRenderStage")
-        .def("SetShaderProgram", &c::CQuadRenderStage::SetShaderProgram)
-        .def("SetColorAttachmentsFramebufferLink", &c::CQuadRenderStage::SetColorAttachmentsFramebufferLink)
-        .def("SetRenderStageParameterFloat", &c::CQuadRenderStage::SetRenderStageParameterFloat)
-        .def("SetRenderStageParameterVector2f", &c::CQuadRenderStage::SetRenderStageParameterVector2f)
-        .def("SetRenderStageParameterVector3f", &c::CQuadRenderStage::SetRenderStageParameterVector3f)
-        .def("SetRenderStageParameterVector4f", &c::CQuadRenderStage::SetRenderStageParameterVector4f);
+    py::class_<c::QuadRenderStage, c::RenderStage>(m, "QuadRenderStage")
+        .def("SetShaderProgram", &c::QuadRenderStage::SetShaderProgram)
+        .def("SetColorAttachmentsFramebufferLink", &c::QuadRenderStage::SetColorAttachmentsFramebufferLink)
+        .def("SetRenderStageParameterFloat", &c::QuadRenderStage::SetRenderStageParameterFloat)
+        .def("SetRenderStageParameterVector2f", &c::QuadRenderStage::SetRenderStageParameterVector2f)
+        .def("SetRenderStageParameterVector3f", &c::QuadRenderStage::SetRenderStageParameterVector3f)
+        .def("SetRenderStageParameterVector4f", &c::QuadRenderStage::SetRenderStageParameterVector4f);
 
-    py::class_<c::CRenderer>(m, "Renderer")
-        .def("CreateQuadRenderStage", &c::CRenderer::Create<c::CQuadRenderStage>)
-        .def("GetRenderStageManager", &c::CRenderer::GetRenderStageManager)
-        .def("GetWidth", &c::CRenderer::GetWidth)
-        .def("GetHeight", &c::CRenderer::GetHeight);
+    py::class_<c::Renderer>(m, "Renderer")
+        .def("CreateQuadRenderStage", &c::Renderer::Create<c::QuadRenderStage>)
+        .def("GetRenderStageManager", &c::Renderer::GetRenderStageManager)
+        .def("GetWidth", &c::Renderer::GetWidth)
+        .def("GetHeight", &c::Renderer::GetHeight);
 
-    py::class_<c::CGLFWRenderer, c::CRenderer>(m, "GLFWRenderer");
+    py::class_<c::GLFWRenderer, c::Renderer>(m, "GLFWRenderer");
 
 // enums
 

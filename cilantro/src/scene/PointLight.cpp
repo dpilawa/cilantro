@@ -6,7 +6,7 @@
 namespace cilantro
 {
 
-PointLight::PointLight (CGameScene* gameScene) : Light (gameScene)
+PointLight::PointLight (GameScene* gameScene) : Light (gameScene)
 {
     attenuationConst = 1.0f;
     attenuationLinear = 0.0f;
@@ -20,21 +20,21 @@ PointLight::~PointLight ()
 PointLight& PointLight::SetConstantAttenuationFactor (const float attenuation)
 {
     attenuationConst = attenuation;
-    CGame::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
+    Game::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
     return *this;
 }
 
 PointLight& PointLight::SetLinearAttenuationFactor (const float attenuation)
 {
     attenuationLinear = attenuation;
-    CGame::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
+    Game::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
     return *this;
 }
 
 PointLight& PointLight::SetQuadraticAttenuationFactor (const float attenuation)
 {
     attenuationQuadratic = attenuation;
-    CGame::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
+    Game::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
     return *this;
 }
 

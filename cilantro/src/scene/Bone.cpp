@@ -2,7 +2,7 @@
 
 namespace cilantro {
 
-Bone::Bone (CGameScene* gameScene) : GameObject (gameScene)
+Bone::Bone (GameScene* gameScene) : GameObject (gameScene)
 {
 }
 

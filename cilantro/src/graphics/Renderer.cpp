@@ -11,7 +11,7 @@
 
 namespace cilantro {
 
-CRenderer::CRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled)
+Renderer::Renderer (GameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled)
     : m_gameScene (gameScene)
     , m_isDeferredRendering (deferredRenderingEnabled)
     , m_isShadowMapping (shadowMappingEnabled)
@@ -25,29 +25,29 @@ CRenderer::CRenderer (CGameScene* gameScene, unsigned int width, unsigned int he
     m_lightingShaderStagesCount = 0;
 }
 
-void CRenderer::Initialize ()
+void Renderer::Initialize ()
 {
     InitializeRenderStages ();
 }
 
-void CRenderer::Deinitialize ()
+void Renderer::Deinitialize ()
 {
     DeinitializeRenderStages ();
 
     LogMessage (MSG_LOCATION) << "Rendered" << m_totalRenderedFrames << "frames in" << m_totalRenderTime << "seconds; avg FPS =" << std::round (m_totalRenderedFrames / m_totalFrameRenderTime) << "; real FPS = " << std::round (m_totalRenderedFrames / m_totalRenderTime);
 }
 
-unsigned int CRenderer::GetWidth () const
+unsigned int Renderer::GetWidth () const
 {
     return this->m_width;
 }
 
-unsigned int CRenderer::GetHeight () const
+unsigned int Renderer::GetHeight () const
 {
     return this->m_height;
 }
 
-IRenderer& CRenderer::SetResolution (unsigned int width, unsigned int height)
+IRenderer& Renderer::SetResolution (unsigned int width, unsigned int height)
 {
     IFramebuffer* fb;
     this->m_width = width;
@@ -65,46 +65,46 @@ IRenderer& CRenderer::SetResolution (unsigned int width, unsigned int height)
     return *this;
 }
 
-CGameScene* CRenderer::GetGameScene ()
+GameScene* Renderer::GetGameScene ()
 {
     return m_gameScene;
 }
 
-TShaderProgramManager& CRenderer::GetShaderProgramManager ()
+TShaderProgramManager& Renderer::GetShaderProgramManager ()
 {
     return m_shaderProgramManager;
 }
 
-TRenderStageManager& CRenderer::GetRenderStageManager ()
+TRenderStageManager& Renderer::GetRenderStageManager ()
 {
     return m_renderStageManager;
 }
 
-IRenderStage* CRenderer::GetCurrentRenderStage ()
+IRenderStage* Renderer::GetCurrentRenderStage ()
 {
     return m_currentRenderStage;
 }
 
-TRenderPipeline& CRenderer::GetRenderPipeline ()
+TRenderPipeline& Renderer::GetRenderPipeline ()
 {
     return m_renderPipeline;
 }
 
-IRenderer& CRenderer::RotateRenderPipelineLeft ()
+IRenderer& Renderer::RotateRenderPipelineLeft ()
 {
     std::rotate (m_renderPipeline.begin (), m_renderPipeline.begin () + 1, m_renderPipeline.end ());
 
     return *this;
 }
 
-IRenderer& CRenderer::RotateRenderPipelineRight ()
+IRenderer& Renderer::RotateRenderPipelineRight ()
 {
     std::rotate (m_renderPipeline.rbegin (), m_renderPipeline.rbegin () + 1, m_renderPipeline.rend ());
 
     return *this;
 }
 
-IFramebuffer* CRenderer::GetPipelineFramebuffer (EPipelineLink link)
+IFramebuffer* Renderer::GetPipelineFramebuffer (EPipelineLink link)
 {
     if ((m_currentRenderStageIdx == 0 && link == EPipelineLink::LINK_PREVIOUS) || 
         (m_currentRenderStageIdx < 2 && link == EPipelineLink::LINK_PREVIOUS_MINUS_1) ||
@@ -144,7 +144,7 @@ IFramebuffer* CRenderer::GetPipelineFramebuffer (EPipelineLink link)
     }
 }
 
-void CRenderer::RenderFrame ()
+void Renderer::RenderFrame ()
 {
     m_currentRenderStageIdx = 0;
 
@@ -171,11 +171,11 @@ void CRenderer::RenderFrame ()
     m_totalFrameRenderTime += m_gameScene->GetTimer ()->GetFrameRenderTime ();
 }
 
-void CRenderer::InitializeRenderStages ()
+void Renderer::InitializeRenderStages ()
 {
     if (m_isShadowMapping == true)
     {
-        IRenderStage& shadow = this->Create<CShadowMapRenderStage> ("shadow_map");
+        IRenderStage& shadow = this->Create<ShadowMapRenderStage> ("shadow_map");
         shadow.SetFaceCullingEnabled (true);
         shadow.SetFaceCullingMode (EFaceCullingFace::FACE_FRONT, EFaceCullingDirection::DIR_CCW);
         shadow.Initialize ();
@@ -184,7 +184,7 @@ void CRenderer::InitializeRenderStages ()
     if (m_isDeferredRendering == true)
     {
         // geometry stage
-        IRenderStage& baseDeferred = this->Create<CDeferredGeometryRenderStage> ("deferred_geometry");
+        IRenderStage& baseDeferred = this->Create<DeferredGeometryRenderStage> ("deferred_geometry");
         baseDeferred.SetDepthTestEnabled (true);
         baseDeferred.SetStencilTestEnabled (true);
         baseDeferred.SetClearColorOnFrameEnabled (true);
@@ -200,7 +200,7 @@ void CRenderer::InitializeRenderStages ()
     }
     else
     {
-        IRenderStage& baseForward = this->Create<CForwardGeometryRenderStage> ("forward");
+        IRenderStage& baseForward = this->Create<ForwardGeometryRenderStage> ("forward");
         if (m_isShadowMapping == true)
         {
             baseForward.SetDepthArrayFramebufferLink (EPipelineLink::LINK_FIRST);
@@ -209,7 +209,7 @@ void CRenderer::InitializeRenderStages ()
     }
 }
 
-void CRenderer::DeinitializeRenderStages ()
+void Renderer::DeinitializeRenderStages ()
 {
     for (auto&& stage : m_renderStageManager)
     {

@@ -11,13 +11,13 @@
 
 namespace cilantro {
 
-class CGameScene;
+class GameScene;
 
-class CRenderer : public IRenderer
+class Renderer : public IRenderer
 {
 public:
-    CRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled);
-    virtual ~CRenderer () {};
+    Renderer (GameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled);
+    virtual ~Renderer () {};
 
     ///////////////////////////////////////////////////////////////////////////
 
@@ -28,7 +28,7 @@ public:
     __EAPI unsigned int GetHeight () const override final;
     __EAPI IRenderer& SetResolution (unsigned int width, unsigned int height) override;
 
-    CGameScene* GetGameScene () override final;
+    GameScene* GetGameScene () override final;
 
     __EAPI virtual TShaderProgramManager& GetShaderProgramManager () override final;
 
@@ -54,7 +54,7 @@ public:
 
 protected:
     // game scene being rendered
-    CGameScene* m_gameScene;
+    GameScene* m_gameScene;
 
     // render pipeline
     size_t m_currentRenderStageIdx;
@@ -89,7 +89,7 @@ private:
 };
 
 template <typename T, typename ...Params>
-T& CRenderer::Create (const std::string& name, Params&&... params)
+T& Renderer::Create (const std::string& name, Params&&... params)
     requires (std::is_base_of_v<IRenderStage,T>)
 {
     T& renderStage = m_renderStageManager.Create<T> (name, params...);
@@ -104,7 +104,7 @@ T& CRenderer::Create (const std::string& name, Params&&... params)
 }
 
 template <typename T, typename ...Params>
-T& CRenderer::Create (const std::string& name, Params&&... params)
+T& Renderer::Create (const std::string& name, Params&&... params)
     requires (std::is_base_of_v<IShaderProgram,T>)
 {
     T& shaderProgram = m_shaderProgramManager.Create<T> (name, params...);

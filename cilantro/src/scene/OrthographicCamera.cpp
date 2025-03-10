@@ -7,7 +7,7 @@
 namespace cilantro
 {
 
-OrthographicCamera::OrthographicCamera (CGameScene* gameScene, float width, float near, float far) :
+OrthographicCamera::OrthographicCamera (GameScene* gameScene, float width, float near, float far) :
     Camera (gameScene),
     cameraWidth (width), nearPlane (near), farPlane (far)
 {

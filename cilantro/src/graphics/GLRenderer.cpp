@@ -23,8 +23,8 @@
 
 namespace cilantro {
 
-CGLRenderer::CGLRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled) 
-    : CRenderer (gameScene, width, height, shadowMappingEnabled, deferredRenderingEnabled)
+GLRenderer::GLRenderer (GameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled) 
+    : Renderer (gameScene, width, height, shadowMappingEnabled, deferredRenderingEnabled)
 {
     m_quadGeometryBuffer = new SGlGeometryBuffers ();
     m_uniformBuffers = new SGlUniformBuffers ();
@@ -34,7 +34,7 @@ CGLRenderer::CGLRenderer (CGameScene* gameScene, unsigned int width, unsigned in
     m_uniformSpotLightBuffer = new SGlUniformSpotLightBuffer ();
 }
 
-CGLRenderer::~CGLRenderer ()
+GLRenderer::~GLRenderer ()
 {
     for (auto&& objectBuffer : m_sceneGeometryBuffers)
     {
@@ -49,9 +49,9 @@ CGLRenderer::~CGLRenderer ()
     delete m_uniformSpotLightBuffer;
 }
 
-void CGLRenderer::Initialize ()
+void GLRenderer::Initialize ()
 {    
-    CRenderer::Initialize ();
+    Renderer::Initialize ();
 
     InitializeShaderLibrary ();
     InitializeQuadGeometryBuffer ();
@@ -60,7 +60,7 @@ void CGLRenderer::Initialize ()
     InitializeLightUniformBuffers ();
 
     // set callback for new MeshObjects
-    CGame::GetMessageBus ().Subscribe<MeshObjectUpdateMessage> (
+    Game::GetMessageBus ().Subscribe<MeshObjectUpdateMessage> (
         [&](const std::shared_ptr<MeshObjectUpdateMessage>& message) 
         { 
             Update (m_gameScene->GetGameObjectManager ().GetByHandle<MeshObject> (message->GetHandle ()));
@@ -68,13 +68,13 @@ void CGLRenderer::Initialize ()
     );
 
     // set callback for new or modified materials
-    CGame::GetMessageBus ().Subscribe<MaterialTextureUpdateMessage> (
+    Game::GetMessageBus ().Subscribe<MaterialTextureUpdateMessage> (
         [&](const std::shared_ptr<MaterialTextureUpdateMessage>& message) 
         { 
             Update (m_gameScene->GetMaterialManager ().GetByHandle<Material> (message->GetHandle ()), message->GetTextureUnit ());
         }
     );
-    CGame::GetMessageBus ().Subscribe<MaterialUpdateMessage> (
+    Game::GetMessageBus ().Subscribe<MaterialUpdateMessage> (
         [&](const std::shared_ptr<MaterialUpdateMessage>& message) 
         { 
             Update (m_gameScene->GetMaterialManager ().GetByHandle<Material> (message->GetHandle ()));
@@ -82,7 +82,7 @@ void CGLRenderer::Initialize ()
     );
     
     // set callback for new or modified lights
-    CGame::GetMessageBus ().Subscribe<LightUpdateMessage> (
+    Game::GetMessageBus ().Subscribe<LightUpdateMessage> (
         [&](const std::shared_ptr<LightUpdateMessage>& message) 
         { 
             m_gameScene->GetGameObjectManager ().GetByHandle<GameObject> (message->GetHandle ()).OnUpdate (*this); 
@@ -90,7 +90,7 @@ void CGLRenderer::Initialize ()
     );
 
     // set callback for modified scene graph (currently this only requires to reload light buffers)
-    CGame::GetMessageBus ().Subscribe<SceneGraphUpdateMessage> (
+    Game::GetMessageBus ().Subscribe<SceneGraphUpdateMessage> (
         [&](const std::shared_ptr<SceneGraphUpdateMessage>& message) 
         { 
             UpdateLightBufferRecursive (message->GetHandle ());
@@ -98,7 +98,7 @@ void CGLRenderer::Initialize ()
     );
 
     // set callback for modified transforms (currently this only requires to reload light buffers)
-    CGame::GetMessageBus ().Subscribe<TransformUpdateMessage> (
+    Game::GetMessageBus ().Subscribe<TransformUpdateMessage> (
         [&](const std::shared_ptr<TransformUpdateMessage>& message) 
         { 
             UpdateLightBufferRecursive (message->GetHandle ());
@@ -107,9 +107,9 @@ void CGLRenderer::Initialize ()
     
 }
 
-void CGLRenderer::Deinitialize ()
+void GLRenderer::Deinitialize ()
 {
-    CRenderer::Deinitialize ();
+    Renderer::Deinitialize ();
 
     DeinitializeQuadGeometryBuffer ();
     DeinitializeObjectBuffers ();
@@ -117,26 +117,26 @@ void CGLRenderer::Deinitialize ()
     DeinitializeLightUniformBuffers ();
 }
 
-IRenderer& CGLRenderer::SetViewport (unsigned int x, unsigned int y, unsigned int sx, unsigned int sy)
+IRenderer& GLRenderer::SetViewport (unsigned int x, unsigned int y, unsigned int sx, unsigned int sy)
 {
     glViewport (x, y, sx, sy);
 
     return *this;
 }
 
-void CGLRenderer::RenderFrame ()
+void GLRenderer::RenderFrame ()
 {
-    CRenderer::RenderFrame ();
+    Renderer::RenderFrame ();
 }
 
-void CGLRenderer::Draw (MeshObject& meshObject)
+void GLRenderer::Draw (MeshObject& meshObject)
 {
     GLuint shaderProgramId;
 
     Material& objM = meshObject.GetMaterial ();
 
     // get shader program for rendered meshobject (geometry pass)
-    CGLShaderProgram& geometryShaderProgram = m_shaderProgramManager.GetByName<CGLShaderProgram> (
+    GLShaderProgram& geometryShaderProgram = m_shaderProgramManager.GetByName<GLShaderProgram> (
         m_isDeferredRendering
         ? objM.GetDeferredGeometryPassShaderProgram ()
         : objM.GetForwardShaderProgram ()
@@ -212,7 +212,7 @@ void CGLRenderer::Draw (MeshObject& meshObject)
     // get shader program for rendered meshobject (lighting pass)
     if (m_isDeferredRendering)
     {
-        CGLShaderProgram& lightingShaderProgram = m_shaderProgramManager.GetByName<CGLShaderProgram>(objM.GetDeferredLightingPassShaderProgram ());
+        GLShaderProgram& lightingShaderProgram = m_shaderProgramManager.GetByName<GLShaderProgram>(objM.GetDeferredLightingPassShaderProgram ());
         lightingShaderProgram.Use ();
         shaderProgramId = lightingShaderProgram.GetProgramId ();
 
@@ -227,12 +227,12 @@ void CGLRenderer::Draw (MeshObject& meshObject)
     RenderGeometryBuffer (b);
 }
 
-void CGLRenderer::DrawQuad ()
+void GLRenderer::DrawQuad ()
 {
     RenderGeometryBuffer (m_quadGeometryBuffer);
 }
 
-void CGLRenderer::DrawAllGeometryBuffers (IShaderProgram& shader)
+void GLRenderer::DrawAllGeometryBuffers (IShaderProgram& shader)
 {
     shader.Use ();
 
@@ -251,7 +251,7 @@ void CGLRenderer::DrawAllGeometryBuffers (IShaderProgram& shader)
     }
 }
 
-void CGLRenderer::Update (MeshObject& meshObject)
+void GLRenderer::Update (MeshObject& meshObject)
 {
     handle_t objectHandle = meshObject.GetHandle ();
 
@@ -371,7 +371,7 @@ void CGLRenderer::Update (MeshObject& meshObject)
 
 }
 
-void CGLRenderer::Update (Material& material, unsigned int textureUnit)
+void GLRenderer::Update (Material& material, unsigned int textureUnit)
 {
     handle_t materialHandle = material.GetHandle ();
     GLuint texture;
@@ -445,7 +445,7 @@ void CGLRenderer::Update (Material& material, unsigned int textureUnit)
 
 }
 
-void CGLRenderer::Update (Material& material)
+void GLRenderer::Update (Material& material)
 {
     handle_t shaderProgramHandle = m_shaderProgramManager.GetByName<CShaderProgram>(material.GetDeferredLightingPassShaderProgram ()).GetHandle ();
     std::string shaderProgramName = material.GetDeferredLightingPassShaderProgram ();
@@ -466,7 +466,7 @@ void CGLRenderer::Update (Material& material)
             // create and append new lighting stage
             m_lightingShaderStagesCount++;
             m_lightingShaders.insert (shaderProgramHandle);
-            CQuadRenderStage& p = Create <CQuadRenderStage> ("deferred_lighting_" + shaderProgramName);
+            QuadRenderStage& p = Create <QuadRenderStage> ("deferred_lighting_" + shaderProgramName);
             p.SetShaderProgram (shaderProgramName);
             p.SetStencilTestEnabled (true).SetStencilTest (EStencilTestFunction::FUNCTION_EQUAL, static_cast<int> (shaderProgramHandle));
             p.SetClearColorOnFrameEnabled (true);
@@ -494,7 +494,7 @@ void CGLRenderer::Update (Material& material)
             {
                 handle_t stageHandle = GetRenderPipeline ()[2 + (m_isShadowMapping ? 1 : 0)];
 
-                CQuadRenderStage& stage = m_renderStageManager.GetByHandle<CQuadRenderStage> (stageHandle);
+                QuadRenderStage& stage = m_renderStageManager.GetByHandle<QuadRenderStage> (stageHandle);
                 stage.SetClearColorOnFrameEnabled (false);
                 stage.SetFramebufferEnabled (false);
             }
@@ -513,7 +513,7 @@ void CGLRenderer::Update (Material& material)
     }
 }
 
-void CGLRenderer::Update (PointLight& pointLight)
+void GLRenderer::Update (PointLight& pointLight)
 {
     handle_t objectHandle = pointLight.GetHandle ();
     size_t lightId;
@@ -563,7 +563,7 @@ void CGLRenderer::Update (PointLight& pointLight)
 
 }
 
-void CGLRenderer::Update (DirectionalLight& directionalLight)
+void GLRenderer::Update (DirectionalLight& directionalLight)
 {
     handle_t objectHandle = directionalLight.GetHandle ();
     size_t lightId;
@@ -584,11 +584,11 @@ void CGLRenderer::Update (DirectionalLight& directionalLight)
     }
 
     // update invocation count in shadow map geometry shader
-    CGLShader shadowmapShader = CGame::GetResourceManager ().GetByName<CGLShader> ("shadowmap_directional_geometry_shader");
+    GLShader shadowmapShader = Game::GetResourceManager ().GetByName<GLShader> ("shadowmap_directional_geometry_shader");
     shadowmapShader.SetParameter ("%%ACTIVE_DIRECTIONAL_LIGHTS%%", std::to_string (GetDirectionalLightCount ()));
     shadowmapShader.Compile ();
 
-    CGLShaderProgram shadowmapShaderProg = GetShaderProgramManager ().GetByName<CGLShaderProgram> ("shadowmap_directional_shader");
+    GLShaderProgram shadowmapShaderProg = GetShaderProgramManager ().GetByName<GLShaderProgram> ("shadowmap_directional_shader");
     shadowmapShaderProg.Link ();    
     shadowmapShaderProg.BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL);
 
@@ -616,7 +616,7 @@ void CGLRenderer::Update (DirectionalLight& directionalLight)
     glBindBuffer (GL_UNIFORM_BUFFER, 0);
 }
 
-void CGLRenderer::Update (SpotLight& spotLight)
+void GLRenderer::Update (SpotLight& spotLight)
 {
     handle_t objectHandle = spotLight.GetHandle ();
     size_t lightId;
@@ -675,32 +675,32 @@ void CGLRenderer::Update (SpotLight& spotLight)
     glBindBuffer (GL_UNIFORM_BUFFER, 0);
 }
 
-void CGLRenderer::UpdateCameraBuffers (Camera& camera)
+void GLRenderer::UpdateCameraBuffers (Camera& camera)
 {
     LoadViewProjectionUniformBuffers (&camera);
 }
 
-void CGLRenderer::UpdateLightViewBuffers ()
+void GLRenderer::UpdateLightViewBuffers ()
 {
     LoadLightViewUniformBuffers ();
 }
 
-size_t CGLRenderer::GetPointLightCount () const
+size_t GLRenderer::GetPointLightCount () const
 {
     return m_uniformPointLightBuffer->pointLightCount;
 }
 
-size_t CGLRenderer::GetDirectionalLightCount () const
+size_t GLRenderer::GetDirectionalLightCount () const
 {
     return m_uniformDirectionalLightBuffer->directionalLightCount;
 }
 
-size_t CGLRenderer::GetSpotLightCount () const
+size_t GLRenderer::GetSpotLightCount () const
 {
     return m_uniformSpotLightBuffer->spotLightCount;
 }
 
-IFramebuffer* CGLRenderer::CreateFramebuffer (unsigned int width, unsigned int height, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayTextureCount, bool depthStencilRenderbufferEnabled, bool multisampleEnabled)
+IFramebuffer* GLRenderer::CreateFramebuffer (unsigned int width, unsigned int height, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayTextureCount, bool depthStencilRenderbufferEnabled, bool multisampleEnabled)
 {
     IFramebuffer* framebuffer;
 
@@ -709,12 +709,12 @@ IFramebuffer* CGLRenderer::CreateFramebuffer (unsigned int width, unsigned int h
 #if (CILANTRO_GL_VERSION <= 150)
         LogMessage (MSG_LOCATION, EXIT_FAILURE) << "OpenGL 3.2 required for multisample framebuffers";
 #else
-        framebuffer = new CGLMultisampleFramebuffer (width, height, rgbTextureCount, rgbaTextureCount, depthBufferArrayTextureCount, depthStencilRenderbufferEnabled);
+        framebuffer = new GLMultisampleFramebuffer (width, height, rgbTextureCount, rgbaTextureCount, depthBufferArrayTextureCount, depthStencilRenderbufferEnabled);
 #endif
     }
     else
     {
-        framebuffer = new CGLFramebuffer (width, height, rgbTextureCount, rgbaTextureCount, depthBufferArrayTextureCount, depthStencilRenderbufferEnabled);
+        framebuffer = new GLFramebuffer (width, height, rgbTextureCount, rgbaTextureCount, depthBufferArrayTextureCount, depthStencilRenderbufferEnabled);
     }
     
     framebuffer->Initialize ();
@@ -722,22 +722,22 @@ IFramebuffer* CGLRenderer::CreateFramebuffer (unsigned int width, unsigned int h
     return framebuffer;
 }
 
-void CGLRenderer::BindDefaultFramebuffer ()
+void GLRenderer::BindDefaultFramebuffer ()
 {
     glBindFramebuffer (GL_FRAMEBUFFER, (GLint) 0);
 }
 
-void CGLRenderer::BindDefaultDepthBuffer ()
+void GLRenderer::BindDefaultDepthBuffer ()
 {
     glFramebufferTexture (GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, 0, 0);
 }
 
-void CGLRenderer::BindDefaultStencilBuffer ()
+void GLRenderer::BindDefaultStencilBuffer ()
 {
     glFramebufferTexture (GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, 0, 0);
 }
 
-void CGLRenderer::BindDefaultTextures ()
+void GLRenderer::BindDefaultTextures ()
 {
     for (unsigned int i = 0; i < CILANTRO_MAX_TEXTURE_UNITS; ++i)
     {
@@ -746,25 +746,25 @@ void CGLRenderer::BindDefaultTextures ()
     }
 }
 
-void CGLRenderer::ClearColorBuffer (const Vector4f& rgba)
+void GLRenderer::ClearColorBuffer (const Vector4f& rgba)
 {
     glClearColor (rgba[0], rgba[1], rgba[2], rgba[3]);
     glClear (GL_COLOR_BUFFER_BIT);
 }
 
-void CGLRenderer::ClearDepthBuffer ()
+void GLRenderer::ClearDepthBuffer ()
 {
     glClearDepth (1.0f);
     glClear (GL_DEPTH_BUFFER_BIT);
 }
 
-void CGLRenderer::ClearStencilBuffer ()
+void GLRenderer::ClearStencilBuffer ()
 {
     glClearStencil (0);
     glClear (GL_STENCIL_BUFFER_BIT);
 }
 
-void CGLRenderer::SetDepthTestEnabled (bool value)
+void GLRenderer::SetDepthTestEnabled (bool value)
 {
     if (value == true)
     {
@@ -776,7 +776,7 @@ void CGLRenderer::SetDepthTestEnabled (bool value)
     }    
 }
 
-void CGLRenderer::SetFaceCullingEnabled (bool value)
+void GLRenderer::SetFaceCullingEnabled (bool value)
 {
     if (value == true)
     {        
@@ -788,7 +788,7 @@ void CGLRenderer::SetFaceCullingEnabled (bool value)
     }    
 }
 
-void CGLRenderer::SetFaceCullingMode (EFaceCullingFace face, EFaceCullingDirection direction)
+void GLRenderer::SetFaceCullingMode (EFaceCullingFace face, EFaceCullingDirection direction)
 {
     if (face == EFaceCullingFace::FACE_FRONT)
     {
@@ -809,7 +809,7 @@ void CGLRenderer::SetFaceCullingMode (EFaceCullingFace face, EFaceCullingDirecti
     }    
 }
 
-void CGLRenderer::SetMultisamplingEnabled (bool value)
+void GLRenderer::SetMultisamplingEnabled (bool value)
 {
     if (value == true)
     {        
@@ -821,7 +821,7 @@ void CGLRenderer::SetMultisamplingEnabled (bool value)
     }    
 }
 
-void CGLRenderer::SetStencilTestEnabled (bool value)
+void GLRenderer::SetStencilTestEnabled (bool value)
 {
     if (value == true)
     {        
@@ -834,7 +834,7 @@ void CGLRenderer::SetStencilTestEnabled (bool value)
     } 
 }
 
-void CGLRenderer::SetStencilTestFunction (EStencilTestFunction testFunction, int testValue)
+void GLRenderer::SetStencilTestFunction (EStencilTestFunction testFunction, int testValue)
 {
     auto GLFun = [](EStencilTestFunction f)
     {
@@ -856,7 +856,7 @@ void CGLRenderer::SetStencilTestFunction (EStencilTestFunction testFunction, int
     glStencilMask (0xff);
 }
 
-void CGLRenderer::SetStencilTestOperation (EStencilTestOperation sFail, EStencilTestOperation dpFail, EStencilTestOperation dpPass)
+void GLRenderer::SetStencilTestOperation (EStencilTestOperation sFail, EStencilTestOperation dpFail, EStencilTestOperation dpPass)
 {
     auto GLOp = [](EStencilTestOperation op)
     {
@@ -877,31 +877,31 @@ void CGLRenderer::SetStencilTestOperation (EStencilTestOperation sFail, EStencil
     glStencilOp (GLOp (sFail), GLOp (dpFail), GLOp (dpPass));
 }
 
-void CGLRenderer::InitializeShaderLibrary ()
+void GLRenderer::InitializeShaderLibrary ()
 {
-    CGLShaderProgram* p;
+    GLShaderProgram* p;
 
     // load standard shaders
-    CGame::GetResourceManager ().Load<CGLShader> ("default_vertex_shader", "shaders/default.vs", EShaderType::VERTEX_SHADER);
-    CGame::GetResourceManager ().Load<CGLShader> ("flatquad_vertex_shader", "shaders/flatquad.vs", EShaderType::VERTEX_SHADER);
-    CGame::GetResourceManager ().Load<CGLShader> ("pbr_forward_fragment_shader", "shaders/pbr_forward.fs", EShaderType::FRAGMENT_SHADER);    
-    CGame::GetResourceManager ().Load<CGLShader> ("pbr_deferred_geometrypass_fragment_shader", "shaders/pbr_deferred_geometrypass.fs", EShaderType::FRAGMENT_SHADER); 
-    CGame::GetResourceManager ().Load<CGLShader> ("pbr_deferred_lightingpass_fragment_shader", "shaders/pbr_deferred_lightingpass.fs", EShaderType::FRAGMENT_SHADER); 
-    CGame::GetResourceManager ().Load<CGLShader> ("blinnphong_forward_fragment_shader", "shaders/blinnphong_forward.fs", EShaderType::FRAGMENT_SHADER);
-    CGame::GetResourceManager ().Load<CGLShader> ("blinnphong_deferred_geometrypass_fragment_shader", "shaders/blinnphong_deferred_geometrypass.fs", EShaderType::FRAGMENT_SHADER); 
-    CGame::GetResourceManager ().Load<CGLShader> ("blinnphong_deferred_lightingpass_fragment_shader", "shaders/blinnphong_deferred_lightingpass.fs", EShaderType::FRAGMENT_SHADER); 
-    CGame::GetResourceManager ().Load<CGLShader> ("flatquad_fragment_shader", "shaders/flatquad.fs", EShaderType::FRAGMENT_SHADER);
-    CGame::GetResourceManager ().Load<CGLShader> ("post_hdr_fragment_shader", "shaders/post_hdr.fs", EShaderType::FRAGMENT_SHADER);
-    CGame::GetResourceManager ().Load<CGLShader> ("post_gamma_fragment_shader", "shaders/post_gamma.fs", EShaderType::FRAGMENT_SHADER);
-    CGame::GetResourceManager ().Load<CGLShader> ("post_fxaa_fragment_shader", "shaders/post_fxaa.fs", EShaderType::FRAGMENT_SHADER);
-    CGame::GetResourceManager ().Load<CGLShader> ("shadowmap_vertex_shader", "shaders/shadowmap.vs", EShaderType::VERTEX_SHADER);
-    CGame::GetResourceManager ().Load<CGLShader> ("shadowmap_directional_geometry_shader", "shaders/shadowmap_directional.gs", EShaderType::GEOMETRY_SHADER);
-    CGame::GetResourceManager ().Load<CGLShader> ("shadowmap_fragment_shader", "shaders/shadowmap.fs", EShaderType::FRAGMENT_SHADER);
+    Game::GetResourceManager ().Load<GLShader> ("default_vertex_shader", "shaders/default.vs", EShaderType::VERTEX_SHADER);
+    Game::GetResourceManager ().Load<GLShader> ("flatquad_vertex_shader", "shaders/flatquad.vs", EShaderType::VERTEX_SHADER);
+    Game::GetResourceManager ().Load<GLShader> ("pbr_forward_fragment_shader", "shaders/pbr_forward.fs", EShaderType::FRAGMENT_SHADER);    
+    Game::GetResourceManager ().Load<GLShader> ("pbr_deferred_geometrypass_fragment_shader", "shaders/pbr_deferred_geometrypass.fs", EShaderType::FRAGMENT_SHADER); 
+    Game::GetResourceManager ().Load<GLShader> ("pbr_deferred_lightingpass_fragment_shader", "shaders/pbr_deferred_lightingpass.fs", EShaderType::FRAGMENT_SHADER); 
+    Game::GetResourceManager ().Load<GLShader> ("blinnphong_forward_fragment_shader", "shaders/blinnphong_forward.fs", EShaderType::FRAGMENT_SHADER);
+    Game::GetResourceManager ().Load<GLShader> ("blinnphong_deferred_geometrypass_fragment_shader", "shaders/blinnphong_deferred_geometrypass.fs", EShaderType::FRAGMENT_SHADER); 
+    Game::GetResourceManager ().Load<GLShader> ("blinnphong_deferred_lightingpass_fragment_shader", "shaders/blinnphong_deferred_lightingpass.fs", EShaderType::FRAGMENT_SHADER); 
+    Game::GetResourceManager ().Load<GLShader> ("flatquad_fragment_shader", "shaders/flatquad.fs", EShaderType::FRAGMENT_SHADER);
+    Game::GetResourceManager ().Load<GLShader> ("post_hdr_fragment_shader", "shaders/post_hdr.fs", EShaderType::FRAGMENT_SHADER);
+    Game::GetResourceManager ().Load<GLShader> ("post_gamma_fragment_shader", "shaders/post_gamma.fs", EShaderType::FRAGMENT_SHADER);
+    Game::GetResourceManager ().Load<GLShader> ("post_fxaa_fragment_shader", "shaders/post_fxaa.fs", EShaderType::FRAGMENT_SHADER);
+    Game::GetResourceManager ().Load<GLShader> ("shadowmap_vertex_shader", "shaders/shadowmap.vs", EShaderType::VERTEX_SHADER);
+    Game::GetResourceManager ().Load<GLShader> ("shadowmap_directional_geometry_shader", "shaders/shadowmap_directional.gs", EShaderType::GEOMETRY_SHADER);
+    Game::GetResourceManager ().Load<GLShader> ("shadowmap_fragment_shader", "shaders/shadowmap.fs", EShaderType::FRAGMENT_SHADER);
 
     // PBR model (forward)
-    p = &Create<CGLShaderProgram> ("pbr_forward_shader");
-    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("default_vertex_shader"));
-    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("pbr_forward_fragment_shader"));
+    p = &Create<GLShaderProgram> ("pbr_forward_shader");
+    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("default_vertex_shader"));
+    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("pbr_forward_fragment_shader"));
     p->Link ();
     p->Use ();
 #if (CILANTRO_GL_VERSION < 330)
@@ -927,9 +927,9 @@ void CGLRenderer::InitializeShaderLibrary ()
     CheckGLError (MSG_LOCATION);
 
     // PBR model (deferred, geometry pass)
-    p = &Create<CGLShaderProgram> ("pbr_deferred_geometrypass_shader");
-    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("default_vertex_shader"));
-    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("pbr_deferred_geometrypass_fragment_shader"));
+    p = &Create<GLShaderProgram> ("pbr_deferred_geometrypass_shader");
+    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("default_vertex_shader"));
+    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("pbr_deferred_geometrypass_fragment_shader"));
     p->Link ();
     p->Use ();
 #if (CILANTRO_GL_VERSION < 330)
@@ -950,9 +950,9 @@ void CGLRenderer::InitializeShaderLibrary ()
     CheckGLError (MSG_LOCATION);
 
     // PBR model (deferred, lighting pass)
-    p = &Create<CGLShaderProgram> ("pbr_deferred_lightingpass_shader");
-    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("flatquad_vertex_shader"));
-    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("pbr_deferred_lightingpass_fragment_shader"));
+    p = &Create<GLShaderProgram> ("pbr_deferred_lightingpass_shader");
+    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("flatquad_vertex_shader"));
+    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("pbr_deferred_lightingpass_fragment_shader"));
     p->Link ();
     p->Use ();
 #if (CILANTRO_GL_VERSION < 330)
@@ -974,9 +974,9 @@ void CGLRenderer::InitializeShaderLibrary ()
     CheckGLError (MSG_LOCATION);
 
     // Blinn-Phong model (forward)
-    p = &Create<CGLShaderProgram> ("blinnphong_forward_shader");
-    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("default_vertex_shader"));
-    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("blinnphong_forward_fragment_shader"));
+    p = &Create<GLShaderProgram> ("blinnphong_forward_shader");
+    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("default_vertex_shader"));
+    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("blinnphong_forward_fragment_shader"));
     p->Link ();
     p->Use ();
 #if (CILANTRO_GL_VERSION < 330)	
@@ -1001,9 +1001,9 @@ void CGLRenderer::InitializeShaderLibrary ()
     CheckGLError (MSG_LOCATION);
     
     // Blinn-Phong model (deferred, geometry pass)
-    p = &Create<CGLShaderProgram> ("blinnphong_deferred_geometrypass_shader");
-    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("default_vertex_shader"));
-    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("blinnphong_deferred_geometrypass_fragment_shader"));
+    p = &Create<GLShaderProgram> ("blinnphong_deferred_geometrypass_shader");
+    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("default_vertex_shader"));
+    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("blinnphong_deferred_geometrypass_fragment_shader"));
     p->Link ();
     p->Use ();
 #if (CILANTRO_GL_VERSION < 330)
@@ -1023,9 +1023,9 @@ void CGLRenderer::InitializeShaderLibrary ()
     CheckGLError (MSG_LOCATION);
 
     // Blinn-Phong model (deferred, lighting pass)
-    p = &Create<CGLShaderProgram> ("blinnphong_deferred_lightingpass_shader");
-    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("flatquad_vertex_shader"));
-    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("blinnphong_deferred_lightingpass_fragment_shader"));
+    p = &Create<GLShaderProgram> ("blinnphong_deferred_lightingpass_shader");
+    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("flatquad_vertex_shader"));
+    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("blinnphong_deferred_lightingpass_fragment_shader"));
     p->Link ();
     p->Use ();
 #if (CILANTRO_GL_VERSION < 330)
@@ -1047,9 +1047,9 @@ void CGLRenderer::InitializeShaderLibrary ()
     CheckGLError (MSG_LOCATION);
 
     // Screen quad rendering
-    p = &Create<CGLShaderProgram> ("flatquad_shader");
-    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("flatquad_vertex_shader"));
-    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("flatquad_fragment_shader"));   
+    p = &Create<GLShaderProgram> ("flatquad_shader");
+    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("flatquad_vertex_shader"));
+    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("flatquad_fragment_shader"));   
 #if (CILANTRO_GL_VERSION < 330)	
     glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
     glBindAttribLocation (p->GetProgramId (), 1, "vTextureCoordinates");
@@ -1062,9 +1062,9 @@ void CGLRenderer::InitializeShaderLibrary ()
     CheckGLError (MSG_LOCATION);
 
     // Post-processing HDR
-    p = &Create<CGLShaderProgram> ("post_hdr_shader");
-    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("flatquad_vertex_shader"));
-    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("post_hdr_fragment_shader"));
+    p = &Create<GLShaderProgram> ("post_hdr_shader");
+    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("flatquad_vertex_shader"));
+    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("post_hdr_fragment_shader"));
 #if (CILANTRO_GL_VERSION < 330)	
     glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
     glBindAttribLocation (p->GetProgramId (), 1, "vTextureCoordinates");
@@ -1077,9 +1077,9 @@ void CGLRenderer::InitializeShaderLibrary ()
     CheckGLError (MSG_LOCATION);
 
     // Post-processing gamma
-    p = &Create<CGLShaderProgram> ("post_gamma_shader");
-    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("flatquad_vertex_shader"));
-    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("post_gamma_fragment_shader"));   
+    p = &Create<GLShaderProgram> ("post_gamma_shader");
+    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("flatquad_vertex_shader"));
+    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("post_gamma_fragment_shader"));   
 #if (CILANTRO_GL_VERSION < 330)	
     glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
     glBindAttribLocation (p->GetProgramId (), 1, "vTextureCoordinates");
@@ -1092,9 +1092,9 @@ void CGLRenderer::InitializeShaderLibrary ()
     CheckGLError (MSG_LOCATION);
 
     // Post-processing fxaa
-    p = &Create<CGLShaderProgram> ("post_fxaa_shader");
-    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("flatquad_vertex_shader"));
-    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("post_fxaa_fragment_shader"));   
+    p = &Create<GLShaderProgram> ("post_fxaa_shader");
+    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("flatquad_vertex_shader"));
+    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("post_fxaa_fragment_shader"));   
 #if (CILANTRO_GL_VERSION < 330)	
     glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
     glBindAttribLocation (p->GetProgramId (), 1, "vTextureCoordinates");
@@ -1107,10 +1107,10 @@ void CGLRenderer::InitializeShaderLibrary ()
     CheckGLError (MSG_LOCATION);
 
     // Shadow map (directional)
-    p = &Create<CGLShaderProgram> ("shadowmap_directional_shader");
-    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("shadowmap_vertex_shader"));
-    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("shadowmap_directional_geometry_shader"));
-    p->AttachShader (CGame::GetResourceManager ().GetByName<CGLShader>("shadowmap_fragment_shader"));
+    p = &Create<GLShaderProgram> ("shadowmap_directional_shader");
+    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("shadowmap_vertex_shader"));
+    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("shadowmap_directional_geometry_shader"));
+    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("shadowmap_fragment_shader"));
 #if (CILANTRO_GL_VERSION < 330)	
     glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
 #endif
@@ -1123,7 +1123,7 @@ void CGLRenderer::InitializeShaderLibrary ()
 
 }
 
-void CGLRenderer::InitializeMatrixUniformBuffers ()
+void GLRenderer::InitializeMatrixUniformBuffers ()
 {
     // create uniform buffer for view and projection matrices
     glGenBuffers (1, &m_uniformBuffers->UBO[UBO_MATRICES]);
@@ -1140,7 +1140,7 @@ void CGLRenderer::InitializeMatrixUniformBuffers ()
     CheckGLError (MSG_LOCATION);
 }
 
-void CGLRenderer::LoadViewProjectionUniformBuffers (Camera* camera)
+void GLRenderer::LoadViewProjectionUniformBuffers (Camera* camera)
 {
     Matrix4f view = camera->GetViewMatrix ();
     Matrix4f projection = camera->GetProjectionMatrix (m_width, m_height);
@@ -1158,7 +1158,7 @@ void CGLRenderer::LoadViewProjectionUniformBuffers (Camera* camera)
     glBindBuffer (GL_UNIFORM_BUFFER, 0);
 }
 
-void CGLRenderer::LoadLightViewUniformBuffers ()
+void GLRenderer::LoadLightViewUniformBuffers ()
 {
     Matrix4f view = m_gameScene->GetActiveCamera ()->GetViewMatrix ();
     Matrix4f projection = m_gameScene->GetActiveCamera ()->GetProjectionMatrix (m_width, m_height);
@@ -1228,13 +1228,13 @@ void CGLRenderer::LoadLightViewUniformBuffers ()
 
 }
 
-void CGLRenderer::DeinitializeMatrixUniformBuffers ()
+void GLRenderer::DeinitializeMatrixUniformBuffers ()
 {
     glDeleteBuffers (1, &m_uniformBuffers->UBO[UBO_MATRICES]);
     glDeleteBuffers (1, &m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTVIEWMATRICES]);
 }
 
-void CGLRenderer::InitializeObjectBuffers ()
+void GLRenderer::InitializeObjectBuffers ()
 {
     // create and load object buffers for all existing objects
     for (auto&& gameObject : m_gameScene->GetGameObjectManager ())
@@ -1247,7 +1247,7 @@ void CGLRenderer::InitializeObjectBuffers ()
     }
 }
 
-void CGLRenderer::DeinitializeObjectBuffers ()
+void GLRenderer::DeinitializeObjectBuffers ()
 {
     for (auto&& buffer : m_sceneGeometryBuffers)
     {
@@ -1257,7 +1257,7 @@ void CGLRenderer::DeinitializeObjectBuffers ()
     }
 }
 
-void CGLRenderer::InitializeQuadGeometryBuffer ()
+void GLRenderer::InitializeQuadGeometryBuffer ()
 {
     // set up VBO and VAO
     float quadVertices[] = {
@@ -1308,13 +1308,13 @@ void CGLRenderer::InitializeQuadGeometryBuffer ()
     CheckGLError (MSG_LOCATION);
 }
 
-void CGLRenderer::DeinitializeQuadGeometryBuffer ()
+void GLRenderer::DeinitializeQuadGeometryBuffer ()
 {
     glDeleteVertexArrays(1, &m_quadGeometryBuffer->VAO);
     glDeleteBuffers(1, &m_quadGeometryBuffer->VBO[EGlVboType::VBO_VERTICES]);
 }
 
-void CGLRenderer::InitializeLightUniformBuffers ()
+void GLRenderer::InitializeLightUniformBuffers ()
 {
     m_uniformPointLightBuffer->pointLightCount = 0;
     m_uniformSpotLightBuffer->spotLightCount = 0;
@@ -1349,7 +1349,7 @@ void CGLRenderer::InitializeLightUniformBuffers ()
 
 }
 
-void CGLRenderer::DeinitializeLightUniformBuffers ()
+void GLRenderer::DeinitializeLightUniformBuffers ()
 {
     // delete all light buffers
     glDeleteBuffers (1, &m_uniformBuffers->UBO[UBO_POINTLIGHTS]);
@@ -1357,7 +1357,7 @@ void CGLRenderer::DeinitializeLightUniformBuffers ()
     glDeleteBuffers (1, &m_uniformBuffers->UBO[UBO_SPOTLIGHTS]);
 }
 
-void CGLRenderer::UpdateLightBufferRecursive (handle_t objectHandle)
+void GLRenderer::UpdateLightBufferRecursive (handle_t objectHandle)
 {
     GameObject* light = &m_gameScene->GetGameObjectManager ().GetByHandle<GameObject> (objectHandle);
 
@@ -1373,7 +1373,7 @@ void CGLRenderer::UpdateLightBufferRecursive (handle_t objectHandle)
 
 }
 
-void CGLRenderer::RenderGeometryBuffer (SGlGeometryBuffers* buffer)
+void GLRenderer::RenderGeometryBuffer (SGlGeometryBuffers* buffer)
 {
     // bind
     glBindVertexArray (buffer->VAO);
@@ -1385,7 +1385,7 @@ void CGLRenderer::RenderGeometryBuffer (SGlGeometryBuffers* buffer)
     glBindVertexArray (0);
 }
 
-void CGLRenderer::CheckGLError (const std::string& location)
+void GLRenderer::CheckGLError (const std::string& location)
 {
     GLuint errorCode;
 

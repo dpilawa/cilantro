@@ -7,19 +7,19 @@
 
 namespace cilantro {
 
-CDeferredGeometryRenderStage::CDeferredGeometryRenderStage () 
-    : CRenderStage ()
+DeferredGeometryRenderStage::DeferredGeometryRenderStage () 
+    : RenderStage ()
 {
 }
 
-void CDeferredGeometryRenderStage::Initialize ()
+void DeferredGeometryRenderStage::Initialize ()
 {
     InitializeFramebuffer ();
 }
 
-void CDeferredGeometryRenderStage::OnFrame ()
+void DeferredGeometryRenderStage::OnFrame ()
 {
-    CRenderStage::OnFrame ();
+    RenderStage::OnFrame ();
 
     // load uniform buffers
     m_renderer->UpdateCameraBuffers (*m_renderer->GetGameScene ()->GetActiveCamera ());
@@ -45,7 +45,7 @@ void CDeferredGeometryRenderStage::OnFrame ()
  
 }
 
-void CDeferredGeometryRenderStage::InitializeFramebuffer ()
+void DeferredGeometryRenderStage::InitializeFramebuffer ()
 {
     if (m_isFramebufferEnabled)
     {

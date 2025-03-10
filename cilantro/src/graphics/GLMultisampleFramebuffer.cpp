@@ -3,16 +3,16 @@
 
 namespace cilantro {
 
-CGLMultisampleFramebuffer::CGLMultisampleFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayLayerCount, bool depthStencilRenderbufferEnabled) 
-    : CGLFramebuffer (bufferWidth, bufferHeight, rgbTextureCount, rgbaTextureCount, depthBufferArrayLayerCount, depthStencilRenderbufferEnabled)
+GLMultisampleFramebuffer::GLMultisampleFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayLayerCount, bool depthStencilRenderbufferEnabled) 
+    : GLFramebuffer (bufferWidth, bufferHeight, rgbTextureCount, rgbaTextureCount, depthBufferArrayLayerCount, depthStencilRenderbufferEnabled)
 {
 }
 
-void CGLMultisampleFramebuffer::Initialize ()
+void GLMultisampleFramebuffer::Initialize ()
 {
     GLint fbStatus;
 
-    CGLFramebuffer::Initialize ();
+    GLFramebuffer::Initialize ();
 
     // create and bind framebuffer
     glGenFramebuffers (1, &m_glMultisampleBuffers.FBO);
@@ -93,21 +93,21 @@ void CGLMultisampleFramebuffer::Initialize ()
     
 }
 
-void CGLMultisampleFramebuffer::Deinitialize ()
+void GLMultisampleFramebuffer::Deinitialize ()
 {
     glDeleteRenderbuffers (1, &m_glMultisampleBuffers.RBO);
     glDeleteTextures (static_cast<GLsizei> (m_rgbTextureCount + m_rgbaTextureCount), m_glMultisampleBuffers.textureBuffer);
     glDeleteFramebuffers (1, &m_glMultisampleBuffers.FBO);
 
-    CGLFramebuffer::Deinitialize ();
+    GLFramebuffer::Deinitialize ();
 }
 
-void CGLMultisampleFramebuffer::BindFramebuffer () const
+void GLMultisampleFramebuffer::BindFramebuffer () const
 {
     glBindFramebuffer (GL_FRAMEBUFFER, m_glMultisampleBuffers.FBO);
 }
 
-void CGLMultisampleFramebuffer::BlitFramebuffer () const
+void GLMultisampleFramebuffer::BlitFramebuffer () const
 {
     // blit multisample framebuffer to standard framebuffer
     glBindFramebuffer (GL_READ_FRAMEBUFFER, m_glMultisampleBuffers.FBO);
@@ -117,20 +117,20 @@ void CGLMultisampleFramebuffer::BlitFramebuffer () const
     glBindFramebuffer (GL_DRAW_FRAMEBUFFER, 0);
 }
 
-void CGLMultisampleFramebuffer::SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight)
+void GLMultisampleFramebuffer::SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight)
 {
     // resize framebuffer texture and viewport
-    CGLFramebuffer::SetFramebufferResolution (bufferWidth, bufferHeight);
+    GLFramebuffer::SetFramebufferResolution (bufferWidth, bufferHeight);
     Deinitialize ();
     Initialize ();
 }
 
-GLuint CGLMultisampleFramebuffer::GetFramebufferRenderbufferGLId () const
+GLuint GLMultisampleFramebuffer::GetFramebufferRenderbufferGLId () const
 {
     return m_glMultisampleBuffers.RBO;
 }
 
-GLuint CGLMultisampleFramebuffer::GetFramebufferGLId () const
+GLuint GLMultisampleFramebuffer::GetFramebufferGLId () const
 {
     return m_glMultisampleBuffers.FBO;
 }

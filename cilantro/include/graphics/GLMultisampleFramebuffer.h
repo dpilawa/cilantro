@@ -7,11 +7,11 @@
 
 namespace cilantro {
 
-class CGLMultisampleFramebuffer : public CGLFramebuffer 
+class GLMultisampleFramebuffer : public GLFramebuffer 
 {
 public:
-    CGLMultisampleFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int dsBufferArraySize, bool hasDepthStencilRB);
-    virtual ~CGLMultisampleFramebuffer () {};
+    GLMultisampleFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int dsBufferArraySize, bool hasDepthStencilRB);
+    virtual ~GLMultisampleFramebuffer () {};
 
     ///////////////////////////////////////////////////////////////////////////
 

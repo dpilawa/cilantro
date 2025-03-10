@@ -12,7 +12,7 @@
 
 namespace cilantro {
 
-GameObject::GameObject (CGameScene* gameScene)
+GameObject::GameObject (GameScene* gameScene)
 {
     parentObject = nullptr;
     this->gameScene = gameScene;
@@ -24,7 +24,7 @@ GameObject::GameObject (CGameScene* gameScene)
     localTransform.SubscribeHook ("OnUpdateTransform", [&]() 
     {
         CalculateModelTransformMatrix (); 
-        CGame::GetMessageBus ().Publish<TransformUpdateMessage> (std::make_shared<TransformUpdateMessage> (this->GetHandle ()));
+        Game::GetMessageBus ().Publish<TransformUpdateMessage> (std::make_shared<TransformUpdateMessage> (this->GetHandle ()));
     });
 }
 
@@ -38,7 +38,7 @@ GameObject& GameObject::SetParentObject (const std::string& name)
 
     parentObject = &parent;
     parent.childObjects.push_back (this);
-    CGame::GetMessageBus ().Publish<SceneGraphUpdateMessage> (std::make_shared<SceneGraphUpdateMessage> (this->GetHandle ()));
+    Game::GetMessageBus ().Publish<SceneGraphUpdateMessage> (std::make_shared<SceneGraphUpdateMessage> (this->GetHandle ()));
 
     return *this;
 }

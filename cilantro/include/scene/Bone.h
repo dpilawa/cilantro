@@ -10,7 +10,7 @@ namespace cilantro {
 class Bone : public GameObject
 {
 public:
-    __EAPI Bone (CGameScene* gameScene);
+    __EAPI Bone (GameScene* gameScene);
     __EAPI virtual ~Bone ();
 
     __EAPI Bone& SetOffsetMatrix (const Matrix4f& m);

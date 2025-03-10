@@ -3,7 +3,7 @@
 
 namespace cilantro {
 
-LinearPath::LinearPath (CGameScene* gameScene) : Path (gameScene)
+LinearPath::LinearPath (GameScene* gameScene) : Path (gameScene)
 {
 
 }

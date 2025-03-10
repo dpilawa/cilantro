@@ -5,7 +5,7 @@
 
 namespace cilantro {
 
-SpotLight::SpotLight (CGameScene* gameScene) : PointLight (gameScene)
+SpotLight::SpotLight (GameScene* gameScene) : PointLight (gameScene)
 {
     innerCutoff = 45.0f;
     outerCutoff = innerCutoff;
@@ -18,7 +18,7 @@ SpotLight::~SpotLight ()
 SpotLight& SpotLight::SetInnerCutoff (const float cutoff)
 {
     innerCutoff = cutoff;
-    CGame::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
+    Game::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
 
     return *this;
 }
@@ -26,7 +26,7 @@ SpotLight& SpotLight::SetInnerCutoff (const float cutoff)
 SpotLight& SpotLight::SetOuterCutoff (const float cutOff)
 {
     outerCutoff = cutOff;
-    CGame::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
+    Game::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
 
     return *this;
 }

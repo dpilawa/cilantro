@@ -15,7 +15,7 @@
 
 namespace cilantro {
 
-Mesh::Mesh () : CResource ()
+Mesh::Mesh () : Resource ()
 {
     this->smoothNormals = false;
 }

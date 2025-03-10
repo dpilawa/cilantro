@@ -5,7 +5,7 @@
 
 namespace cilantro {
 
-CGLShader::CGLShader (const std::string& path, EShaderType shaderType) : CShader (path, shaderType)
+GLShader::GLShader (const std::string& path, EShaderType shaderType) : Shader (path, shaderType)
 {
     GLint success;
     char errorLog[512];
@@ -37,7 +37,7 @@ CGLShader::CGLShader (const std::string& path, EShaderType shaderType) : CShader
     }
 }
 
-void CGLShader::Compile ()
+void GLShader::Compile ()
 {
     const char* src;
 
@@ -46,7 +46,7 @@ void CGLShader::Compile ()
     glCompileShader (m_glShaderId); 
 }
 
-GLuint CGLShader::GetShaderId () const
+GLuint GLShader::GetShaderId () const
 {
     return m_glShaderId;
 }

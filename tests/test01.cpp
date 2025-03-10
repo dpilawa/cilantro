@@ -30,32 +30,32 @@ using namespace cilantro;
 
 int main (int argc, char* argv [])
 {
-    CGame::Initialize (std::filesystem::current_path ().string ());
+    Game::Initialize (std::filesystem::current_path ().string ());
 
-    CGameScene& gameScene = CGame::Create<CGameScene> ("scene");
-    CGLFWRenderer& renderer = gameScene.Create<CGLFWRenderer> (800, 600, true, true, "Test 01", false, true, true);
-    InputController& inputController = CGame::Create<GLFWInputController> ();
+    GameScene& gameScene = Game::Create<GameScene> ("scene");
+    GLFWRenderer& renderer = gameScene.Create<GLFWRenderer> (800, 600, true, true, "Test 01", false, true, true);
+    InputController& inputController = Game::Create<GLFWInputController> ();
     
-    renderer.Create<CQuadRenderStage> ("hdr_postprocess").SetShaderProgram ("post_hdr_shader").SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);
-    renderer.Create<CQuadRenderStage> ("fxaa_postprocess").SetShaderProgram ("post_fxaa_shader").SetRenderStageParameterFloat ("fMaxSpan", 4.0f).SetRenderStageParameterVector2f ("vInvResolution", Vector2f (1.0f / renderer.GetWidth (), 1.0f / renderer.GetHeight ())).SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);
-    renderer.Create<CQuadRenderStage> ("gamma_postprocess+screen").SetShaderProgram ("post_gamma_shader").SetRenderStageParameterFloat ("fGamma", 2.1f).SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS).SetFramebufferEnabled (false);  
+    renderer.Create<QuadRenderStage> ("hdr_postprocess").SetShaderProgram ("post_hdr_shader").SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);
+    renderer.Create<QuadRenderStage> ("fxaa_postprocess").SetShaderProgram ("post_fxaa_shader").SetRenderStageParameterFloat ("fMaxSpan", 4.0f).SetRenderStageParameterVector2f ("vInvResolution", Vector2f (1.0f / renderer.GetWidth (), 1.0f / renderer.GetHeight ())).SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);
+    renderer.Create<QuadRenderStage> ("gamma_postprocess+screen").SetShaderProgram ("post_gamma_shader").SetRenderStageParameterFloat ("fGamma", 2.1f).SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS).SetFramebufferEnabled (false);  
 
     inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
-    inputController.BindInputEvent ("exit", [ & ]() { CGame::Stop (); });
+    inputController.BindInputEvent ("exit", [ & ]() { Game::Stop (); });
 
     inputController.CreateInputEvent ("mousemode", InputKey::KeySpace, InputTrigger::Release, {});
     inputController.BindInputEvent ("mousemode", [ & ]() { inputController.SetMouseGameMode (!inputController.IsGameMode ()); });
 
-    CGame::GetResourceManager ().Load<Texture> ("tAlbedoMetal", "textures/scuffed-metal1_albedo.png");
-    CGame::GetResourceManager ().Load<Texture> ("tMetalnessMetal", "textures/scuffed-metal1_metallic.png");
-    CGame::GetResourceManager ().Load<Texture> ("tNormalMetal", "textures/scuffed-metal1_normal-dx.png");
-    CGame::GetResourceManager ().Load<Texture> ("tRoughnessMetal", "textures/scuffed-metal1_roughness.png");
-    CGame::GetResourceManager ().Load<Texture> ("tAOMetal", "textures/scuffed-metal1_ao.png");
+    Game::GetResourceManager ().Load<Texture> ("tAlbedoMetal", "textures/scuffed-metal1_albedo.png");
+    Game::GetResourceManager ().Load<Texture> ("tMetalnessMetal", "textures/scuffed-metal1_metallic.png");
+    Game::GetResourceManager ().Load<Texture> ("tNormalMetal", "textures/scuffed-metal1_normal-dx.png");
+    Game::GetResourceManager ().Load<Texture> ("tRoughnessMetal", "textures/scuffed-metal1_roughness.png");
+    Game::GetResourceManager ().Load<Texture> ("tAOMetal", "textures/scuffed-metal1_ao.png");
 
-    CGame::GetResourceManager ().Load<Texture> ("tAlbedoGold", "textures/Metal007_1K_Color.png");
-    CGame::GetResourceManager ().Load<Texture> ("tMetalnessGold", "textures/Metal007_1K_Metalness.png");
-    CGame::GetResourceManager ().Load<Texture> ("tNormalGold", "textures/Metal007_1K_Normal.png");
-    CGame::GetResourceManager ().Load<Texture> ("tRoughnessGold", "textures/Metal007_1K_Roughness.png");
+    Game::GetResourceManager ().Load<Texture> ("tAlbedoGold", "textures/Metal007_1K_Color.png");
+    Game::GetResourceManager ().Load<Texture> ("tMetalnessGold", "textures/Metal007_1K_Metalness.png");
+    Game::GetResourceManager ().Load<Texture> ("tNormalGold", "textures/Metal007_1K_Normal.png");
+    Game::GetResourceManager ().Load<Texture> ("tRoughnessGold", "textures/Metal007_1K_Roughness.png");
 
     gameScene.Add<PBRMaterial> ("greenMaterial").SetAlbedo (Vector3f (0.1f, 0.4f, 0.1f)).SetRoughness (0.1f).SetMetallic (0.6f).SetNormal ("tNormalMetal");
     gameScene.Add<PBRMaterial> ("redMaterial").SetAlbedo ("tAlbedoMetal").SetMetallic ("tMetalnessMetal").SetRoughness ("tRoughnessMetal").SetNormal("tNormalMetal").SetAO ("tAOMetal");
@@ -68,27 +68,27 @@ int main (int argc, char* argv [])
     cam.GetLocalTransform ().Translate (5.0f, 2.5f, 5.0f).Rotate (-20.0f, 45.0f, 0.0f);
     gameScene.SetActiveCamera ("camera");
 
-    Mesh& cubeMesh = CGame::GetResourceManager ().Create<Mesh> ("cubeMesh");
+    Mesh& cubeMesh = Game::GetResourceManager ().Create<Mesh> ("cubeMesh");
     Primitives::GenerateCube (cubeMesh);
     MeshObject& cube = gameScene.Add<MeshObject> ("cube", "cubeMesh", "redMaterial");
     cube.GetLocalTransform ().Scale (0.5f).Translate (0.0f, 1.1f, 0.0f);
 
-    Mesh& coneMesh = CGame::GetResourceManager ().Create<Mesh> ("coneMesh").SetSmoothNormals (false);
+    Mesh& coneMesh = Game::GetResourceManager ().Create<Mesh> ("coneMesh").SetSmoothNormals (false);
     Primitives::GenerateCone (coneMesh, 32);
     MeshObject& cone = gameScene.Add<MeshObject> ("cone", "coneMesh", "goldMaterial");
     cone.GetLocalTransform ().Translate (-1.5f, 0.5f, 1.0f).Scale (0.5f);
 
-    Mesh& cylinderMesh = CGame::GetResourceManager ().Create<Mesh> ("cylinderMesh").SetSmoothNormals (false);
+    Mesh& cylinderMesh = Game::GetResourceManager ().Create<Mesh> ("cylinderMesh").SetSmoothNormals (false);
     Primitives::GenerateCylinder (cylinderMesh, 32);
     MeshObject& cylinder = gameScene.Add<MeshObject> ("cylinder", "cylinderMesh", "blueMaterial");
     cylinder.GetLocalTransform ().Rotate (90.0f, 12.5f, 0.0f).Translate (1.7f, 0.5f, 0.7f).Scale (0.5f);
 
-    Mesh& lampMesh = CGame::GetResourceManager ().Create<Mesh> ("lampMesh");
+    Mesh& lampMesh = Game::GetResourceManager ().Create<Mesh> ("lampMesh");
     Primitives::GenerateSphere (lampMesh, 3);
     MeshObject& lamp = gameScene.Add<MeshObject> ("lamp", "lampMesh", "lampMaterial");
     lamp.GetLocalTransform ().Scale (0.1f, 0.1f, 0.1f).Translate (1.0f, 0.75f, 1.0f);
 
-    Mesh& floorMesh = CGame::GetResourceManager ().Create<Mesh> ("floorMesh");
+    Mesh& floorMesh = Game::GetResourceManager ().Create<Mesh> ("floorMesh");
     Primitives::GenerateCube (floorMesh);
     MeshObject& floor = gameScene.Add<MeshObject> ("floor", "floorMesh", "greenMaterial");
     floor.GetLocalTransform ().Scale (2.5f, 0.05f, 2.5f).Translate (0.0f, -0.05f, 0.0f);
@@ -142,9 +142,9 @@ int main (int argc, char* argv [])
     lightAnimation.SetLooping (true);
     lightAnimation.Play ();
 
-    CGame::Run ();
+    Game::Run ();
 
-    CGame::Deinitialize ();
+    Game::Deinitialize ();
 
     return 0;
 }

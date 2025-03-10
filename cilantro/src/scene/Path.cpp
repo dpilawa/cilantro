@@ -4,7 +4,7 @@
 namespace cilantro
 {
 
-Path::Path (CGameScene* gameScene) : GameObject (gameScene)
+Path::Path (GameScene* gameScene) : GameObject (gameScene)
 {
 }
 

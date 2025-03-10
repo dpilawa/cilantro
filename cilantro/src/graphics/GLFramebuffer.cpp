@@ -4,8 +4,8 @@
 
 namespace cilantro {
 
-CGLFramebuffer::CGLFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayLayerCount, bool depthStencilRenderbufferEnabled) 
-    : CFramebuffer (bufferWidth, bufferHeight, rgbTextureCount, rgbaTextureCount, depthBufferArrayLayerCount, depthStencilRenderbufferEnabled)
+GLFramebuffer::GLFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayLayerCount, bool depthStencilRenderbufferEnabled) 
+    : Framebuffer (bufferWidth, bufferHeight, rgbTextureCount, rgbaTextureCount, depthBufferArrayLayerCount, depthStencilRenderbufferEnabled)
 {
     for (unsigned int i = 0; i < CILANTRO_MAX_FRAMEBUFFER_TEXTURES; ++i)
     {
@@ -14,7 +14,7 @@ CGLFramebuffer::CGLFramebuffer (unsigned int bufferWidth, unsigned int bufferHei
     m_glBuffers.colorNone = GL_NONE;
 }
 
-void CGLFramebuffer::Initialize ()
+void GLFramebuffer::Initialize ()
 {
     GLint fbStatus;
 
@@ -101,19 +101,19 @@ void CGLFramebuffer::Initialize ()
     }
 }
 
-void CGLFramebuffer::Deinitialize ()
+void GLFramebuffer::Deinitialize ()
 {
     glDeleteRenderbuffers (1, &m_glBuffers.RBO);
     glDeleteTextures (static_cast<GLsizei> (m_rgbTextureCount + m_rgbaTextureCount), m_glBuffers.textureBuffer);
     glDeleteFramebuffers (1, &m_glBuffers.FBO);
 }
 
-void CGLFramebuffer::BindFramebuffer () const
+void GLFramebuffer::BindFramebuffer () const
 {
     glBindFramebuffer (GL_FRAMEBUFFER, m_glBuffers.FBO);
 }
 
-void CGLFramebuffer::BindFramebufferColorTexturesAsColor () const
+void GLFramebuffer::BindFramebufferColorTexturesAsColor () const
 {
     for (unsigned int i = 0; i < GetColorTextureCount (); ++i)
     {
@@ -122,46 +122,46 @@ void CGLFramebuffer::BindFramebufferColorTexturesAsColor () const
     }
 }
 
-void CGLFramebuffer::BindFramebufferDepthArrayTextureAsColor (unsigned int index) const
+void GLFramebuffer::BindFramebufferDepthArrayTextureAsColor (unsigned int index) const
 {
     glActiveTexture (static_cast<GLenum> (GL_TEXTURE0 + index));
     glBindTexture (GL_TEXTURE_2D_ARRAY, m_glBuffers.depthTextureArray);
 }
 
-void CGLFramebuffer::BindFramebufferDepthArrayTextureAsDepth () const
+void GLFramebuffer::BindFramebufferDepthArrayTextureAsDepth () const
 {
     glFramebufferTexture (GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_glBuffers.depthTextureArray, 0);
 }
 
-void CGLFramebuffer::BindFramebufferRenderbuffer () const
+void GLFramebuffer::BindFramebufferRenderbuffer () const
 {
     glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, GetFramebufferRenderbufferGLId ());
 }
 
-void CGLFramebuffer::UnbindFramebuffer () const
+void GLFramebuffer::UnbindFramebuffer () const
 {
     glBindFramebuffer (GL_FRAMEBUFFER, (GLint) 0);
 }
 
-void CGLFramebuffer::SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight)
+void GLFramebuffer::SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight)
 {
     // resize framebuffer texture and viewport
-    CFramebuffer::SetFramebufferResolution (bufferWidth, bufferHeight);
+    Framebuffer::SetFramebufferResolution (bufferWidth, bufferHeight);
     Deinitialize (); 
     Initialize ();
 }
 
-GLuint CGLFramebuffer::GetFramebufferRenderbufferGLId () const
+GLuint GLFramebuffer::GetFramebufferRenderbufferGLId () const
 {
     return m_glBuffers.RBO;
 }
 
-GLuint CGLFramebuffer::GetFramebufferTextureGLId (unsigned int textureNumber) const
+GLuint GLFramebuffer::GetFramebufferTextureGLId (unsigned int textureNumber) const
 {
     return m_glBuffers.textureBuffer[textureNumber];
 }
 
-GLuint CGLFramebuffer::GetFramebufferGLId () const
+GLuint GLFramebuffer::GetFramebufferGLId () const
 {
     return m_glBuffers.FBO;
 }

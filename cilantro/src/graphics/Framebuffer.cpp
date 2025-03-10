@@ -3,7 +3,7 @@
 
 namespace cilantro {
 
-CFramebuffer::CFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayLayerCount, bool depthStencilRenderbufferEnabled)
+Framebuffer::Framebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayLayerCount, bool depthStencilRenderbufferEnabled)
     : m_bufferWidth (bufferWidth)
     , m_bufferHeight (bufferHeight)
     , m_rgbTextureCount (rgbTextureCount)
@@ -17,47 +17,47 @@ CFramebuffer::CFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight,
     }
 }
 
-unsigned int CFramebuffer::GetWidth () const
+unsigned int Framebuffer::GetWidth () const
 {
     return m_bufferWidth;
 }
 
-unsigned int CFramebuffer::GetHeight () const
+unsigned int Framebuffer::GetHeight () const
 {
     return m_bufferHeight;
 }
 
-unsigned int CFramebuffer::GetColorTextureCount () const
+unsigned int Framebuffer::GetColorTextureCount () const
 {
     return m_rgbTextureCount + m_rgbaTextureCount;
 }
 
-unsigned int CFramebuffer::GetRGBTextureCount () const
+unsigned int Framebuffer::GetRGBTextureCount () const
 {
     return m_rgbTextureCount;
 }
 
-unsigned int CFramebuffer::GetRGBATextureCount () const
+unsigned int Framebuffer::GetRGBATextureCount () const
 {
     return m_rgbaTextureCount;
 }
 
-unsigned int CFramebuffer::GetDepthArrayLayerCount () const
+unsigned int Framebuffer::GetDepthArrayLayerCount () const
 {
     return m_depthBufferArrayLayerCount;
 }
 
-bool CFramebuffer::IsDepthStencilRenderbufferEnabled () const
+bool Framebuffer::IsDepthStencilRenderbufferEnabled () const
 {
     return m_depthStencilRenderbufferEnabled;
 }
 
-bool CFramebuffer::IsDepthArrayEnabled () const
+bool Framebuffer::IsDepthArrayEnabled () const
 {
     return (m_depthBufferArrayLayerCount > 0);
 }
 
-void CFramebuffer::SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight)
+void Framebuffer::SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight)
 {
     m_bufferWidth = bufferWidth;
     m_bufferHeight = bufferHeight;

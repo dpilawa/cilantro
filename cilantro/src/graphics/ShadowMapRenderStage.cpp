@@ -7,18 +7,18 @@
 
 namespace cilantro {
 
-CShadowMapRenderStage::CShadowMapRenderStage ()
-    : CRenderStage ()
+ShadowMapRenderStage::ShadowMapRenderStage ()
+    : RenderStage ()
 {
 
 }
 
-void CShadowMapRenderStage::Initialize ()
+void ShadowMapRenderStage::Initialize ()
 {
     InitializeFramebuffer ();
 
     // set callback for new or modified lights
-    CGame::GetMessageBus ().Subscribe<LightUpdateMessage> (
+    Game::GetMessageBus ().Subscribe<LightUpdateMessage> (
         [&](const std::shared_ptr<LightUpdateMessage>& message) 
         { 
             if (m_framebuffer != nullptr)
@@ -33,9 +33,9 @@ void CShadowMapRenderStage::Initialize ()
 
 }
 
-void CShadowMapRenderStage::OnFrame ()
+void ShadowMapRenderStage::OnFrame ()
 {
-    CRenderStage::OnFrame ();
+    RenderStage::OnFrame ();
 
     // load uniform buffers
     m_renderer->UpdateLightViewBuffers ();
@@ -49,7 +49,7 @@ void CShadowMapRenderStage::OnFrame ()
     }    
 }
 
-void CShadowMapRenderStage::InitializeFramebuffer ()
+void ShadowMapRenderStage::InitializeFramebuffer ()
 {   
     if (m_isFramebufferEnabled)
     {

@@ -10,7 +10,7 @@ namespace cilantro {
 class Camera : public GameObject
 {
 public:
-    Camera (CGameScene* gameScene);
+    Camera (GameScene* gameScene);
     virtual ~Camera ();
 
     Matrix4f GetViewMatrix ();

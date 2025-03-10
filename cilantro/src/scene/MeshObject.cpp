@@ -16,12 +16,12 @@
 namespace cilantro
 {
 
-MeshObject::MeshObject (CGameScene* gameScene, const std::string& meshName, const std::string& materialName)
+MeshObject::MeshObject (GameScene* gameScene, const std::string& meshName, const std::string& materialName)
     : GameObject (gameScene)
-    , mesh (CGame::GetResourceManager ().GetByName<Mesh> (meshName))
+    , mesh (Game::GetResourceManager ().GetByName<Mesh> (meshName))
     , material (gameScene->GetMaterialManager ().GetByName<Material> (materialName))
 {
-    mesh.SubscribeHook ("OnUpdateMesh", [&] () { CGame::GetMessageBus ().Publish<MeshObjectUpdateMessage> (std::make_shared<MeshObjectUpdateMessage> (this->GetHandle ())); });
+    mesh.SubscribeHook ("OnUpdateMesh", [&] () { Game::GetMessageBus ().Publish<MeshObjectUpdateMessage> (std::make_shared<MeshObjectUpdateMessage> (this->GetHandle ())); });
 }
 
 MeshObject::~MeshObject ()

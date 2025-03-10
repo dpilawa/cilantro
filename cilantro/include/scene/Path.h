@@ -23,7 +23,7 @@ public:
 class Path : public GameObject
 {
 public:
-    Path (CGameScene* gameScene);
+    Path (GameScene* gameScene);
     virtual ~Path ();
 
     __EAPI Path& AddWaypoint (std::size_t wIndex, const Vector3f& position, const Quaternion& rotation);

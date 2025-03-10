@@ -8,11 +8,11 @@ namespace cilantro {
 
 struct IShaderProgram;
 
-class CGLShaderProgram : public CShaderProgram
+class GLShaderProgram : public CShaderProgram
 {
 public:
-    __EAPI CGLShaderProgram ();
-    __EAPI virtual ~CGLShaderProgram () {};
+    __EAPI GLShaderProgram ();
+    __EAPI virtual ~GLShaderProgram () {};
 
     ///////////////////////////////////////////////////////////////////////////
 

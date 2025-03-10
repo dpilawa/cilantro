@@ -8,15 +8,15 @@
 
 namespace cilantro {
 
-CShader::CShader (const std::string& path, EShaderType shaderType) : CLoadableResource (path)
+Shader::Shader (const std::string& path, EShaderType shaderType) : LoadableResource (path)
 {
     this->m_shaderType = shaderType;
     Load (path);
 }
 
-void CShader::Load (const std::string& path)
+void Shader::Load (const std::string& path)
 {
-    std::string absolutePath = CGame::GetPath() + "/" + path;
+    std::string absolutePath = Game::GetPath() + "/" + path;
     std::ifstream f (absolutePath, std::ios::binary);
     std::ostringstream ss;
    
@@ -32,7 +32,7 @@ void CShader::Load (const std::string& path)
     this->SetDefaultParameters ();
 }
 
-void CShader::SetParameter (const std::string& parameter, const std::string& value)
+void Shader::SetParameter (const std::string& parameter, const std::string& value)
 {
     std::size_t pos;
 
@@ -49,7 +49,7 @@ void CShader::SetParameter (const std::string& parameter, const std::string& val
     }    
 }
 
-void CShader::SetDefaultParameters ()
+void Shader::SetDefaultParameters ()
 {
 #ifdef CILANTRO_BUILDING_GLES    
     SetParameter ("%%CILANTRO_GL_VERSION%%", CILANTRO_GLES_VERSION);

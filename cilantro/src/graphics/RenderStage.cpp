@@ -5,7 +5,7 @@
 
 namespace cilantro {
 
-CRenderStage::CRenderStage ()
+RenderStage::RenderStage ()
     
     : m_isMultisampleEnabled (false)
     , m_isStencilTestEnabled (false)
@@ -44,7 +44,7 @@ CRenderStage::CRenderStage ()
 {
 }
 
-CRenderStage::~CRenderStage ()
+RenderStage::~RenderStage ()
 {
     if (m_framebuffer != nullptr)
     {
@@ -53,32 +53,32 @@ CRenderStage::~CRenderStage ()
     }
 }
 
-IFramebuffer* CRenderStage::GetFramebuffer () const
+IFramebuffer* RenderStage::GetFramebuffer () const
 {
     return m_framebuffer;
 }
 
-IFramebuffer* CRenderStage::GetLinkedColorAttachmentsFramebuffer () const
+IFramebuffer* RenderStage::GetLinkedColorAttachmentsFramebuffer () const
 {
     return m_renderer->GetPipelineFramebuffer (m_colorAttachmentsFramebufferLink);
 }
 
-IFramebuffer* CRenderStage::GetLinkedDepthStencilFramebuffer () const
+IFramebuffer* RenderStage::GetLinkedDepthStencilFramebuffer () const
 {
     return m_renderer->GetPipelineFramebuffer (m_depthStencilFramebufferLink);
 }
 
-IFramebuffer* CRenderStage::GetLinkedDepthArrayFramebuffer () const
+IFramebuffer* RenderStage::GetLinkedDepthArrayFramebuffer () const
 {
     return m_renderer->GetPipelineFramebuffer (m_depthArrayFramebufferLink);
 }
 
-IFramebuffer* CRenderStage::GetLinkedDrawFramebuffer () const
+IFramebuffer* RenderStage::GetLinkedDrawFramebuffer () const
 {
     return m_renderer->GetPipelineFramebuffer (m_drawFramebufferLink);
 }
 
-void CRenderStage::OnFrame ()
+void RenderStage::OnFrame ()
 {
     size_t width;
     size_t height;
@@ -178,7 +178,7 @@ void CRenderStage::OnFrame ()
 
 }
 
-IRenderStage& CRenderStage::SetViewport (float u, float v, float su, float sv)
+IRenderStage& RenderStage::SetViewport (float u, float v, float su, float sv)
 {
     m_viewportU = u;
     m_viewportV = v;
@@ -188,7 +188,7 @@ IRenderStage& CRenderStage::SetViewport (float u, float v, float su, float sv)
     return *this;
 }
 
-IRenderStage& CRenderStage::SetMultisampleEnabled (bool value)
+IRenderStage& RenderStage::SetMultisampleEnabled (bool value)
 {
     unsigned int rgbTextureCount;
     unsigned int rgbaTextureCount;
@@ -224,28 +224,28 @@ IRenderStage& CRenderStage::SetMultisampleEnabled (bool value)
     return *this;
 }
 
-IRenderStage& CRenderStage::SetStencilTestEnabled (bool value)
+IRenderStage& RenderStage::SetStencilTestEnabled (bool value)
 {
     m_isStencilTestEnabled = value;
 
     return *this;
 }
 
-IRenderStage& CRenderStage::SetDepthTestEnabled (bool value)
+IRenderStage& RenderStage::SetDepthTestEnabled (bool value)
 {
     m_isDepthTestEnabled = value;
 
     return *this;
 }
 
-IRenderStage& CRenderStage::SetFaceCullingEnabled (bool value)
+IRenderStage& RenderStage::SetFaceCullingEnabled (bool value)
 {
     m_isFaceCullingEnabled = value;
 
     return *this;
 }
 
-IRenderStage& CRenderStage::SetFramebufferEnabled (bool value)
+IRenderStage& RenderStage::SetFramebufferEnabled (bool value)
 {
     if (m_isFramebufferEnabled != value)
     {
@@ -269,28 +269,28 @@ IRenderStage& CRenderStage::SetFramebufferEnabled (bool value)
     return *this;
 }
 
-IRenderStage& CRenderStage::SetClearColorOnFrameEnabled (bool value)
+IRenderStage& RenderStage::SetClearColorOnFrameEnabled (bool value)
 {
     m_isClearColorOnFrameEnabled = value;
 
     return *this;
 }
 
-IRenderStage& CRenderStage::SetClearDepthOnFrameEnabled (bool value)
+IRenderStage& RenderStage::SetClearDepthOnFrameEnabled (bool value)
 {
     m_isClearDepthOnFrameEnabled = value;
 
     return *this;
 }
 
-IRenderStage& CRenderStage::SetClearStencilOnFrameEnabled (bool value)
+IRenderStage& RenderStage::SetClearStencilOnFrameEnabled (bool value)
 {
     m_isClearStencilOnFrameEnabled = value;
 
     return *this;
 }
 
-IRenderStage& CRenderStage::SetStencilTest (EStencilTestFunction stencilTestFunction, int stencilTestValue)
+IRenderStage& RenderStage::SetStencilTest (EStencilTestFunction stencilTestFunction, int stencilTestValue)
 {
     m_stencilTestFunction = stencilTestFunction;
     m_stencilTestValue = stencilTestValue;
@@ -298,7 +298,7 @@ IRenderStage& CRenderStage::SetStencilTest (EStencilTestFunction stencilTestFunc
     return *this;
 }
 
-IRenderStage& CRenderStage::SetFaceCullingMode (EFaceCullingFace faceCullingFace, EFaceCullingDirection faceCullingDirection)
+IRenderStage& RenderStage::SetFaceCullingMode (EFaceCullingFace faceCullingFace, EFaceCullingDirection faceCullingDirection)
 {
     m_faceCullingFace = faceCullingFace;
     m_faceCullingDirection = faceCullingDirection;
@@ -306,68 +306,68 @@ IRenderStage& CRenderStage::SetFaceCullingMode (EFaceCullingFace faceCullingFace
     return *this;
 }
 
-bool CRenderStage::IsMultisampleEnabled () const
+bool RenderStage::IsMultisampleEnabled () const
 {
     return m_isMultisampleEnabled;
 }
 
-bool CRenderStage::IsStencilTestEnabled () const
+bool RenderStage::IsStencilTestEnabled () const
 {
     return m_isStencilTestEnabled;
 }
 
-bool CRenderStage::IsDepthTestEnabled () const
+bool RenderStage::IsDepthTestEnabled () const
 {
     return m_isDepthTestEnabled;
 }
 
-bool CRenderStage::IsFaceCullingEnabled () const
+bool RenderStage::IsFaceCullingEnabled () const
 {
     return m_isFaceCullingEnabled;
 }
 
-bool CRenderStage::IsFramebufferEnabled () const
+bool RenderStage::IsFramebufferEnabled () const
 {
     return m_isFramebufferEnabled;
 }
 
-bool CRenderStage::IsClearColorOnFrameEnabled () const
+bool RenderStage::IsClearColorOnFrameEnabled () const
 {
     return m_isClearColorOnFrameEnabled;
 }
 
-bool CRenderStage::IsClearDepthOnFrameEnabled () const
+bool RenderStage::IsClearDepthOnFrameEnabled () const
 {
     return m_isClearDepthOnFrameEnabled;
 }
 
-bool CRenderStage::IsClearStencilOnFrameEnabled () const
+bool RenderStage::IsClearStencilOnFrameEnabled () const
 {
     return m_isClearStencilOnFrameEnabled;
 }
 
-IRenderStage& CRenderStage::SetColorAttachmentsFramebufferLink (EPipelineLink link)
+IRenderStage& RenderStage::SetColorAttachmentsFramebufferLink (EPipelineLink link)
 {
     m_colorAttachmentsFramebufferLink = link;
 
     return *this;
 }
 
-IRenderStage& CRenderStage::SetDepthStencilFramebufferLink (EPipelineLink link)
+IRenderStage& RenderStage::SetDepthStencilFramebufferLink (EPipelineLink link)
 {
     m_depthStencilFramebufferLink = link;
 
     return *this;
 }
 
-IRenderStage& CRenderStage::SetDepthArrayFramebufferLink (EPipelineLink link)
+IRenderStage& RenderStage::SetDepthArrayFramebufferLink (EPipelineLink link)
 {
     m_depthArrayFramebufferLink = link;
 
     return *this;
 }
 
-IRenderStage& CRenderStage::SetOutputFramebufferLink (EPipelineLink link)
+IRenderStage& RenderStage::SetOutputFramebufferLink (EPipelineLink link)
 {
     m_drawFramebufferLink = link;
 

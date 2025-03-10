@@ -23,23 +23,23 @@ using namespace cilantro;
 
 int main (int argc, char* argv [])
 {
-    CGame::Initialize (std::filesystem::current_path ().string ());
+    Game::Initialize (std::filesystem::current_path ().string ());
 
-    CGameScene& gameScene = CGame::Create<CGameScene> ("scene");
-    CGLFWRenderer& renderer = gameScene.Create<CGLFWRenderer> (960, 600, true, false, "Test 02", false, true, true);
-    InputController& inputController = CGame::Create<GLFWInputController> ();
+    GameScene& gameScene = Game::Create<GameScene> ("scene");
+    GLFWRenderer& renderer = gameScene.Create<GLFWRenderer> (960, 600, true, false, "Test 02", false, true, true);
+    InputController& inputController = Game::Create<GLFWInputController> ();
 
-    renderer.Create<CQuadRenderStage> ("screen").SetShaderProgram ("flatquad_shader").SetFramebufferEnabled (false).SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);
+    renderer.Create<QuadRenderStage> ("screen").SetShaderProgram ("flatquad_shader").SetFramebufferEnabled (false).SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);
     renderer.GetRenderStageManager ().GetByName<IRenderStage> ("forward").SetMultisampleEnabled (true);
 
     inputController.CreateInputEvent ("exit", InputKey::KeyEsc, InputTrigger::Press, {});
-    inputController.BindInputEvent ("exit", [ & ]() { CGame::Stop (); });
+    inputController.BindInputEvent ("exit", [ & ]() { Game::Stop (); });
 
-    CGame::GetResourceManager().Load<Texture> ("tEarthDiffuse", "textures/2k_earth_daymap.jpg");
-    CGame::GetResourceManager().Load<Texture> ("tEarthSpec", "textures/2k_earth_specular_map.png");
-    CGame::GetResourceManager().Load<Texture> ("tEarthNormal", "textures/2k_earth_normal_map.png");
-    CGame::GetResourceManager().Load<Texture> ("tMoon", "textures/2k_moon.jpg");
-    CGame::GetResourceManager().Load<Texture> ("tSun", "textures/2k_sun.jpg");
+    Game::GetResourceManager().Load<Texture> ("tEarthDiffuse", "textures/2k_earth_daymap.jpg");
+    Game::GetResourceManager().Load<Texture> ("tEarthSpec", "textures/2k_earth_specular_map.png");
+    Game::GetResourceManager().Load<Texture> ("tEarthNormal", "textures/2k_earth_normal_map.png");
+    Game::GetResourceManager().Load<Texture> ("tMoon", "textures/2k_moon.jpg");
+    Game::GetResourceManager().Load<Texture> ("tSun", "textures/2k_sun.jpg");
 
     gameScene.Add<PhongMaterial> ("mSun").SetEmissive ("tSun");
     gameScene.Add<PhongMaterial> ("mEarth").SetDiffuse ("tEarthDiffuse").SetSpecular ("tEarthSpec").SetNormal("tEarthNormal").SetSpecularShininess (32.0f);
@@ -49,20 +49,20 @@ int main (int argc, char* argv [])
     cam.GetLocalTransform ().Translate (0.0f, 0.0f, 160.0f);
     gameScene.SetActiveCamera ("camera");
 
-    Mesh& sunMesh = CGame::GetResourceManager().Create<Mesh> ("sunMesh");
+    Mesh& sunMesh = Game::GetResourceManager().Create<Mesh> ("sunMesh");
     MeshObject& sun = gameScene.Add<MeshObject> ("sun", "sunMesh", "mSun");
     Primitives::GenerateSphere (sunMesh, 8);
     sun.GetLocalTransform ().Scale (10.0f);
 
     Orbiter& earthOrbit = gameScene.Add<Orbiter> ("earthOrbit", gameScene.GetGameObjectManager ().GetByName<GameObject> ("sun"), 1.0f, 23.5f, 365.256f, 50.0f, 0.0f);
-    Mesh& earthMesh = CGame::GetResourceManager().Create<Mesh> ("earthMesh").SetSmoothNormals (true);
+    Mesh& earthMesh = Game::GetResourceManager().Create<Mesh> ("earthMesh").SetSmoothNormals (true);
     MeshObject& earth = gameScene.Add<MeshObject> ("earth", "earthMesh", "mEarth");
     Primitives::GenerateSphere (earthMesh, 8);
     earth.SetParentObject ("earthOrbit");
     earth.GetLocalTransform ().Scale (3.0f);
 
     Orbiter& moonOrbit = gameScene.Add<Orbiter> ("moonOrbit", gameScene.GetGameObjectManager ().GetByName<GameObject> ("earth"), 27.321f, -6.68f, 27.321f, 20.0f, -5.14f);
-    Mesh& moonMesh = CGame::GetResourceManager().Create<Mesh> ("moonMesh").SetSmoothNormals (true);
+    Mesh& moonMesh = Game::GetResourceManager().Create<Mesh> ("moonMesh").SetSmoothNormals (true);
     MeshObject& moon = gameScene.Add<MeshObject> ("moon", "moonMesh", "mMoon");
     Primitives::GenerateSphere (moonMesh, 8);
     moon.GetLocalTransform ().Scale (0.273f * 5.0f);
@@ -94,9 +94,9 @@ int main (int argc, char* argv [])
     animation.SetLooping (false);
     animation.Play ();
 
-    CGame::Run ();
+    Game::Run ();
 
-    CGame::Deinitialize ();
+    Game::Deinitialize ();
 
     return 0;
 }

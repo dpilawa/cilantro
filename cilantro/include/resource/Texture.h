@@ -9,7 +9,7 @@
 
 namespace cilantro {
 
-class Texture : public CLoadableResource
+class Texture : public LoadableResource
 {
 public:
     __EAPI Texture (const int width, const int height, float channel);

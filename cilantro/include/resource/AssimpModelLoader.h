@@ -10,7 +10,7 @@
 
 namespace cilantro {
 
-class CGameScene;
+class GameScene;
 class GameObject;
 class AnimationObject;
 class Mesh;
@@ -31,7 +31,7 @@ public:
 
 private:
 
-    CGameScene* gameScene;
+    GameScene* gameScene;
 
     Assimp::Importer importer;
     std::set<std::string> boneNodes;

@@ -10,7 +10,7 @@ namespace cilantro {
 class PerspectiveCamera : public Camera
 {
 public:
-    __EAPI PerspectiveCamera (CGameScene* gameScene, float fov, float near, float far);
+    __EAPI PerspectiveCamera (GameScene* gameScene, float fov, float near, float far);
     __EAPI ~PerspectiveCamera ();
 
     __EAPI Matrix4f GetProjectionMatrix (unsigned int xRes, unsigned int yRes) const;

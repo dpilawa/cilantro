@@ -7,11 +7,11 @@ namespace cilantro {
 
 class MeshObject;
 
-class CForwardGeometryRenderStage : public CRenderStage
+class ForwardGeometryRenderStage : public RenderStage
 {
 public:
-    __EAPI CForwardGeometryRenderStage ();
-    __EAPI virtual ~CForwardGeometryRenderStage () {};
+    __EAPI ForwardGeometryRenderStage ();
+    __EAPI virtual ~ForwardGeometryRenderStage () {};
 
     ///////////////////////////////////////////////////////////////////////////
 

@@ -9,13 +9,13 @@
 
 namespace cilantro {
 
-class CGameScene;
+class GameScene;
 struct IRenderer;
 
-class GameObject : public CResource
+class GameObject : public Resource
 {
 public:
-    __EAPI GameObject (CGameScene* gameScene);
+    __EAPI GameObject (GameScene* gameScene);
     __EAPI virtual ~GameObject ();
 
     // set pointer to parent object (i.e. put current object inside hierarchy)
@@ -56,7 +56,7 @@ public:
 protected:
 
     // parent scene
-    CGameScene* gameScene;
+    GameScene* gameScene;
 
     // pointer to parent object (objects may form a hierarchy)
     GameObject* parentObject;

@@ -6,7 +6,7 @@
 
 namespace cilantro {
 
-class CGameScene;
+class GameScene;
 class MeshObject;
 class Camera;
 
@@ -118,11 +118,11 @@ struct SGlUniformSpotLightBuffer
     SGlSpotLightStruct spotLights[CILANTRO_MAX_SPOT_LIGHTS];
 };
 
-class CGLRenderer : public CRenderer
+class GLRenderer : public Renderer
 {
 public:
-    CGLRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled);
-    virtual ~CGLRenderer ();
+    GLRenderer (GameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled);
+    virtual ~GLRenderer ();
 
     ///////////////////////////////////////////////////////////////////////////
 

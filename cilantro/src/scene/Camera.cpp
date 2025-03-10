@@ -6,7 +6,7 @@
 
 namespace cilantro {
 
-Camera::Camera (CGameScene* gameScene) : GameObject (gameScene)
+Camera::Camera (GameScene* gameScene) : GameObject (gameScene)
 {
 }
 

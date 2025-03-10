@@ -5,11 +5,11 @@
 
 namespace cilantro {
 
-class CFramebuffer : public IFramebuffer
+class Framebuffer : public IFramebuffer
 {
 public:
-    CFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayLayerCount, bool depthStencilRenderbufferEnabled);
-    virtual ~CFramebuffer () {};
+    Framebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayLayerCount, bool depthStencilRenderbufferEnabled);
+    virtual ~Framebuffer () {};
 
     ///////////////////////////////////////////////////////////////////////////
 

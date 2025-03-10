@@ -11,7 +11,7 @@
 
 namespace cilantro {
 
-CGameScene::CGameScene()
+GameScene::GameScene()
 { 
     this->timer = new Timer();
     timer->Tick ();
@@ -19,7 +19,7 @@ CGameScene::CGameScene()
     this->activeCamera = nullptr;
 }
 
-CGameScene::~CGameScene()
+GameScene::~GameScene()
 {
     delete timer;
 
@@ -30,7 +30,7 @@ CGameScene::~CGameScene()
     }
 }
 
-void CGameScene::OnStart ()
+void GameScene::OnStart ()
 {
     for (auto gameObject : gameObjects)
     {
@@ -38,7 +38,7 @@ void CGameScene::OnStart ()
     }
 }
 
-void CGameScene::OnFrame ()
+void GameScene::OnFrame ()
 {
     timer->Tick ();
 
@@ -52,7 +52,7 @@ void CGameScene::OnFrame ()
     timer->Tock ();
 }
 
-void CGameScene::OnEnd ()
+void GameScene::OnEnd ()
 {
     for (auto gameObject : gameObjects)
     {
@@ -60,32 +60,32 @@ void CGameScene::OnEnd ()
     }
 }
 
-CResourceManager<GameObject>& CGameScene::GetGameObjectManager ()
+ResourceManager<GameObject>& GameScene::GetGameObjectManager ()
 {
     return gameObjects;
 }
 
-CResourceManager<Material>& CGameScene::GetMaterialManager ()
+ResourceManager<Material>& GameScene::GetMaterialManager ()
 {
     return materials;
 }
 
-IRenderer* CGameScene::GetRenderer () const
+IRenderer* GameScene::GetRenderer () const
 {
     return renderer;
 }
 
-Timer* CGameScene::GetTimer () const
+Timer* GameScene::GetTimer () const
 {
     return timer;
 }
 
-void CGameScene::SetActiveCamera (const std::string& name)
+void GameScene::SetActiveCamera (const std::string& name)
 {
     activeCamera = &(gameObjects.GetByName<Camera> (name));
 }
 
-Camera* CGameScene::GetActiveCamera () const
+Camera* GameScene::GetActiveCamera () const
 {
     if (activeCamera == nullptr)
     {

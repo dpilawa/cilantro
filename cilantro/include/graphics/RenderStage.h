@@ -7,12 +7,12 @@
 
 namespace cilantro {
 
-class CRenderStage : public IRenderStage, public CResource
+class RenderStage : public IRenderStage, public Resource
 {
-    friend class CRenderer;
+    friend class Renderer;
 public:
-    CRenderStage ();
-    virtual ~CRenderStage ();
+    RenderStage ();
+    virtual ~RenderStage ();
 
     ///////////////////////////////////////////////////////////////////////////
 

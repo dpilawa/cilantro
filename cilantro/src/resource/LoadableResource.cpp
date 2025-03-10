@@ -3,12 +3,12 @@
 
 namespace cilantro {
 
-CLoadableResource::CLoadableResource () : CResource ()
+LoadableResource::LoadableResource () : Resource ()
 {
     this->path = std::string ();
 }
 
-CLoadableResource::CLoadableResource (const std::string& path) : CResource ()
+LoadableResource::LoadableResource (const std::string& path) : Resource ()
 {
     this->path = path;
 }

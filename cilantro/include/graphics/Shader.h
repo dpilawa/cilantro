@@ -10,11 +10,11 @@ namespace cilantro {
 
 typedef std::map<std::string, std::string> TParameterValueMap;
 
-class CShader : public IShader, public CLoadableResource
+class Shader : public IShader, public LoadableResource
 {
 public:
-    CShader (const std::string& path, EShaderType shaderType);
-    virtual ~CShader () {};
+    Shader (const std::string& path, EShaderType shaderType);
+    virtual ~Shader () {};
 
     ///////////////////////////////////////////////////////////////////////////
 

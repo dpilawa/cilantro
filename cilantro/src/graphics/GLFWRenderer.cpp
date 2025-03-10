@@ -7,8 +7,8 @@
 
 namespace cilantro {
 
-CGLFWRenderer::CGLFWRenderer (CGameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled, std::string windowCaption, bool fullscreen, bool resizable, bool vSync) 
-    : CGLRenderer (gameScene, width, height, shadowMappingEnabled, deferredRenderingEnabled)
+GLFWRenderer::GLFWRenderer (GameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled, std::string windowCaption, bool fullscreen, bool resizable, bool vSync) 
+    : GLRenderer (gameScene, width, height, shadowMappingEnabled, deferredRenderingEnabled)
     , m_windowCaption (windowCaption)
     , m_isFullscreen (fullscreen)
     , m_isResizable (resizable)
@@ -16,12 +16,12 @@ CGLFWRenderer::CGLFWRenderer (CGameScene* gameScene, unsigned int width, unsigne
 {
 }
 
-CGLFWRenderer::~CGLFWRenderer ()
+GLFWRenderer::~GLFWRenderer ()
 {
 
 }
 
-void CGLFWRenderer::Initialize ()
+void GLFWRenderer::Initialize ()
 {
     GLFWmonitor* monitor;
     GLint data;
@@ -75,7 +75,7 @@ void CGLFWRenderer::Initialize ()
     // set resize callback
     auto framebufferResizeCallback = [](GLFWwindow* window, int width, int height)
     {
-        for (auto&& gameScene : CGame::GetGameSceneManager ())
+        for (auto&& gameScene : Game::GetGameSceneManager ())
         {
             gameScene->GetRenderer ()->SetResolution (width, height);
         }
@@ -142,20 +142,20 @@ void CGLFWRenderer::Initialize ()
 
     LogMessage (MSG_LOCATION) << "GLFWRenderer started";
 
-    CGLRenderer::Initialize ();
+    GLRenderer::Initialize ();
 }
 
-void CGLFWRenderer::Deinitialize ()
+void GLFWRenderer::Deinitialize ()
 {    
-    CGLRenderer::Deinitialize ();
+    GLRenderer::Deinitialize ();
     
     glfwDestroyWindow (window);
     glfwTerminate ();
 }
 
-void CGLFWRenderer::RenderFrame ()
+void GLFWRenderer::RenderFrame ()
 {
-    CGLRenderer::RenderFrame ();
+    GLRenderer::RenderFrame ();
 
     // swap front and back buffers
     glfwSwapInterval (1);
@@ -164,7 +164,7 @@ void CGLFWRenderer::RenderFrame ()
     // check window closing
     if (glfwWindowShouldClose (window))
     {
-        CGame::Stop ();
+        Game::Stop ();
     }
 }
 

@@ -8,7 +8,7 @@ using namespace cilantro;
 class ControlledCamera : public PerspectiveCamera
 {
 public:
-    ControlledCamera (CGameScene* gameScene, float fov, float near, float far, float speed, float sensitivity);
+    ControlledCamera (GameScene* gameScene, float fov, float near, float far, float speed, float sensitivity);
     virtual ~ControlledCamera ();
 
     void Initialize ();

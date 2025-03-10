@@ -7,7 +7,7 @@
 namespace cilantro
 {
 
-PerspectiveCamera::PerspectiveCamera (CGameScene* gameScene, float fov, float near, float far) :
+PerspectiveCamera::PerspectiveCamera (GameScene* gameScene, float fov, float near, float far) :
     Camera (gameScene),
     cameraFOV (fov), nearPlane (near), farPlane (far)
 {

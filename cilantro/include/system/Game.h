@@ -8,11 +8,11 @@
 
 namespace cilantro {
 
-class CResource;
-class CGameScene;
+class Resource;
+class GameScene;
 class InputController;
 
-class CGame
+class Game
 {
 public:
 
@@ -30,15 +30,15 @@ public:
     static __EAPI bool IsRunning ();
 
     // managers
-    static __EAPI CResourceManager<CResource>& GetResourceManager ();
-    static __EAPI CResourceManager<CGameScene>& GetGameSceneManager ();
+    static __EAPI ResourceManager<Resource>& GetResourceManager ();
+    static __EAPI ResourceManager<GameScene>& GetGameSceneManager ();
 
     // scene control
     template <typename T, typename ...Params> 
     static T& Create (Params&&... params)
-    requires (std::is_base_of_v<CGameScene,T>);
+    requires (std::is_base_of_v<GameScene,T>);
     
-    static __EAPI CGameScene& GetCurrentGameScene ();
+    static __EAPI GameScene& GetCurrentGameScene ();
     static __EAPI void SetCurrentGameScene (const std::string sceneName);
 
     // input control
@@ -52,9 +52,9 @@ public:
 
 private:
     
-    static __EAPI CResourceManager<CResource> m_resourceManager;
-    static __EAPI CResourceManager<CGameScene> m_gameSceneManager;
-    static __EAPI CGameScene* m_currentGameScene;
+    static __EAPI ResourceManager<Resource> m_resourceManager;
+    static __EAPI ResourceManager<GameScene> m_gameSceneManager;
+    static __EAPI GameScene* m_currentGameScene;
     static __EAPI InputController* m_inputController;
     static __EAPI MessageBus* m_messageBus;
 
@@ -66,8 +66,8 @@ private:
 };
 
 template <typename T, typename ...Params> 
-T& CGame::Create (Params&&... params)
-    requires (std::is_base_of_v<CGameScene,T>)
+T& Game::Create (Params&&... params)
+    requires (std::is_base_of_v<GameScene,T>)
 {
     T& gameScene = m_gameSceneManager.Create<T> (params...);
 
@@ -81,12 +81,12 @@ T& CGame::Create (Params&&... params)
 
 
 template <typename T, typename ...Params> 
-T& CGame::Create (Params&&... params)
+T& Game::Create (Params&&... params)
     requires (std::is_base_of_v<InputController,T>)
 {
     T* newInputController = new T (params...);
 
-    CGame::m_inputController = static_cast<InputController*> (newInputController);
+    Game::m_inputController = static_cast<InputController*> (newInputController);
 
     return *newInputController;
 }

@@ -12,7 +12,7 @@ namespace cilantro {
 class AnimationObject : public GameObject
 {
 public:
-    __EAPI AnimationObject (CGameScene* gameScene);
+    __EAPI AnimationObject (GameScene* gameScene);
     __EAPI virtual ~AnimationObject ();
 
     template <typename P>

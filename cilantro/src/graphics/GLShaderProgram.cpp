@@ -9,20 +9,20 @@
 
 namespace cilantro {
 
-CGLShaderProgram::CGLShaderProgram () 
+GLShaderProgram::GLShaderProgram () 
     : CShaderProgram ()
 {
     m_glShaderProgramId = glCreateProgram ();
 }
 
-void CGLShaderProgram::AttachShader (const IShader& shader)
+void GLShaderProgram::AttachShader (const IShader& shader)
 {
-    const CGLShader* glShader = static_cast<const CGLShader*> (&shader);
+    const GLShader* glShader = static_cast<const GLShader*> (&shader);
 
     glAttachShader (m_glShaderProgramId, glShader->GetShaderId ());
 }
 
-void CGLShaderProgram::Link ()
+void GLShaderProgram::Link ()
 {
     GLint success;
     char errorLog[512];
@@ -39,7 +39,7 @@ void CGLShaderProgram::Link ()
     }
 }
 
-bool CGLShaderProgram::HasUniform (const std::string& uniformName) const
+bool GLShaderProgram::HasUniform (const std::string& uniformName) const
 {
     GLuint location = GetUniformLocationId (uniformName);
 
@@ -51,7 +51,7 @@ bool CGLShaderProgram::HasUniform (const std::string& uniformName) const
     return true;
 }
 
-IShaderProgram& CGLShaderProgram::SetUniformFloat (const std::string& uniformName, float uniformValue)
+IShaderProgram& GLShaderProgram::SetUniformFloat (const std::string& uniformName, float uniformValue)
 {
     GLuint location = GetUniformLocationId (uniformName);
     if (location != GL_INVALID_INDEX)
@@ -62,7 +62,7 @@ IShaderProgram& CGLShaderProgram::SetUniformFloat (const std::string& uniformNam
     return *this;
 }
 
-IShaderProgram& CGLShaderProgram::SetUniformFloatv (const std::string& uniformName, const float* uniformValue, size_t count)
+IShaderProgram& GLShaderProgram::SetUniformFloatv (const std::string& uniformName, const float* uniformValue, size_t count)
 {
     GLuint location = GetUniformLocationId (uniformName);
     if (location != GL_INVALID_INDEX)
@@ -73,7 +73,7 @@ IShaderProgram& CGLShaderProgram::SetUniformFloatv (const std::string& uniformNa
     return *this;
 }
 
-IShaderProgram& CGLShaderProgram::SetUniformVector2f (const std::string& uniformName, const Vector2f& uniformValue)
+IShaderProgram& GLShaderProgram::SetUniformVector2f (const std::string& uniformName, const Vector2f& uniformValue)
 {
     GLuint location = GetUniformLocationId (uniformName);
     if (location != GL_INVALID_INDEX)
@@ -83,7 +83,7 @@ IShaderProgram& CGLShaderProgram::SetUniformVector2f (const std::string& uniform
     return *this;
 }
 
-IShaderProgram& CGLShaderProgram::SetUniformVector3f (const std::string& uniformName, const Vector3f& uniformValue)
+IShaderProgram& GLShaderProgram::SetUniformVector3f (const std::string& uniformName, const Vector3f& uniformValue)
 {
     GLuint location = GetUniformLocationId (uniformName);
     if (location != GL_INVALID_INDEX)
@@ -94,7 +94,7 @@ IShaderProgram& CGLShaderProgram::SetUniformVector3f (const std::string& uniform
     return *this;
 }
 
-IShaderProgram& CGLShaderProgram::SetUniformVector4f (const std::string& uniformName, const Vector4f& uniformValue)
+IShaderProgram& GLShaderProgram::SetUniformVector4f (const std::string& uniformName, const Vector4f& uniformValue)
 {
     GLuint location = GetUniformLocationId (uniformName);
     if (location != GL_INVALID_INDEX)
@@ -105,7 +105,7 @@ IShaderProgram& CGLShaderProgram::SetUniformVector4f (const std::string& uniform
     return *this;
 }
 
-IShaderProgram& CGLShaderProgram::SetUniformMatrix3f (const std::string& uniformName, const Matrix3f& uniformValue)
+IShaderProgram& GLShaderProgram::SetUniformMatrix3f (const std::string& uniformName, const Matrix3f& uniformValue)
 {
     GLuint location = GetUniformLocationId (uniformName);
     if (location != GL_INVALID_INDEX)
@@ -116,7 +116,7 @@ IShaderProgram& CGLShaderProgram::SetUniformMatrix3f (const std::string& uniform
     return *this;
 }
 
-IShaderProgram& CGLShaderProgram::SetUniformMatrix4f (const std::string& uniformName, const Matrix4f& uniformValue)
+IShaderProgram& GLShaderProgram::SetUniformMatrix4f (const std::string& uniformName, const Matrix4f& uniformValue)
 {
     GLuint location = GetUniformLocationId (uniformName);
     if (location != GL_INVALID_INDEX)
@@ -127,7 +127,7 @@ IShaderProgram& CGLShaderProgram::SetUniformMatrix4f (const std::string& uniform
     return *this;
 }
 
-IShaderProgram& CGLShaderProgram::SetUniformMatrix3fv (const std::string& uniformName, const float* uniformValue, size_t count)
+IShaderProgram& GLShaderProgram::SetUniformMatrix3fv (const std::string& uniformName, const float* uniformValue, size_t count)
 {
     GLuint location = GetUniformLocationId (uniformName);
     if (location != GL_INVALID_INDEX)
@@ -138,7 +138,7 @@ IShaderProgram& CGLShaderProgram::SetUniformMatrix3fv (const std::string& unifor
     return *this;
 }
 
-IShaderProgram& CGLShaderProgram::SetUniformMatrix4fv (const std::string& uniformName, const float* uniformValue, size_t count)
+IShaderProgram& GLShaderProgram::SetUniformMatrix4fv (const std::string& uniformName, const float* uniformValue, size_t count)
 {
     GLuint location = GetUniformLocationId (uniformName);
     if (location != GL_INVALID_INDEX)
@@ -149,17 +149,17 @@ IShaderProgram& CGLShaderProgram::SetUniformMatrix4fv (const std::string& unifor
     return *this;
 }
 
-void CGLShaderProgram::Use () const
+void GLShaderProgram::Use () const
 {
     glUseProgram (m_glShaderProgramId);
 }
 
-GLuint CGLShaderProgram::GetProgramId () const
+GLuint GLShaderProgram::GetProgramId () const
 {
     return m_glShaderProgramId;
 }
 
-GLuint CGLShaderProgram::GetUniformLocationId (const std::string& uniformName) const
+GLuint GLShaderProgram::GetUniformLocationId (const std::string& uniformName) const
 {
     this->Use ();
     GLuint paramUniformLocation = glGetUniformLocation (m_glShaderProgramId, uniformName.c_str ());
@@ -172,7 +172,7 @@ GLuint CGLShaderProgram::GetUniformLocationId (const std::string& uniformName) c
     return paramUniformLocation;
 }
 
-void CGLShaderProgram::BindUniformBlock (const std::string& blockName, EBindingPoint bp)
+void GLShaderProgram::BindUniformBlock (const std::string& blockName, EBindingPoint bp)
 {
     GLuint uniformBlockIndex = glGetUniformBlockIndex (m_glShaderProgramId, blockName.c_str ());
 

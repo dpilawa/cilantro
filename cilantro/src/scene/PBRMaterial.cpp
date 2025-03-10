@@ -27,7 +27,7 @@ PBRMaterial::~PBRMaterial ()
 
 PBRMaterial& PBRMaterial::SetAlbedo (const std::string& albedo)
 {
-    Texture& tAlbedo = CGame::GetResourceManager ().GetByName<Texture> (albedo);
+    Texture& tAlbedo = Game::GetResourceManager ().GetByName<Texture> (albedo);
     SetTexture (static_cast<int>(PBRTexture::Albedo), "tAlbedo", tAlbedo);
 
     return *this;
@@ -35,7 +35,7 @@ PBRMaterial& PBRMaterial::SetAlbedo (const std::string& albedo)
 
 PBRMaterial& PBRMaterial::SetNormal (const std::string& normal)
 {
-    Texture& tNormal = CGame::GetResourceManager ().GetByName<Texture> (normal);
+    Texture& tNormal = Game::GetResourceManager ().GetByName<Texture> (normal);
     SetTexture (static_cast<int>(PBRTexture::Normal), "tNormal", tNormal);
 
     return *this;
@@ -43,7 +43,7 @@ PBRMaterial& PBRMaterial::SetNormal (const std::string& normal)
 
 PBRMaterial& PBRMaterial::SetMetallic (const std::string& metallic)
 {
-    Texture& tMetallic = CGame::GetResourceManager ().GetByName<Texture> (metallic);
+    Texture& tMetallic = Game::GetResourceManager ().GetByName<Texture> (metallic);
     SetTexture (static_cast<int>(PBRTexture::Metallic), "tMetallic", tMetallic);
 
     return *this;
@@ -51,7 +51,7 @@ PBRMaterial& PBRMaterial::SetMetallic (const std::string& metallic)
 
 PBRMaterial& PBRMaterial::SetRoughness (const std::string& roughness)
 {
-    Texture& tRoughness = CGame::GetResourceManager ().GetByName<Texture> (roughness);
+    Texture& tRoughness = Game::GetResourceManager ().GetByName<Texture> (roughness);
     SetTexture (static_cast<int>(PBRTexture::Roughness), "tRoughness", tRoughness);
 
     return *this;
@@ -59,7 +59,7 @@ PBRMaterial& PBRMaterial::SetRoughness (const std::string& roughness)
 
 PBRMaterial& PBRMaterial::SetAO (const std::string& ao)
 {
-    Texture& tAO = CGame::GetResourceManager ().GetByName<Texture> (ao);
+    Texture& tAO = Game::GetResourceManager ().GetByName<Texture> (ao);
     SetTexture (static_cast<int>(PBRTexture::AO), "tAO", tAO);
 
     return *this;
