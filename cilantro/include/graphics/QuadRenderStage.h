@@ -14,14 +14,16 @@ class QuadRenderStage : public RenderStage
 {
 public:
     __EAPI QuadRenderStage ();
-    virtual ~QuadRenderStage () {};
+    __EAPI virtual ~QuadRenderStage () {};
 
     ///////////////////////////////////////////////////////////////////////////
 
-    virtual void Initialize () override;
-    virtual void Deinitialize () override {};
+    __EAPI virtual void Initialize () override;
+    __EAPI virtual void Deinitialize () override {};
 
-    virtual void OnFrame () override;
+    __EAPI virtual void InitializeFramebuffer () override;
+
+    __EAPI virtual void OnFrame () override;
 
     ///////////////////////////////////////////////////////////////////////////
 
@@ -33,10 +35,6 @@ public:
     __EAPI virtual QuadRenderStage& SetRenderStageParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue);
 
 protected:
-    virtual void InitializeFramebuffer () override;
-
-protected:
-
     CShaderProgram* m_shaderProgram;
 
 };

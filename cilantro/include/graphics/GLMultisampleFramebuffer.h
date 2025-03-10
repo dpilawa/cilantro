@@ -10,23 +10,23 @@ namespace cilantro {
 class GLMultisampleFramebuffer : public GLFramebuffer 
 {
 public:
-    GLMultisampleFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int dsBufferArraySize, bool hasDepthStencilRB);
-    virtual ~GLMultisampleFramebuffer () {};
+    __EAPI GLMultisampleFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int dsBufferArraySize, bool hasDepthStencilRB);
+    __EAPI virtual ~GLMultisampleFramebuffer () {};
 
     ///////////////////////////////////////////////////////////////////////////
 
-    virtual void Initialize () override;
-    virtual void Deinitialize () override;
+    __EAPI virtual void Initialize () override;
+    __EAPI virtual void Deinitialize () override;
 
-    virtual void BindFramebuffer () const override;
-    virtual void BlitFramebuffer () const override;
+    __EAPI virtual void BindFramebuffer () const override;
+    __EAPI virtual void BlitFramebuffer () const override;
 
-    virtual void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight) override;
+    __EAPI virtual void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight) override;
 
     ///////////////////////////////////////////////////////////////////////////
 
-    GLuint virtual GetFramebufferRenderbufferGLId () const override;
-    GLuint virtual GetFramebufferGLId () const override;
+    __EAPI GLuint virtual GetFramebufferRenderbufferGLId () const override;
+    __EAPI GLuint virtual GetFramebufferGLId () const override;
 
 protected:
 

@@ -17,6 +17,14 @@ void DeferredGeometryRenderStage::Initialize ()
     InitializeFramebuffer ();
 }
 
+void DeferredGeometryRenderStage::InitializeFramebuffer ()
+{
+    if (m_isFramebufferEnabled)
+    {
+        m_framebuffer = m_renderer->CreateFramebuffer (m_renderer->GetWidth (), m_renderer->GetHeight (), 0, 5, 0, true, m_isMultisampleEnabled);
+    }
+}
+
 void DeferredGeometryRenderStage::OnFrame ()
 {
     RenderStage::OnFrame ();
@@ -45,13 +53,6 @@ void DeferredGeometryRenderStage::OnFrame ()
  
 }
 
-void DeferredGeometryRenderStage::InitializeFramebuffer ()
-{
-    if (m_isFramebufferEnabled)
-    {
-        m_framebuffer = m_renderer->CreateFramebuffer (m_renderer->GetWidth (), m_renderer->GetHeight (), 0, 5, 0, true, m_isMultisampleEnabled);
-    }
-}
 
 } // namespace cilantro
 

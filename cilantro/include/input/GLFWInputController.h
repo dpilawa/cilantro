@@ -41,7 +41,10 @@ class GLFWInputController : public InputController
 {
 public:
     __EAPI GLFWInputController ();
-    __EAPI ~GLFWInputController ();
+    __EAPI virtual ~GLFWInputController ();
+
+    __EAPI void Initialize ();
+    __EAPI void Deinitialize ();
 
     __EAPI void OnFrame ();
 
@@ -52,9 +55,6 @@ public:
     __EAPI void SetMouseGameMode(bool value);
 
 private:
-
-    void Initialize ();
-    void Deinitialize ();
 
     int GetGLFWKey (EInputKey key);
     int GetGLFWTrigger (EInputTrigger trigger);

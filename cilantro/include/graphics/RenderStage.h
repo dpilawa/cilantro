@@ -11,18 +11,18 @@ class RenderStage : public IRenderStage, public Resource
 {
     friend class Renderer;
 public:
-    RenderStage ();
-    virtual ~RenderStage ();
+    __EAPI RenderStage ();
+    __EAPI virtual ~RenderStage ();
 
     ///////////////////////////////////////////////////////////////////////////
 
-    virtual IFramebuffer* GetFramebuffer () const override final;
-    virtual IFramebuffer* GetLinkedColorAttachmentsFramebuffer () const override final;
-    virtual IFramebuffer* GetLinkedDepthStencilFramebuffer () const override final;
-    virtual IFramebuffer* GetLinkedDepthArrayFramebuffer () const override final;
-    virtual IFramebuffer* GetLinkedDrawFramebuffer () const override final;
+    __EAPI virtual IFramebuffer* GetFramebuffer () const override final;
+    __EAPI virtual IFramebuffer* GetLinkedColorAttachmentsFramebuffer () const override final;
+    __EAPI virtual IFramebuffer* GetLinkedDepthStencilFramebuffer () const override final;
+    __EAPI virtual IFramebuffer* GetLinkedDepthArrayFramebuffer () const override final;
+    __EAPI virtual IFramebuffer* GetLinkedDrawFramebuffer () const override final;
 
-    virtual void OnFrame () override;
+    __EAPI virtual void OnFrame () override;
     __EAPI virtual IRenderStage& SetViewport (float u, float v, float su, float sv) override;
 
     __EAPI virtual IRenderStage& SetMultisampleEnabled (bool value) override;

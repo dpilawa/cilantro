@@ -121,55 +121,55 @@ struct SGlUniformSpotLightBuffer
 class GLRenderer : public Renderer
 {
 public:
-    GLRenderer (GameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled);
-    virtual ~GLRenderer ();
+    __EAPI GLRenderer (GameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled);
+    __EAPI virtual ~GLRenderer ();
 
     ///////////////////////////////////////////////////////////////////////////
 
-    virtual void Initialize () override;
-    virtual void Deinitialize () override;
-
-    virtual IRenderer& SetViewport (unsigned int x, unsigned int y, unsigned int sx, unsigned int sy) override;
-
-    virtual void RenderFrame () override;
-
-    virtual void Draw (MeshObject& meshObject) override;
-    virtual void DrawQuad () override;
-    virtual void DrawAllGeometryBuffers (IShaderProgram& shader) override;
-
-    virtual void Update (MeshObject& meshObject) override;
-    virtual void Update (Material& material, unsigned int textureUnit) override;
-    virtual void Update (Material& material) override;
+    __EAPI virtual void Initialize () override;
+    __EAPI virtual void Deinitialize () override;
     
-    virtual void Update (PointLight& pointLight) override;
-    virtual void Update (DirectionalLight& directionalLight) override;	
-    virtual void Update (SpotLight& spotLight) override;
-
-    virtual void UpdateCameraBuffers (Camera& camera) override;
-    virtual void UpdateLightViewBuffers () override;
-
-    virtual size_t GetPointLightCount () const override;
-    virtual size_t GetDirectionalLightCount () const override;
-    virtual size_t GetSpotLightCount () const override;
-
-    virtual IFramebuffer* CreateFramebuffer (unsigned int width, unsigned int height, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayTextureCount, bool depthStencilRenderbufferEnabled, bool multisampleEnabled) override;
-    virtual void BindDefaultFramebuffer () override;
-    virtual void BindDefaultDepthBuffer () override;
-    virtual void BindDefaultStencilBuffer () override;
-    virtual void BindDefaultTextures () override;    
-
-    virtual void ClearColorBuffer (const Vector4f& rgba) override;
-    virtual void ClearDepthBuffer () override;
-    virtual void ClearStencilBuffer () override;
-
-    virtual void SetDepthTestEnabled (bool value) override;
-    virtual void SetFaceCullingEnabled (bool value) override;
-    virtual void SetFaceCullingMode (EFaceCullingFace face, EFaceCullingDirection direction) override;
-    virtual void SetMultisamplingEnabled (bool value) override;
+    __EAPI virtual IRenderer& SetViewport (unsigned int x, unsigned int y, unsigned int sx, unsigned int sy) override;
     
-    virtual void SetStencilTestEnabled (bool value) override;
-    virtual void SetStencilTestFunction (EStencilTestFunction testFunction, int testValue) override;
-    virtual void SetStencilTestOperation (EStencilTestOperation sFail, EStencilTestOperation dpFail, EStencilTestOperation dpPass) override;
+    __EAPI virtual void RenderFrame () override;
+    
+    __EAPI virtual void Draw (MeshObject& meshObject) override;
+    __EAPI virtual void DrawQuad () override;
+    __EAPI virtual void DrawAllGeometryBuffers (IShaderProgram& shader) override;
+    
+    __EAPI virtual void Update (MeshObject& meshObject) override;
+    __EAPI virtual void Update (Material& material, unsigned int textureUnit) override;
+    __EAPI virtual void Update (Material& material) override;
+    
+    __EAPI virtual void Update (PointLight& pointLight) override;
+    __EAPI virtual void Update (DirectionalLight& directionalLight) override;    
+    __EAPI virtual void Update (SpotLight& spotLight) override;
+    
+    __EAPI virtual void UpdateCameraBuffers (Camera& camera) override;
+    __EAPI virtual void UpdateLightViewBuffers () override;
+    
+    __EAPI virtual size_t GetPointLightCount () const override;
+    __EAPI virtual size_t GetDirectionalLightCount () const override;
+    __EAPI virtual size_t GetSpotLightCount () const override;
+    
+    __EAPI virtual IFramebuffer* CreateFramebuffer (unsigned int width, unsigned int height, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayTextureCount, bool depthStencilRenderbufferEnabled, bool multisampleEnabled) override;
+    __EAPI virtual void BindDefaultFramebuffer () override;
+    __EAPI virtual void BindDefaultDepthBuffer () override;
+    __EAPI virtual void BindDefaultStencilBuffer () override;
+    __EAPI virtual void BindDefaultTextures () override;    
+    
+    __EAPI virtual void ClearColorBuffer (const Vector4f& rgba) override;
+    __EAPI virtual void ClearDepthBuffer () override;
+    __EAPI virtual void ClearStencilBuffer () override;
+    
+    __EAPI virtual void SetDepthTestEnabled (bool value) override;
+    __EAPI virtual void SetFaceCullingEnabled (bool value) override;
+    __EAPI virtual void SetFaceCullingMode (EFaceCullingFace face, EFaceCullingDirection direction) override;
+    __EAPI virtual void SetMultisamplingEnabled (bool value) override;
+    
+    __EAPI virtual void SetStencilTestEnabled (bool value) override;
+    __EAPI virtual void SetStencilTestFunction (EStencilTestFunction testFunction, int testValue) override;
+    __EAPI virtual void SetStencilTestOperation (EStencilTestOperation sFail, EStencilTestOperation dpFail, EStencilTestOperation dpPass) override;
 
     ///////////////////////////////////////////////////////////////////////////
 

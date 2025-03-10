@@ -8,23 +8,23 @@ namespace cilantro {
 class Framebuffer : public IFramebuffer
 {
 public:
-    Framebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayLayerCount, bool depthStencilRenderbufferEnabled);
-    virtual ~Framebuffer () {};
+    __EAPI Framebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayLayerCount, bool depthStencilRenderbufferEnabled);
+    __EAPI virtual ~Framebuffer () {};
 
     ///////////////////////////////////////////////////////////////////////////
 
-    virtual unsigned int GetWidth () const override final;
-    virtual unsigned int GetHeight () const override final;
+    __EAPI virtual unsigned int GetWidth () const override final;
+    __EAPI virtual unsigned int GetHeight () const override final;
 
-    virtual unsigned int GetColorTextureCount() const override final;
-    virtual unsigned int GetRGBTextureCount () const override final;
-    virtual unsigned int GetRGBATextureCount () const override final;
-    virtual unsigned int GetDepthArrayLayerCount () const override final;
+    __EAPI virtual unsigned int GetColorTextureCount() const override final;
+    __EAPI virtual unsigned int GetRGBTextureCount () const override final;
+    __EAPI virtual unsigned int GetRGBATextureCount () const override final;
+    __EAPI virtual unsigned int GetDepthArrayLayerCount () const override final;
 
-    virtual bool IsDepthStencilRenderbufferEnabled () const override final;
-    virtual bool IsDepthArrayEnabled () const override final;
+    __EAPI virtual bool IsDepthStencilRenderbufferEnabled () const override final;
+    __EAPI virtual bool IsDepthArrayEnabled () const override final;
 
-    void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight) override;
+    __EAPI void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight) override;
 
     ///////////////////////////////////////////////////////////////////////////
 

@@ -16,6 +16,14 @@ void QuadRenderStage::Initialize ()
     InitializeFramebuffer ();
 }
 
+void QuadRenderStage::InitializeFramebuffer ()
+{   
+    if (m_isFramebufferEnabled)
+    {
+        m_framebuffer = m_renderer->CreateFramebuffer (m_renderer->GetWidth (), m_renderer->GetHeight (), 0, 1, 0, true, m_isMultisampleEnabled);
+    }
+}
+
 void QuadRenderStage::OnFrame ()
 {
     RenderStage::OnFrame ();
@@ -75,12 +83,5 @@ QuadRenderStage& QuadRenderStage::SetRenderStageParameterVector4f (const std::st
     return *this;
 }
 
-void QuadRenderStage::InitializeFramebuffer ()
-{   
-    if (m_isFramebufferEnabled)
-    {
-        m_framebuffer = m_renderer->CreateFramebuffer (m_renderer->GetWidth (), m_renderer->GetHeight (), 0, 1, 0, true, m_isMultisampleEnabled);
-    }
-}
 
 } // namespace cilantro

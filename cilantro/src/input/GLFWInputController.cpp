@@ -78,6 +78,47 @@ GLFWInputController::~GLFWInputController ()
 
 }
 
+void GLFWInputController::Initialize () 
+{
+    window = glfwGetCurrentContext ();
+    if (window == NULL)
+    {
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "GL context/window not present";
+    }
+
+    auto keyCallback = [](GLFWwindow* _window, int _key, int _scancode, int _action, int _mods)
+    {
+        static_cast<GLFWInputController&>(Game::GetInputController ()).KeyCallback(_key, _scancode, _action, _mods);
+    };
+
+    auto mouseButtonCallback = [](GLFWwindow* _window, int _button, int _action, int _mods)
+    {
+        static_cast<GLFWInputController&>(Game::GetInputController ()).KeyCallback(_button, 0, _action, _mods);
+    };
+
+    auto mouseCursorCallback = [](GLFWwindow* _window, double _xPos, double _yPos)
+    {
+        static_cast<GLFWInputController&>(Game::GetInputController ()).MouseCursorCallback(_xPos, _yPos);
+    };
+
+    auto mouseScrollCallback = [](GLFWwindow* _window, double _xOffset, double _yOffset)
+    {
+        static_cast<GLFWInputController&>(Game::GetInputController ()).MouseScrollCallback(_xOffset, _yOffset);
+    };
+
+    glfwSetKeyCallback (window, keyCallback);
+    glfwSetMouseButtonCallback (window, mouseButtonCallback);
+    glfwSetCursorPosCallback (window, mouseCursorCallback);
+    glfwSetScrollCallback (window, mouseScrollCallback);
+
+    LogMessage (MSG_LOCATION) << "GLFWInputController started";
+}
+
+void GLFWInputController::Deinitialize () 
+{
+    glfwSetKeyCallback (window, NULL);
+}
+
 void GLFWInputController::OnFrame ()
 {
     glfwPollEvents ();
@@ -164,47 +205,6 @@ void GLFWInputController::SetMouseGameMode(bool value)
         }
         glfwSetInputMode (window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);        
     }
-}
-
-void GLFWInputController::Initialize () 
-{
-    window = glfwGetCurrentContext ();
-    if (window == NULL)
-    {
-        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "GL context/window not present";
-    }
-
-    auto keyCallback = [](GLFWwindow* _window, int _key, int _scancode, int _action, int _mods)
-    {
-        static_cast<GLFWInputController&>(Game::GetInputController ()).KeyCallback(_key, _scancode, _action, _mods);
-    };
-
-    auto mouseButtonCallback = [](GLFWwindow* _window, int _button, int _action, int _mods)
-    {
-        static_cast<GLFWInputController&>(Game::GetInputController ()).KeyCallback(_button, 0, _action, _mods);
-    };
-
-    auto mouseCursorCallback = [](GLFWwindow* _window, double _xPos, double _yPos)
-    {
-        static_cast<GLFWInputController&>(Game::GetInputController ()).MouseCursorCallback(_xPos, _yPos);
-    };
-
-    auto mouseScrollCallback = [](GLFWwindow* _window, double _xOffset, double _yOffset)
-    {
-        static_cast<GLFWInputController&>(Game::GetInputController ()).MouseScrollCallback(_xOffset, _yOffset);
-    };
-
-    glfwSetKeyCallback (window, keyCallback);
-    glfwSetMouseButtonCallback (window, mouseButtonCallback);
-    glfwSetCursorPosCallback (window, mouseCursorCallback);
-    glfwSetScrollCallback (window, mouseScrollCallback);
-
-    LogMessage (MSG_LOCATION) << "GLFWInputController started";
-}
-
-void GLFWInputController::Deinitialize () 
-{
-    glfwSetKeyCallback (window, NULL);
 }
 
 int GLFWInputController::GetGLFWKey (EInputKey key)

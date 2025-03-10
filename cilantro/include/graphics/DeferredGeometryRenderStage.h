@@ -15,15 +15,15 @@ public:
 
     ///////////////////////////////////////////////////////////////////////////
 
-    virtual void Initialize () override;
-    virtual void Deinitialize () override {};
+    __EAPI virtual void Initialize () override;
+    __EAPI virtual void Deinitialize () override {};
 
-    virtual void OnFrame () override;
+    __EAPI virtual void InitializeFramebuffer () override;
+
+    __EAPI virtual void OnFrame () override;
 
     ///////////////////////////////////////////////////////////////////////////
 
-protected:
-    virtual void InitializeFramebuffer () override;
 };
 
 } // namespace cilantro

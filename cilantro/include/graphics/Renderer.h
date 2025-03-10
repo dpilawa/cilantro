@@ -16,31 +16,31 @@ class GameScene;
 class Renderer : public IRenderer
 {
 public:
-    Renderer (GameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled);
-    virtual ~Renderer () {};
+    __EAPI Renderer (GameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled);
+    __EAPI virtual ~Renderer () {};
 
     ///////////////////////////////////////////////////////////////////////////
 
-    void Initialize () override;
-    void Deinitialize () override;
+    __EAPI void Initialize () override;
+    __EAPI void Deinitialize () override;
 
     __EAPI unsigned int GetWidth () const override final;
     __EAPI unsigned int GetHeight () const override final;
     __EAPI IRenderer& SetResolution (unsigned int width, unsigned int height) override;
 
-    GameScene* GetGameScene () override final;
+    __EAPI GameScene* GetGameScene () override final;
 
     __EAPI virtual TShaderProgramManager& GetShaderProgramManager () override final;
 
     __EAPI virtual TRenderStageManager& GetRenderStageManager () override final;
     
-    virtual IRenderStage* GetCurrentRenderStage () override final;
-    virtual TRenderPipeline& GetRenderPipeline () override final;
-    virtual IRenderer& RotateRenderPipelineLeft () override final;
-    virtual IRenderer& RotateRenderPipelineRight () override final;
-    virtual IFramebuffer* GetPipelineFramebuffer (EPipelineLink link) override final;
+    __EAPI virtual IRenderStage* GetCurrentRenderStage () override final;
+    __EAPI virtual TRenderPipeline& GetRenderPipeline () override final;
+    __EAPI virtual IRenderer& RotateRenderPipelineLeft () override final;
+    __EAPI virtual IRenderer& RotateRenderPipelineRight () override final;
+    __EAPI virtual IFramebuffer* GetPipelineFramebuffer (EPipelineLink link) override final;
     
-    virtual void RenderFrame () override;   
+    __EAPI virtual void RenderFrame () override;   
     
     ///////////////////////////////////////////////////////////////////////////
 

@@ -2,6 +2,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
 
+#include "cilantroengine.h"
 #include "math/Vector2f.h"
 #include "math/Vector3f.h"
 #include "system/Game.h"

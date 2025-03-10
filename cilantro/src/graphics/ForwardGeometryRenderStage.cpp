@@ -17,6 +17,14 @@ void ForwardGeometryRenderStage::Initialize ()
     InitializeFramebuffer ();
 }
 
+void ForwardGeometryRenderStage::InitializeFramebuffer ()
+{
+    if (m_isFramebufferEnabled)
+    {
+        m_framebuffer = m_renderer->CreateFramebuffer (m_renderer->GetWidth (), m_renderer->GetHeight (), 0, 1, 0, true, m_isMultisampleEnabled);
+    }
+}
+
 void ForwardGeometryRenderStage::OnFrame ()
 {
     RenderStage::OnFrame ();
@@ -36,12 +44,5 @@ void ForwardGeometryRenderStage::OnFrame ()
     }
 }
 
-void ForwardGeometryRenderStage::InitializeFramebuffer ()
-{
-    if (m_isFramebufferEnabled)
-    {
-        m_framebuffer = m_renderer->CreateFramebuffer (m_renderer->GetWidth (), m_renderer->GetHeight (), 0, 1, 0, true, m_isMultisampleEnabled);
-    }
-}
 
 } // namespace cilantro

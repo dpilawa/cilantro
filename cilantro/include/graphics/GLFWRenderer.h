@@ -18,7 +18,7 @@ public:
     __EAPI virtual void Initialize ();
     __EAPI virtual void Deinitialize ();
 
-    virtual void RenderFrame ();
+    __EAPI virtual void RenderFrame ();
 
 private:
 

@@ -33,6 +33,19 @@ void ShadowMapRenderStage::Initialize ()
 
 }
 
+void ShadowMapRenderStage::InitializeFramebuffer ()
+{   
+    if (m_isFramebufferEnabled)
+    {
+        size_t numLights = m_renderer->GetDirectionalLightCount ();
+
+        if (numLights > 0)
+        {
+            m_framebuffer = m_renderer->CreateFramebuffer (CILANTRO_SHADOW_MAP_SIZE, CILANTRO_SHADOW_MAP_SIZE, 0, 0, (unsigned int) numLights, false, m_isMultisampleEnabled);
+        }
+    }
+}
+
 void ShadowMapRenderStage::OnFrame ()
 {
     RenderStage::OnFrame ();
@@ -47,19 +60,6 @@ void ShadowMapRenderStage::OnFrame ()
     {
         m_framebuffer->BlitFramebuffer ();
     }    
-}
-
-void ShadowMapRenderStage::InitializeFramebuffer ()
-{   
-    if (m_isFramebufferEnabled)
-    {
-        size_t numLights = m_renderer->GetDirectionalLightCount ();
-
-        if (numLights > 0)
-        {
-            m_framebuffer = m_renderer->CreateFramebuffer (CILANTRO_SHADOW_MAP_SIZE, CILANTRO_SHADOW_MAP_SIZE, 0, 0, (unsigned int) numLights, false, m_isMultisampleEnabled);
-        }
-    }
 }
 
 } // namespace cilantro
