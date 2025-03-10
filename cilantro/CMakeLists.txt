@@ -189,7 +189,7 @@ if(CILANTRO_BUILD_GLES)
     target_compile_definitions(cilantro PRIVATE CILANTRO_BUILDING_GLES)
 endif()
 
-target_link_libraries (cilantro PRIVATE glfw glad assimp)
+target_link_libraries (cilantro PUBLIC glfw glad assimp)
 
 if (DEFINED EMSCRIPTEN)
 set_target_properties(cilantro
