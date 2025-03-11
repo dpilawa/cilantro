@@ -21,30 +21,29 @@ typedef size_t handle_t;
   #if defined CILANTRO_BUILDING_DLL && !defined CILANTRO_BUILDING_PYTHON_MODULE
     #ifdef __GNUC__
       #define __EAPI __attribute__ ((dllexport))
+      #define __CEAPI __attribute__ ((dllexport))
     #else
       #define __EAPI __declspec (dllexport)
+      #define __CEAPI
     #endif
   #else
     #ifdef __GNUC__
       #define __EAPI __attribute__ ((dllimport))
+      #define __CEAPI __attribute__ ((dllimport))
     #else
       #define __EAPI __declspec (dllimport)
+      #define __CEAPI
     #endif
   #endif
 #else
   #if __GNUC__ >= 4 || __clang__
     #define __EAPI __attribute__ ((visibility ("default")))
     #define __EAPI_LOCAL __attribute__ ((visibility ("hidden")))
+    #define __CEAPI __attribute__ ((visibility ("default")))
   #else
     #define __EAPI
     #define __EAPI_LOCAL
-  #endif
-#endif
-
-#if defined _WIN32 || defined __CYGWIN__
-  #ifdef __GNUC__
-    #define __CEAPI __EAPI
-  #else
     #define __CEAPI
   #endif
 #endif
+
