@@ -7,7 +7,7 @@
 
 namespace cilantro {
 
-class Bone : public GameObject
+class __CEAPI Bone : public GameObject
 {
 public:
     __EAPI Bone (GameScene* gameScene);

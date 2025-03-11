@@ -6,11 +6,11 @@
 
 namespace cilantro {
 
-class CShaderProgram : public IShaderProgram, public Resource
+class __CEAPI ShaderProgram : public IShaderProgram, public Resource
 {
 public:
-    CShaderProgram () : Resource () {}; 
-    virtual ~CShaderProgram () {};
+    ShaderProgram () : Resource () {}; 
+    virtual ~ShaderProgram () {};
 };
 
 } // namespace cilantro

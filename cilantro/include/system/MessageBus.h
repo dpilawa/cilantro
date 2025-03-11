@@ -10,11 +10,11 @@
 
 namespace cilantro {
 
-class MessageBus 
+class __CEAPI MessageBus 
 {
 public:
-    MessageBus();
-    virtual ~MessageBus();
+    __EAPI MessageBus();
+    __EAPI virtual ~MessageBus();
 
     // Subscribe to a specific message type
     template <typename T>

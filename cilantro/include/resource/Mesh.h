@@ -20,7 +20,7 @@ struct Vector3Hash
     }
 };
 
-class Mesh : public Resource, public Hook<std::string>
+class __CEAPI Mesh : public Resource, public Hook<std::string>
 {
 
 public:

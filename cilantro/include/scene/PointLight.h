@@ -8,7 +8,7 @@ struct IRenderer;
 
 namespace cilantro {
 
-class PointLight : public Light
+class __CEAPI PointLight : public Light
 {
 public:
     __EAPI PointLight (GameScene* gameScene);

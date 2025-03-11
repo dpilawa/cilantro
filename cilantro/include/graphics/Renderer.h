@@ -13,11 +13,11 @@ namespace cilantro {
 
 class GameScene;
 
-class Renderer : public IRenderer
+class __CEAPI Renderer : public IRenderer
 {
 public:
     __EAPI Renderer (GameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled);
-    __EAPI virtual ~Renderer () {};
+    __EAPI virtual ~Renderer ();
 
     ///////////////////////////////////////////////////////////////////////////
 

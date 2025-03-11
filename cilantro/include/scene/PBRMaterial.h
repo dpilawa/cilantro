@@ -19,7 +19,7 @@ enum class PBRTexture : int
     AO
 };
 
-class PBRMaterial : public Material
+class __CEAPI PBRMaterial : public Material
 {
 public:
     __EAPI PBRMaterial ();

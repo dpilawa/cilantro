@@ -18,7 +18,7 @@ enum class PhongTexture : int
     Emissive
 };
 
-class PhongMaterial : public Material
+class __CEAPI PhongMaterial : public Material
 {
 public:
     __EAPI PhongMaterial ();

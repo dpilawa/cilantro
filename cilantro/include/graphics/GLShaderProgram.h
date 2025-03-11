@@ -8,7 +8,7 @@ namespace cilantro {
 
 struct IShaderProgram;
 
-class GLShaderProgram : public CShaderProgram
+class __CEAPI GLShaderProgram : public ShaderProgram
 {
 public:
     __EAPI GLShaderProgram ();

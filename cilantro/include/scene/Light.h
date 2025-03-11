@@ -9,11 +9,11 @@ struct IRenderer;
 
 namespace cilantro {
 
-class Light : public GameObject
+class __CEAPI Light : public GameObject
 {
 public:
-    Light (GameScene* gameScene);
-    virtual ~Light ();
+    __EAPI Light (GameScene* gameScene);
+    __EAPI virtual ~Light ();
 
     // enable or disable light
     __EAPI void SetEnabled (bool value);
@@ -27,7 +27,7 @@ public:
 
 
     // invoked by game loop on update	
-    void OnUpdate (IRenderer& renderStage);
+    __EAPI void OnUpdate (IRenderer& renderStage);
 
 private:
 

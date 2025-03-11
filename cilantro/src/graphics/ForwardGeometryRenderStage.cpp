@@ -12,9 +12,17 @@ ForwardGeometryRenderStage::ForwardGeometryRenderStage ()
 {
 }
 
+ForwardGeometryRenderStage::~ForwardGeometryRenderStage ()
+{
+}
+
 void ForwardGeometryRenderStage::Initialize ()
 {    
     InitializeFramebuffer ();
+}
+
+void ForwardGeometryRenderStage::Deinitialize()
+{
 }
 
 void ForwardGeometryRenderStage::InitializeFramebuffer ()

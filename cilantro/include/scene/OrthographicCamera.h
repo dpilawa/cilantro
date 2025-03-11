@@ -7,7 +7,7 @@
 
 namespace cilantro {
 
-class OrthographicCamera : public Camera
+class __CEAPI OrthographicCamera : public Camera
 {
 public:
     __EAPI OrthographicCamera (GameScene* gameScene, float width, float near, float far);

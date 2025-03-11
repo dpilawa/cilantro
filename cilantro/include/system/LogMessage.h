@@ -9,7 +9,7 @@
 
 namespace cilantro {
 
-class LogMessage
+class __CEAPI LogMessage
 {
 public:
     __EAPI LogMessage ();

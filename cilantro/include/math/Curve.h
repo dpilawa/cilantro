@@ -7,7 +7,7 @@
 namespace cilantro {
 
 template <typename T, int d>
-class Curve
+class __CEAPI Curve
 {
 public:
     __EAPI Curve ();

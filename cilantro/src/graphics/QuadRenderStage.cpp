@@ -11,9 +11,17 @@ QuadRenderStage::QuadRenderStage ()
 {
 }
 
+QuadRenderStage::~QuadRenderStage ()
+{
+}
+
 void QuadRenderStage::Initialize ()
 {
     InitializeFramebuffer ();
+}
+
+void QuadRenderStage::Deinitialize ()
+{
 }
 
 void QuadRenderStage::InitializeFramebuffer ()
@@ -50,7 +58,7 @@ void QuadRenderStage::OnFrame ()
 
 QuadRenderStage& QuadRenderStage::SetShaderProgram (const std::string& shaderProgramName)
 {
-    m_shaderProgram = &(m_renderer->GetShaderProgramManager ().GetByName<CShaderProgram> (shaderProgramName));
+    m_shaderProgram = &(m_renderer->GetShaderProgramManager ().GetByName<ShaderProgram> (shaderProgramName));
 
     return *this;
 }

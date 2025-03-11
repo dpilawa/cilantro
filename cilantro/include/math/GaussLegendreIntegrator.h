@@ -11,7 +11,7 @@
 namespace cilantro {
 
 template<int n>
-class GaussLegendreIntegrator
+class __CEAPI GaussLegendreIntegrator
 {
 public:
     __EAPI GaussLegendreIntegrator ();

@@ -6,7 +6,7 @@
 
 namespace cilantro {
 
-class LinearPath : public Path
+class __CEAPI LinearPath : public Path
 {
 public:
     __EAPI LinearPath (GameScene* gameScene);

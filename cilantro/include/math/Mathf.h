@@ -17,7 +17,7 @@ namespace cilantro {
 #define cPI 3.14159265358979323846f
 
 // Collection of static helper math floating point routines
-class Mathf
+class __CEAPI Mathf
 {
 public:
     // static constants

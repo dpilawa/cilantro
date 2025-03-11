@@ -12,11 +12,11 @@
 namespace cilantro {
 
 template<typename P>
-class AnimationProperty 
+class __CEAPI AnimationProperty 
 {
 public:
     __EAPI AnimationProperty (std::function<void (P)> updateFunction, std::function<P (P, P, float)> interpolateFunction);
-    virtual ~AnimationProperty (){};
+    virtual ~AnimationProperty () {};
 
     __EAPI bool AddKeyframe (float time, P propertyValue);
     __EAPI P GetFrame (float time);

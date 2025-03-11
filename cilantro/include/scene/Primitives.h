@@ -10,7 +10,7 @@ class Mesh;
 class Vector2f;
 class Vector3f;
 
-class Primitives
+class __CEAPI Primitives
 {
 public:
     __EAPI static void GeneratePlane (Mesh& m);

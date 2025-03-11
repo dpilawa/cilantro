@@ -12,7 +12,7 @@
 
 namespace cilantro {
 
-class InputController
+class __CEAPI InputController
 {
 public:
     __EAPI InputController ();

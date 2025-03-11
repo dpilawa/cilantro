@@ -5,21 +5,21 @@
 
 namespace cilantro {
 
-class CShaderProgram;
+class ShaderProgram;
 class Vector2f;
 class Vector3f;
 class Vector4f;
 
-class QuadRenderStage : public RenderStage
+class __CEAPI QuadRenderStage : public RenderStage
 {
 public:
     __EAPI QuadRenderStage ();
-    __EAPI virtual ~QuadRenderStage () {};
+    __EAPI virtual ~QuadRenderStage ();
 
     ///////////////////////////////////////////////////////////////////////////
 
     __EAPI virtual void Initialize () override;
-    __EAPI virtual void Deinitialize () override {};
+    __EAPI virtual void Deinitialize () override;
 
     __EAPI virtual void InitializeFramebuffer () override;
 
@@ -35,7 +35,7 @@ public:
     __EAPI virtual QuadRenderStage& SetRenderStageParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue);
 
 protected:
-    CShaderProgram* m_shaderProgram;
+    ShaderProgram* m_shaderProgram;
 
 };
 

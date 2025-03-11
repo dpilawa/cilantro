@@ -6,11 +6,11 @@
 
 namespace cilantro {
 
-class ModelLoader
+class __CEAPI ModelLoader
 {
 public:
-    ModelLoader ();
-    virtual ~ModelLoader ();
+    __EAPI ModelLoader ();
+    __EAPI virtual ~ModelLoader ();
 
     virtual void Load (std::string sceneName, std::string path) = 0;
  

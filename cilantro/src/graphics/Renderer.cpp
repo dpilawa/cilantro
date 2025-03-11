@@ -25,6 +25,10 @@ Renderer::Renderer (GameScene* gameScene, unsigned int width, unsigned int heigh
     m_lightingShaderStagesCount = 0;
 }
 
+Renderer::~Renderer ()
+{
+}
+
 void Renderer::Initialize ()
 {
     InitializeRenderStages ();

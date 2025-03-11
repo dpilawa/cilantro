@@ -8,7 +8,7 @@
 
 namespace cilantro {
 
-class GLFWRenderer : public GLRenderer
+class __CEAPI GLFWRenderer : public GLRenderer
 {
 public:
 

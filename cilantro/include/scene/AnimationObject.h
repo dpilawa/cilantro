@@ -9,7 +9,7 @@
 
 namespace cilantro {
 
-class AnimationObject : public GameObject
+class __CEAPI AnimationObject : public GameObject
 {
 public:
     __EAPI AnimationObject (GameScene* gameScene);

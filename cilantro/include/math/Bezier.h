@@ -8,7 +8,7 @@
 namespace cilantro {
 
 template <typename T, int d>
-class Bezier : public Curve<T, d>
+class __CEAPI Bezier : public Curve<T, d>
 {
 public:
     __EAPI Bezier ();

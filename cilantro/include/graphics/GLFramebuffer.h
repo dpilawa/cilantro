@@ -17,7 +17,7 @@ struct GLBuffers
     GLuint depthTextureArray;
 };
 
-class GLFramebuffer : public Framebuffer
+class __CEAPI GLFramebuffer : public Framebuffer
 {
 public:
     __EAPI GLFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayLayerCount, bool depthStencilRenderbufferEnabled);

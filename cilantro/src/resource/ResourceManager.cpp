@@ -119,15 +119,15 @@ template __EAPI ResourceManager<GameObject>::const_iterator ResourceManager<Game
 template __EAPI ResourceManager<GameObject>::const_iterator ResourceManager<GameObject>::cend () const;
 template __EAPI std::shared_ptr<GameObject> ResourceManager<GameObject>::Push (const std::string& name, std::shared_ptr<GameObject> resource);
 
-template __EAPI ResourceManager<CShaderProgram>::ResourceManager ();
-template __EAPI ResourceManager<CShaderProgram>::~ResourceManager ();
-template __EAPI ResourceManager<CShaderProgram>::iterator ResourceManager<CShaderProgram>::begin ();
-template __EAPI ResourceManager<CShaderProgram>::iterator ResourceManager<CShaderProgram>::end ();
-template __EAPI ResourceManager<CShaderProgram>::const_iterator ResourceManager<CShaderProgram>::begin () const;
-template __EAPI ResourceManager<CShaderProgram>::const_iterator ResourceManager<CShaderProgram>::end () const;
-template __EAPI ResourceManager<CShaderProgram>::const_iterator ResourceManager<CShaderProgram>::cbegin () const;
-template __EAPI ResourceManager<CShaderProgram>::const_iterator ResourceManager<CShaderProgram>::cend () const;
-template __EAPI std::shared_ptr<CShaderProgram> ResourceManager<CShaderProgram>::Push (const std::string& name, std::shared_ptr<CShaderProgram> resource);
+template __EAPI ResourceManager<ShaderProgram>::ResourceManager ();
+template __EAPI ResourceManager<ShaderProgram>::~ResourceManager ();
+template __EAPI ResourceManager<ShaderProgram>::iterator ResourceManager<ShaderProgram>::begin ();
+template __EAPI ResourceManager<ShaderProgram>::iterator ResourceManager<ShaderProgram>::end ();
+template __EAPI ResourceManager<ShaderProgram>::const_iterator ResourceManager<ShaderProgram>::begin () const;
+template __EAPI ResourceManager<ShaderProgram>::const_iterator ResourceManager<ShaderProgram>::end () const;
+template __EAPI ResourceManager<ShaderProgram>::const_iterator ResourceManager<ShaderProgram>::cbegin () const;
+template __EAPI ResourceManager<ShaderProgram>::const_iterator ResourceManager<ShaderProgram>::cend () const;
+template __EAPI std::shared_ptr<ShaderProgram> ResourceManager<ShaderProgram>::Push (const std::string& name, std::shared_ptr<ShaderProgram> resource);
 
 template __EAPI ResourceManager<RenderStage>::ResourceManager ();
 template __EAPI ResourceManager<RenderStage>::~ResourceManager ();

@@ -3,6 +3,15 @@
 
 namespace cilantro {
 
+Resource::Resource ()
+{
+    m_handle = -1;
+}
+
+Resource::~Resource ()
+{
+}
+
 handle_t Resource::GetHandle () const
 {
     return m_handle;

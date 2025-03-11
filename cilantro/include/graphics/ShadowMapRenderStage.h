@@ -5,7 +5,7 @@
 
 namespace cilantro {
 
-class ShadowMapRenderStage : public RenderStage
+class __CEAPI ShadowMapRenderStage : public RenderStage
 {
 public:
     __EAPI ShadowMapRenderStage ();

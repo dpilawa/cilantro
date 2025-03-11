@@ -21,16 +21,16 @@ namespace cilantro {
 
 // This class represents a game world (a.k.a scene or level)
 // It contains all visible and invisible objects in a game
-class GameScene : public Resource
+class __CEAPI GameScene : public Resource
 {
 public:
 
-    __EAPI GameScene();
-    __EAPI ~GameScene();
+    __EAPI GameScene ();
+    __EAPI virtual ~GameScene ();
 
-    void OnStart ();
-    void OnFrame ();
-    void OnEnd ();
+    __EAPI void OnStart ();
+    __EAPI void OnFrame ();
+    __EAPI void OnEnd ();
 
     // add GameObject to a scene
     // returns reference to that added object

@@ -15,7 +15,7 @@ class Resource;
 class LoadableResource;
 
 template <typename Base = Resource>
-class ResourceManager
+class __CEAPI ResourceManager
 {
     using TResourcesVec = std::vector<std::shared_ptr<Base>>;
     using TResourceNameMap = std::unordered_map<std::string, handle_t>;

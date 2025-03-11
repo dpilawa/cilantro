@@ -10,12 +10,12 @@
 
 namespace cilantro {
 
-class Transform : public Hook<std::string>
+class __CEAPI Transform : public Hook<std::string>
 {
 public:
 
     __EAPI Transform ();
-    __EAPI ~Transform ();
+    __EAPI virtual ~Transform ();
 
     // returns models matrix (multiplication of scaling, rotation, translation)
     __EAPI Matrix4f& GetTransformMatrix ();

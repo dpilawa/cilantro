@@ -9,7 +9,7 @@
 namespace cilantro {
 
 // Represents 4-dimensional float vector
-class Vector4f
+class __CEAPI Vector4f
 {
 public:
     // constructors

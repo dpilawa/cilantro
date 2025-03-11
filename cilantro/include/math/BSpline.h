@@ -14,7 +14,7 @@ enum class KnotVectorType
 };
 
 template <typename T, int d>
-class BSpline : public Curve<T, d>
+class __CEAPI BSpline : public Curve<T, d>
 {
 public:
     __EAPI BSpline ();

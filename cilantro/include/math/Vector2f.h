@@ -8,7 +8,7 @@
 namespace cilantro {
 
 // Represents 2-dimensional float vector
-class Vector2f
+class __CEAPI Vector2f
 {
 public:
     // constructors

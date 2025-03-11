@@ -8,7 +8,7 @@
 namespace cilantro {
 
 template <typename T, int d>
-class NURBS : public BSpline<T, d>
+class __CEAPI NURBS : public BSpline<T, d>
 {
 public:
     __EAPI NURBS ();

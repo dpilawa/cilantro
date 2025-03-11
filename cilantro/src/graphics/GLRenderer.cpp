@@ -447,7 +447,7 @@ void GLRenderer::Update (Material& material, unsigned int textureUnit)
 
 void GLRenderer::Update (Material& material)
 {
-    handle_t shaderProgramHandle = m_shaderProgramManager.GetByName<CShaderProgram>(material.GetDeferredLightingPassShaderProgram ()).GetHandle ();
+    handle_t shaderProgramHandle = m_shaderProgramManager.GetByName<ShaderProgram>(material.GetDeferredLightingPassShaderProgram ()).GetHandle ();
     std::string shaderProgramName = material.GetDeferredLightingPassShaderProgram ();
 
     if (m_isDeferredRendering)

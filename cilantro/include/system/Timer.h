@@ -6,7 +6,7 @@
 
 namespace cilantro {
 
-class Timer
+class __CEAPI Timer
 {
 public:
     __EAPI Timer ();

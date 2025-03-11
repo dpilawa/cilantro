@@ -6,7 +6,7 @@
 
 namespace cilantro {
 
-class Matrix4f
+class __CEAPI Matrix4f
 {
 public:
     // constructor

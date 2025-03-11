@@ -2,7 +2,6 @@
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
 
-#include "cilantroengine.h"
 #include "math/Vector2f.h"
 #include "math/Vector3f.h"
 #include "system/Game.h"
@@ -13,11 +12,12 @@
 #include "input/Input.h"
 #include "input/GLFWInputController.h"
 #include "scene/GameScene.h"
+#include "resource/Resource.h"
 #include "resource/ResourceManager.h"
 
 namespace py = pybind11;
 namespace c = cilantro;
-
+ 
 // Create Python bindings
 
 PYBIND11_MODULE(pycilantro, m) {

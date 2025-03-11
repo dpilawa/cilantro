@@ -37,7 +37,7 @@ struct InputKeyHash
     }
 };
 
-class GLFWInputController : public InputController
+class __CEAPI GLFWInputController : public InputController
 {
 public:
     __EAPI GLFWInputController ();

@@ -7,14 +7,14 @@
 
 namespace cilantro {
 
-class Camera : public GameObject
+class __CEAPI Camera : public GameObject
 {
 public:
-    Camera (GameScene* gameScene);
-    virtual ~Camera ();
+    __EAPI Camera (GameScene* gameScene);
+    __EAPI virtual ~Camera ();
 
-    Matrix4f GetViewMatrix ();
-    virtual Matrix4f GetProjectionMatrix (unsigned int xRes, unsigned int yRes) const = 0;
+    __EAPI Matrix4f GetViewMatrix ();
+    __EAPI virtual Matrix4f GetProjectionMatrix (unsigned int xRes, unsigned int yRes) const = 0;
 
 };
 

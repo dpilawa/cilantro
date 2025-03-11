@@ -12,7 +12,7 @@ namespace cilantro {
 class GameScene;
 struct IRenderer;
 
-class GameObject : public Resource
+class __CEAPI GameObject : public Resource
 {
 public:
     __EAPI GameObject (GameScene* gameScene);

@@ -8,7 +8,7 @@
 namespace cilantro {
 
 template <typename T>
-class CubicHermite : public Curve<T, 3>
+class __CEAPI CubicHermite : public Curve<T, 3>
 {
 public:
     __EAPI CubicHermite ();

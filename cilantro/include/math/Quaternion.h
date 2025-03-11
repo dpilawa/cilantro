@@ -6,7 +6,7 @@
 
 namespace cilantro {
 
-class Quaternion
+class __CEAPI Quaternion
 {
 public:
     // constructors

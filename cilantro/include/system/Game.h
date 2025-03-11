@@ -12,7 +12,7 @@ class Resource;
 class GameScene;
 class InputController;
 
-class Game
+class __CEAPI Game
 {
 public:
 

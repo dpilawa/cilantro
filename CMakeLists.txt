@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.14)
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD 20)
 
-project (cilantroengine)
+project (cilantro)
 
 set(CILANTRO_GL_VERSION_MAJOR 4)
 set(CILANTRO_GL_VERSION_MINOR 1)

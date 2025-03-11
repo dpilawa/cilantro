@@ -7,7 +7,7 @@
 
 namespace cilantro {
 
-class GLShader : public Shader
+class __CEAPI GLShader : public Shader
 {
 public:
     GLShader (const std::string& path, EShaderType type);

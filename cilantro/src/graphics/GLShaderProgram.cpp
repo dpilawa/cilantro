@@ -10,7 +10,7 @@
 namespace cilantro {
 
 GLShaderProgram::GLShaderProgram () 
-    : CShaderProgram ()
+    : ShaderProgram ()
 {
     m_glShaderProgramId = glCreateProgram ();
 }

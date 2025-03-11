@@ -11,7 +11,7 @@ struct IRenderStage;
 struct IFramebuffer;
 struct IShaderProgram;
 class RenderStage;
-class CShaderProgram;
+class ShaderProgram;
 class GameScene;
 class MeshObject;
 class Material;
@@ -28,7 +28,7 @@ enum EStencilTestOperation { OP_KEEP, OP_ZERO, OP_REPLACE, OP_INC, OP_INC_WRAP, 
 enum EFaceCullingFace { FACE_FRONT, FACE_BACK };
 enum EFaceCullingDirection { DIR_CW, DIR_CCW };
 
-typedef ResourceManager<CShaderProgram> TShaderProgramManager;
+typedef ResourceManager<ShaderProgram> TShaderProgramManager;
 typedef ResourceManager<RenderStage> TRenderStageManager;
 typedef std::vector<handle_t> TRenderPipeline;
 typedef std::set<handle_t> TLightingShaderSet;

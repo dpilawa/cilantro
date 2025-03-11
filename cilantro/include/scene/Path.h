@@ -20,20 +20,20 @@ public:
     float cumulativeLength;
 };
 
-class Path : public GameObject
+class __CEAPI Path : public GameObject
 {
 public:
-    Path (GameScene* gameScene);
-    virtual ~Path ();
+    __EAPI Path (GameScene* gameScene);
+    __EAPI virtual ~Path ();
 
     __EAPI Path& AddWaypoint (std::size_t wIndex, const Vector3f& position, const Quaternion& rotation);
     __EAPI Path& AddWaypoint (const Vector3f& position, const Quaternion& rotation);
     
     __EAPI Path& SetWaypoint (std::size_t wIndex, const Vector3f& position, const Quaternion& rotation);
 
-    virtual Vector3f GetPositionAtDistance (float distance) const = 0;
-    virtual Vector3f GetTangentAtDistance (float distance) const = 0;
-    virtual Quaternion GetRotationAtDistance (float distance) const;
+    __EAPI virtual Vector3f GetPositionAtDistance (float distance) const = 0;
+    __EAPI virtual Vector3f GetTangentAtDistance (float distance) const = 0;
+    __EAPI virtual Quaternion GetRotationAtDistance (float distance) const;
 
     __EAPI float GetPathLength () const;
 

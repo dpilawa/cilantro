@@ -7,7 +7,7 @@
 
 namespace cilantro {
 
-class RenderStage : public IRenderStage, public Resource
+class __CEAPI RenderStage : public IRenderStage, public Resource
 {
     friend class Renderer;
 public:

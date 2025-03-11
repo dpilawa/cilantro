@@ -21,7 +21,7 @@ class Vector3f;
 class Matrix4f;
 class Quaternion;
 
-class AssimpModelLoader : public ModelLoader
+class __CEAPI AssimpModelLoader : public ModelLoader
 {
 public:
     __EAPI AssimpModelLoader ();

@@ -118,7 +118,7 @@ struct SGlUniformSpotLightBuffer
     SGlSpotLightStruct spotLights[CILANTRO_MAX_SPOT_LIGHTS];
 };
 
-class GLRenderer : public Renderer
+class __CEAPI GLRenderer : public Renderer
 {
 public:
     __EAPI GLRenderer (GameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled);

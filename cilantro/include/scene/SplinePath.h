@@ -9,7 +9,7 @@
 namespace cilantro {
 
 // Catmull-Rom Spline
-class SplinePath : public Path 
+class __CEAPI SplinePath : public Path 
 {
 public:
     __EAPI SplinePath (GameScene* gameScene);

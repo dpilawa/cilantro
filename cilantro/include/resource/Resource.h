@@ -6,14 +6,14 @@
 
 namespace cilantro {
 
-class Resource
+class __CEAPI Resource
 {
     template <typename Base>
     friend class ResourceManager;
 
 public:
-    Resource () { m_handle = -1; };
-    virtual ~Resource () {};
+    __EAPI Resource ();
+    __EAPI virtual ~Resource ();
 
     __EAPI handle_t GetHandle () const;
     __EAPI std::string GetName () const;

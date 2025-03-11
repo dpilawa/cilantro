@@ -6,14 +6,14 @@
 
 namespace cilantro {
 
-class LoadableResource : public Resource
+class __CEAPI LoadableResource : public Resource
 {
 public:
     __EAPI LoadableResource ();
     __EAPI LoadableResource (const std::string& path);
     virtual ~LoadableResource () {};
 
-    virtual void Load (const std::string& path) = 0;
+    __EAPI virtual void Load (const std::string& path) = 0;
 
 protected:
     std::string path;

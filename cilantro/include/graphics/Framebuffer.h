@@ -5,7 +5,7 @@
 
 namespace cilantro {
 
-class Framebuffer : public IFramebuffer
+class __CEAPI Framebuffer : public IFramebuffer
 {
 public:
     __EAPI Framebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayLayerCount, bool depthStencilRenderbufferEnabled);
