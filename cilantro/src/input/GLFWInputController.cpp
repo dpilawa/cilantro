@@ -125,9 +125,9 @@ void GLFWInputController::OnFrame ()
     InputController::OnFrame ();
 }
 
-Input<bool>* GLFWInputController::CreateInputEvent (const std::string& name, EInputKey key, EInputTrigger trigger, std::set<EInputModifier> modifiers)
+std::shared_ptr<Input<bool>> GLFWInputController::CreateInputEvent (const std::string& name, EInputKey key, EInputTrigger trigger, std::set<EInputModifier> modifiers)
 {
-    Input<bool>* inputevent = InputController::CreateInputEvent (name);
+    auto inputevent = InputController::CreateInputEvent (name);
 
     if (inputevent) 
     {
@@ -139,9 +139,9 @@ Input<bool>* GLFWInputController::CreateInputEvent (const std::string& name, EIn
 }
 
 
-Input<float>* GLFWInputController::CreateInputAxis (const std::string& name, EInputKey key, std::set<EInputModifier> modifiers, float scale) 
+std::shared_ptr<Input<float>> GLFWInputController::CreateInputAxis (const std::string& name, EInputKey key, std::set<EInputModifier> modifiers, float scale) 
 {
-    Input<float>* inputaxis = InputController::CreateInputAxis (name, scale);
+    auto inputaxis = InputController::CreateInputAxis (name, scale);
 
     if (inputaxis) 
     {
@@ -152,9 +152,9 @@ Input<float>* GLFWInputController::CreateInputAxis (const std::string& name, EIn
     return inputaxis;
 }
 
-Input<float>* GLFWInputController::CreateInputAxis (const std::string& name, EInputAxis axis, float scale) 
+std::shared_ptr<Input<float>> GLFWInputController::CreateInputAxis (const std::string& name, EInputAxis axis, float scale) 
 {
-    Input<float>* inputaxis = InputController::CreateInputAxis (name, scale);
+    auto inputaxis = InputController::CreateInputAxis (name, scale);
 
     if (inputaxis)
     {

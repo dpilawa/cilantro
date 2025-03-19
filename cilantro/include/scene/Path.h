@@ -44,7 +44,7 @@ protected:
     std::size_t FindPathSegment (float distance) const;
 
     /* return interpolation parameter with respect to given segment, based on cumulative distance */
-    float CalculateInterpolationParameter (std::size_t wIndex, float distance) const;
+    __EAPI float CalculateInterpolationParameter (std::size_t wIndex, float distance) const;
 
 private:
     /* rebuild path distances and tangents */

@@ -48,9 +48,9 @@ public:
 
     __EAPI void OnFrame ();
 
-    __EAPI Input<bool>* CreateInputEvent (const std::string& name, EInputKey key, EInputTrigger trigger, std::set<EInputModifier> modifiers); 
-    __EAPI Input<float>* CreateInputAxis (const std::string& name, EInputKey key, std::set<EInputModifier> modifiers, float scale);
-    __EAPI Input<float>* CreateInputAxis (const std::string& name, EInputAxis axis, float scale);
+    __EAPI std::shared_ptr<Input<bool>> CreateInputEvent (const std::string& name, EInputKey key, EInputTrigger trigger, std::set<EInputModifier> modifiers); 
+    __EAPI std::shared_ptr<Input<float>> CreateInputAxis (const std::string& name, EInputKey key, std::set<EInputModifier> modifiers, float scale);
+    __EAPI std::shared_ptr<Input<float>> CreateInputAxis (const std::string& name, EInputAxis axis, float scale);
 
     __EAPI void SetMouseGameMode(bool value);
 
@@ -66,16 +66,16 @@ private:
 
     GLFWwindow* window;
 
-    Input<float>* axisMouseX;
-    Input<float>* axisMouseY;
-    Input<float>* axisMouseScrollX;
-    Input<float>* axisMouseScrollY;   
+    std::shared_ptr<Input<float>> axisMouseX;
+    std::shared_ptr<Input<float>> axisMouseY;
+    std::shared_ptr<Input<float>> axisMouseScrollX;
+    std::shared_ptr<Input<float>> axisMouseScrollY;   
 
     double prevAxisMouseX;
     double prevAxisMouseY;
 
-    std::unordered_map<std::tuple<int, int, int>, Input<bool>*, TupleHash> glfwKeyEventMap;
-    std::unordered_map<std::pair<int, int>, Input<float>*, PairHash> glfwKeyAxisMap;
+    std::unordered_map<std::tuple<int, int, int>, std::shared_ptr<Input<bool>>, TupleHash> glfwKeyEventMap;
+    std::unordered_map<std::pair<int, int>, std::shared_ptr<Input<float>>, PairHash> glfwKeyAxisMap;
 
     static std::unordered_map<EInputKey, int, InputKeyHash> glfwKeyMap;
 

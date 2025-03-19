@@ -28,7 +28,7 @@ public:
 
 private:
 
-    void Load (const std::string& path) override;
+    __EAPI void Load (const std::string& path) override;
 
     std::uint8_t* data;
     int width;

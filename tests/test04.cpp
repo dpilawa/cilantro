@@ -44,19 +44,19 @@ int main (int argc, char* argv [])
     inputController.CreateInputEvent ("mousemode", EInputKey::KeySpace, EInputTrigger::Release, {});
     inputController.BindInputEvent ("mousemode", [ & ]() { inputController.SetMouseGameMode (!inputController.IsGameMode ()); });
 
-    PBRMaterial& m = gameScene.Add<PBRMaterial> ("gunMaterial");
+    PBRMaterial& m = gameScene.Create<PBRMaterial> ("gunMaterial");
     m.SetAlbedo ("tAlbedo").SetNormal ("tNormal").SetMetallic ("tMetalness").SetRoughness ("tRoughness");
 
     MeshObject& gun = gameScene.GetGameObjectManager ().GetByName<MeshObject> ("Cerberus00_Fixed");
     gun.SetMaterial ("gunMaterial");
     gun.GetLocalTransform ().Rotate (0.0f, 0.0f, 135.0f);
 
-    ControlledCamera& cam = gameScene.Add<ControlledCamera> ("camera", 60.0f, 10.0f, 250.0f, 1.5f, 0.1f);
+    ControlledCamera& cam = gameScene.Create<ControlledCamera> ("camera", 60.0f, 10.0f, 250.0f, 1.5f, 0.1f);
     cam.Initialize ();
     cam.GetLocalTransform ().Translate (0.0f, 0.0f, 50.0f);
     gameScene.SetActiveCamera ("camera");
 
-    DirectionalLight& light = gameScene.Add<DirectionalLight> ("light");
+    DirectionalLight& light = gameScene.Create<DirectionalLight> ("light");
     light.GetLocalTransform ().Rotate (45.0f, -120.0f, 0.0f);
     light.SetColor (Vector3f (2.5f, 2.1f, 1.7f));
     light.SetEnabled (true);

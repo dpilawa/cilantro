@@ -23,7 +23,7 @@ public:
     __EAPI float GetOuterCutoff () const;
 
     // invoked by game loop on update
-    void OnUpdate (IRenderer& renderer);
+    __EAPI void OnUpdate (IRenderer& renderer);
 
 private:
 

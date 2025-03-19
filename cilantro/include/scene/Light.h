@@ -16,7 +16,7 @@ public:
     __EAPI virtual ~Light ();
 
     // enable or disable light
-    __EAPI void SetEnabled (bool value);
+    __EAPI Light& SetEnabled (bool value);
     __EAPI bool IsEnabled () const;
 
     // set color of the light
@@ -24,7 +24,6 @@ public:
 
     // get color of the light
     __EAPI Vector3f GetColor () const;
-
 
     // invoked by game loop on update	
     __EAPI void OnUpdate (IRenderer& renderStage);

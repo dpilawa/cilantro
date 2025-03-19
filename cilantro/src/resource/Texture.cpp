@@ -25,7 +25,7 @@ Texture::Texture (const std::string& path) : LoadableResource (path)
 }
 
 Texture::~Texture ()
-{
+{    
     free (data);
 }
 

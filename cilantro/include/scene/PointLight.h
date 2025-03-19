@@ -25,7 +25,7 @@ public:
     __EAPI float GetQuadraticAttenuationFactor () const;
 
     // invoked by game loop on update
-    void OnUpdate (IRenderer& renderer);
+    __EAPI void OnUpdate (IRenderer& renderer);
 
 private:
 

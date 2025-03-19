@@ -33,6 +33,9 @@ public:
     T& Create (const std::string& name, Params&&... params);
 
     template <typename T>
+    T& Add (const std::string& name, std::shared_ptr<T> resource);
+
+    template <typename T>
     T& GetByHandle (handle_t handle) const;
 
     template <typename T>
@@ -86,6 +89,18 @@ T& ResourceManager<Base>::Create (const std::string& name, Params&&... params)
     LogMessage (MSG_LOCATION) << "Created" << typeid (T).name () << name;
 
     return *newResource;
+}
+
+template <typename Base>
+template <typename T>
+T& ResourceManager<Base>::Add (const std::string& name, std::shared_ptr<T> resource)
+{
+    static_assert (std::is_base_of<Base, T>::value, "Invalid base class for resource");
+    this->Push (name, resource);
+
+    LogMessage (MSG_LOCATION) << "Added" << typeid (T).name () << name;
+
+    return *resource;
 }
 
 template <typename Base>

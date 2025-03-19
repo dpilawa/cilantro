@@ -24,7 +24,7 @@ public:
 private:
     std::vector<CubicHermite<Vector3f>> curves;
 
-    void UpdatePathAtWaypoint (const std::size_t wIndex);
+    __EAPI void UpdatePathAtWaypoint (const std::size_t wIndex);
 };
 
 } // namespace cilantro

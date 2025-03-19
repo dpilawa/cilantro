@@ -16,7 +16,7 @@ public:
     __EAPI Vector3f GetTangentAtDistance (float distance) const;
 
 private:
-    void UpdatePathAtWaypoint (std::size_t wIndex);
+    __EAPI void UpdatePathAtWaypoint (std::size_t wIndex);
 };
 
 } // namespace cilantro

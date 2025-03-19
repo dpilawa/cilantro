@@ -32,16 +32,22 @@ public:
     __EAPI void OnFrame ();
     __EAPI void OnEnd ();
 
-    // add GameObject to a scene
-    // returns reference to that added object
+    // create a new GameObject in the scene
+    // returns reference to that created object
     template <typename T, typename ...Params>
-    T& Add (const std::string& name, Params&&... params)
+    T& Create (const std::string& name, Params&&... params)
     requires (std::is_base_of_v<GameObject,T>);
 
-    // add material to the scene 
-    // returns reference to that material
+    // add a GameObject to the scene
+    // returns reference to that added object
+    template <typename T>
+    T& Add (const std::string& name, std::shared_ptr<T> gameObject)
+    requires (std::is_base_of_v<GameObject,T>);
+
+    // create a new material in the scene 
+    // returns reference to that created material
     template <typename T, typename ...Params>
-    T& Add (const std::string& name, Params&&... params)
+    T& Create (const std::string& name, Params&&... params)
     requires (std::is_base_of_v<Material,T>);
 
     // return reference to map
@@ -80,7 +86,7 @@ private:
 };
 
 template <typename T, typename ...Params>
-T& GameScene::Add (const std::string& name, Params&&... params)
+T& GameScene::Create (const std::string& name, Params&&... params)
     requires (std::is_base_of_v<GameObject,T>)
 {
     T& gameObject = gameObjects.Create<T> (name, this, params...);
@@ -101,8 +107,30 @@ T& GameScene::Add (const std::string& name, Params&&... params)
     return gameObject;
 }
 
+template <typename T>
+T& GameScene::Add (const std::string& name, std::shared_ptr<T> gameObject)
+requires (std::is_base_of_v<GameObject,T>)
+{
+    gameObjects.Add<T> (name, gameObject);
+    handle_t handle = gameObject->GetHandle ();
+
+    // update renderer data
+    if constexpr (std::is_base_of<MeshObject, T>::value)
+    {
+        Game::GetMessageBus ().Publish<MeshObjectUpdateMessage> (std::make_shared<MeshObjectUpdateMessage> (handle));
+        Game::GetMessageBus ().Publish<SceneGraphUpdateMessage> (std::make_shared<SceneGraphUpdateMessage> (handle));
+    }
+    else if constexpr (std::is_base_of<Light, T>::value)
+    {
+        Game::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (handle));
+    }
+
+    // return object reference
+    return *gameObject;
+}
+
 template <typename T, typename ...Params>
-T& GameScene::Add (const std::string& name, Params&&... params)
+T& GameScene::Create (const std::string& name, Params&&... params)
     requires (std::is_base_of_v<Material,T>)
 {
     T& material = materials.Create<T> (name, params...);

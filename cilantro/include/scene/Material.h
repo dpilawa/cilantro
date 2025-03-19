@@ -31,8 +31,8 @@ public:
     __EAPI std::string GetDeferredGeometryPassShaderProgram () const;
     __EAPI std::string GetDeferredLightingPassShaderProgram () const;
 
-    texture_map_t& GetTexturesMap();
-    property_map_t& GetPropertiesMap ();
+    __EAPI texture_map_t& GetTexturesMap();
+    __EAPI property_map_t& GetPropertiesMap ();
 
 protected:
 

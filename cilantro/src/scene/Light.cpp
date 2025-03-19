@@ -16,10 +16,11 @@ Light::~Light ()
 {
 }
 
-void Light::SetEnabled (bool value)
+Light& Light::SetEnabled (bool value)
 {
     isEnabled = value;
     Game::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
+    return *this;
 }
 
 bool Light::IsEnabled () const

@@ -23,12 +23,12 @@ public:
 
     __EAPI virtual void OnFrame ();
 
-    __EAPI virtual Input<bool>* CreateInputEvent (const std::string& name);
-    __EAPI virtual Input<bool>* CreateInputEvent (const std::string& name, EInputKey key, EInputTrigger trigger, std::set<EInputModifier> modifiers) = 0;
+    __EAPI virtual std::shared_ptr<Input<bool>> CreateInputEvent (const std::string& name);
+    __EAPI virtual std::shared_ptr<Input<bool>> CreateInputEvent (const std::string& name, EInputKey key, EInputTrigger trigger, std::set<EInputModifier> modifiers) = 0;
 
-    __EAPI virtual Input<float>*  CreateInputAxis (const std::string& name, float scale);
-    __EAPI virtual Input<float>*  CreateInputAxis (const std::string& name, EInputKey key, std::set<EInputModifier> modifiers, float scale) = 0;
-    __EAPI virtual Input<float>*  CreateInputAxis (const std::string& name, EInputAxis value, float scale) = 0;
+    __EAPI virtual std::shared_ptr<Input<float>>  CreateInputAxis (const std::string& name, float scale);
+    __EAPI virtual std::shared_ptr<Input<float>> CreateInputAxis (const std::string& name, EInputKey key, std::set<EInputModifier> modifiers, float scale) = 0;
+    __EAPI virtual std::shared_ptr<Input<float>>  CreateInputAxis (const std::string& name, EInputAxis value, float scale) = 0;
 
     __EAPI void BindInputEvent (const std::string& name, std::function<void ()>);
     __EAPI void BindInputAxis (const std::string& name, std::function<void (float)>);
@@ -38,8 +38,8 @@ public:
 
 private: 
 
-    std::vector<Input<bool>*> events;
-    std::unordered_map<std::string, std::vector<Input<float>*>> axes;
+    std::vector<std::shared_ptr<Input<bool>>> events;
+    std::unordered_map<std::string, std::vector<std::shared_ptr<Input<float>>>> axes;
 
 protected:
 

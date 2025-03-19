@@ -52,7 +52,7 @@ public:
     __EAPI static Vector3f Rotate (const Vector3f &v, const Quaternion& q);
     __EAPI static Vector3f Rotate (const Vector3f &v, const Vector3f& axis, float theta);
     __EAPI static Vector3f QuaternionToEuler (const Quaternion& q);
-    __EAPI static Quaternion EulerToQuaterion (const Vector3f& euler);
+    __EAPI static Quaternion EulerToQuaternion (const Vector3f& euler);
 
     // interpolations
     __EAPI static float Clamp (float v0, float v1, float vt);

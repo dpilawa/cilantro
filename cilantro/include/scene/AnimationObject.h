@@ -27,7 +27,7 @@ public:
 
     __EAPI void SetLooping (float looping);
 
-    void OnFrame ();
+    __EAPI void OnFrame ();
 
 private:
 

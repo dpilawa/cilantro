@@ -42,18 +42,18 @@ void InputController::OnFrame ()
     }
 }
 
-Input<bool>* InputController::CreateInputEvent (const std::string& name) 
+std::shared_ptr<Input<bool>> InputController::CreateInputEvent (const std::string& name) 
 {
-    events.push_back (new Input<bool> (name));
-
-    return events.back ();
+    auto event = std::make_shared<Input<bool>>(name);
+    events.push_back(event);
+    return event;
 }
 
-Input<float>* InputController::CreateInputAxis (const std::string& name, float scale) 
+std::shared_ptr<Input<float>> InputController::CreateInputAxis (const std::string& name, float scale) 
 {
-    axes[name].push_back (new Input<float> (name, scale));
-
-    return axes[name].back ();
+    auto axis = std::make_shared<Input<float>>(name, scale);
+    axes[name].push_back(axis);
+    return axis;
 }
 
 void InputController::BindInputEvent (const std::string& name, std::function<void ()> function)

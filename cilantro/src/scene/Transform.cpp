@@ -175,7 +175,7 @@ Transform& Transform::Rotate (const Vector3f& euler)
 {
     isValid = false;
 
-    rotate = Mathf::EulerToQuaterion (Mathf::Deg2Rad (euler));
+    rotate = Mathf::EulerToQuaternion (Mathf::Deg2Rad (euler));
     rotationMatrix = Mathf::GenRotationMatrix (rotate);
 
     InvokeHook ("OnUpdateTransform");

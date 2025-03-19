@@ -179,7 +179,7 @@ Vector3f Mathf::QuaternionToEuler (const Quaternion& q)
     return euler;
 }
 
-Quaternion Mathf::EulerToQuaterion (const Vector3f& euler)
+Quaternion Mathf::EulerToQuaternion (const Vector3f& euler)
 {
     Quaternion q;
 
