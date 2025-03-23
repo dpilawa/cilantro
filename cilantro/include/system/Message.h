@@ -6,14 +6,14 @@
 
 namespace cilantro {
 
-class Message 
+class __CEAPI Message 
 {
 public:
     Message() = default;
     virtual ~Message() = default;
 };
 
-class ResourceMessage : public Message
+class  __CEAPI ResourceMessage : public Message
 {
 public:
     ResourceMessage (handle_t handle) : m_handle (handle) {}
@@ -24,38 +24,38 @@ protected:
 
 /* gameobject messages */
 
-class TransformUpdateMessage : public ResourceMessage
+class  __CEAPI TransformUpdateMessage : public ResourceMessage
 {
 public:
     TransformUpdateMessage (handle_t handle) : ResourceMessage (handle) {}
 };
 
-class SceneGraphUpdateMessage : public ResourceMessage
+class  __CEAPI SceneGraphUpdateMessage : public ResourceMessage
 {
 public:
     SceneGraphUpdateMessage (handle_t handle) : ResourceMessage (handle) {}
 };
 
-class MeshObjectUpdateMessage : public ResourceMessage
+class  __CEAPI MeshObjectUpdateMessage : public ResourceMessage
 {
 public:
     MeshObjectUpdateMessage (handle_t handle) : ResourceMessage (handle) {}
 };
 
-class LightUpdateMessage : public ResourceMessage
+class  __CEAPI LightUpdateMessage : public ResourceMessage
 {
 public:
     LightUpdateMessage (handle_t handle) : ResourceMessage (handle) {}
 };
 
 /* material messages */
-class MaterialUpdateMessage : public ResourceMessage
+class  __CEAPI MaterialUpdateMessage : public ResourceMessage
 {
 public:
     MaterialUpdateMessage (handle_t handle) : ResourceMessage (handle) {}
 };
 
-class MaterialTextureUpdateMessage : public MaterialUpdateMessage
+class  __CEAPI MaterialTextureUpdateMessage : public MaterialUpdateMessage
 {
 public:
     MaterialTextureUpdateMessage (handle_t handle, int textureUnit) : MaterialUpdateMessage (handle), m_textureUnit (textureUnit) {}
@@ -66,7 +66,7 @@ protected:
 
 /* input controller messages */
 
-class InputEventMessage : public Message
+class  __CEAPI InputEventMessage : public Message
 {
 public:
     InputEventMessage (std::string event, float value) : m_event (event), m_value (value) {}
@@ -77,7 +77,7 @@ protected:
     float m_value;
 };
 
-class InputAxisMessage : public InputEventMessage
+class  __CEAPI InputAxisMessage : public InputEventMessage
 {
 public:
     InputAxisMessage (std::string event, float value) : InputEventMessage (event, value) {}

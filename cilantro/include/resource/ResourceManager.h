@@ -120,7 +120,7 @@ T& ResourceManager<Base>::GetByHandle (handle_t handle) const
         LogMessage(MSG_LOCATION, EXIT_FAILURE) << "Resource" << resource->GetName () << "invalid type" << typeid (T).name ();
     }
     
-    return *(resourcePtr.get ());
+    return *resourcePtr;
 }
 
 template <typename Base>
