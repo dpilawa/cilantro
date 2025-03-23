@@ -1,3 +1,4 @@
+/*
 #include "cilantroengine.h"
 #include "scene/GameScene.h"
 #include "scene/PointLight.h"
@@ -68,3 +69,6 @@ int main (int argc, char* argv [])
     return 0;
 }
 
+*/
+
+int main() {}

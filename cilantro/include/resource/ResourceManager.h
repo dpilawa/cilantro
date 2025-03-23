@@ -27,19 +27,19 @@ public:
     __EAPI virtual ~ResourceManager();
 
     template <typename T, typename ...Params>
-    T& Load (const std::string& name, const std::string& path, Params&&... params);
+    std::shared_ptr<T> Load (const std::string& name, const std::string& path, Params&&... params);
 
     template <typename T, typename ...Params>
-    T& Create (const std::string& name, Params&&... params);
+    std::shared_ptr<T> Create (const std::string& name, Params&&... params);
 
     template <typename T>
-    T& Add (const std::string& name, std::shared_ptr<T> resource);
+    std::shared_ptr<T> Add (const std::string& name, std::shared_ptr<T> resource);
 
     template <typename T>
-    T& GetByHandle (handle_t handle) const;
+    std::shared_ptr<T> GetByHandle (handle_t handle) const;
 
     template <typename T>
-    T& GetByName (const std::string& name) const;
+    std::shared_ptr<T> GetByName (const std::string& name) const;
 
     template <typename T>
     bool HasName (const std::string& name) const;
@@ -62,7 +62,7 @@ private:
 
 template <typename Base>
 template <typename T, typename ...Params>
-T& ResourceManager<Base>::Load (const std::string& name, const std::string& path, Params&&... params)
+std::shared_ptr<T> ResourceManager<Base>::Load (const std::string& name, const std::string& path, Params&&... params)
 {
     static_assert (std::is_base_of<Base, T>::value, "Invalid base class for resource");
     static_assert (std::is_base_of<LoadableResource, T>::value, "Resource is not derived from LoadableResource");
@@ -73,39 +73,37 @@ T& ResourceManager<Base>::Load (const std::string& name, const std::string& path
 
     LogMessage (MSG_LOCATION) << "Loaded" << typeid (T).name () << name;
 
-    return *newResource;
+    return newResource;
 }
 
 template <typename Base>
 template <typename T, typename ...Params>
-T& ResourceManager<Base>::Create (const std::string& name, Params&&... params)
+std::shared_ptr<T> ResourceManager<Base>::Create (const std::string& name, Params&&... params)
 {
     static_assert (std::is_base_of<Base, T>::value, "Invalid base class for resource");
-    std::shared_ptr<T> newResource;
-
-    newResource = std::make_shared<T> (std::forward<Params>(params)...);
+    auto newResource = std::make_shared<T> (std::forward<Params>(params)...);
     this->Push (name, newResource);
 
     LogMessage (MSG_LOCATION) << "Created" << typeid (T).name () << name;
 
-    return *newResource;
+    return newResource;
 }
 
 template <typename Base>
 template <typename T>
-T& ResourceManager<Base>::Add (const std::string& name, std::shared_ptr<T> resource)
+std::shared_ptr<T> ResourceManager<Base>::Add (const std::string& name, std::shared_ptr<T> resource)
 {
     static_assert (std::is_base_of<Base, T>::value, "Invalid base class for resource");
     this->Push (name, resource);
 
     LogMessage (MSG_LOCATION) << "Added" << typeid (T).name () << name;
 
-    return *resource;
+    return resource;
 }
 
 template <typename Base>
 template <typename T>
-T& ResourceManager<Base>::GetByHandle (handle_t handle) const
+std::shared_ptr<T> ResourceManager<Base>::GetByHandle (handle_t handle) const
 {
     if (handle >= this->m_nextHandle)
     {
@@ -120,12 +118,12 @@ T& ResourceManager<Base>::GetByHandle (handle_t handle) const
         LogMessage(MSG_LOCATION, EXIT_FAILURE) << "Resource" << resource->GetName () << "invalid type" << typeid (T).name ();
     }
     
-    return *resourcePtr;
+    return resourcePtr;
 }
 
 template <typename Base>
 template <typename T>
-T& ResourceManager<Base>::GetByName (const std::string& name) const
+std::shared_ptr<T> ResourceManager<Base>::GetByName (const std::string& name) const
 {
     auto resourceName = resourceNames.find (name);
 

@@ -7,9 +7,9 @@
 namespace cilantro
 {
 
-OrthographicCamera::OrthographicCamera (GameScene* gameScene, float width, float near, float far) :
+OrthographicCamera::OrthographicCamera (std::shared_ptr<GameScene> gameScene, float width, float near, float far) :
     Camera (gameScene),
-    cameraWidth (width), nearPlane (near), farPlane (far)
+    m_cameraWidth (width), m_nearPlane (near), m_farPlane (far)
 {
 }
 
@@ -19,7 +19,7 @@ OrthographicCamera::~OrthographicCamera ()
 
 Matrix4f OrthographicCamera::GetProjectionMatrix (unsigned int xRes, unsigned int yRes) const
 {
-    return Mathf::GenOrthographicProjectionMatrix (float (xRes) / float (yRes), cameraWidth, nearPlane, farPlane);
+    return Mathf::GenOrthographicProjectionMatrix (float (xRes) / float (yRes), m_cameraWidth, m_nearPlane, m_farPlane);
 }
 
 } // namespace cilantro

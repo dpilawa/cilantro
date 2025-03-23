@@ -1,4 +1,5 @@
 #include "cilantroengine.h"
+#include "scene/GameScene.h"
 #include "scene/PointLight.h"
 #include "graphics/Renderer.h"
 #include "system/Game.h"
@@ -6,11 +7,11 @@
 namespace cilantro
 {
 
-PointLight::PointLight (GameScene* gameScene) : Light (gameScene)
+PointLight::PointLight (std::shared_ptr<GameScene> gameScene) : Light (gameScene)
 {
-    attenuationConst = 1.0f;
-    attenuationLinear = 0.0f;
-    attenuationQuadratic = 0.0f;
+    m_attenuationConst = 1.0f;
+    m_attenuationLinear = 0.0f;
+    m_attenuationQuadratic = 0.0f;
 }
 
 PointLight::~PointLight ()
@@ -19,44 +20,44 @@ PointLight::~PointLight ()
 
 PointLight& PointLight::SetConstantAttenuationFactor (const float attenuation)
 {
-    attenuationConst = attenuation;
-    Game::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
+    m_attenuationConst = attenuation;
+    GetGameScene ()->GetGame ()->GetMessageBus ()->Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
     return *this;
 }
 
 PointLight& PointLight::SetLinearAttenuationFactor (const float attenuation)
 {
-    attenuationLinear = attenuation;
-    Game::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
+    m_attenuationLinear = attenuation;
+    GetGameScene ()->GetGame ()->GetMessageBus ()->Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
     return *this;
 }
 
 PointLight& PointLight::SetQuadraticAttenuationFactor (const float attenuation)
 {
-    attenuationQuadratic = attenuation;
-    Game::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
+    m_attenuationQuadratic = attenuation;
+    GetGameScene ()->GetGame ()->GetMessageBus ()->Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
     return *this;
 }
 
 float PointLight::GetConstantAttenuationFactor () const
 {
-    return attenuationConst;
+    return m_attenuationConst;
 }
 
 float PointLight::GetLinearAttenuationFactor () const
 {
-    return attenuationLinear;
+    return m_attenuationLinear;
 }
 
 float PointLight::GetQuadraticAttenuationFactor () const
 {
-    return attenuationQuadratic;
+    return m_attenuationQuadratic;
 }
 
 void PointLight::OnUpdate (IRenderer& renderer)
 {
     Light::OnUpdate (renderer);
-    renderer.Update (*this);
+    renderer.Update (std::dynamic_pointer_cast<PointLight> (this->GetPointer ()));
 }
 
 } // namespace cilantro

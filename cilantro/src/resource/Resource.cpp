@@ -22,5 +22,10 @@ std::string Resource::GetName () const
     return m_name;
 }
 
+std::shared_ptr<Resource> Resource::GetPointer () const
+{
+    return m_pointer.lock ();
+}
+
 } // namespace cilantro
 

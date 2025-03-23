@@ -6,9 +6,9 @@
 
 namespace cilantro {
 
-void Primitives::GeneratePlane (Mesh& m)
+void Primitives::GeneratePlane (std::shared_ptr<Mesh> m)
 {
-    m.Clear ();
+    m->Clear ();
 
     std::vector<Vector3f> vertices {
         { 1.0f, 0.0f,  1.0f}, 
@@ -29,16 +29,16 @@ void Primitives::GeneratePlane (Mesh& m)
 
     Primitives::GenerateMeshFromArrays (m, vertices, uv, varray);
     
-    m.CalculateVertexNormals ();
-    m.CalculateTangentsBitangents ();
+    m->CalculateVertexNormals ();
+    m->CalculateTangentsBitangents ();
 
-    m.InvokeHook ("OnUpdateMesh");
+    m->InvokeHook ("OnUpdateMesh");
     
 }
 
-void Primitives::GenerateCube (Mesh& m)
+void Primitives::GenerateCube (std::shared_ptr<Mesh> m)
 {
-    m.Clear ();
+    m->Clear ();
 
     std::vector<Vector3f> vertices {
         { 1.0f, 1.0f, -1.0f},
@@ -94,14 +94,14 @@ void Primitives::GenerateCube (Mesh& m)
 
     Primitives::GenerateMeshFromArrays (m, vertices, uv, varray);
 
-    m.CalculateVertexNormals ();
-    m.CalculateTangentsBitangents ();
+    m->CalculateVertexNormals ();
+    m->CalculateTangentsBitangents ();
 
-    m.InvokeHook ("OnUpdateMesh");
+    m->InvokeHook ("OnUpdateMesh");
     
 }
 
-void Primitives::GenerateSphere (Mesh& m, unsigned int subdivisions)
+void Primitives::GenerateSphere (std::shared_ptr<Mesh> m, unsigned int subdivisions)
 {
     float step;
     float theta, phi;
@@ -112,7 +112,7 @@ void Primitives::GenerateSphere (Mesh& m, unsigned int subdivisions)
     std::vector<Vector2f> uv;
     std::vector<std::size_t> varray;
 
-    m.Clear ();
+    m->Clear ();
 
     step = Mathf::Pi () / ((subdivisions + 1) * 2);
     lonSteps = (subdivisions + 1) * 4;
@@ -184,14 +184,14 @@ void Primitives::GenerateSphere (Mesh& m, unsigned int subdivisions)
 
     Primitives::GenerateMeshFromArrays (m, vertices, uv, varray);
 
-    m.CalculateVertexNormals ();
-    m.CalculateTangentsBitangents ();
+    m->CalculateVertexNormals ();
+    m->CalculateTangentsBitangents ();
 
-    m.InvokeHook ("OnUpdateMesh");
+    m->InvokeHook ("OnUpdateMesh");
 
 }
 
-void Primitives::GenerateCone (Mesh& m, unsigned int subdivisions)
+void Primitives::GenerateCone (std::shared_ptr<Mesh> m, unsigned int subdivisions)
 {
     float step;
     float phi;
@@ -201,7 +201,7 @@ void Primitives::GenerateCone (Mesh& m, unsigned int subdivisions)
     std::vector<Vector2f> uv;
     std::vector<std::size_t> varray;
 
-    m.Clear ();
+    m->Clear ();
 
     step = Mathf::Pi () / ((subdivisions + 1) * 2);
     lonSteps = (subdivisions + 1) * 4;
@@ -239,14 +239,14 @@ void Primitives::GenerateCone (Mesh& m, unsigned int subdivisions)
 
     Primitives::GenerateMeshFromArrays (m, vertices, uv, varray);
 
-    m.CalculateVertexNormals ();
-    m.CalculateTangentsBitangents ();
+    m->CalculateVertexNormals ();
+    m->CalculateTangentsBitangents ();
 
-    m.InvokeHook ("OnUpdateMesh");
+    m->InvokeHook ("OnUpdateMesh");
 
 }
 
-void Primitives::GenerateCylinder (Mesh& m, unsigned int subdivisions)
+void Primitives::GenerateCylinder (std::shared_ptr<Mesh> m, unsigned int subdivisions)
 {
     float step;
     float phi;
@@ -257,7 +257,7 @@ void Primitives::GenerateCylinder (Mesh& m, unsigned int subdivisions)
     std::vector<Vector2f> uv;
     std::vector<std::size_t> varray;
 
-    m.Clear ();
+    m->Clear ();
 
     step = Mathf::Pi () / ((subdivisions + 1) * 2);
     lonSteps = (subdivisions + 1) * 4;
@@ -314,26 +314,26 @@ void Primitives::GenerateCylinder (Mesh& m, unsigned int subdivisions)
 
     Primitives::GenerateMeshFromArrays (m, vertices, uv, varray);
 
-    m.CalculateVertexNormals ();
-    m.CalculateTangentsBitangents ();
+    m->CalculateVertexNormals ();
+    m->CalculateTangentsBitangents ();
 
-    m.InvokeHook ("OnUpdateMesh");
+    m->InvokeHook ("OnUpdateMesh");
 
 }
 
-void Primitives::GenerateMeshFromArrays (Mesh& m, const std::vector<Vector3f>& vertices, const std::vector<Vector2f>& uv, const std::vector<std::size_t> varray)
+void Primitives::GenerateMeshFromArrays (std::shared_ptr<Mesh> m, const std::vector<Vector3f>& vertices, const std::vector<Vector2f>& uv, const std::vector<std::size_t> varray)
 {
 
     for (std::size_t i = 0; i < varray.size (); i += 3)
     {
-        m.AddVertex (vertices[varray[i]], uv[i]);
-        m.AddVertex (vertices[varray[i + 1]], uv[i + 1]);
-        m.AddVertex (vertices[varray[i + 2]], uv[i + 2]);
+        m->AddVertex (vertices[varray[i]], uv[i]);
+        m->AddVertex (vertices[varray[i + 1]], uv[i + 1]);
+        m->AddVertex (vertices[varray[i + 2]], uv[i + 2]);
     }
 
     for (std::size_t i = 0; i < varray.size (); i += 3)
     {
-        m.AddFace (i, i + 1, i + 2);
+        m->AddFace (i, i + 1, i + 2);
     }
 
 }

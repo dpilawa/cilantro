@@ -40,7 +40,7 @@ struct InputKeyHash
 class __CEAPI GLFWInputController : public InputController
 {
 public:
-    __EAPI GLFWInputController ();
+    __EAPI GLFWInputController (std::shared_ptr<Game> game);
     __EAPI virtual ~GLFWInputController ();
 
     __EAPI void Initialize ();
@@ -64,6 +64,11 @@ private:
     void MouseCursorCallback (double xPos, double yPos);      
     void MouseScrollCallback (double xOffset, double yOffset);    
 
+    static void KeyCallback (GLFWwindow* _window, int _key, int _scancode, int _action, int _mods);    
+    static void MouseButtonCallback (GLFWwindow* _window, int _button, int _action, int _mods);
+    static void MouseCursorCallback (GLFWwindow* _window, double _xPos, double _yPos);
+    static void MouseScrollCallback (GLFWwindow* _window, double _xOffset, double _yOffset);
+    
     GLFWwindow* window;
 
     std::shared_ptr<Input<float>> axisMouseX;

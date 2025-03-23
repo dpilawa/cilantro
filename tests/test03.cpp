@@ -1,3 +1,4 @@
+/*
 #include "cilantroengine.h"
 #include "scene/Primitives.h"
 #include "scene/AnimationObject.h"
@@ -79,3 +80,6 @@ int main (int argc, char* argv[])
     return 0;
 }
 
+*/
+
+int main() {}

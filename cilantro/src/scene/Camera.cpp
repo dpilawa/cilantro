@@ -6,7 +6,7 @@
 
 namespace cilantro {
 
-Camera::Camera (GameScene* gameScene) : GameObject (gameScene)
+Camera::Camera (std::shared_ptr<GameScene> gameScene) : GameObject (gameScene)
 {
 }
 

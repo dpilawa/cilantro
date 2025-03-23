@@ -16,6 +16,7 @@
 #include "scene/Camera.h"
 #include "scene/Light.h"
 #include <string>
+#include <memory>
 
 namespace cilantro {
 
@@ -25,7 +26,7 @@ class __CEAPI GameScene : public Resource
 {
 public:
 
-    __EAPI GameScene ();
+    __EAPI GameScene (std::shared_ptr<Game> game);
     __EAPI virtual ~GameScene ();
 
     __EAPI void OnStart ();
@@ -35,19 +36,19 @@ public:
     // create a new GameObject in the scene
     // returns reference to that created object
     template <typename T, typename ...Params>
-    T& Create (const std::string& name, Params&&... params)
+    std::shared_ptr<T> Create (const std::string& name, Params&&... params)
     requires (std::is_base_of_v<GameObject,T>);
 
     // add a GameObject to the scene
     // returns reference to that added object
     template <typename T>
-    T& Add (const std::string& name, std::shared_ptr<T> gameObject)
+    std::shared_ptr<T> Add (const std::string& name, std::shared_ptr<T> gameObject)
     requires (std::is_base_of_v<GameObject,T>);
 
     // create a new material in the scene 
     // returns reference to that created material
     template <typename T, typename ...Params>
-    T& Create (const std::string& name, Params&&... params)
+    std::shared_ptr<T> Create (const std::string& name, Params&&... params)
     requires (std::is_base_of_v<Material,T>);
 
     // return reference to map
@@ -56,51 +57,55 @@ public:
 
     // renderer control
     template <typename T, typename ...Params> 
-    T& Create (Params&&... params)
+    std::shared_ptr<T> Create (Params&&... params)
     requires (std::is_base_of_v<IRenderer,T>);
 
-    __EAPI IRenderer* GetRenderer () const;
+    __EAPI std::shared_ptr<IRenderer> GetRenderer () const;
 
     // other getters
-    __EAPI Timer* GetTimer () const;
+    __EAPI std::shared_ptr<Timer> GetTimer () const;
+    __EAPI std::shared_ptr<Game> GetGame () const;
 
     // active camera manipulation
     __EAPI void SetActiveCamera (const std::string& name);
-    __EAPI Camera* GetActiveCamera () const;
+    __EAPI std::shared_ptr<Camera> GetActiveCamera () const;
 
 private:
     
+    // game reference
+    std::weak_ptr<Game> m_game;
+
     // map of all GameObjects in the scene
-    ResourceManager<GameObject> gameObjects;
+    ResourceManager<GameObject> m_gameObjects;
 
     // map of all Materials in the scene
-    ResourceManager<Material> materials;
+    ResourceManager<Material> m_materials;
 
     // systems
-    Timer* timer;
-    IRenderer* renderer;
+    std::shared_ptr<Timer> m_timer;
+    std::shared_ptr<IRenderer> m_renderer;
 
     // reference to active camera
-    Camera* activeCamera;
+    std::weak_ptr<Camera> m_activeCamera;
 
 };
 
 template <typename T, typename ...Params>
-T& GameScene::Create (const std::string& name, Params&&... params)
+std::shared_ptr<T> GameScene::Create (const std::string& name, Params&&... params)
     requires (std::is_base_of_v<GameObject,T>)
 {
-    T& gameObject = gameObjects.Create<T> (name, this, params...);
-    handle_t handle = gameObject.GetHandle ();
+    auto gameObject = m_gameObjects.Create<T> (name, std::static_pointer_cast<GameScene>(this->GetPointer ()), params...);
+    handle_t handle = gameObject->GetHandle ();
 
     // update renderer data
     if constexpr (std::is_base_of<MeshObject, T>::value)
     {
-        Game::GetMessageBus ().Publish<MeshObjectUpdateMessage> (std::make_shared<MeshObjectUpdateMessage> (handle));
-        Game::GetMessageBus ().Publish<SceneGraphUpdateMessage> (std::make_shared<SceneGraphUpdateMessage> (handle));
+        GetGame ()->GetMessageBus ()->Publish<MeshObjectUpdateMessage> (std::make_shared<MeshObjectUpdateMessage> (handle));
+        GetGame ()->GetMessageBus ()->Publish<SceneGraphUpdateMessage> (std::make_shared<SceneGraphUpdateMessage> (handle));
     }
     else if constexpr (std::is_base_of<Light, T>::value)
     {
-        Game::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (handle));
+        GetGame ()->GetMessageBus ()->Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (handle));
     }
 
     // return object reference
@@ -108,51 +113,50 @@ T& GameScene::Create (const std::string& name, Params&&... params)
 }
 
 template <typename T>
-T& GameScene::Add (const std::string& name, std::shared_ptr<T> gameObject)
+std::shared_ptr<T> GameScene::Add (const std::string& name, std::shared_ptr<T> gameObject)
 requires (std::is_base_of_v<GameObject,T>)
 {
-    gameObjects.Add<T> (name, gameObject);
+    m_gameObjects.Add<T> (name, gameObject);
     handle_t handle = gameObject->GetHandle ();
 
     // update renderer data
     if constexpr (std::is_base_of<MeshObject, T>::value)
     {
-        Game::GetMessageBus ().Publish<MeshObjectUpdateMessage> (std::make_shared<MeshObjectUpdateMessage> (handle));
-        Game::GetMessageBus ().Publish<SceneGraphUpdateMessage> (std::make_shared<SceneGraphUpdateMessage> (handle));
+        GetGame ()->GetMessageBus ()->Publish<MeshObjectUpdateMessage> (std::make_shared<MeshObjectUpdateMessage> (handle));
+        GetGame ()->GetMessageBus ()->Publish<SceneGraphUpdateMessage> (std::make_shared<SceneGraphUpdateMessage> (handle));
     }
     else if constexpr (std::is_base_of<Light, T>::value)
     {
-        Game::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (handle));
+        GetGame ()->GetMessageBus ()->Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (handle));
     }
 
     // return object reference
-    return *gameObject;
+    return gameObject;
 }
 
 template <typename T, typename ...Params>
-T& GameScene::Create (const std::string& name, Params&&... params)
+std::shared_ptr<T> GameScene::Create (const std::string& name, Params&&... params)
     requires (std::is_base_of_v<Material,T>)
 {
-    T& material = materials.Create<T> (name, params...);
-    handle_t handle = material.GetHandle ();
+    auto material = m_materials.Create<T> (name, std::static_pointer_cast<GameScene>(this->GetPointer ()), params...);
+    handle_t handle = material->GetHandle ();
 
     // update renderer data
-    Game::GetMessageBus ().Publish<MaterialUpdateMessage> (std::make_shared<MaterialUpdateMessage> (handle));
+    GetGame ()->GetMessageBus ()->Publish<MaterialUpdateMessage> (std::make_shared<MaterialUpdateMessage> (handle));
 
     // return material reference
     return material;
 }
 
 template <typename T, typename ...Params> 
-T& GameScene::Create (Params&&... params)
+std::shared_ptr<T> GameScene::Create (Params&&... params)
     requires (std::is_base_of_v<IRenderer,T>)
 {
-    T* newRenderer = new T (this, params...);
+    auto newRenderer = std::make_shared<T> (std::static_pointer_cast<GameScene>(this->GetPointer ()), params...);
+    this->m_renderer = newRenderer;
+    this->m_renderer->Initialize ();
 
-    this->renderer = static_cast<IRenderer*> (newRenderer);
-    this->renderer->Initialize ();
-
-    return *newRenderer;
+    return newRenderer;
 }
 
 } // namespace cilantro

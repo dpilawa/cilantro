@@ -5,7 +5,7 @@
 
 using namespace cilantro;
 
-ControlledCamera::ControlledCamera (GameScene* gameScene, float fov, float near, float far, float speed, float sensitivity) : PerspectiveCamera (gameScene, fov, near, far), speed (speed), sensitivity (sensitivity)
+ControlledCamera::ControlledCamera (std::shared_ptr<GameScene> gameScene, float fov, float near, float far, float speed, float sensitivity) : PerspectiveCamera (gameScene, fov, near, far), speed (speed), sensitivity (sensitivity)
 {
 }
 
@@ -15,21 +15,21 @@ ControlledCamera::~ControlledCamera()
 
 void ControlledCamera::Initialize ()
 {
-    GLFWInputController& c = dynamic_cast<GLFWInputController&> (Game::GetInputController ());
+    auto c = std::dynamic_pointer_cast<GLFWInputController> (GetGameScene ()->GetGame ()->GetInputController ());
 
-    c.CreateInputAxis ("moveforward", EInputKey::KeyW, {}, 1.0f);
-    c.CreateInputAxis ("moveforward", EInputKey::KeyS, {}, -1.0f);	
+    c->CreateInputAxis ("moveforward", EInputKey::KeyW, {}, 1.0f);
+    c->CreateInputAxis ("moveforward", EInputKey::KeyS, {}, -1.0f);	
 
-    c.CreateInputAxis ("moveright", EInputKey::KeyD, {}, 1.0f);
-    c.CreateInputAxis ("moveright", EInputKey::KeyA, {}, -1.0f);
+    c->CreateInputAxis ("moveright", EInputKey::KeyD, {}, 1.0f);
+    c->CreateInputAxis ("moveright", EInputKey::KeyA, {}, -1.0f);
 
-    c.CreateInputAxis ("camerapitch", EInputAxis::MouseY, 1.0f);
-    c.CreateInputAxis ("camerayaw", EInputAxis::MouseX, 1.0f);
+    c->CreateInputAxis ("camerapitch", EInputAxis::MouseY, 1.0f);
+    c->CreateInputAxis ("camerayaw", EInputAxis::MouseX, 1.0f);
 
-    c.BindInputAxis ("moveright", [&](float a) { MoveRight (a); });
-    c.BindInputAxis ("moveforward", [&](float a) { MoveForward (a); });
-    c.BindInputAxis ("camerapitch", [&](float a) { PitchBy (a); });
-    c.BindInputAxis ("camerayaw", [&](float a) { YawBy (a); });
+    c->BindInputAxis ("moveright", [&](float a) { MoveRight (a); });
+    c->BindInputAxis ("moveforward", [&](float a) { MoveForward (a); });
+    c->BindInputAxis ("camerapitch", [&](float a) { PitchBy (a); });
+    c->BindInputAxis ("camerayaw", [&](float a) { YawBy (a); });
 }
 
 void ControlledCamera::MoveRight (float offset)

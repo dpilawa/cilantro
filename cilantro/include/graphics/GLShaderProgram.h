@@ -16,7 +16,7 @@ public:
 
     ///////////////////////////////////////////////////////////////////////////
 
-    __EAPI virtual void AttachShader (const IShader& shader) override;
+    __EAPI virtual void AttachShader (const std::shared_ptr<IShader> shader) override;
     __EAPI virtual void Link () override;
 
     __EAPI virtual bool HasUniform (const std::string& uniformName) const override;

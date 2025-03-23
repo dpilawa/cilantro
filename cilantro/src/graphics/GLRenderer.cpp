@@ -23,7 +23,7 @@
 
 namespace cilantro {
 
-GLRenderer::GLRenderer (GameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled) 
+GLRenderer::GLRenderer (std::shared_ptr<GameScene> gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled) 
     : Renderer (gameScene, width, height, shadowMappingEnabled, deferredRenderingEnabled)
 {
     m_quadGeometryBuffer = new SGlGeometryBuffers ();
@@ -60,37 +60,37 @@ void GLRenderer::Initialize ()
     InitializeLightUniformBuffers ();
 
     // set callback for new MeshObjects
-    Game::GetMessageBus ().Subscribe<MeshObjectUpdateMessage> (
+    GetGameScene ()->GetGame ()->GetMessageBus ()->Subscribe<MeshObjectUpdateMessage> (
         [&](const std::shared_ptr<MeshObjectUpdateMessage>& message) 
         { 
-            Update (m_gameScene->GetGameObjectManager ().GetByHandle<MeshObject> (message->GetHandle ()));
+            Update (GetGameScene ()->GetGameObjectManager ().GetByHandle<MeshObject> (message->GetHandle ()));
         }
     );
 
     // set callback for new or modified materials
-    Game::GetMessageBus ().Subscribe<MaterialTextureUpdateMessage> (
+    GetGameScene ()->GetGame ()->GetMessageBus ()->Subscribe<MaterialTextureUpdateMessage> (
         [&](const std::shared_ptr<MaterialTextureUpdateMessage>& message) 
         { 
-            Update (m_gameScene->GetMaterialManager ().GetByHandle<Material> (message->GetHandle ()), message->GetTextureUnit ());
+            Update (GetGameScene ()->GetMaterialManager ().GetByHandle<Material> (message->GetHandle ()), message->GetTextureUnit ());
         }
     );
-    Game::GetMessageBus ().Subscribe<MaterialUpdateMessage> (
+    GetGameScene ()->GetGame ()->GetMessageBus ()->Subscribe<MaterialUpdateMessage> (
         [&](const std::shared_ptr<MaterialUpdateMessage>& message) 
         { 
-            Update (m_gameScene->GetMaterialManager ().GetByHandle<Material> (message->GetHandle ()));
+            Update (GetGameScene ()->GetMaterialManager ().GetByHandle<Material> (message->GetHandle ()));
         }
     );
     
     // set callback for new or modified lights
-    Game::GetMessageBus ().Subscribe<LightUpdateMessage> (
+    GetGameScene ()->GetGame ()->GetMessageBus ()->Subscribe<LightUpdateMessage> (
         [&](const std::shared_ptr<LightUpdateMessage>& message) 
         { 
-            m_gameScene->GetGameObjectManager ().GetByHandle<GameObject> (message->GetHandle ()).OnUpdate (*this); 
+            GetGameScene ()->GetGameObjectManager ().GetByHandle<GameObject> (message->GetHandle ())->OnUpdate (*this); 
         }
     );
 
     // set callback for modified scene graph (currently this only requires to reload light buffers)
-    Game::GetMessageBus ().Subscribe<SceneGraphUpdateMessage> (
+    GetGameScene ()->GetGame ()->GetMessageBus ()->Subscribe<SceneGraphUpdateMessage> (
         [&](const std::shared_ptr<SceneGraphUpdateMessage>& message) 
         { 
             UpdateLightBufferRecursive (message->GetHandle ());
@@ -98,7 +98,7 @@ void GLRenderer::Initialize ()
     );
 
     // set callback for modified transforms (currently this only requires to reload light buffers)
-    Game::GetMessageBus ().Subscribe<TransformUpdateMessage> (
+    GetGameScene ()->GetGame ()->GetMessageBus ()->Subscribe<TransformUpdateMessage> (
         [&](const std::shared_ptr<TransformUpdateMessage>& message) 
         { 
             UpdateLightBufferRecursive (message->GetHandle ());
@@ -129,25 +129,25 @@ void GLRenderer::RenderFrame ()
     Renderer::RenderFrame ();
 }
 
-void GLRenderer::Draw (MeshObject& meshObject)
+void GLRenderer::Draw (std::shared_ptr<MeshObject> meshObject)
 {
     GLuint shaderProgramId;
 
-    Material& objM = meshObject.GetMaterial ();
+    auto objM = meshObject->GetMaterial ();
 
     // get shader program for rendered meshobject (geometry pass)
-    GLShaderProgram& geometryShaderProgram = m_shaderProgramManager.GetByName<GLShaderProgram> (
+    auto geometryShaderProgram = m_shaderProgramManager.GetByName<GLShaderProgram> (
         m_isDeferredRendering
-        ? objM.GetDeferredGeometryPassShaderProgram ()
-        : objM.GetForwardShaderProgram ()
+        ? objM->GetDeferredGeometryPassShaderProgram ()
+        : objM->GetForwardShaderProgram ()
     );
-    geometryShaderProgram.Use ();
-    shaderProgramId = geometryShaderProgram.GetProgramId ();
+    geometryShaderProgram->Use ();
+    shaderProgramId = geometryShaderProgram->GetProgramId ();
 
     // bind textures for active material and bind a shadow map
-    if (m_materialTextureUnits.find(meshObject.GetMaterial ().GetHandle ()) != m_materialTextureUnits.end ())
+    if (m_materialTextureUnits.find(meshObject->GetMaterial ()->GetHandle ()) != m_materialTextureUnits.end ())
     {
-        SGlMaterialTextureUnits* u = m_materialTextureUnits[meshObject.GetMaterial ().GetHandle ()];
+        SGlMaterialTextureUnits* u = m_materialTextureUnits[meshObject->GetMaterial ()->GetHandle ()];
 
         for (GLuint i = 0; i < u->unitsCount; i++)
         {
@@ -167,63 +167,63 @@ void GLRenderer::Draw (MeshObject& meshObject)
     }
     else
     {
-        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Missing texture for object" << meshObject.GetHandle ();
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Missing texture for object" << meshObject->GetHandle ();
     }
 
     // set material uniforms for active material
-    for (auto&& property : meshObject.GetMaterial ().GetPropertiesMap ())
+    for (auto&& property : meshObject->GetMaterial ()->GetPropertiesMap ())
     {
-        if (geometryShaderProgram.HasUniform (property.first.c_str ()))
+        if (geometryShaderProgram->HasUniform (property.first.c_str ()))
         {
             if (property.second.size () == 1)
             {
-                geometryShaderProgram.SetUniformFloat (property.first.c_str (), property.second[0]);
+                geometryShaderProgram->SetUniformFloat (property.first.c_str (), property.second[0]);
             }
             else if ((property.second.size () == 3))
             {
-                geometryShaderProgram.SetUniformFloatv (property.first.c_str (), property.second.data (), 3);
+                geometryShaderProgram->SetUniformFloatv (property.first.c_str (), property.second.data (), 3);
             }
             else
             {
-                LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Invalid vector size for material property" << property.first << "in shader" << geometryShaderProgram.GetName () << "for" << meshObject.GetName ();
+                LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Invalid vector size for material property" << property.first << "in shader" << geometryShaderProgram->GetName () << "for" << meshObject->GetName ();
             }
         }        
         else 
         {
-            LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Invalid material uniform" << property.first << "in shader" << geometryShaderProgram.GetName () << "for" << meshObject.GetName ();
+            LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Invalid material uniform" << property.first << "in shader" << geometryShaderProgram->GetName () << "for" << meshObject->GetName ();
         }
     }
 
     // get world matrix for drawn objects and set uniform value
-    geometryShaderProgram.SetUniformMatrix4f ("mModel", meshObject.GetModelTransformMatrix ());
+    geometryShaderProgram->SetUniformMatrix4f ("mModel", meshObject->GetModelTransformMatrix ());
 
     // calculate normal matrix for drawn objects and set uniform value
-    geometryShaderProgram.SetUniformMatrix3f ("mNormal", Mathf::Invert (Mathf::Transpose (Matrix3f (meshObject.GetModelTransformMatrix ()))));
+    geometryShaderProgram->SetUniformMatrix3f ("mNormal", Mathf::Invert (Mathf::Transpose (Matrix3f (meshObject->GetModelTransformMatrix ()))));
 
     // get camera position in world space and set uniform value
     if (!m_isDeferredRendering)
     {
-        geometryShaderProgram.SetUniformVector3f ("eyePosition", m_gameScene->GetActiveCamera ()->GetPosition ());
+        geometryShaderProgram->SetUniformVector3f ("eyePosition", GetGameScene ()->GetActiveCamera ()->GetPosition ());
     }
 
     // set bone transformation matrix array uniform
-    geometryShaderProgram.SetUniformMatrix4fv ("mBoneTransformations", meshObject.GetBoneTransformationsMatrixArray (), CILANTRO_MAX_BONES);
+    geometryShaderProgram->SetUniformMatrix4fv ("mBoneTransformations", meshObject->GetBoneTransformationsMatrixArray (), CILANTRO_MAX_BONES);
 
     // get shader program for rendered meshobject (lighting pass)
     if (m_isDeferredRendering)
     {
-        GLShaderProgram& lightingShaderProgram = m_shaderProgramManager.GetByName<GLShaderProgram>(objM.GetDeferredLightingPassShaderProgram ());
-        lightingShaderProgram.Use ();
-        shaderProgramId = lightingShaderProgram.GetProgramId ();
+        auto lightingShaderProgram = m_shaderProgramManager.GetByName<GLShaderProgram>(objM->GetDeferredLightingPassShaderProgram ());
+        lightingShaderProgram->Use ();
+        shaderProgramId = lightingShaderProgram->GetProgramId ();
 
         // get camera position in world space and set uniform value (this needs to be done again for deferred lighting shader program)
-        lightingShaderProgram.SetUniformVector3f ("eyePosition", m_gameScene->GetActiveCamera ()->GetPosition ());
+        lightingShaderProgram->SetUniformVector3f ("eyePosition", GetGameScene ()->GetActiveCamera ()->GetPosition ());
 
     }
     
     // draw mesh
-    SGlGeometryBuffers* b = m_sceneGeometryBuffers[meshObject.GetHandle ()];
-    geometryShaderProgram.Use ();
+    SGlGeometryBuffers* b = m_sceneGeometryBuffers[meshObject->GetHandle ()];
+    geometryShaderProgram->Use ();
     RenderGeometryBuffer (b);
 }
 
@@ -232,28 +232,28 @@ void GLRenderer::DrawQuad ()
     RenderGeometryBuffer (m_quadGeometryBuffer);
 }
 
-void GLRenderer::DrawAllGeometryBuffers (IShaderProgram& shader)
+void GLRenderer::DrawAllGeometryBuffers (std::shared_ptr<IShaderProgram> shader)
 {
-    shader.Use ();
+    shader->Use ();
 
     for (auto&& geomertyBuffer : m_sceneGeometryBuffers)
     {
-        MeshObject m = m_gameScene->GetGameObjectManager ().GetByHandle<MeshObject> (geomertyBuffer.first);
+        auto m = GetGameScene ()->GetGameObjectManager ().GetByHandle<MeshObject> (geomertyBuffer.first);
 
         // load model matrix to currently bound shader
-        shader.SetUniformMatrix4f ("mModel", m.GetModelTransformMatrix ());
+        shader->SetUniformMatrix4f ("mModel", m->GetModelTransformMatrix ());
 
         // set bone transformation matrix array uniform
-        shader.SetUniformMatrix4fv ("mBoneTransformations", m.GetBoneTransformationsMatrixArray (), CILANTRO_MAX_BONES);
+        shader->SetUniformMatrix4fv ("mBoneTransformations", m->GetBoneTransformationsMatrixArray (), CILANTRO_MAX_BONES);
 
         // draw
         RenderGeometryBuffer (geomertyBuffer.second);
     }
 }
 
-void GLRenderer::Update (MeshObject& meshObject)
+void GLRenderer::Update (std::shared_ptr<MeshObject> meshObject)
 {
-    handle_t objectHandle = meshObject.GetHandle ();
+    handle_t objectHandle = meshObject->GetHandle ();
 
     // check of object's buffers are already initialized
     auto find = m_sceneGeometryBuffers.find (objectHandle);
@@ -329,51 +329,51 @@ void GLRenderer::Update (MeshObject& meshObject)
 
     // resize buffers and load data
     SGlGeometryBuffers* b = m_sceneGeometryBuffers[objectHandle];
-    b->indexCount = meshObject.GetMesh ().GetIndexCount ();
+    b->indexCount = meshObject->GetMesh ()->GetIndexCount ();
 
     // bind Vertex Array Object (VAO)
     glBindVertexArray (b->VAO);
 
     // load vertex buffer
     glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVboType::VBO_VERTICES]);
-    glBufferData (GL_ARRAY_BUFFER, meshObject.GetMesh ().GetVertexCount () * sizeof (float) * 3, meshObject.GetMesh ().GetVerticesData (), GL_STATIC_DRAW);
+    glBufferData (GL_ARRAY_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (float) * 3, meshObject->GetMesh ()->GetVerticesData (), GL_STATIC_DRAW);
 
     // load normals buffer
     glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVboType::VBO_NORMALS]);
-    glBufferData (GL_ARRAY_BUFFER, meshObject.GetMesh ().GetVertexCount () * sizeof (float) * 3, meshObject.GetMesh ().GetNormalsData (), GL_STATIC_DRAW);
+    glBufferData (GL_ARRAY_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (float) * 3, meshObject->GetMesh ()->GetNormalsData (), GL_STATIC_DRAW);
     
     // load uv buffer
     glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVboType::VBO_UVS]);
-    glBufferData (GL_ARRAY_BUFFER, meshObject.GetMesh ().GetVertexCount () * sizeof (float) * 2, meshObject.GetMesh ().GetUVData (), GL_STATIC_DRAW);
+    glBufferData (GL_ARRAY_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (float) * 2, meshObject->GetMesh ()->GetUVData (), GL_STATIC_DRAW);
 
     // load tangents buffer
     glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVboType::VBO_TANGENTS]);
-    glBufferData (GL_ARRAY_BUFFER, meshObject.GetMesh ().GetVertexCount () * sizeof (float) * 3, meshObject.GetMesh ().GetTangentData (), GL_STATIC_DRAW);
+    glBufferData (GL_ARRAY_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (float) * 3, meshObject->GetMesh ()->GetTangentData (), GL_STATIC_DRAW);
 
     // load bitangents buffer
     glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVboType::VBO_BITANGENTS]);
-    glBufferData (GL_ARRAY_BUFFER, meshObject.GetMesh ().GetVertexCount () * sizeof (float) * 3, meshObject.GetMesh ().GetBitangentData (), GL_STATIC_DRAW);
+    glBufferData (GL_ARRAY_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (float) * 3, meshObject->GetMesh ()->GetBitangentData (), GL_STATIC_DRAW);
 
     // load bone index buffer
     glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVboType::VBO_BONES]);
-    glBufferData (GL_ARRAY_BUFFER, meshObject.GetMesh ().GetVertexCount () * sizeof (uint32_t) * CILANTRO_MAX_BONE_INFLUENCES, meshObject.GetMesh ().GetBoneIndicesData (), GL_STATIC_DRAW);
+    glBufferData (GL_ARRAY_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (uint32_t) * CILANTRO_MAX_BONE_INFLUENCES, meshObject->GetMesh ()->GetBoneIndicesData (), GL_STATIC_DRAW);
 
     // load bone weight buffer
     glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVboType::VBO_BONEWEIGHTS]);
-    glBufferData (GL_ARRAY_BUFFER, meshObject.GetMesh ().GetVertexCount () * sizeof (float) * CILANTRO_MAX_BONE_INFLUENCES, meshObject.GetMesh ().GetBoneWeightsData (), GL_STATIC_DRAW);
+    glBufferData (GL_ARRAY_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (float) * CILANTRO_MAX_BONE_INFLUENCES, meshObject->GetMesh ()->GetBoneWeightsData (), GL_STATIC_DRAW);
 
     // load index buffer
     glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, b->EBO);
-    glBufferData (GL_ELEMENT_ARRAY_BUFFER, meshObject.GetMesh ().GetIndexCount () * sizeof (uint32_t), meshObject.GetMesh ().GetFacesData (), GL_STATIC_DRAW);
+    glBufferData (GL_ELEMENT_ARRAY_BUFFER, meshObject->GetMesh ()->GetIndexCount () * sizeof (uint32_t), meshObject->GetMesh ()->GetFacesData (), GL_STATIC_DRAW);
 
     // unbind VAO
     glBindVertexArray (0);
 
 }
 
-void GLRenderer::Update (Material& material, unsigned int textureUnit)
+void GLRenderer::Update (std::shared_ptr<Material> material, unsigned int textureUnit)
 {
-    handle_t materialHandle = material.GetHandle ();
+    handle_t materialHandle = material->GetHandle ();
     GLuint texture;
     GLuint format;
 
@@ -395,7 +395,7 @@ void GLRenderer::Update (Material& material, unsigned int textureUnit)
         }
     };
 
-    texture_map_t& textures = material.GetTexturesMap ();
+    texture_map_t& textures = material->GetTexturesMap ();
 
     // check if material already exists
     auto find = m_materialTextureUnits.find (materialHandle);
@@ -406,7 +406,7 @@ void GLRenderer::Update (Material& material, unsigned int textureUnit)
         
         for (auto&& t : textures)
         {
-            Texture* tPtr = t.second.second;
+            auto tPtr = t.second.second;
             std::string tName = t.second.first;
             GLuint unit = t.first;
             format = GLTextureFormat (tPtr->GetChannels ());
@@ -429,7 +429,7 @@ void GLRenderer::Update (Material& material, unsigned int textureUnit)
     else
     {
         auto& t = textures[textureUnit];
-        Texture* tPtr = t.second;
+        auto tPtr = t.second;
         std::string tName = t.first;
         GLuint unit = textureUnit;
         format = GLTextureFormat (tPtr->GetChannels ());
@@ -444,10 +444,10 @@ void GLRenderer::Update (Material& material, unsigned int textureUnit)
     }
 }
 
-void GLRenderer::Update (Material& material)
+void GLRenderer::Update (std::shared_ptr<Material> material)
 {
-    handle_t shaderProgramHandle = m_shaderProgramManager.GetByName<ShaderProgram>(material.GetDeferredLightingPassShaderProgram ()).GetHandle ();
-    std::string shaderProgramName = material.GetDeferredLightingPassShaderProgram ();
+    handle_t shaderProgramHandle = m_shaderProgramManager.GetByName<ShaderProgram>(material->GetDeferredLightingPassShaderProgram ())->GetHandle ();
+    std::string shaderProgramName = material->GetDeferredLightingPassShaderProgram ();
 
     if (m_isDeferredRendering)
     {
@@ -465,20 +465,20 @@ void GLRenderer::Update (Material& material)
             // create and append new lighting stage
             m_lightingShaderStagesCount++;
             m_lightingShaders.insert (shaderProgramHandle);
-            QuadRenderStage& p = Create <QuadRenderStage> ("deferred_lighting_" + shaderProgramName);
-            p.SetShaderProgram (shaderProgramName);
-            p.SetStencilTestEnabled (true).SetStencilTest (EStencilTestFunction::FUNCTION_EQUAL, static_cast<int> (shaderProgramHandle));
-            p.SetClearColorOnFrameEnabled (true);
-            p.SetClearDepthOnFrameEnabled (true);
-            p.SetClearStencilOnFrameEnabled (false);
-            p.SetDepthTestEnabled (false);
-            p.SetColorAttachmentsFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_SECOND : EPipelineLink::LINK_FIRST);
-            p.SetDepthStencilFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_SECOND : EPipelineLink::LINK_FIRST);
-            p.SetDepthArrayFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_FIRST : EPipelineLink::LINK_CURRENT);
-            p.SetOutputFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_THIRD : EPipelineLink::LINK_SECOND);
-            p.SetFramebufferEnabled (true);
+            auto q = Create <QuadRenderStage> ("deferred_lighting_" + shaderProgramName);
+            q->SetShaderProgram (shaderProgramName);
+            q->SetStencilTestEnabled (true).SetStencilTest (EStencilTestFunction::FUNCTION_EQUAL, static_cast<int> (shaderProgramHandle));
+            q->SetClearColorOnFrameEnabled (true);
+            q->SetClearDepthOnFrameEnabled (true);
+            q->SetClearStencilOnFrameEnabled (false);
+            q->SetDepthTestEnabled (false);
+            q->SetColorAttachmentsFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_SECOND : EPipelineLink::LINK_FIRST);
+            q->SetDepthStencilFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_SECOND : EPipelineLink::LINK_FIRST);
+            q->SetDepthArrayFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_FIRST : EPipelineLink::LINK_CURRENT);
+            q->SetOutputFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_THIRD : EPipelineLink::LINK_SECOND);
+            q->SetFramebufferEnabled (true);
 
-            p.Initialize ();
+            q->Initialize ();
 
             // rotate pipeline to the right, so that ultimately geometry stage is first and newly added stage is second
             RotateRenderPipelineRight ();
@@ -493,9 +493,9 @@ void GLRenderer::Update (Material& material)
             {
                 handle_t stageHandle = GetRenderPipeline ()[2 + (m_isShadowMapping ? 1 : 0)];
 
-                QuadRenderStage& stage = m_renderStageManager.GetByHandle<QuadRenderStage> (stageHandle);
-                stage.SetClearColorOnFrameEnabled (false);
-                stage.SetFramebufferEnabled (false);
+                auto stage = m_renderStageManager.GetByHandle<QuadRenderStage> (stageHandle);
+                stage->SetClearColorOnFrameEnabled (false);
+                stage->SetFramebufferEnabled (false);
             }
 
             // update pipeline links of 1st stage following deferred lighting stages
@@ -503,18 +503,18 @@ void GLRenderer::Update (Material& material)
             {
                 handle_t stageHandle = m_renderPipeline[m_lightingShaderStagesCount + 1 + (m_isShadowMapping ? 1 : 0)];
 
-                IRenderStage& stage = m_renderStageManager.GetByHandle<IRenderStage> (stageHandle);
-                stage.SetColorAttachmentsFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_THIRD : EPipelineLink::LINK_SECOND);
-                stage.SetDepthStencilFramebufferLink (EPipelineLink::LINK_CURRENT);
-                stage.SetOutputFramebufferLink (EPipelineLink::LINK_CURRENT);
+                auto stage = m_renderStageManager.GetByHandle<IRenderStage> (stageHandle);
+                stage->SetColorAttachmentsFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_THIRD : EPipelineLink::LINK_SECOND);
+                stage->SetDepthStencilFramebufferLink (EPipelineLink::LINK_CURRENT);
+                stage->SetOutputFramebufferLink (EPipelineLink::LINK_CURRENT);
             }
         }
     }
 }
 
-void GLRenderer::Update (PointLight& pointLight)
+void GLRenderer::Update (std::shared_ptr<PointLight> pointLight)
 {
-    handle_t objectHandle = pointLight.GetHandle ();
+    handle_t objectHandle = pointLight->GetHandle ();
     size_t lightId;
     size_t uniformBufferOffset;
 
@@ -533,20 +533,20 @@ void GLRenderer::Update (PointLight& pointLight)
     }
 
     // copy position
-    Vector4f lightPosition = pointLight.GetPosition ();
+    Vector4f lightPosition = pointLight->GetPosition ();
     m_uniformPointLightBuffer->pointLights[lightId].lightPosition[0] = lightPosition[0];
     m_uniformPointLightBuffer->pointLights[lightId].lightPosition[1] = lightPosition[1];
     m_uniformPointLightBuffer->pointLights[lightId].lightPosition[2] = lightPosition[2];
 
     // copy attenuation factors
-    m_uniformPointLightBuffer->pointLights[lightId].attenuationConst = pointLight.GetConstantAttenuationFactor ();
-    m_uniformPointLightBuffer->pointLights[lightId].attenuationLinear = pointLight.GetLinearAttenuationFactor ();
-    m_uniformPointLightBuffer->pointLights[lightId].attenuationQuadratic = pointLight.GetQuadraticAttenuationFactor ();
+    m_uniformPointLightBuffer->pointLights[lightId].attenuationConst = pointLight->GetConstantAttenuationFactor ();
+    m_uniformPointLightBuffer->pointLights[lightId].attenuationLinear = pointLight->GetLinearAttenuationFactor ();
+    m_uniformPointLightBuffer->pointLights[lightId].attenuationQuadratic = pointLight->GetQuadraticAttenuationFactor ();
 
     // copy color
-    m_uniformPointLightBuffer->pointLights[lightId].lightColor[0] = pointLight.GetColor ()[0];
-    m_uniformPointLightBuffer->pointLights[lightId].lightColor[1] = pointLight.GetColor ()[1];
-    m_uniformPointLightBuffer->pointLights[lightId].lightColor[2] = pointLight.GetColor ()[2];
+    m_uniformPointLightBuffer->pointLights[lightId].lightColor[0] = pointLight->GetColor ()[0];
+    m_uniformPointLightBuffer->pointLights[lightId].lightColor[1] = pointLight->GetColor ()[1];
+    m_uniformPointLightBuffer->pointLights[lightId].lightColor[2] = pointLight->GetColor ()[2];
 
     // copy to GPU memory
     glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_POINTLIGHTS]);
@@ -562,9 +562,9 @@ void GLRenderer::Update (PointLight& pointLight)
 
 }
 
-void GLRenderer::Update (DirectionalLight& directionalLight)
+void GLRenderer::Update (std::shared_ptr<DirectionalLight> directionalLight)
 {
-    handle_t objectHandle = directionalLight.GetHandle ();
+    handle_t objectHandle = directionalLight->GetHandle ();
     size_t lightId;
     size_t uniformBufferOffset;
 
@@ -583,24 +583,24 @@ void GLRenderer::Update (DirectionalLight& directionalLight)
     }
 
     // update invocation count in shadow map geometry shader
-    GLShader shadowmapShader = Game::GetResourceManager ().GetByName<GLShader> ("shadowmap_directional_geometry_shader");
-    shadowmapShader.SetParameter ("%%ACTIVE_DIRECTIONAL_LIGHTS%%", std::to_string (GetDirectionalLightCount ()));
-    shadowmapShader.Compile ();
+    auto shadowmapShader = GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<GLShader> ("shadowmap_directional_geometry_shader");
+    shadowmapShader->SetParameter ("%%ACTIVE_DIRECTIONAL_LIGHTS%%", std::to_string (GetDirectionalLightCount ()));
+    shadowmapShader->Compile ();
 
-    GLShaderProgram shadowmapShaderProg = GetShaderProgramManager ().GetByName<GLShaderProgram> ("shadowmap_directional_shader");
-    shadowmapShaderProg.Link ();    
-    shadowmapShaderProg.BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL);
+    auto shadowmapShaderProg = GetShaderProgramManager ().GetByName<GLShaderProgram> ("shadowmap_directional_shader");
+    shadowmapShaderProg->Link ();    
+    shadowmapShaderProg->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL);
 
     // copy direction
-    Vector3f lightDirection = directionalLight.GetForward ();
+    Vector3f lightDirection = directionalLight->GetForward ();
     m_uniformDirectionalLightBuffer->directionalLights[lightId].lightDirection[0] = lightDirection[0];
     m_uniformDirectionalLightBuffer->directionalLights[lightId].lightDirection[1] = lightDirection[1];
     m_uniformDirectionalLightBuffer->directionalLights[lightId].lightDirection[2] = lightDirection[2];
 
     // copy color
-    m_uniformDirectionalLightBuffer->directionalLights[lightId].lightColor[0] = directionalLight.GetColor ()[0];
-    m_uniformDirectionalLightBuffer->directionalLights[lightId].lightColor[1] = directionalLight.GetColor ()[1];
-    m_uniformDirectionalLightBuffer->directionalLights[lightId].lightColor[2] = directionalLight.GetColor ()[2];
+    m_uniformDirectionalLightBuffer->directionalLights[lightId].lightColor[0] = directionalLight->GetColor ()[0];
+    m_uniformDirectionalLightBuffer->directionalLights[lightId].lightColor[1] = directionalLight->GetColor ()[1];
+    m_uniformDirectionalLightBuffer->directionalLights[lightId].lightColor[2] = directionalLight->GetColor ()[2];
 
     // copy to GPU memory
     glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTS]);
@@ -615,9 +615,9 @@ void GLRenderer::Update (DirectionalLight& directionalLight)
     glBindBuffer (GL_UNIFORM_BUFFER, 0);
 }
 
-void GLRenderer::Update (SpotLight& spotLight)
+void GLRenderer::Update (std::shared_ptr<SpotLight> spotLight)
 {
-    handle_t objectHandle = spotLight.GetHandle ();
+    handle_t objectHandle = spotLight->GetHandle ();
     size_t lightId;
     size_t uniformBufferOffset;
 
@@ -636,30 +636,30 @@ void GLRenderer::Update (SpotLight& spotLight)
     }
 
     // copy position
-    Vector4f lightPosition = spotLight.GetPosition ();
+    Vector4f lightPosition = spotLight->GetPosition ();
     m_uniformSpotLightBuffer->spotLights[lightId].lightPosition[0] = lightPosition[0];
     m_uniformSpotLightBuffer->spotLights[lightId].lightPosition[1] = lightPosition[1];
     m_uniformSpotLightBuffer->spotLights[lightId].lightPosition[2] = lightPosition[2];
 
     // copy direction
-    Vector3f lightDirection = spotLight.GetForward ();
+    Vector3f lightDirection = spotLight->GetForward ();
     m_uniformSpotLightBuffer->spotLights[lightId].lightDirection[0] = lightDirection[0];
     m_uniformSpotLightBuffer->spotLights[lightId].lightDirection[1] = lightDirection[1];
     m_uniformSpotLightBuffer->spotLights[lightId].lightDirection[2] = lightDirection[2];
     
     // copy attenuation factors
-    m_uniformSpotLightBuffer->spotLights[lightId].attenuationConst = spotLight.GetConstantAttenuationFactor ();
-    m_uniformSpotLightBuffer->spotLights[lightId].attenuationLinear = spotLight.GetLinearAttenuationFactor ();
-    m_uniformSpotLightBuffer->spotLights[lightId].attenuationQuadratic = spotLight.GetQuadraticAttenuationFactor ();
+    m_uniformSpotLightBuffer->spotLights[lightId].attenuationConst = spotLight->GetConstantAttenuationFactor ();
+    m_uniformSpotLightBuffer->spotLights[lightId].attenuationLinear = spotLight->GetLinearAttenuationFactor ();
+    m_uniformSpotLightBuffer->spotLights[lightId].attenuationQuadratic = spotLight->GetQuadraticAttenuationFactor ();
 
     // copy cutoff angles
-    m_uniformSpotLightBuffer->spotLights[lightId].innerCutoffCosine = std::cos (Mathf::Deg2Rad (spotLight.GetInnerCutoff ()));
-    m_uniformSpotLightBuffer->spotLights[lightId].outerCutoffCosine = std::cos (Mathf::Deg2Rad (spotLight.GetOuterCutoff ()));
+    m_uniformSpotLightBuffer->spotLights[lightId].innerCutoffCosine = std::cos (Mathf::Deg2Rad (spotLight->GetInnerCutoff ()));
+    m_uniformSpotLightBuffer->spotLights[lightId].outerCutoffCosine = std::cos (Mathf::Deg2Rad (spotLight->GetOuterCutoff ()));
 
     // copy color
-    m_uniformSpotLightBuffer->spotLights[lightId].lightColor[0] = spotLight.GetColor ()[0];
-    m_uniformSpotLightBuffer->spotLights[lightId].lightColor[1] = spotLight.GetColor ()[1];
-    m_uniformSpotLightBuffer->spotLights[lightId].lightColor[2] = spotLight.GetColor ()[2];
+    m_uniformSpotLightBuffer->spotLights[lightId].lightColor[0] = spotLight->GetColor ()[0];
+    m_uniformSpotLightBuffer->spotLights[lightId].lightColor[1] = spotLight->GetColor ()[1];
+    m_uniformSpotLightBuffer->spotLights[lightId].lightColor[2] = spotLight->GetColor ()[2];
 
     // copy to GPU memory
     glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_SPOTLIGHTS]);
@@ -674,9 +674,9 @@ void GLRenderer::Update (SpotLight& spotLight)
     glBindBuffer (GL_UNIFORM_BUFFER, 0);
 }
 
-void GLRenderer::UpdateCameraBuffers (Camera& camera)
+void GLRenderer::UpdateCameraBuffers (std::shared_ptr<Camera> camera)
 {
-    LoadViewProjectionUniformBuffers (&camera);
+    LoadViewProjectionUniformBuffers (camera);
 }
 
 void GLRenderer::UpdateLightViewBuffers ()
@@ -878,29 +878,29 @@ void GLRenderer::SetStencilTestOperation (EStencilTestOperation sFail, EStencilT
 
 void GLRenderer::InitializeShaderLibrary ()
 {
-    GLShaderProgram* p;
+    std::shared_ptr<GLShaderProgram> p;
 
     // load standard shaders
-    Game::GetResourceManager ().Load<GLShader> ("default_vertex_shader", "shaders/default.vs", EShaderType::VERTEX_SHADER);
-    Game::GetResourceManager ().Load<GLShader> ("flatquad_vertex_shader", "shaders/flatquad.vs", EShaderType::VERTEX_SHADER);
-    Game::GetResourceManager ().Load<GLShader> ("pbr_forward_fragment_shader", "shaders/pbr_forward.fs", EShaderType::FRAGMENT_SHADER);    
-    Game::GetResourceManager ().Load<GLShader> ("pbr_deferred_geometrypass_fragment_shader", "shaders/pbr_deferred_geometrypass.fs", EShaderType::FRAGMENT_SHADER); 
-    Game::GetResourceManager ().Load<GLShader> ("pbr_deferred_lightingpass_fragment_shader", "shaders/pbr_deferred_lightingpass.fs", EShaderType::FRAGMENT_SHADER); 
-    Game::GetResourceManager ().Load<GLShader> ("blinnphong_forward_fragment_shader", "shaders/blinnphong_forward.fs", EShaderType::FRAGMENT_SHADER);
-    Game::GetResourceManager ().Load<GLShader> ("blinnphong_deferred_geometrypass_fragment_shader", "shaders/blinnphong_deferred_geometrypass.fs", EShaderType::FRAGMENT_SHADER); 
-    Game::GetResourceManager ().Load<GLShader> ("blinnphong_deferred_lightingpass_fragment_shader", "shaders/blinnphong_deferred_lightingpass.fs", EShaderType::FRAGMENT_SHADER); 
-    Game::GetResourceManager ().Load<GLShader> ("flatquad_fragment_shader", "shaders/flatquad.fs", EShaderType::FRAGMENT_SHADER);
-    Game::GetResourceManager ().Load<GLShader> ("post_hdr_fragment_shader", "shaders/post_hdr.fs", EShaderType::FRAGMENT_SHADER);
-    Game::GetResourceManager ().Load<GLShader> ("post_gamma_fragment_shader", "shaders/post_gamma.fs", EShaderType::FRAGMENT_SHADER);
-    Game::GetResourceManager ().Load<GLShader> ("post_fxaa_fragment_shader", "shaders/post_fxaa.fs", EShaderType::FRAGMENT_SHADER);
-    Game::GetResourceManager ().Load<GLShader> ("shadowmap_vertex_shader", "shaders/shadowmap.vs", EShaderType::VERTEX_SHADER);
-    Game::GetResourceManager ().Load<GLShader> ("shadowmap_directional_geometry_shader", "shaders/shadowmap_directional.gs", EShaderType::GEOMETRY_SHADER);
-    Game::GetResourceManager ().Load<GLShader> ("shadowmap_fragment_shader", "shaders/shadowmap.fs", EShaderType::FRAGMENT_SHADER);
+    GetGameScene ()->GetGame ()->GetResourceManager ().Load<GLShader> ("default_vertex_shader", "shaders/default.vs", EShaderType::VERTEX_SHADER);
+    GetGameScene ()->GetGame ()->GetResourceManager ().Load<GLShader> ("flatquad_vertex_shader", "shaders/flatquad.vs", EShaderType::VERTEX_SHADER);
+    GetGameScene ()->GetGame ()->GetResourceManager ().Load<GLShader> ("pbr_forward_fragment_shader", "shaders/pbr_forward.fs", EShaderType::FRAGMENT_SHADER);    
+    GetGameScene ()->GetGame ()->GetResourceManager ().Load<GLShader> ("pbr_deferred_geometrypass_fragment_shader", "shaders/pbr_deferred_geometrypass.fs", EShaderType::FRAGMENT_SHADER); 
+    GetGameScene ()->GetGame ()->GetResourceManager ().Load<GLShader> ("pbr_deferred_lightingpass_fragment_shader", "shaders/pbr_deferred_lightingpass.fs", EShaderType::FRAGMENT_SHADER); 
+    GetGameScene ()->GetGame ()->GetResourceManager ().Load<GLShader> ("blinnphong_forward_fragment_shader", "shaders/blinnphong_forward.fs", EShaderType::FRAGMENT_SHADER);
+    GetGameScene ()->GetGame ()->GetResourceManager ().Load<GLShader> ("blinnphong_deferred_geometrypass_fragment_shader", "shaders/blinnphong_deferred_geometrypass.fs", EShaderType::FRAGMENT_SHADER); 
+    GetGameScene ()->GetGame ()->GetResourceManager ().Load<GLShader> ("blinnphong_deferred_lightingpass_fragment_shader", "shaders/blinnphong_deferred_lightingpass.fs", EShaderType::FRAGMENT_SHADER); 
+    GetGameScene ()->GetGame ()->GetResourceManager ().Load<GLShader> ("flatquad_fragment_shader", "shaders/flatquad.fs", EShaderType::FRAGMENT_SHADER);
+    GetGameScene ()->GetGame ()->GetResourceManager ().Load<GLShader> ("post_hdr_fragment_shader", "shaders/post_hdr.fs", EShaderType::FRAGMENT_SHADER);
+    GetGameScene ()->GetGame ()->GetResourceManager ().Load<GLShader> ("post_gamma_fragment_shader", "shaders/post_gamma.fs", EShaderType::FRAGMENT_SHADER);
+    GetGameScene ()->GetGame ()->GetResourceManager ().Load<GLShader> ("post_fxaa_fragment_shader", "shaders/post_fxaa.fs", EShaderType::FRAGMENT_SHADER);
+    GetGameScene ()->GetGame ()->GetResourceManager ().Load<GLShader> ("shadowmap_vertex_shader", "shaders/shadowmap.vs", EShaderType::VERTEX_SHADER);
+    GetGameScene ()->GetGame ()->GetResourceManager ().Load<GLShader> ("shadowmap_directional_geometry_shader", "shaders/shadowmap_directional.gs", EShaderType::GEOMETRY_SHADER);
+    GetGameScene ()->GetGame ()->GetResourceManager ().Load<GLShader> ("shadowmap_fragment_shader", "shaders/shadowmap.fs", EShaderType::FRAGMENT_SHADER);
 
     // PBR model (forward)
-    p = &Create<GLShaderProgram> ("pbr_forward_shader");
-    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("default_vertex_shader"));
-    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("pbr_forward_fragment_shader"));
+    p = Create<GLShaderProgram> ("pbr_forward_shader");
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<GLShader>("default_vertex_shader"));
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<GLShader>("pbr_forward_fragment_shader"));
     p->Link ();
     p->Use ();
 #if (CILANTRO_GL_VERSION < 330)
@@ -926,9 +926,9 @@ void GLRenderer::InitializeShaderLibrary ()
     CheckGLError (MSG_LOCATION);
 
     // PBR model (deferred, geometry pass)
-    p = &Create<GLShaderProgram> ("pbr_deferred_geometrypass_shader");
-    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("default_vertex_shader"));
-    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("pbr_deferred_geometrypass_fragment_shader"));
+    p = Create<GLShaderProgram> ("pbr_deferred_geometrypass_shader");
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<GLShader>("default_vertex_shader"));
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<GLShader>("pbr_deferred_geometrypass_fragment_shader"));
     p->Link ();
     p->Use ();
 #if (CILANTRO_GL_VERSION < 330)
@@ -949,9 +949,9 @@ void GLRenderer::InitializeShaderLibrary ()
     CheckGLError (MSG_LOCATION);
 
     // PBR model (deferred, lighting pass)
-    p = &Create<GLShaderProgram> ("pbr_deferred_lightingpass_shader");
-    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("flatquad_vertex_shader"));
-    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("pbr_deferred_lightingpass_fragment_shader"));
+    p = Create<GLShaderProgram> ("pbr_deferred_lightingpass_shader");
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<GLShader>("flatquad_vertex_shader"));
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<GLShader>("pbr_deferred_lightingpass_fragment_shader"));
     p->Link ();
     p->Use ();
 #if (CILANTRO_GL_VERSION < 330)
@@ -973,9 +973,9 @@ void GLRenderer::InitializeShaderLibrary ()
     CheckGLError (MSG_LOCATION);
 
     // Blinn-Phong model (forward)
-    p = &Create<GLShaderProgram> ("blinnphong_forward_shader");
-    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("default_vertex_shader"));
-    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("blinnphong_forward_fragment_shader"));
+    p = Create<GLShaderProgram> ("blinnphong_forward_shader");
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<GLShader>("default_vertex_shader"));
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<GLShader>("blinnphong_forward_fragment_shader"));
     p->Link ();
     p->Use ();
 #if (CILANTRO_GL_VERSION < 330)	
@@ -1000,9 +1000,9 @@ void GLRenderer::InitializeShaderLibrary ()
     CheckGLError (MSG_LOCATION);
     
     // Blinn-Phong model (deferred, geometry pass)
-    p = &Create<GLShaderProgram> ("blinnphong_deferred_geometrypass_shader");
-    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("default_vertex_shader"));
-    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("blinnphong_deferred_geometrypass_fragment_shader"));
+    p = Create<GLShaderProgram> ("blinnphong_deferred_geometrypass_shader");
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<GLShader>("default_vertex_shader"));
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<GLShader>("blinnphong_deferred_geometrypass_fragment_shader"));
     p->Link ();
     p->Use ();
 #if (CILANTRO_GL_VERSION < 330)
@@ -1022,9 +1022,9 @@ void GLRenderer::InitializeShaderLibrary ()
     CheckGLError (MSG_LOCATION);
 
     // Blinn-Phong model (deferred, lighting pass)
-    p = &Create<GLShaderProgram> ("blinnphong_deferred_lightingpass_shader");
-    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("flatquad_vertex_shader"));
-    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("blinnphong_deferred_lightingpass_fragment_shader"));
+    p = Create<GLShaderProgram> ("blinnphong_deferred_lightingpass_shader");
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<GLShader>("flatquad_vertex_shader"));
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<GLShader>("blinnphong_deferred_lightingpass_fragment_shader"));
     p->Link ();
     p->Use ();
 #if (CILANTRO_GL_VERSION < 330)
@@ -1046,9 +1046,9 @@ void GLRenderer::InitializeShaderLibrary ()
     CheckGLError (MSG_LOCATION);
 
     // Screen quad rendering
-    p = &Create<GLShaderProgram> ("flatquad_shader");
-    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("flatquad_vertex_shader"));
-    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("flatquad_fragment_shader"));   
+    p = Create<GLShaderProgram> ("flatquad_shader");
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<GLShader>("flatquad_vertex_shader"));
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<GLShader>("flatquad_fragment_shader"));   
 #if (CILANTRO_GL_VERSION < 330)	
     glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
     glBindAttribLocation (p->GetProgramId (), 1, "vTextureCoordinates");
@@ -1061,9 +1061,9 @@ void GLRenderer::InitializeShaderLibrary ()
     CheckGLError (MSG_LOCATION);
 
     // Post-processing HDR
-    p = &Create<GLShaderProgram> ("post_hdr_shader");
-    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("flatquad_vertex_shader"));
-    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("post_hdr_fragment_shader"));
+    p = Create<GLShaderProgram> ("post_hdr_shader");
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<GLShader>("flatquad_vertex_shader"));
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<GLShader>("post_hdr_fragment_shader"));
 #if (CILANTRO_GL_VERSION < 330)	
     glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
     glBindAttribLocation (p->GetProgramId (), 1, "vTextureCoordinates");
@@ -1076,9 +1076,9 @@ void GLRenderer::InitializeShaderLibrary ()
     CheckGLError (MSG_LOCATION);
 
     // Post-processing gamma
-    p = &Create<GLShaderProgram> ("post_gamma_shader");
-    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("flatquad_vertex_shader"));
-    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("post_gamma_fragment_shader"));   
+    p = Create<GLShaderProgram> ("post_gamma_shader");
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<GLShader>("flatquad_vertex_shader"));
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<GLShader>("post_gamma_fragment_shader"));   
 #if (CILANTRO_GL_VERSION < 330)	
     glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
     glBindAttribLocation (p->GetProgramId (), 1, "vTextureCoordinates");
@@ -1091,9 +1091,9 @@ void GLRenderer::InitializeShaderLibrary ()
     CheckGLError (MSG_LOCATION);
 
     // Post-processing fxaa
-    p = &Create<GLShaderProgram> ("post_fxaa_shader");
-    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("flatquad_vertex_shader"));
-    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("post_fxaa_fragment_shader"));   
+    p = Create<GLShaderProgram> ("post_fxaa_shader");
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<GLShader>("flatquad_vertex_shader"));
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<GLShader>("post_fxaa_fragment_shader"));   
 #if (CILANTRO_GL_VERSION < 330)	
     glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
     glBindAttribLocation (p->GetProgramId (), 1, "vTextureCoordinates");
@@ -1106,10 +1106,10 @@ void GLRenderer::InitializeShaderLibrary ()
     CheckGLError (MSG_LOCATION);
 
     // Shadow map (directional)
-    p = &Create<GLShaderProgram> ("shadowmap_directional_shader");
-    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("shadowmap_vertex_shader"));
-    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("shadowmap_directional_geometry_shader"));
-    p->AttachShader (Game::GetResourceManager ().GetByName<GLShader>("shadowmap_fragment_shader"));
+    p = Create<GLShaderProgram> ("shadowmap_directional_shader");
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<GLShader>("shadowmap_vertex_shader"));
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<GLShader>("shadowmap_directional_geometry_shader"));
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<GLShader>("shadowmap_fragment_shader"));
 #if (CILANTRO_GL_VERSION < 330)	
     glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
 #endif
@@ -1139,7 +1139,7 @@ void GLRenderer::InitializeMatrixUniformBuffers ()
     CheckGLError (MSG_LOCATION);
 }
 
-void GLRenderer::LoadViewProjectionUniformBuffers (Camera* camera)
+void GLRenderer::LoadViewProjectionUniformBuffers (std::shared_ptr<Camera> camera)
 {
     Matrix4f view = camera->GetViewMatrix ();
     Matrix4f projection = camera->GetProjectionMatrix (m_width, m_height);
@@ -1159,8 +1159,8 @@ void GLRenderer::LoadViewProjectionUniformBuffers (Camera* camera)
 
 void GLRenderer::LoadLightViewUniformBuffers ()
 {
-    Matrix4f view = m_gameScene->GetActiveCamera ()->GetViewMatrix ();
-    Matrix4f projection = m_gameScene->GetActiveCamera ()->GetProjectionMatrix (m_width, m_height);
+    Matrix4f view = GetGameScene ()->GetActiveCamera ()->GetViewMatrix ();
+    Matrix4f projection = GetGameScene ()->GetActiveCamera ()->GetProjectionMatrix (m_width, m_height);
     Matrix4f invMV = Mathf::Invert (projection * view);
     Matrix4f lightView;
     Matrix4f lightViewProjection;
@@ -1199,8 +1199,8 @@ void GLRenderer::LoadLightViewUniformBuffers ()
         float maxZ = std::numeric_limits<float>::min();
 
         size_t lightIdx = light.second;
-        DirectionalLight& l = m_gameScene->GetGameObjectManager ().GetByHandle<DirectionalLight> (light.first);
-        lightView = Mathf::GenCameraViewMatrix (frustumCenter - l.GetForward (), frustumCenter, l.GetUp ());
+        auto l = GetGameScene ()->GetGameObjectManager ().GetByHandle<DirectionalLight> (light.first);
+        lightView = Mathf::GenCameraViewMatrix (frustumCenter - l->GetForward (), frustumCenter, l->GetUp ());
 
         for (auto&& v : frustumVertices)
         {
@@ -1236,7 +1236,7 @@ void GLRenderer::DeinitializeMatrixUniformBuffers ()
 void GLRenderer::InitializeObjectBuffers ()
 {
     // create and load object buffers for all existing objects
-    for (auto&& gameObject : m_gameScene->GetGameObjectManager ())
+    for (auto&& gameObject : GetGameScene ()->GetGameObjectManager ())
     {
         // load buffers for MeshObject only
         if (std::dynamic_pointer_cast<MeshObject> (gameObject) != nullptr)
@@ -1338,7 +1338,7 @@ void GLRenderer::InitializeLightUniformBuffers ()
     glBindBufferBase (GL_UNIFORM_BUFFER, EBindingPoint::BP_SPOTLIGHTS, m_uniformBuffers->UBO[UBO_SPOTLIGHTS]);
 
     // scan objects vector for lights and populate light buffers
-    for (auto gameObject : m_gameScene->GetGameObjectManager ())
+    for (auto&& gameObject : GetGameScene ()->GetGameObjectManager ())
     {
         if (std::dynamic_pointer_cast<Light> (gameObject) != nullptr)
         {
@@ -1358,9 +1358,9 @@ void GLRenderer::DeinitializeLightUniformBuffers ()
 
 void GLRenderer::UpdateLightBufferRecursive (handle_t objectHandle)
 {
-    GameObject* light = &m_gameScene->GetGameObjectManager ().GetByHandle<GameObject> (objectHandle);
+    auto light = GetGameScene ()->GetGameObjectManager ().GetByHandle<GameObject> (objectHandle);
 
-    if (dynamic_cast<Light*>(light) != nullptr)
+    if (std::dynamic_pointer_cast<Light>(light) != nullptr)
     {
         light->OnUpdate (*this);
     }

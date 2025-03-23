@@ -96,7 +96,7 @@ int Texture::GetChannels () const
 void Texture::Load (const std::string& path)
 {
     stbi_set_flip_vertically_on_load (true);
-    data = stbi_load ((Game::GetPath() + "/" + path).c_str (), &this->width, &this->height, &this->numChannels, STBI_default);
+    data = stbi_load (path.c_str (), &this->width, &this->height, &this->numChannels, STBI_default);
 
     if (data == nullptr)
     {

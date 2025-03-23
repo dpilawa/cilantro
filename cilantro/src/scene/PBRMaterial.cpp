@@ -8,17 +8,23 @@
 namespace cilantro
 {
 
-PBRMaterial::PBRMaterial () : Material ()
+PBRMaterial::PBRMaterial (std::shared_ptr<GameScene> scene) : Material (scene)
 {
-    forwardShaderProgram = "pbr_forward_shader";
-    deferredGeometryPassShaderProgram = "pbr_deferred_geometrypass_shader";
-    deferredLightingPassShaderProgram = "pbr_deferred_lightingpass_shader";
+    m_forwardShaderProgram = "pbr_forward_shader";
+    m_deferredGeometryPassShaderProgram = "pbr_deferred_geometrypass_shader";
+    m_deferredLightingPassShaderProgram = "pbr_deferred_lightingpass_shader";
     
-    textures[static_cast<int>(PBRTexture::Albedo)] = std::pair ("tAlbedo", &albedo);
-    textures[static_cast<int>(PBRTexture::Normal)] = std::pair ("tNormal", &normal);
-    textures[static_cast<int>(PBRTexture::Metallic)] = std::pair ("tMetallic", &metallic);
-    textures[static_cast<int>(PBRTexture::Roughness)] = std::pair ("tRoughness", &roughness);
-    textures[static_cast<int>(PBRTexture::AO)] = std::pair ("tAO", &ao);
+    m_albedo = std::make_shared<Texture> (1, 1, Vector3f (1.0f, 1.0f, 1.0f));
+    m_normal = std::make_shared<Texture> (1, 1, Vector3f (0.5f, 0.5f, 1.0f));
+    m_metallic = std::make_shared<Texture> (1, 1, 0.0f);
+    m_roughness = std::make_shared<Texture> (1, 1, 1.0f);
+    m_ao = std::make_shared<Texture> (1, 1, 1.0f);
+
+    m_textures[static_cast<int>(PBRTexture::Albedo)] = std::pair ("tAlbedo", m_albedo);
+    m_textures[static_cast<int>(PBRTexture::Normal)] = std::pair ("tNormal", m_normal);
+    m_textures[static_cast<int>(PBRTexture::Metallic)] = std::pair ("tMetallic", m_metallic);
+    m_textures[static_cast<int>(PBRTexture::Roughness)] = std::pair ("tRoughness", m_roughness);
+    m_textures[static_cast<int>(PBRTexture::AO)] = std::pair ("tAO", m_ao);
 }
 
 PBRMaterial::~PBRMaterial ()
@@ -27,7 +33,7 @@ PBRMaterial::~PBRMaterial ()
 
 PBRMaterial& PBRMaterial::SetAlbedo (const std::string& albedo)
 {
-    Texture& tAlbedo = Game::GetResourceManager ().GetByName<Texture> (albedo);
+    auto tAlbedo = GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<Texture> (albedo);
     SetTexture (static_cast<int>(PBRTexture::Albedo), "tAlbedo", tAlbedo);
 
     return *this;
@@ -35,7 +41,7 @@ PBRMaterial& PBRMaterial::SetAlbedo (const std::string& albedo)
 
 PBRMaterial& PBRMaterial::SetNormal (const std::string& normal)
 {
-    Texture& tNormal = Game::GetResourceManager ().GetByName<Texture> (normal);
+    auto tNormal = GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<Texture> (normal);
     SetTexture (static_cast<int>(PBRTexture::Normal), "tNormal", tNormal);
 
     return *this;
@@ -43,7 +49,7 @@ PBRMaterial& PBRMaterial::SetNormal (const std::string& normal)
 
 PBRMaterial& PBRMaterial::SetMetallic (const std::string& metallic)
 {
-    Texture& tMetallic = Game::GetResourceManager ().GetByName<Texture> (metallic);
+    auto tMetallic = GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<Texture> (metallic);
     SetTexture (static_cast<int>(PBRTexture::Metallic), "tMetallic", tMetallic);
 
     return *this;
@@ -51,7 +57,7 @@ PBRMaterial& PBRMaterial::SetMetallic (const std::string& metallic)
 
 PBRMaterial& PBRMaterial::SetRoughness (const std::string& roughness)
 {
-    Texture& tRoughness = Game::GetResourceManager ().GetByName<Texture> (roughness);
+    auto tRoughness = GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<Texture> (roughness);
     SetTexture (static_cast<int>(PBRTexture::Roughness), "tRoughness", tRoughness);
 
     return *this;
@@ -59,7 +65,7 @@ PBRMaterial& PBRMaterial::SetRoughness (const std::string& roughness)
 
 PBRMaterial& PBRMaterial::SetAO (const std::string& ao)
 {
-    Texture& tAO = Game::GetResourceManager ().GetByName<Texture> (ao);
+    auto tAO = GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<Texture> (ao);
     SetTexture (static_cast<int>(PBRTexture::AO), "tAO", tAO);
 
     return *this;
@@ -67,59 +73,59 @@ PBRMaterial& PBRMaterial::SetAO (const std::string& ao)
 
 PBRMaterial& PBRMaterial::SetAlbedo (const Vector3f& albedo)
 {
-    this->albedo.GenerateSolid (1, 1, albedo);
-    SetTexture (static_cast<int>(PBRTexture::Albedo), "tAlbedo", this->albedo);
+    m_albedo->GenerateSolid (1, 1, albedo);
+    SetTexture (static_cast<int>(PBRTexture::Albedo), "tAlbedo", m_albedo);
 
     return *this;
 }
 
 PBRMaterial& PBRMaterial::SetMetallic (const float metallic)
 {
-    this->metallic.GenerateSolid (1, 1, metallic);
-    SetTexture (static_cast<int>(PBRTexture::Metallic), "tMetallic", this->metallic);
+    m_metallic->GenerateSolid (1, 1, metallic);
+    SetTexture (static_cast<int>(PBRTexture::Metallic), "tMetallic", m_metallic);
 
     return *this;
 }
 
 PBRMaterial& PBRMaterial::SetRoughness (const float roughness)
 {
-    this->roughness.GenerateSolid (1, 1, roughness);
-    SetTexture (static_cast<int>(PBRTexture::Roughness), "tRoughness", this->roughness);
+    m_roughness->GenerateSolid (1, 1, roughness);
+    SetTexture (static_cast<int>(PBRTexture::Roughness), "tRoughness", m_roughness);
 
     return *this;
 }
 
 PBRMaterial& PBRMaterial::SetAO (const float ao)
 {
-    this->ao.GenerateSolid (1, 1, ao);
-    SetTexture (static_cast<int>(PBRTexture::AO), "tAO", this->ao);
+    m_ao->GenerateSolid (1, 1, ao);
+    SetTexture (static_cast<int>(PBRTexture::AO), "tAO", m_ao);
 
     return *this;
 }
 
-Texture& PBRMaterial::GetAlbedo ()
+std::shared_ptr<Texture> PBRMaterial::GetAlbedo ()
 {
-    return *(textures[static_cast<int>(PBRTexture::Albedo)].second);
+    return m_textures[static_cast<int>(PBRTexture::Albedo)].second;
 }
 
-Texture& PBRMaterial::GetNormal ()
+std::shared_ptr<Texture> PBRMaterial::GetNormal ()
 {
-    return *(textures[static_cast<int>(PBRTexture::Normal)].second);
+    return m_textures[static_cast<int>(PBRTexture::Normal)].second;
 }
 
-Texture& PBRMaterial::GetMetallic ()
+std::shared_ptr<Texture> PBRMaterial::GetMetallic ()
 {
-    return *(textures[static_cast<int>(PBRTexture::Metallic)].second);
+    return m_textures[static_cast<int>(PBRTexture::Metallic)].second;
 }
 
-Texture& PBRMaterial::GetRoughness ()
+std::shared_ptr<Texture> PBRMaterial::GetRoughness ()
 {
-    return *(textures[static_cast<int>(PBRTexture::Roughness)].second);
+    return m_textures[static_cast<int>(PBRTexture::Roughness)].second;
 }
 
-Texture& PBRMaterial::GetAO ()
+std::shared_ptr<Texture> PBRMaterial::GetAO ()
 {
-    return *(textures[static_cast<int>(PBRTexture::AO)].second);
+    return m_textures[static_cast<int>(PBRTexture::AO)].second;
 }
 
 } // namespace cilantro

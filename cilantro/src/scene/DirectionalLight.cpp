@@ -4,7 +4,7 @@
 
 namespace cilantro {
 
-DirectionalLight::DirectionalLight (GameScene* gameScene) : Light (gameScene)
+DirectionalLight::DirectionalLight (std::shared_ptr<GameScene> gameScene) : Light (gameScene)
 {
 }
 
@@ -15,7 +15,7 @@ DirectionalLight::~DirectionalLight ()
 void DirectionalLight::OnUpdate (IRenderer& renderer)
 {
     Light::OnUpdate (renderer);
-    renderer.Update (*this);
+    renderer.Update (std::dynamic_pointer_cast<DirectionalLight> (this->GetPointer ()));
 }
 
 } // namespace cilantro

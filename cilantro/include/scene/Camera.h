@@ -10,7 +10,7 @@ namespace cilantro {
 class __CEAPI Camera : public GameObject
 {
 public:
-    __EAPI Camera (GameScene* gameScene);
+    __EAPI Camera (std::shared_ptr<GameScene> gameScene);
     __EAPI virtual ~Camera ();
 
     __EAPI Matrix4f GetViewMatrix ();

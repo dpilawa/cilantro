@@ -12,7 +12,7 @@ class __CEAPI GLFWRenderer : public GLRenderer
 {
 public:
 
-    __EAPI GLFWRenderer (GameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled, std::string windowCaption, bool fullscreen, bool resizable, bool vSync);
+    __EAPI GLFWRenderer (std::shared_ptr<GameScene> gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled, std::string windowCaption, bool fullscreen, bool resizable, bool vSync);
     __EAPI ~GLFWRenderer ();
 
     __EAPI virtual void Initialize ();
@@ -21,6 +21,8 @@ public:
     __EAPI virtual void RenderFrame ();
 
 private:
+
+    static void FramebufferResizeCallback (GLFWwindow* window, int width, int height);
 
     // GL window context
     GLFWwindow* window;

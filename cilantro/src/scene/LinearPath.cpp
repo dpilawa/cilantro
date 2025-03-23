@@ -3,7 +3,7 @@
 
 namespace cilantro {
 
-LinearPath::LinearPath (GameScene* gameScene) : Path (gameScene)
+LinearPath::LinearPath (std::shared_ptr<GameScene> gameScene) : Path (gameScene)
 {
 
 }

@@ -15,9 +15,9 @@ GLShaderProgram::GLShaderProgram ()
     m_glShaderProgramId = glCreateProgram ();
 }
 
-void GLShaderProgram::AttachShader (const IShader& shader)
+void GLShaderProgram::AttachShader (const std::shared_ptr<IShader> shader)
 {
-    const GLShader* glShader = static_cast<const GLShader*> (&shader);
+    auto glShader = std::static_pointer_cast<GLShader> (shader);
 
     glAttachShader (m_glShaderProgramId, glShader->GetShaderId ());
 }

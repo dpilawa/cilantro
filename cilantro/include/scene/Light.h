@@ -12,7 +12,7 @@ namespace cilantro {
 class __CEAPI Light : public GameObject
 {
 public:
-    __EAPI Light (GameScene* gameScene);
+    __EAPI Light (std::shared_ptr<GameScene> gameScene);
     __EAPI virtual ~Light ();
 
     // enable or disable light
@@ -30,8 +30,8 @@ public:
 
 private:
 
-    bool isEnabled;
-    Vector3f lightColor;
+    bool m_isEnabled;
+    Vector3f m_lightColor;
 };
 
 } // namespace cilantro

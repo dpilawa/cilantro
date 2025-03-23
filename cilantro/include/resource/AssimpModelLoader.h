@@ -2,11 +2,13 @@
 #define _ASSIMPMODELLOADER_H_
 
 #include "cilantroengine.h"
+#include "system/Game.h"
 #include "resource/ModelLoader.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <string>
 #include <set>
+#include <memory>
 
 namespace cilantro {
 
@@ -24,17 +26,17 @@ class Quaternion;
 class __CEAPI AssimpModelLoader : public ModelLoader
 {
 public:
-    __EAPI AssimpModelLoader ();
+    __EAPI AssimpModelLoader (std::shared_ptr<Game> game);
     __EAPI virtual ~AssimpModelLoader ();
 
     __EAPI void Load (std::string sceneName, std::string path);
 
 private:
+    std::shared_ptr<Game> m_game;
+    std::shared_ptr<GameScene> m_gameScene;
 
-    GameScene* gameScene;
-
-    Assimp::Importer importer;
-    std::set<std::string> boneNodes;
+    Assimp::Importer m_importer;
+    std::set<std::string> m_boneNodes;
 
     void ScanNode (const aiScene* scene, const aiNode* node);
     void ScanMesh (const aiMesh* mesh);
@@ -44,21 +46,21 @@ private:
     void ImportBone (const aiNode* node, const aiNode* parent, const aiMatrix4x4& transform);
     void ImportMesh (const aiScene* scene, const aiMesh* mesh, const aiNode* parent, const aiMatrix4x4& transform);
 
-    void ImportMeshPositions (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh);
-    void ImportMeshFaces (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh);
-    void ImportMeshBones (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh);
-    void ImportMeshMaterial (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh);
+    void ImportMeshPositions (std::shared_ptr<Mesh> myMesh, const aiScene* scene, const aiMesh* mesh);
+    void ImportMeshFaces (std::shared_ptr<Mesh> myMesh, const aiScene* scene, const aiMesh* mesh);
+    void ImportMeshBones (std::shared_ptr<Mesh> myMesh, const aiScene* scene, const aiMesh* mesh);
+    void ImportMeshMaterial (std::shared_ptr<Mesh> myMesh, const aiScene* scene, const aiMesh* mesh);
 
     void ImportAnimation (const aiAnimation* animation);
-    void ImportNodeAnimation (AnimationObject& animationObject, const aiAnimation* animation, const aiNodeAnim* nodeAnimation);
+    void ImportNodeAnimation (std::shared_ptr<AnimationObject> myAnimationObject, const aiAnimation* animation, const aiNodeAnim* nodeAnimation);
 
-    GameObject& CreateGameObject (const aiNode* node, const aiNode* parent);
-    Bone& CreateBone (const aiNode* node, const aiNode* parent);
-    MeshObject& CreateMeshObject (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh, const aiNode* parent);
-    AnimationObject& CreateAnimationObject (const aiAnimation* animation);
+    std::shared_ptr<GameObject> CreateGameObject (const aiNode* node, const aiNode* parent);
+    std::shared_ptr<Bone> CreateBone (const aiNode* node, const aiNode* parent);
+    std::shared_ptr<MeshObject> CreateMeshObject (std::shared_ptr<Mesh> myMesh, const aiScene* scene, const aiMesh* mesh, const aiNode* parent);
+    std::shared_ptr<AnimationObject> CreateAnimationObject (const aiAnimation* animation);
 
     bool HasTexture (aiMaterial* material, aiTextureType type);
-    Texture& ImportMeshMaterialTexture (aiMaterial* material, aiTextureType type);
+    std::shared_ptr<Texture> ImportMeshMaterialTexture (aiMaterial* material, aiTextureType type);
 
     Matrix4f ConvertMatrix (const aiMatrix4x4& m);
     Vector3f ConvertVector3f (const aiVector3D& v);

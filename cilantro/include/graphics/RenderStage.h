@@ -16,6 +16,8 @@ public:
 
     ///////////////////////////////////////////////////////////////////////////
 
+    __EAPI virtual IRenderer* GetRenderer () const override final;
+
     __EAPI virtual IFramebuffer* GetFramebuffer () const override final;
     __EAPI virtual IFramebuffer* GetLinkedColorAttachmentsFramebuffer () const override final;
     __EAPI virtual IFramebuffer* GetLinkedDepthStencilFramebuffer () const override final;

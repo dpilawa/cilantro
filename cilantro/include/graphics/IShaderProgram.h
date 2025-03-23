@@ -2,6 +2,7 @@
 
 #include "cilantroengine.h"
 #include <string>
+#include <memory>
 
 namespace cilantro {
 
@@ -19,7 +20,7 @@ struct IShaderProgram
     virtual ~IShaderProgram () {};
 
     // linking
-    virtual void AttachShader (const IShader& shader) = 0;  
+    virtual void AttachShader (const std::shared_ptr<IShader> shader) = 0;  
     virtual void Link () = 0;
 
     // uniform manipulation

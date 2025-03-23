@@ -12,7 +12,7 @@ namespace cilantro {
 class __CEAPI SplinePath : public Path 
 {
 public:
-    __EAPI SplinePath (GameScene* gameScene);
+    __EAPI SplinePath (std::shared_ptr<GameScene> gameScene);
     __EAPI virtual ~SplinePath ();
 
     __EAPI Vector3f GetPositionAtDistance (float distance) const;
@@ -22,7 +22,7 @@ public:
     __EAPI SplinePath& SetEndTangent (const Vector3f& tangent);
 
 private:
-    std::vector<CubicHermite<Vector3f>> curves;
+    std::vector<CubicHermite<Vector3f>> m_curves;
 
     __EAPI void UpdatePathAtWaypoint (const std::size_t wIndex);
 };

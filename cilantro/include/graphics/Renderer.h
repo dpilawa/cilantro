@@ -16,7 +16,7 @@ class GameScene;
 class __CEAPI Renderer : public IRenderer
 {
 public:
-    __EAPI Renderer (GameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled);
+    __EAPI Renderer (std::shared_ptr<GameScene> gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled);
     __EAPI virtual ~Renderer ();
 
     ///////////////////////////////////////////////////////////////////////////
@@ -28,13 +28,13 @@ public:
     __EAPI unsigned int GetHeight () const override final;
     __EAPI IRenderer& SetResolution (unsigned int width, unsigned int height) override;
 
-    __EAPI GameScene* GetGameScene () override final;
+    __EAPI std::shared_ptr<GameScene> GetGameScene () override final;
 
     __EAPI virtual TShaderProgramManager& GetShaderProgramManager () override final;
 
     __EAPI virtual TRenderStageManager& GetRenderStageManager () override final;
     
-    __EAPI virtual IRenderStage* GetCurrentRenderStage () override final;
+    __EAPI virtual std::shared_ptr<IRenderStage> GetCurrentRenderStage () override final;
     __EAPI virtual TRenderPipeline& GetRenderPipeline () override final;
     __EAPI virtual IRenderer& RotateRenderPipelineLeft () override final;
     __EAPI virtual IRenderer& RotateRenderPipelineRight () override final;
@@ -45,20 +45,20 @@ public:
     ///////////////////////////////////////////////////////////////////////////
 
     template <typename T, typename ...Params>
-    T& Create (const std::string& name, Params&&... params)
+    std::shared_ptr<T> Create (const std::string& name, Params&&... params)
     requires (std::is_base_of_v<IRenderStage,T>);
     
     template <typename T, typename ...Params>
-    T& Create (const std::string& name, Params&&... params)
+    std::shared_ptr<T> Create (const std::string& name, Params&&... params)
     requires (std::is_base_of_v<IShaderProgram,T>);        
 
 protected:
     // game scene being rendered
-    GameScene* m_gameScene;
+    std::weak_ptr<GameScene> m_gameScene;
 
     // render pipeline
     size_t m_currentRenderStageIdx;
-    IRenderStage* m_currentRenderStage;
+    std::shared_ptr<IRenderStage> m_currentRenderStage;
     TRenderStageManager m_renderStageManager;
     TRenderPipeline m_renderPipeline;
 
@@ -89,25 +89,25 @@ private:
 };
 
 template <typename T, typename ...Params>
-T& Renderer::Create (const std::string& name, Params&&... params)
+std::shared_ptr<T> Renderer::Create (const std::string& name, Params&&... params)
     requires (std::is_base_of_v<IRenderStage,T>)
 {
-    T& renderStage = m_renderStageManager.Create<T> (name, params...);
-    renderStage.m_renderer = this;
+    auto renderStage = m_renderStageManager.Create<T> (name, params...);
+    renderStage->m_renderer = this;
 
     // initialize
-    renderStage.Initialize ();
-    m_renderPipeline.push_back (renderStage.GetHandle ());
+    renderStage->Initialize ();
+    m_renderPipeline.push_back (renderStage->GetHandle ());
 
     // return stage
     return renderStage;
 }
 
 template <typename T, typename ...Params>
-T& Renderer::Create (const std::string& name, Params&&... params)
+std::shared_ptr<T> Renderer::Create (const std::string& name, Params&&... params)
     requires (std::is_base_of_v<IShaderProgram,T>)
 {
-    T& shaderProgram = m_shaderProgramManager.Create<T> (name, params...);
+    auto shaderProgram = m_shaderProgramManager.Create<T> (name, params...);
 
     // return program
     return shaderProgram;

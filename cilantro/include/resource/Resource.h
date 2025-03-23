@@ -17,10 +17,12 @@ public:
 
     __EAPI handle_t GetHandle () const;
     __EAPI std::string GetName () const;
+    __EAPI std::shared_ptr<Resource> GetPointer () const;
 
 protected:
     handle_t m_handle;
     std::string m_name;
+    std::weak_ptr<Resource> m_pointer;
  
 };
 

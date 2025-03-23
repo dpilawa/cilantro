@@ -5,30 +5,27 @@
 
 namespace cilantro {
 
-ResourceManager<Resource> Game::m_resourceManager;
-ResourceManager<GameScene> Game::m_gameSceneManager;
+Game::Game ()
+{
+    m_inputController = nullptr;
+    m_currentGameScene = nullptr;
+    m_messageBus = nullptr;
+}
 
-GameScene* Game::m_currentGameScene;
-InputController* Game::m_inputController;
-MessageBus* Game::m_messageBus;
+Game::~Game ()
+{
+}
 
-bool Game::m_shouldStop;
-bool Game::m_isRunning;
-std::string Game::m_path;
-
-void Game::Initialize (std::string path)
+void Game::Initialize ()
 {
     LogMessage () << "Engine starting";
-
-    // set path
-    m_path = path;
 
     // set flags
     m_shouldStop = false;
     m_isRunning = false;
 
     // create message bus
-    m_messageBus = new MessageBus ();
+    m_messageBus = std::make_shared<MessageBus> ();
 }
 
 void Game::Deinitialize ()
@@ -36,10 +33,7 @@ void Game::Deinitialize ()
     if (m_inputController != nullptr)
     {
         m_inputController->Deinitialize ();
-        delete m_inputController;
-    }
-    
-    delete m_messageBus;
+    }  
 
     LogMessage () << "Engine stopping";
 }
@@ -54,24 +48,24 @@ ResourceManager<GameScene>& Game::GetGameSceneManager ()
     return m_gameSceneManager;
 }
 
-GameScene& Game::GetCurrentGameScene ()
+std::shared_ptr<GameScene> Game::GetCurrentGameScene ()
 {
-    return *m_currentGameScene;
+    return m_currentGameScene;
 }
 
 void Game::SetCurrentGameScene (const std::string sceneName)
 {
-    m_currentGameScene = &m_gameSceneManager.GetByName<GameScene>(sceneName);
+    m_currentGameScene = m_gameSceneManager.GetByName<GameScene>(sceneName);
 }
 
-InputController& Game::GetInputController ()
+std::shared_ptr<InputController> Game::GetInputController ()
 {
-    return *m_inputController;
+    return m_inputController;
 }
 
-MessageBus& Game::GetMessageBus ()
+std::shared_ptr<MessageBus> Game::GetMessageBus ()
 {
-    return *m_messageBus;
+    return m_messageBus;
 }
 
 void Game::Run ()
@@ -111,11 +105,6 @@ void Game::Step ()
 
     // process input
     m_inputController->OnFrame ();
-}
-
-std::string Game::GetPath ()
-{
-    return m_path;
 }
 
 bool Game::IsRunning ()

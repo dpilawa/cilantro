@@ -11,7 +11,7 @@ struct IRenderer;
 class __CEAPI SpotLight : public PointLight
 {
 public:
-    __EAPI SpotLight (GameScene* gameScene);
+    __EAPI SpotLight (std::shared_ptr<GameScene> gameScene);
     __EAPI virtual ~SpotLight ();
 
     // set attenuation factors
@@ -27,8 +27,8 @@ public:
 
 private:
 
-    float innerCutoff;
-    float outerCutoff;
+    float m_innerCutoff;
+    float m_outerCutoff;
 };
 
 } // namespace cilantro

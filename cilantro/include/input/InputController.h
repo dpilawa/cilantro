@@ -2,6 +2,7 @@
 #define _INPUTCONTROLLER_H_
 
 #include "cilantroengine.h"
+#include "system/Game.h"
 #include "scene/GameScene.h"
 #include "input/Input.h"
 #include <string>
@@ -15,11 +16,13 @@ namespace cilantro {
 class __CEAPI InputController
 {
 public:
-    __EAPI InputController ();
+    __EAPI InputController (std::shared_ptr<Game> game);
     __EAPI virtual ~InputController ();
 
     __EAPI virtual void Initialize () = 0;
     __EAPI virtual void Deinitialize () = 0;
+
+    __EAPI std::shared_ptr<Game> GetGame ();
 
     __EAPI virtual void OnFrame ();
 
@@ -37,6 +40,8 @@ public:
     __EAPI bool IsGameMode ();
 
 private: 
+
+    std::weak_ptr<Game> m_game;
 
     std::vector<std::shared_ptr<Input<bool>>> events;
     std::unordered_map<std::string, std::vector<std::shared_ptr<Input<float>>>> axes;

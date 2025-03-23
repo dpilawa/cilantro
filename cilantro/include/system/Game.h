@@ -12,68 +12,69 @@ class Resource;
 class GameScene;
 class InputController;
 
-class __CEAPI Game
+class __CEAPI Game : public std::enable_shared_from_this<Game>
 {
 public:
+    __EAPI Game ();
+    __EAPI virtual ~Game ();
 
     // initialize and deinitialize
-    static __EAPI void Initialize (std::string path);
-    static __EAPI void Deinitialize ();
+    __EAPI void Initialize ();
+    __EAPI void Deinitialize ();
 
     // run a game loop
-    static __EAPI void Run ();
-    static __EAPI void Stop ();	
-    static __EAPI void Step ();
+    __EAPI void Run ();
+    __EAPI void Stop ();	
+    __EAPI void Step ();
 
     // get global parameters
-    static __EAPI std::string GetPath ();
-    static __EAPI bool IsRunning ();
+    __EAPI bool IsRunning ();
 
     // managers
-    static __EAPI ResourceManager<Resource>& GetResourceManager ();
-    static __EAPI ResourceManager<GameScene>& GetGameSceneManager ();
+    __EAPI ResourceManager<Resource>& GetResourceManager ();
+    __EAPI ResourceManager<GameScene>& GetGameSceneManager ();
 
     // scene control
     template <typename T, typename ...Params> 
-    static T& Create (Params&&... params)
+    std::shared_ptr<T> Create (const std::string& name, Params&&... params)
     requires (std::is_base_of_v<GameScene,T>);
     
-    static __EAPI GameScene& GetCurrentGameScene ();
-    static __EAPI void SetCurrentGameScene (const std::string sceneName);
+    __EAPI std::shared_ptr<GameScene> GetCurrentGameScene ();
+    __EAPI void SetCurrentGameScene (const std::string sceneName);
 
     // input control
     template <typename T, typename ...Params>
-    static T& Create (Params&&... params)
+    std::shared_ptr<T> Create (Params&&... params)
     requires (std::is_base_of_v<InputController,T>);
-    static __EAPI InputController& GetInputController ();
+    
+    __EAPI std::shared_ptr<InputController> GetInputController ();
 
     // message bus
-    static __EAPI MessageBus& GetMessageBus ();
+    __EAPI std::shared_ptr<MessageBus> GetMessageBus ();
 
 private:
     
-    static __EAPI ResourceManager<Resource> m_resourceManager;
-    static __EAPI ResourceManager<GameScene> m_gameSceneManager;
-    static __EAPI GameScene* m_currentGameScene;
-    static __EAPI InputController* m_inputController;
-    static __EAPI MessageBus* m_messageBus;
+    ResourceManager<Resource> m_resourceManager;
+    ResourceManager<GameScene> m_gameSceneManager;
+    std::shared_ptr<GameScene> m_currentGameScene;
+    std::shared_ptr<InputController> m_inputController;
+    std::shared_ptr<MessageBus> m_messageBus;
 
     // game state
-    static std::string m_path;
-    static bool m_shouldStop;
-    static bool m_isRunning;
+    bool m_shouldStop;
+    bool m_isRunning;
 
 };
 
 template <typename T, typename ...Params> 
-T& Game::Create (Params&&... params)
+std::shared_ptr<T> Game::Create (const std::string& name, Params&&... params)
     requires (std::is_base_of_v<GameScene,T>)
 {
-    T& gameScene = m_gameSceneManager.Create<T> (params...);
+    auto gameScene = m_gameSceneManager.Create<T> (name, shared_from_this (), std::forward<Params>(params)...);
 
     if (m_currentGameScene == nullptr)
     {
-        m_currentGameScene = &gameScene;
+        m_currentGameScene = gameScene;
     }
 
     return gameScene;
@@ -81,14 +82,12 @@ T& Game::Create (Params&&... params)
 
 
 template <typename T, typename ...Params> 
-T& Game::Create (Params&&... params)
+std::shared_ptr<T> Game::Create (Params&&... params)
     requires (std::is_base_of_v<InputController,T>)
 {
-    T* newInputController = new T (params...);
+    m_inputController = std::make_shared<T> (shared_from_this (), std::forward<Params>(params)...);
 
-    Game::m_inputController = static_cast<InputController*> (newInputController);
-
-    return *newInputController;
+    return std::static_pointer_cast<T> (m_inputController);
 }
 
 } // namespace cilantro

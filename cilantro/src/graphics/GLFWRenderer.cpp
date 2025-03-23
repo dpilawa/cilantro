@@ -7,7 +7,7 @@
 
 namespace cilantro {
 
-GLFWRenderer::GLFWRenderer (GameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled, std::string windowCaption, bool fullscreen, bool resizable, bool vSync) 
+GLFWRenderer::GLFWRenderer (std::shared_ptr<GameScene> gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled, std::string windowCaption, bool fullscreen, bool resizable, bool vSync) 
     : GLRenderer (gameScene, width, height, shadowMappingEnabled, deferredRenderingEnabled)
     , m_windowCaption (windowCaption)
     , m_isFullscreen (fullscreen)
@@ -72,16 +72,11 @@ void GLFWRenderer::Initialize ()
     // make openGL context active
     glfwMakeContextCurrent (window);
 
-    // set resize callback
-    auto framebufferResizeCallback = [](GLFWwindow* window, int width, int height)
-    {
-        for (auto&& gameScene : Game::GetGameSceneManager ())
-        {
-            gameScene->GetRenderer ()->SetResolution (width, height);
-        }
-    };
+    // set game pointer on window (for callbacks)
+    glfwSetWindowUserPointer (window, GetGameScene ()->GetGame ().get ());
 
-    glfwSetFramebufferSizeCallback (window, framebufferResizeCallback);
+    // set resize callback
+    glfwSetFramebufferSizeCallback (window, FramebufferResizeCallback);
 
     // set framebuffer size (relevant for high DPI displays)
     glfwGetFramebufferSize (window, (int*)(&m_width), (int*)(&m_height));
@@ -164,8 +159,17 @@ void GLFWRenderer::RenderFrame ()
     // check window closing
     if (glfwWindowShouldClose (window))
     {
-        Game::Stop ();
+        GetGameScene ()->GetGame ()->Stop ();
     }
 }
+
+void GLFWRenderer::FramebufferResizeCallback (GLFWwindow* window, int width, int height)
+{
+    Game* game = static_cast<Game*>(glfwGetWindowUserPointer (window));
+    for (auto&& gameScene : game->GetGameSceneManager ())
+    {
+        gameScene->GetRenderer ()->SetResolution (width, height);
+    }
+};
 
 } // namespace cilantro

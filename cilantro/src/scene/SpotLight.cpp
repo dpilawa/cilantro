@@ -1,14 +1,15 @@
 #include "cilantroengine.h"
+#include "scene/GameScene.h"
 #include "scene/SpotLight.h"
 #include "graphics/Renderer.h"
 #include "system/Game.h"
 
 namespace cilantro {
 
-SpotLight::SpotLight (GameScene* gameScene) : PointLight (gameScene)
+SpotLight::SpotLight (std::shared_ptr<GameScene> gameScene) : PointLight (gameScene)
 {
-    innerCutoff = 45.0f;
-    outerCutoff = innerCutoff;
+    m_innerCutoff = 45.0f;
+    m_outerCutoff = m_innerCutoff;
 }
 
 SpotLight::~SpotLight ()
@@ -17,34 +18,34 @@ SpotLight::~SpotLight ()
 
 SpotLight& SpotLight::SetInnerCutoff (const float cutoff)
 {
-    innerCutoff = cutoff;
-    Game::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
+    m_innerCutoff = cutoff;
+    GetGameScene ()->GetGame ()->GetMessageBus ()->Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
 
     return *this;
 }
 
 SpotLight& SpotLight::SetOuterCutoff (const float cutOff)
 {
-    outerCutoff = cutOff;
-    Game::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
+    m_outerCutoff = cutOff;
+    GetGameScene ()->GetGame ()->GetMessageBus ()->Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
 
     return *this;
 }
 
 float SpotLight::GetInnerCutoff () const
 {
-    return innerCutoff;
+    return m_innerCutoff;
 }
 
 float SpotLight::GetOuterCutoff () const 
 {
-    return outerCutoff;
+    return m_outerCutoff;
 }
 
 void SpotLight::OnUpdate (IRenderer& renderer)
 {
     Light::OnUpdate (renderer);
-    renderer.Update (*this);
+    renderer.Update (std::dynamic_pointer_cast<SpotLight> (this->GetPointer ()));
 }
 
 } // namespace cilantro

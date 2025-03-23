@@ -9,7 +9,7 @@ namespace cilantro {
 class __CEAPI LinearPath : public Path
 {
 public:
-    __EAPI LinearPath (GameScene* gameScene);
+    __EAPI LinearPath (std::shared_ptr<GameScene> gameScene);
     __EAPI virtual ~LinearPath ();
 
     __EAPI Vector3f GetPositionAtDistance (float distance) const;

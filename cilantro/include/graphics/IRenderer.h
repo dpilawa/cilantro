@@ -48,7 +48,7 @@ struct IRenderer
     virtual IRenderer& SetViewport (unsigned int x, unsigned int y, unsigned int sx, unsigned int sy) = 0;
 
     // access scene
-    virtual GameScene* GetGameScene () = 0;
+    virtual std::shared_ptr<GameScene> GetGameScene () = 0;
 
     // shader library manipulation
     virtual TShaderProgramManager& GetShaderProgramManager () = 0;
@@ -56,7 +56,7 @@ struct IRenderer
     // render pipeline
     virtual TRenderStageManager& GetRenderStageManager () = 0;
     
-    virtual IRenderStage* GetCurrentRenderStage () = 0;
+    virtual std::shared_ptr<IRenderStage> GetCurrentRenderStage () = 0;
     virtual TRenderPipeline& GetRenderPipeline () = 0;
     virtual IRenderer& RotateRenderPipelineLeft () = 0;
     virtual IRenderer& RotateRenderPipelineRight () = 0;
@@ -66,19 +66,19 @@ struct IRenderer
     virtual void RenderFrame () = 0;
 
     // geometry
-    virtual void Draw (MeshObject& meshObject) = 0;
+    virtual void Draw (std::shared_ptr<MeshObject> meshObject) = 0;
     virtual void DrawQuad () = 0;
-    virtual void DrawAllGeometryBuffers (IShaderProgram& shader) = 0;
+    virtual void DrawAllGeometryBuffers (std::shared_ptr<IShaderProgram> shader) = 0;
 
-    virtual void Update (MeshObject& meshObject) = 0;
-    virtual void Update (Material& material, unsigned int textureUnit) = 0;
-    virtual void Update (Material& material) = 0;
+    virtual void Update (std::shared_ptr<MeshObject> meshObject) = 0;
+    virtual void Update (std::shared_ptr<Material>, unsigned int textureUnit) = 0;
+    virtual void Update (std::shared_ptr<Material> material) = 0;
     
-    virtual void Update (PointLight& pointLight) = 0;
-    virtual void Update (DirectionalLight& directionalLight) = 0;	
-    virtual void Update (SpotLight& spotLight) = 0;
+    virtual void Update (std::shared_ptr<PointLight> pointLight) = 0;
+    virtual void Update (std::shared_ptr<DirectionalLight> directionalLight) = 0;	
+    virtual void Update (std::shared_ptr<SpotLight> spotLight) = 0;
 
-    virtual void UpdateCameraBuffers (Camera& camera) = 0;
+    virtual void UpdateCameraBuffers (std::shared_ptr<Camera> camera) = 0;
     virtual void UpdateLightViewBuffers () = 0;
 
     // object counts

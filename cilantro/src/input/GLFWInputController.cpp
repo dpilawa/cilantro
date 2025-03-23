@@ -61,7 +61,7 @@ std::unordered_map<EInputKey, int, InputKeyHash> GLFWInputController::glfwKeyMap
         {EInputKey::MouseRight, GLFW_MOUSE_BUTTON_RIGHT}
 };
 
-GLFWInputController::GLFWInputController () : InputController ()
+GLFWInputController::GLFWInputController (std::shared_ptr<Game> game) : InputController (game)
 {
     axisMouseX = nullptr;
     axisMouseY = nullptr;
@@ -86,30 +86,10 @@ void GLFWInputController::Initialize ()
         LogMessage (MSG_LOCATION, EXIT_FAILURE) << "GL context/window not present";
     }
 
-    auto keyCallback = [](GLFWwindow* _window, int _key, int _scancode, int _action, int _mods)
-    {
-        static_cast<GLFWInputController&>(Game::GetInputController ()).KeyCallback(_key, _scancode, _action, _mods);
-    };
-
-    auto mouseButtonCallback = [](GLFWwindow* _window, int _button, int _action, int _mods)
-    {
-        static_cast<GLFWInputController&>(Game::GetInputController ()).KeyCallback(_button, 0, _action, _mods);
-    };
-
-    auto mouseCursorCallback = [](GLFWwindow* _window, double _xPos, double _yPos)
-    {
-        static_cast<GLFWInputController&>(Game::GetInputController ()).MouseCursorCallback(_xPos, _yPos);
-    };
-
-    auto mouseScrollCallback = [](GLFWwindow* _window, double _xOffset, double _yOffset)
-    {
-        static_cast<GLFWInputController&>(Game::GetInputController ()).MouseScrollCallback(_xOffset, _yOffset);
-    };
-
-    glfwSetKeyCallback (window, keyCallback);
-    glfwSetMouseButtonCallback (window, mouseButtonCallback);
-    glfwSetCursorPosCallback (window, mouseCursorCallback);
-    glfwSetScrollCallback (window, mouseScrollCallback);
+    glfwSetKeyCallback (window, KeyCallback);
+    glfwSetMouseButtonCallback (window, MouseButtonCallback);
+    glfwSetCursorPosCallback (window, MouseCursorCallback);
+    glfwSetScrollCallback (window, MouseScrollCallback);
 
     LogMessage (MSG_LOCATION) << "GLFWInputController started";
 }
@@ -311,5 +291,33 @@ void GLFWInputController::MouseScrollCallback(double xOffset, double yOffset)
         }
     }
 }
+
+void GLFWInputController::KeyCallback (GLFWwindow* _window, int _key, int _scancode, int _action, int _mods)
+{
+    auto game = static_cast<Game*>(glfwGetWindowUserPointer (_window));
+    auto c = std::static_pointer_cast<GLFWInputController>(game->GetInputController ());
+    c->KeyCallback (_key, _scancode, _action, _mods);
+};
+
+void GLFWInputController::MouseButtonCallback (GLFWwindow* _window, int _button, int _action, int _mods)
+{
+    auto game = static_cast<Game*>(glfwGetWindowUserPointer (_window));
+    auto c = std::static_pointer_cast<GLFWInputController>(game->GetInputController ());
+    c->KeyCallback (_button, 0, _action, _mods);
+};
+
+void GLFWInputController::MouseCursorCallback (GLFWwindow* _window, double _xPos, double _yPos)
+{
+    auto game = static_cast<Game*>(glfwGetWindowUserPointer (_window));
+    auto c = std::static_pointer_cast<GLFWInputController>(game->GetInputController ());
+    c->MouseCursorCallback (_xPos, _yPos);
+};
+
+void GLFWInputController::MouseScrollCallback (GLFWwindow* _window, double _xOffset, double _yOffset)
+{
+    auto game = static_cast<Game*>(glfwGetWindowUserPointer (_window));
+    auto c = std::static_pointer_cast<GLFWInputController>(game->GetInputController ());
+    c->MouseScrollCallback(_xOffset, _yOffset);
+};
 
 } // namespace cilantro

@@ -11,7 +11,7 @@ namespace cilantro {
 class __CEAPI PointLight : public Light
 {
 public:
-    __EAPI PointLight (GameScene* gameScene);
+    __EAPI PointLight (std::shared_ptr<GameScene> gameScene);
     __EAPI virtual ~PointLight ();
 
     // set attenuation factors
@@ -29,9 +29,9 @@ public:
 
 private:
 
-    float attenuationConst;
-    float attenuationLinear;
-    float attenuationQuadratic;
+    float m_attenuationConst;
+    float m_attenuationLinear;
+    float m_attenuationQuadratic;
 };
 
 } // namespace cilantro

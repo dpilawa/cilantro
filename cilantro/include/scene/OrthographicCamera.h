@@ -10,16 +10,16 @@ namespace cilantro {
 class __CEAPI OrthographicCamera : public Camera
 {
 public:
-    __EAPI OrthographicCamera (GameScene* gameScene, float width, float near, float far);
+    __EAPI OrthographicCamera (std::shared_ptr<GameScene> gameScene, float width, float near, float far);
     __EAPI ~OrthographicCamera ();
 
     __EAPI Matrix4f GetProjectionMatrix (unsigned int xRes, unsigned int yRes) const;
 
 private:
 
-    float cameraWidth;
-    float nearPlane;
-    float farPlane;
+    float m_cameraWidth;
+    float m_nearPlane;
+    float m_farPlane;
 };
 
 } // namespace cilantro

@@ -11,7 +11,7 @@ namespace cilantro {
 class __CEAPI DirectionalLight : public Light
 {
 public:
-    __EAPI DirectionalLight (GameScene* gameScene);
+    __EAPI DirectionalLight (std::shared_ptr<GameScene> gameScene);
     __EAPI virtual ~DirectionalLight ();
 
     // invoked by game loop on update	

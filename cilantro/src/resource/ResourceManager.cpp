@@ -70,6 +70,7 @@ std::shared_ptr<Base> ResourceManager<Base>::Push (const std::string& name, std:
     {
         resource->m_name = name;
         resource->m_handle = m_nextHandle++;
+        resource->m_pointer = resource;
         m_resources.push_back (resource);
         resourceNames[name] = resource->m_handle;
     }

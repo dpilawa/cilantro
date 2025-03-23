@@ -22,7 +22,7 @@ enum class PBRTexture : int
 class __CEAPI PBRMaterial : public Material
 {
 public:
-    __EAPI PBRMaterial ();
+    __EAPI PBRMaterial (std::shared_ptr<GameScene> scene);
     __EAPI virtual ~PBRMaterial ();
 
     // setters
@@ -38,20 +38,20 @@ public:
     __EAPI PBRMaterial& SetAO (const float ao);
 
     // getters
-    __EAPI Texture& GetAlbedo ();
-    __EAPI Texture& GetNormal ();
-    __EAPI Texture& GetMetallic ();
-    __EAPI Texture& GetRoughness ();
-    __EAPI Texture& GetAO ();
+    __EAPI std::shared_ptr<Texture> GetAlbedo ();
+    __EAPI std::shared_ptr<Texture> GetNormal ();
+    __EAPI std::shared_ptr<Texture> GetMetallic ();
+    __EAPI std::shared_ptr<Texture> GetRoughness ();
+    __EAPI std::shared_ptr<Texture> GetAO ();
 
 protected:
 
     // static textures
-    Texture albedo {1, 1, Vector3f (1.0f, 1.0f, 1.0f)};
-    Texture normal {1, 1, Vector3f (0.5f, 0.5f, 1.0f)};
-    Texture metallic {1, 1, 0.0f};
-    Texture roughness {1, 1, 1.0f};
-    Texture ao {1, 1, 1.0f};
+    std::shared_ptr<Texture> m_albedo;
+    std::shared_ptr<Texture> m_normal;
+    std::shared_ptr<Texture> m_metallic;
+    std::shared_ptr<Texture> m_roughness;
+    std::shared_ptr<Texture> m_ao;
 
 };
 

@@ -2,6 +2,7 @@
 #define _MATERIAL_H_
 
 #include "cilantroengine.h"
+#include "scene/GameScene.h"
 #include "graphics/ShaderProgram.h"
 #include "resource/Resource.h"
 #include "resource/Texture.h"
@@ -15,13 +16,13 @@ struct IRenderer;
 
 namespace cilantro {
 
-typedef std::map<unsigned int, std::pair<std::string, Texture*>> texture_map_t;
+typedef std::map<unsigned int, std::pair<std::string, std::shared_ptr<Texture>>> texture_map_t;
 typedef std::unordered_map<std::string, std::vector<float>> property_map_t;
 
 class __CEAPI Material : public Resource
 {
 public:
-    __EAPI Material ();
+    __EAPI Material (std::shared_ptr<GameScene> scene);
     __EAPI virtual ~Material ();
 
     __EAPI Material& SetForwardShaderProgram (const std::string& name);
@@ -31,25 +32,30 @@ public:
     __EAPI std::string GetDeferredGeometryPassShaderProgram () const;
     __EAPI std::string GetDeferredLightingPassShaderProgram () const;
 
+    __EAPI std::shared_ptr<GameScene> GetGameScene () const;
+
     __EAPI texture_map_t& GetTexturesMap();
     __EAPI property_map_t& GetPropertiesMap ();
 
 protected:
 
-    Material& SetTexture (unsigned int textureUnit, const std::string& label, Texture& texture);
+    Material& SetTexture (unsigned int textureUnit, const std::string& label, std::shared_ptr<Texture> texture);
     Material& SetProperty (const std::string& propertyName, float propertyValue);
     Material& SetProperty (const std::string& propertyName, Vector3f propertyValue);
 
+    // parent game scene
+    std::weak_ptr<GameScene> m_gameScene;
+
     // textures map
-    texture_map_t textures;
+    texture_map_t m_textures;
 
     // properties map
-    property_map_t properties;
+    property_map_t m_properties;
 
     // shader programs defined in renderer
-    std::string forwardShaderProgram;
-    std::string deferredGeometryPassShaderProgram;
-    std::string deferredLightingPassShaderProgram;
+    std::string m_forwardShaderProgram;
+    std::string m_deferredGeometryPassShaderProgram;
+    std::string m_deferredLightingPassShaderProgram;
 
 };
 

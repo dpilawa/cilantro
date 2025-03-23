@@ -53,6 +53,11 @@ RenderStage::~RenderStage ()
     }
 }
 
+IRenderer* RenderStage::GetRenderer () const
+{
+    return m_renderer;
+}
+
 IFramebuffer* RenderStage::GetFramebuffer () const
 {
     return m_framebuffer;

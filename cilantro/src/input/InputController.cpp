@@ -3,17 +3,22 @@
 #include "system/Game.h"
 #include "system/MessageBus.h"
 #include "system/Message.h"
-
+#include <memory>
 #include <string>
 
 namespace cilantro {
 
-InputController::InputController ()
+InputController::InputController (std::shared_ptr<Game> game) : m_game (game)
 {
 }
 
 InputController::~InputController ()
 {
+}
+
+std::shared_ptr<Game> InputController::GetGame ()
+{
+    return m_game.lock ();
 }
 
 void InputController::OnFrame ()
@@ -25,7 +30,7 @@ void InputController::OnFrame ()
     {
         if (event->Read ()) 
         {
-            Game::GetMessageBus ().Publish<InputEventMessage> (std::make_shared<InputEventMessage> (event->GetName (), event->GetScale ()));
+            GetGame ()->GetMessageBus ()->Publish<InputEventMessage> (std::make_shared<InputEventMessage> (event->GetName (), event->GetScale ()));
             event->Set (false);
         }
     }
@@ -38,7 +43,7 @@ void InputController::OnFrame ()
         {
             axisCompound += axis->Read () * axis->GetScale ();
         }
-        Game::GetMessageBus ().Publish<InputAxisMessage> (std::make_shared<InputAxisMessage> (axisvector.first, axisCompound));
+        GetGame ()->GetMessageBus ()->Publish<InputAxisMessage> (std::make_shared<InputAxisMessage> (axisvector.first, axisCompound));
     }
 }
 
@@ -58,7 +63,7 @@ std::shared_ptr<Input<float>> InputController::CreateInputAxis (const std::strin
 
 void InputController::BindInputEvent (const std::string& name, std::function<void ()> function)
 {
-    Game::GetMessageBus ().Subscribe<InputEventMessage> ([name, function](const std::shared_ptr<InputEventMessage>& message) 
+    GetGame ()->GetMessageBus ()->Subscribe<InputEventMessage> ([name, function](const std::shared_ptr<InputEventMessage>& message) 
     { 
         if (message->GetEvent () == name)
         {
@@ -69,7 +74,7 @@ void InputController::BindInputEvent (const std::string& name, std::function<voi
 
 void InputController::BindInputAxis (const std::string& name, std::function<void (float)> function)
 {
-    Game::GetMessageBus ().Subscribe<InputAxisMessage> ([name, function](const std::shared_ptr<InputAxisMessage>& message) 
+    GetGame ()->GetMessageBus ()->Subscribe<InputAxisMessage> ([name, function](const std::shared_ptr<InputAxisMessage>& message) 
     { 
         if (message->GetEvent () == name)
         {

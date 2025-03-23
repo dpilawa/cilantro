@@ -23,7 +23,7 @@ public:
 class __CEAPI Path : public GameObject
 {
 public:
-    __EAPI Path (GameScene* gameScene);
+    __EAPI Path (std::shared_ptr<GameScene> gameScene);
     __EAPI virtual ~Path ();
 
     __EAPI Path& AddWaypoint (std::size_t wIndex, const Vector3f& position, const Quaternion& rotation);

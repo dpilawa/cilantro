@@ -44,7 +44,7 @@
 
 namespace py = pybind11;
 namespace c = cilantro;
- 
+/*
 // Create Python bindings
 
 PYBIND11_MODULE(pycilantro, m) {
@@ -565,3 +565,7 @@ PYBIND11_MODULE(pycilantro, m) {
         .value("Release", c::EInputTrigger::Release);
 
 }
+
+*/
+
+PYBIND11_MODULE(pycilantro, m) {}

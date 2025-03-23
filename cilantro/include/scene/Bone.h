@@ -10,14 +10,14 @@ namespace cilantro {
 class __CEAPI Bone : public GameObject
 {
 public:
-    __EAPI Bone (GameScene* gameScene);
+    __EAPI Bone (std::shared_ptr<GameScene> gameScene);
     __EAPI virtual ~Bone ();
 
     __EAPI Bone& SetOffsetMatrix (const Matrix4f& m);
     __EAPI Matrix4f GetOffsetMatrix () const;
 
 private:
-    Matrix4f offsetMatrix;
+    Matrix4f m_offsetMatrix;
 };
 
 } // namespace cilantro

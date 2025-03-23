@@ -11,28 +11,26 @@
 
 namespace cilantro {
 
-GameScene::GameScene()
+GameScene::GameScene(std::shared_ptr<Game> game)
 { 
-    this->timer = new Timer();
-    timer->Tick ();
+    this->m_game = game;
+    this->m_timer = std::make_shared<Timer> ();
+    m_timer->Tick ();
 
-    this->activeCamera = nullptr;
+    this->m_renderer = nullptr;
 }
 
 GameScene::~GameScene()
 {
-    delete timer;
-
-    if (renderer != nullptr)
+    if (m_renderer != nullptr)
     {
-        renderer->Deinitialize ();
-        delete renderer;
+        m_renderer->Deinitialize ();
     }
 }
 
 void GameScene::OnStart ()
 {
-    for (auto gameObject : gameObjects)
+    for (auto gameObject : m_gameObjects)
     {
         gameObject->OnStart ();
     }
@@ -40,21 +38,21 @@ void GameScene::OnStart ()
 
 void GameScene::OnFrame ()
 {
-    timer->Tick ();
+    m_timer->Tick ();
 
-    for (auto gameObject : gameObjects)
+    for (auto gameObject : m_gameObjects)
     {
         gameObject->OnFrame ();
     }
 
-    renderer->RenderFrame ();
+    m_renderer->RenderFrame ();
 
-    timer->Tock ();
+    m_timer->Tock ();
 }
 
 void GameScene::OnEnd ()
 {
-    for (auto gameObject : gameObjects)
+    for (auto gameObject : m_gameObjects)
     {
         gameObject->OnEnd ();
     }
@@ -62,37 +60,43 @@ void GameScene::OnEnd ()
 
 ResourceManager<GameObject>& GameScene::GetGameObjectManager ()
 {
-    return gameObjects;
+    return m_gameObjects;
 }
 
 ResourceManager<Material>& GameScene::GetMaterialManager ()
 {
-    return materials;
+    return m_materials;
 }
 
-IRenderer* GameScene::GetRenderer () const
+std::shared_ptr<IRenderer> GameScene::GetRenderer () const
 {
-    return renderer;
+    return m_renderer;
 }
 
-Timer* GameScene::GetTimer () const
+std::shared_ptr<Timer> GameScene::GetTimer () const
 {
-    return timer;
+    return m_timer;
+}
+
+std::shared_ptr<Game> GameScene::GetGame () const
+{
+    return m_game.lock ();
 }
 
 void GameScene::SetActiveCamera (const std::string& name)
 {
-    activeCamera = &(gameObjects.GetByName<Camera> (name));
+    m_activeCamera = m_gameObjects.GetByName<Camera> (name);
 }
 
-Camera* GameScene::GetActiveCamera () const
+std::shared_ptr<Camera> GameScene::GetActiveCamera () const
 {
-    if (activeCamera == nullptr)
+    auto camera = m_activeCamera.lock ();
+    if (camera == nullptr)
     {
         LogMessage (MSG_LOCATION, EXIT_FAILURE) << "No active camera found";
     }
 
-    return activeCamera;
+    return camera;
 }
 
 } // namespace cilantro

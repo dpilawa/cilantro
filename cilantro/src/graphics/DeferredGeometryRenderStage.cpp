@@ -39,7 +39,7 @@ void DeferredGeometryRenderStage::OnFrame ()
     RenderStage::OnFrame ();
 
     // load uniform buffers
-    m_renderer->UpdateCameraBuffers (*m_renderer->GetGameScene ()->GetActiveCamera ());
+    m_renderer->UpdateCameraBuffers (m_renderer->GetGameScene ()->GetActiveCamera ());
 
     // GEOMETRY PASS
     // draw all objects in scene using geometry shader, construct g-buffer
@@ -52,7 +52,7 @@ void DeferredGeometryRenderStage::OnFrame ()
         // overwrite stencil value with material Id
         if (MeshObject* meshObject = dynamic_cast<MeshObject*>(gameObject.get ()))
         {
-            m_renderer->SetStencilTestFunction (EStencilTestFunction::FUNCTION_ALWAYS, (int) m_renderer->GetShaderProgramManager ().GetByName<ShaderProgram>(meshObject->GetMaterial ().GetDeferredLightingPassShaderProgram ()).GetHandle ());
+            m_renderer->SetStencilTestFunction (EStencilTestFunction::FUNCTION_ALWAYS, (int) m_renderer->GetShaderProgramManager ().GetByName<ShaderProgram>(meshObject->GetMaterial ()->GetDeferredLightingPassShaderProgram ())->GetHandle ());
         }
 
         // draw to g-buffer

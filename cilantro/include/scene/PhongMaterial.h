@@ -21,7 +21,7 @@ enum class PhongTexture : int
 class __CEAPI PhongMaterial : public Material
 {
 public:
-    __EAPI PhongMaterial ();
+    __EAPI PhongMaterial (std::shared_ptr<GameScene> scene);
     __EAPI virtual ~PhongMaterial ();
 
     // setters
@@ -37,19 +37,19 @@ public:
 
 
     // getters
-    __EAPI Texture& GetDiffuse ();
-    __EAPI Texture& GetNormal ();
-    __EAPI Texture& GetSpecular ();
+    __EAPI std::shared_ptr<Texture> GetDiffuse ();
+    __EAPI std::shared_ptr<Texture> GetNormal ();
+    __EAPI std::shared_ptr<Texture> GetSpecular ();
     __EAPI float GetSpecularShininess ();
-    __EAPI Texture& GetEmissive ();
+    __EAPI std::shared_ptr<Texture> GetEmissive ();
 
 protected:
 
     // static textures
-    Texture diffuse {1, 1, Vector3f (1.0f, 1.0f, 1.0f)};
-    Texture normal {1, 1, Vector3f (0.5f, 0.5f, 1.0f)};
-    Texture specular {1, 1, Vector3f (1.0f, 1.0f, 1.0f)};
-    Texture emissive {1, 1, Vector3f (0.0f, 0.0f, 0.0f)};
+    std::shared_ptr<Texture> m_diffuse;
+    std::shared_ptr<Texture> m_normal;
+    std::shared_ptr<Texture> m_specular;
+    std::shared_ptr<Texture> m_emissive;
 
 };
 

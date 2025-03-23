@@ -16,33 +16,33 @@
 namespace cilantro
 {
 
-MeshObject::MeshObject (GameScene* gameScene, const std::string& meshName, const std::string& materialName)
+MeshObject::MeshObject (std::shared_ptr<GameScene> gameScene, const std::string& meshName, const std::string& materialName)
     : GameObject (gameScene)
-    , mesh (Game::GetResourceManager ().GetByName<Mesh> (meshName))
-    , material (gameScene->GetMaterialManager ().GetByName<Material> (materialName))
 {
-    mesh.SubscribeHook ("OnUpdateMesh", [&] () { Game::GetMessageBus ().Publish<MeshObjectUpdateMessage> (std::make_shared<MeshObjectUpdateMessage> (this->GetHandle ())); });
+    m_mesh = GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<Mesh> (meshName);
+    m_material = GetGameScene ()->GetMaterialManager ().GetByName<Material> (materialName);
+    m_mesh->SubscribeHook ("OnUpdateMesh", [&] () { GetGameScene ()->GetGame ()->GetMessageBus ()->Publish<MeshObjectUpdateMessage> (std::make_shared<MeshObjectUpdateMessage> (this->GetHandle ())); });
 }
 
 MeshObject::~MeshObject ()
 {
 }
 
-Mesh& MeshObject::GetMesh ()
+std::shared_ptr<Mesh> MeshObject::GetMesh ()
 {
-    return mesh;
+    return m_mesh;
 }
 
 MeshObject& MeshObject::SetMaterial (const std::string& materialName)
 {
-    material = gameScene->GetMaterialManager ().GetByName<Material> (materialName);
+    m_material = m_gameScene.lock ()->GetMaterialManager ().GetByName<Material> (materialName);
 
     return *this;
 }
 
-Material& MeshObject::GetMaterial () const
+std::shared_ptr<Material> MeshObject::GetMaterial () const
 {
-    return material;
+    return m_material;
 }
 
 float* MeshObject::GetBoneTransformationsMatrixArray ()
@@ -53,19 +53,19 @@ float* MeshObject::GetBoneTransformationsMatrixArray ()
     identity.InitIdentity ();
 
     // copy identity matrix in index 0
-    std::memcpy (boneTransformationMatrixArray, identity[0], 16 * sizeof (float));
+    std::memcpy (m_boneTransformationMatrixArray, identity[0], 16 * sizeof (float));
 
     // copy remaining bones
-    for (handle_t boneHandle : mesh.GetMeshBones ())
+    for (handle_t boneHandle : m_mesh->GetMeshBones ())
     {
-        Bone& b = gameScene->GetGameObjectManager ().GetByHandle<Bone> (boneHandle);
-        boneTransformation = b.GetModelTransformMatrix () * b.GetOffsetMatrix ();
+        auto b = m_gameScene.lock ()->GetGameObjectManager ().GetByHandle<Bone> (boneHandle);
+        boneTransformation = b->GetModelTransformMatrix () * b->GetOffsetMatrix ();
 
-        std::memcpy (boneTransformationMatrixArray + index, boneTransformation[0], 16 * sizeof (float));
+        std::memcpy (m_boneTransformationMatrixArray + index, boneTransformation[0], 16 * sizeof (float));
         index += 16;
     }
 
-    return boneTransformationMatrixArray;
+    return m_boneTransformationMatrixArray;
 }
 
 void MeshObject::OnFrame ()
@@ -76,13 +76,13 @@ void MeshObject::OnFrame ()
 void MeshObject::OnDraw (IRenderer& renderer)
 {
     GameObject::OnDraw (renderer);
-    renderer.Draw (*this);
+    renderer.Draw (std::dynamic_pointer_cast<MeshObject> (this->GetPointer ()));
 }
 
 void MeshObject::OnUpdate (IRenderer& renderer)
 {
     GameObject::OnUpdate (renderer);
-    renderer.Update (*this);
+    renderer.Update (std::dynamic_pointer_cast<MeshObject> (this->GetPointer ()));
 }
 
 } // namespace cilantro

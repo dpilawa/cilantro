@@ -35,7 +35,7 @@ public:
     __EAPI virtual QuadRenderStage& SetRenderStageParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue);
 
 protected:
-    ShaderProgram* m_shaderProgram;
+    std::shared_ptr<ShaderProgram> m_shaderProgram;
 
 };
 

@@ -12,19 +12,19 @@
 
 namespace cilantro {
 
-GameObject::GameObject (GameScene* gameScene)
+GameObject::GameObject (std::shared_ptr<GameScene> gameScene)
 {
-    parentObject = nullptr;
-    this->gameScene = gameScene;
+    m_parentObject = std::weak_ptr<GameObject> ();
+    m_gameScene = gameScene;
 
     CalculateModelTransformMatrix ();
 
     // set callbacks on transform modification
     // this is just a passthrough of callbacks to subscribers (Scene)
-    localTransform.SubscribeHook ("OnUpdateTransform", [&]() 
+    m_localTransform.SubscribeHook ("OnUpdateTransform", [&]() 
     {
         CalculateModelTransformMatrix (); 
-        Game::GetMessageBus ().Publish<TransformUpdateMessage> (std::make_shared<TransformUpdateMessage> (this->GetHandle ()));
+        GetGameScene ()->GetGame ()->GetMessageBus ()->Publish<TransformUpdateMessage> (std::make_shared<TransformUpdateMessage> (this->GetHandle ()));
     });
 }
 
@@ -34,23 +34,31 @@ GameObject::~GameObject ()
 
 GameObject& GameObject::SetParentObject (const std::string& name)
 {
-    GameObject& parent = gameScene->GetGameObjectManager ().GetByName<GameObject> (name);
+    if (auto s = m_gameScene.lock ())
+    {
+        auto parent = s->GetGameObjectManager ().GetByName<GameObject> (name);
 
-    parentObject = &parent;
-    parent.childObjects.push_back (this);
-    Game::GetMessageBus ().Publish<SceneGraphUpdateMessage> (std::make_shared<SceneGraphUpdateMessage> (this->GetHandle ()));
-
+        m_parentObject = parent;
+        parent->m_childObjects.push_back (std::dynamic_pointer_cast<GameObject>(this->GetPointer ()));
+        GetGameScene ()->GetGame ()->GetMessageBus ()->Publish<SceneGraphUpdateMessage> (std::make_shared<SceneGraphUpdateMessage> (this->GetHandle ()));
+    }
+     
     return *this;
 }
 
-GameObject* GameObject::GetParentObject ()
+std::shared_ptr<GameScene> GameObject::GetGameScene ()
 {
-    return parentObject;
+    return m_gameScene.lock ();
 }
 
-std::vector<GameObject*> GameObject::GetChildObjects ()
+std::shared_ptr<GameObject> GameObject::GetParentObject ()
 {
-    return childObjects;
+    return m_parentObject.lock ();
+}
+
+std::vector<std::shared_ptr<GameObject>> GameObject::GetChildObjects ()
+{
+    return m_childObjects;
 }
 
 void GameObject::OnStart ()
@@ -75,26 +83,26 @@ void GameObject::OnEnd ()
 
 Transform& GameObject::GetLocalTransform ()
 {
-    return localTransform;
+    return m_localTransform;
 }
 
 Matrix4f GameObject::GetModelTransformMatrix () const
 {
-    return modelTransformMatrix;
+    return m_modelTransformMatrix;
 }
 
 void GameObject::CalculateModelTransformMatrix ()
 {
-    if (parentObject != nullptr)
+    if (auto p = m_parentObject.lock ())
     {
-        modelTransformMatrix = parentObject->GetModelTransformMatrix () * localTransform.GetTransformMatrix ();
+        m_modelTransformMatrix = p->GetModelTransformMatrix () * m_localTransform.GetTransformMatrix ();
     }
     else
     {
-        modelTransformMatrix = localTransform.GetTransformMatrix ();
+        m_modelTransformMatrix = m_localTransform.GetTransformMatrix ();
     }
 
-    for (auto&& childObject : childObjects)
+    for (auto&& childObject : m_childObjects)
     {
         childObject->CalculateModelTransformMatrix ();
     }

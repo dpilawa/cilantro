@@ -20,9 +20,9 @@
 
 namespace cilantro {
 
-AssimpModelLoader::AssimpModelLoader ()
+AssimpModelLoader::AssimpModelLoader (std::shared_ptr<Game> game) : m_game (game)
 {
-
+    
 }
 
 AssimpModelLoader::~AssimpModelLoader ()
@@ -32,12 +32,12 @@ AssimpModelLoader::~AssimpModelLoader ()
 
 void AssimpModelLoader::Load (std::string sceneName, std::string path)
 {
-    const aiScene* scene = importer.ReadFile (Game::GetPath() + "/" + path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_LimitBoneWeights);
-    gameScene = &Game::GetGameSceneManager ().GetByName<GameScene> (sceneName);
+    const aiScene* scene = m_importer.ReadFile (path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_LimitBoneWeights);
+    m_gameScene = m_game->GetGameSceneManager ().GetByName<GameScene> (sceneName);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) 
     {
-        LogMessage(MSG_LOCATION, EXIT_FAILURE) << "Unable to load model" << path << importer.GetErrorString ();
+        LogMessage(MSG_LOCATION, EXIT_FAILURE) << "Unable to load model" << path << m_importer.GetErrorString ();
     }
     else
     {
@@ -73,7 +73,7 @@ void AssimpModelLoader::ScanMesh (const aiMesh* mesh)
 {
     for (unsigned int i = 0; i < mesh->mNumBones; i++)
     {
-        boneNodes.insert (mesh->mBones[i]->mName.C_Str());
+        m_boneNodes.insert (mesh->mBones[i]->mName.C_Str());
     }
 }
 
@@ -82,7 +82,7 @@ void AssimpModelLoader::ImportNode (const aiScene* scene, const aiNode* node, co
     
     if (node->mNumMeshes == 0)
     {
-        if (boneNodes.find (node->mName.C_Str()) != boneNodes.end ())
+        if (m_boneNodes.find (node->mName.C_Str()) != m_boneNodes.end ())
         {
             // create a simple Bone with transformation
             ImportBone (node, parent, node->mTransformation);
@@ -119,31 +119,30 @@ void AssimpModelLoader::ImportNode (const aiScene* scene, const aiNode* node, co
 
 void AssimpModelLoader::ImportGameObject (const aiNode* node, const aiNode* parent, const aiMatrix4x4& transform)
 {
-    GameObject& gameObject = CreateGameObject (node, parent);
-    gameObject.GetLocalTransform ().SetTransformMatrix (ConvertMatrix (transform));
+    auto gameObject = CreateGameObject (node, parent);
+    gameObject->GetLocalTransform ().SetTransformMatrix (ConvertMatrix (transform));
 }
 
 void AssimpModelLoader::ImportBone (const aiNode* node, const aiNode* parent, const aiMatrix4x4& transform)
 {
-    Bone& bone = CreateBone (node, parent);
-    bone.GetLocalTransform ().SetTransformMatrix (ConvertMatrix (transform));
-    //bone.SetOffsetMatrix (Mathf::Invert (bone.GetModelTransformMatrix ()));
+    auto bone = CreateBone (node, parent);
+    bone->GetLocalTransform ().SetTransformMatrix (ConvertMatrix (transform));
 }
 
 void AssimpModelLoader::ImportMesh (const aiScene* scene, const aiMesh* mesh, const aiNode* parent, const aiMatrix4x4& transform)
 {
-    Mesh& myMesh = Game::GetResourceManager ().Create<Mesh> (mesh->mName.C_Str ());
+    auto myMesh = m_game->GetResourceManager ().Create<Mesh> (mesh->mName.C_Str ());
 
     ImportMeshPositions (myMesh, scene, mesh);
     ImportMeshFaces (myMesh, scene, mesh);
     ImportMeshBones (myMesh, scene, mesh);
     ImportMeshMaterial (myMesh, scene, mesh);
 
-    MeshObject& meshObject = CreateMeshObject (myMesh, scene, mesh, parent);
-    meshObject.GetLocalTransform ().SetTransformMatrix (ConvertMatrix (transform));
+    auto meshObject = CreateMeshObject (myMesh, scene, mesh, parent);
+    meshObject->GetLocalTransform ().SetTransformMatrix (ConvertMatrix (transform));
 }
 
-void AssimpModelLoader::ImportMeshPositions (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh)
+void AssimpModelLoader::ImportMeshPositions (std::shared_ptr<Mesh> myMesh, const aiScene* scene, const aiMesh* mesh)
 {
     if (mesh->HasPositions ())
     {
@@ -152,30 +151,30 @@ void AssimpModelLoader::ImportMeshPositions (Mesh& myMesh, const aiScene* scene,
             /* vertices with UV coordinates */
             if (mesh->HasTextureCoords (0))
             {
-                myMesh.AddVertex (Vector3f (mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z), Vector2f (mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y));
+                myMesh->AddVertex (Vector3f (mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z), Vector2f (mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y));
             }
             else
             {
-                myMesh.AddVertex (Vector3f (mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z), Vector2f ());
+                myMesh->AddVertex (Vector3f (mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z), Vector2f ());
             }
 
             /* normals */
             if (mesh->HasNormals ())
             {
-                myMesh.AddNormal (Vector3f (mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z));
+                myMesh->AddNormal (Vector3f (mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z));
             }
 
             /* tangents and bitangents */
             if (mesh->HasTangentsAndBitangents ())
             {
-                myMesh.AddTangentBitangent (Vector3f (mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z), Vector3f (mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z));
+                myMesh->AddTangentBitangent (Vector3f (mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z), Vector3f (mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z));
             }
 
         }
     }
 }
 
-void AssimpModelLoader::ImportMeshFaces (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh)
+void AssimpModelLoader::ImportMeshFaces (std::shared_ptr<Mesh> myMesh, const aiScene* scene, const aiMesh* mesh)
 {
     if (mesh->HasFaces ())
     {
@@ -186,13 +185,13 @@ void AssimpModelLoader::ImportMeshFaces (Mesh& myMesh, const aiScene* scene, con
                 LogMessage(MSG_LOCATION, EXIT_FAILURE) << "Unsupported number of face indices:" << mesh->mFaces[i].mNumIndices;
             }
             else {
-                myMesh.AddFace (mesh->mFaces[i].mIndices[0], mesh->mFaces[i].mIndices[1], mesh->mFaces[i].mIndices[2]);
+                myMesh->AddFace (mesh->mFaces[i].mIndices[0], mesh->mFaces[i].mIndices[1], mesh->mFaces[i].mIndices[2]);
             }
         }
     }
 }
 
-void AssimpModelLoader::ImportMeshBones (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh)
+void AssimpModelLoader::ImportMeshBones (std::shared_ptr<Mesh> myMesh, const aiScene* scene, const aiMesh* mesh)
 {
     if (mesh->HasBones ())
     {
@@ -206,14 +205,14 @@ void AssimpModelLoader::ImportMeshBones (Mesh& myMesh, const aiScene* scene, con
         {
             aiBone* bone = mesh->mBones[i];
 
-            Bone& b = gameScene->GetGameObjectManager ().GetByName<Bone> (bone->mName.C_Str ());
-            b.SetOffsetMatrix (ConvertMatrix (bone->mOffsetMatrix));
+            std::shared_ptr<Bone> b = m_gameScene->GetGameObjectManager ().GetByName<Bone> (bone->mName.C_Str ());
+            b->SetOffsetMatrix (ConvertMatrix (bone->mOffsetMatrix));
 
             for (unsigned j = 0; j < bone->mNumWeights; j++)
             {
                 aiVertexWeight w = bone->mWeights[j];
 
-                myMesh.AddVertexBoneInfluence (w.mVertexId, w.mWeight, b.GetHandle ());
+                myMesh->AddVertexBoneInfluence (w.mVertexId, w.mWeight, b->GetHandle ());
             }
 
         }
@@ -222,7 +221,7 @@ void AssimpModelLoader::ImportMeshBones (Mesh& myMesh, const aiScene* scene, con
     }
 }
 
-void AssimpModelLoader::ImportMeshMaterial (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh)
+void AssimpModelLoader::ImportMeshMaterial (std::shared_ptr<Mesh> myMesh, const aiScene* scene, const aiMesh* mesh)
 {
     std::string textureTypes;
 
@@ -231,7 +230,7 @@ void AssimpModelLoader::ImportMeshMaterial (Mesh& myMesh, const aiScene* scene, 
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
         // skip if material already loaded
-        if (gameScene->GetMaterialManager ().HasName<Material> (material->GetName ().C_Str ()))
+        if (m_gameScene->GetMaterialManager ().HasName<Material> (material->GetName ().C_Str ()))
         {
             return;
         }
@@ -249,57 +248,57 @@ void AssimpModelLoader::ImportMeshMaterial (Mesh& myMesh, const aiScene* scene, 
         if (HasTexture (material, aiTextureType_DIFFUSE))
         {
             // phong material
-            PhongMaterial& myMaterial = gameScene->Create<PhongMaterial> (material->GetName ().C_Str ());
+            auto myMaterial = m_gameScene->Create<PhongMaterial> (material->GetName ().C_Str ());
 
             if (HasTexture (material, aiTextureType_DIFFUSE))
             {
-                myMaterial.SetDiffuse (ImportMeshMaterialTexture (material, aiTextureType_DIFFUSE).GetName ());
+                myMaterial->SetDiffuse (ImportMeshMaterialTexture (material, aiTextureType_DIFFUSE)->GetName ());
             }
 
             if (HasTexture (material, aiTextureType_NORMALS))
             {
-                myMaterial.SetNormal (ImportMeshMaterialTexture (material, aiTextureType_NORMALS).GetName ());
+                myMaterial->SetNormal (ImportMeshMaterialTexture (material, aiTextureType_NORMALS)->GetName ());
             }
 
             if (HasTexture (material, aiTextureType_SPECULAR))
             {
-                myMaterial.SetSpecular (ImportMeshMaterialTexture (material, aiTextureType_SPECULAR).GetName ());
+                myMaterial->SetSpecular (ImportMeshMaterialTexture (material, aiTextureType_SPECULAR)->GetName ());
             }
 
             if (HasTexture (material, aiTextureType_EMISSIVE))
             {
-                myMaterial.SetEmissive (ImportMeshMaterialTexture (material, aiTextureType_EMISSIVE).GetName ());
+                myMaterial->SetEmissive (ImportMeshMaterialTexture (material, aiTextureType_EMISSIVE)->GetName ());
             }
 
         }
         else if (HasTexture (material, aiTextureType_BASE_COLOR))
         {
             // PBR material
-            PBRMaterial& myMaterial = gameScene->Create<PBRMaterial> (material->GetName ().C_Str ());
+            auto myMaterial = m_gameScene->Create<PBRMaterial> (material->GetName ().C_Str ());
 
             if (HasTexture (material, aiTextureType_BASE_COLOR))
             {
-                myMaterial.SetAlbedo (ImportMeshMaterialTexture (material, aiTextureType_BASE_COLOR).GetName ());
+                myMaterial->SetAlbedo (ImportMeshMaterialTexture (material, aiTextureType_BASE_COLOR)->GetName ());
             }
 
             if (HasTexture (material, aiTextureType_NORMAL_CAMERA))
             {
-                myMaterial.SetNormal (ImportMeshMaterialTexture (material, aiTextureType_NORMAL_CAMERA).GetName ());
+                myMaterial->SetNormal (ImportMeshMaterialTexture (material, aiTextureType_NORMAL_CAMERA)->GetName ());
             }
 
             if (HasTexture (material, aiTextureType_METALNESS))
             {
-                myMaterial.SetMetallic (ImportMeshMaterialTexture (material, aiTextureType_METALNESS).GetName ());
+                myMaterial->SetMetallic (ImportMeshMaterialTexture (material, aiTextureType_METALNESS)->GetName ());
             }
 
             if (HasTexture (material, aiTextureType_DIFFUSE_ROUGHNESS))
             {
-                myMaterial.SetRoughness (ImportMeshMaterialTexture (material, aiTextureType_DIFFUSE_ROUGHNESS).GetName ());
+                myMaterial->SetRoughness (ImportMeshMaterialTexture (material, aiTextureType_DIFFUSE_ROUGHNESS)->GetName ());
             }
 
             if (HasTexture (material, aiTextureType_AMBIENT_OCCLUSION))
             {
-                myMaterial.SetAO (ImportMeshMaterialTexture (material, aiTextureType_AMBIENT_OCCLUSION).GetName ());
+                myMaterial->SetAO (ImportMeshMaterialTexture (material, aiTextureType_AMBIENT_OCCLUSION)->GetName ());
             }
 
         }   
@@ -308,7 +307,7 @@ void AssimpModelLoader::ImportMeshMaterial (Mesh& myMesh, const aiScene* scene, 
 
 void AssimpModelLoader::ImportAnimation (const aiAnimation* animation)
 {
-    AnimationObject& animationObject = CreateAnimationObject (animation);
+    auto animationObject = CreateAnimationObject (animation);
 
     for (unsigned int i = 0; i < animation->mNumChannels; i++)
     {
@@ -316,10 +315,10 @@ void AssimpModelLoader::ImportAnimation (const aiAnimation* animation)
     }
 }
 
-void AssimpModelLoader::ImportNodeAnimation (AnimationObject& animationObject, const aiAnimation* animation, const aiNodeAnim* nodeAnimation)
+void AssimpModelLoader::ImportNodeAnimation (std::shared_ptr<AnimationObject> myAnimationObject, const aiAnimation* animation, const aiNodeAnim* nodeAnimation)
 {
     std::string nodeName = nodeAnimation->mNodeName.C_Str ();
-    GameObject& node = gameScene->GetGameObjectManager ().GetByName <GameObject> (nodeName);
+    std::shared_ptr<GameObject> node = m_gameScene->GetGameObjectManager ().GetByName <GameObject> (nodeName);
     std::string propertyNameT = nodeName + "_T";
     std::string propertyNameR = nodeName + "_R";
     std::string propertyNameS = nodeName + "_S";
@@ -329,11 +328,11 @@ void AssimpModelLoader::ImportNodeAnimation (AnimationObject& animationObject, c
         if (i == 0)
         {
             // create animation property
-            animationObject.AddAnimationProperty<Vector3f> (
+            myAnimationObject->AddAnimationProperty<Vector3f> (
                 propertyNameT, 
                 ConvertVector3f (nodeAnimation->mPositionKeys[i].mValue), 
                 [&] (Vector3f v) {
-                    node.GetLocalTransform ().Translate (v);
+                    node->GetLocalTransform ().Translate (v);
                 },
                 [] (Vector3f v0, Vector3f v1, float u) { 
                     return Mathf::Lerp (v0, v1, u); 
@@ -343,7 +342,7 @@ void AssimpModelLoader::ImportNodeAnimation (AnimationObject& animationObject, c
         else 
         {
             // create keyframe
-            animationObject.AddKeyframe<Vector3f> (propertyNameT, (float)(nodeAnimation->mPositionKeys[i].mTime / animation->mTicksPerSecond), ConvertVector3f (nodeAnimation->mPositionKeys[i].mValue));
+            myAnimationObject->AddKeyframe<Vector3f> (propertyNameT, (float)(nodeAnimation->mPositionKeys[i].mTime / animation->mTicksPerSecond), ConvertVector3f (nodeAnimation->mPositionKeys[i].mValue));
         }
     }
 
@@ -352,11 +351,11 @@ void AssimpModelLoader::ImportNodeAnimation (AnimationObject& animationObject, c
         if (i == 0)
         {
             // create animation property
-            animationObject.AddAnimationProperty<Quaternion> (
+            myAnimationObject->AddAnimationProperty<Quaternion> (
                 propertyNameR, 
                 ConvertQuaterion (nodeAnimation->mRotationKeys[i].mValue), 
                 [&] (Quaternion q) {
-                    node.GetLocalTransform ().Rotate (q);
+                    node->GetLocalTransform ().Rotate (q);
                 },
                 [] (Quaternion q0, Quaternion q1, float u) { 
                     return Mathf::Slerp (q0, q1, u); 
@@ -366,7 +365,7 @@ void AssimpModelLoader::ImportNodeAnimation (AnimationObject& animationObject, c
         else 
         {
             // create keyframe
-            animationObject.AddKeyframe<Quaternion> (propertyNameR, (float)(nodeAnimation->mRotationKeys[i].mTime / animation->mTicksPerSecond), ConvertQuaterion (nodeAnimation->mRotationKeys[i].mValue));
+            myAnimationObject->AddKeyframe<Quaternion> (propertyNameR, (float)(nodeAnimation->mRotationKeys[i].mTime / animation->mTicksPerSecond), ConvertQuaterion (nodeAnimation->mRotationKeys[i].mValue));
         }
     }
 
@@ -375,11 +374,11 @@ void AssimpModelLoader::ImportNodeAnimation (AnimationObject& animationObject, c
         if (i == 0)
         {
             // create animation property
-            animationObject.AddAnimationProperty<Vector3f> (
+            myAnimationObject->AddAnimationProperty<Vector3f> (
                 propertyNameS, 
                 ConvertVector3f (nodeAnimation->mScalingKeys[i].mValue), 
                 [&] (Vector3f v) {
-                    node.GetLocalTransform ().Scale (v);
+                    node->GetLocalTransform ().Scale (v);
                 },
                 [] (Vector3f v0, Vector3f v1, float u) { 
                     return Mathf::Lerp (v0, v1, u); 
@@ -389,52 +388,52 @@ void AssimpModelLoader::ImportNodeAnimation (AnimationObject& animationObject, c
         else 
         {
             // create keyframe
-            animationObject.AddKeyframe<Vector3f> (propertyNameS, (float)(nodeAnimation->mScalingKeys[i].mTime / animation->mTicksPerSecond), ConvertVector3f (nodeAnimation->mScalingKeys[i].mValue));
+            myAnimationObject->AddKeyframe<Vector3f> (propertyNameS, (float)(nodeAnimation->mScalingKeys[i].mTime / animation->mTicksPerSecond), ConvertVector3f (nodeAnimation->mScalingKeys[i].mValue));
         }
     }
 
 }
 
-GameObject& AssimpModelLoader::CreateGameObject (const aiNode* node, const aiNode* parent)
+std::shared_ptr<GameObject> AssimpModelLoader::CreateGameObject (const aiNode* node, const aiNode* parent)
 {
-    GameObject& gameObject = gameScene->Create<GameObject> (node->mName.C_Str ());
+    auto gameObject = m_gameScene->Create<GameObject> (node->mName.C_Str ());
         
     if (parent != nullptr)
     {
-        gameObject.SetParentObject (parent->mName.C_Str ());
+        gameObject->SetParentObject (parent->mName.C_Str ());
     }
     
     return gameObject;
 }
 
-Bone& AssimpModelLoader::CreateBone (const aiNode* node, const aiNode* parent)
+std::shared_ptr<Bone> AssimpModelLoader::CreateBone (const aiNode* node, const aiNode* parent)
 {
-    Bone& bone = gameScene->Create<Bone> (node->mName.C_Str ());
+    auto bone = m_gameScene->Create<Bone> (node->mName.C_Str ());
         
     if (parent != nullptr)
     {
-        bone.SetParentObject (parent->mName.C_Str ());
+        bone->SetParentObject (parent->mName.C_Str ());
     }
     
     return bone;
 }
 
-MeshObject& AssimpModelLoader::CreateMeshObject (Mesh& myMesh, const aiScene* scene, const aiMesh* mesh, const aiNode* parent)
+std::shared_ptr<MeshObject> AssimpModelLoader::CreateMeshObject (std::shared_ptr<Mesh> myMesh, const aiScene* scene, const aiMesh* mesh, const aiNode* parent)
 {
     aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-    MeshObject& m = gameScene->Create<MeshObject> (myMesh.GetName (), myMesh.GetName (), material->GetName ().C_Str ());
+    auto m = m_gameScene->Create<MeshObject> (myMesh->GetName (), myMesh->GetName (), material->GetName ().C_Str ());
         
     if (parent != nullptr)
     {
-        m.SetParentObject (parent->mName.C_Str ());
+        m->SetParentObject (parent->mName.C_Str ());
     }
     
     return m;
 }
 
-AnimationObject& AssimpModelLoader::CreateAnimationObject (const aiAnimation* animation)
+std::shared_ptr<AnimationObject> AssimpModelLoader::CreateAnimationObject (const aiAnimation* animation)
 {
-    AnimationObject& animationObject = gameScene->Create<AnimationObject> (animation->mName.C_Str ());
+    auto animationObject = m_gameScene->Create<AnimationObject> (animation->mName.C_Str ());
 
     return animationObject;
 }
@@ -444,7 +443,7 @@ bool AssimpModelLoader::HasTexture (aiMaterial* material, aiTextureType type)
     return (material->GetTextureCount (type) > 0);
 }
 
-Texture& AssimpModelLoader::ImportMeshMaterialTexture (aiMaterial* material, aiTextureType type)
+std::shared_ptr<Texture> AssimpModelLoader::ImportMeshMaterialTexture (aiMaterial* material, aiTextureType type)
 {
     aiString path;
     std::string sysPath;
@@ -459,9 +458,9 @@ Texture& AssimpModelLoader::ImportMeshMaterialTexture (aiMaterial* material, aiT
 #endif
 
     // if texture already exists, return it
-    if (Game::GetResourceManager ().HasName<Texture> (sysPath))
+    if (m_game->GetResourceManager ().HasName<Texture> (sysPath))
     {
-        return Game::GetResourceManager ().GetByName<Texture> (sysPath);
+        return m_game->GetResourceManager ().GetByName<Texture> (sysPath);
     }
     else 
     {
@@ -470,7 +469,7 @@ Texture& AssimpModelLoader::ImportMeshMaterialTexture (aiMaterial* material, aiT
             LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Stacked textures not supported" << sysPath;
         }
 
-        return Game::GetResourceManager ().Load<Texture> (sysPath, sysPath);
+        return m_game->GetResourceManager ().Load<Texture> (sysPath, sysPath);
 
     }
 }

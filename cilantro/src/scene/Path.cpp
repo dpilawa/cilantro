@@ -4,7 +4,7 @@
 namespace cilantro
 {
 
-Path::Path (GameScene* gameScene) : GameObject (gameScene)
+Path::Path (std::shared_ptr<GameScene> gameScene) : GameObject (gameScene)
 {
 }
 

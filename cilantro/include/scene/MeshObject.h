@@ -17,15 +17,15 @@ namespace cilantro {
 class __CEAPI MeshObject : public GameObject
 {
 public:
-    __EAPI MeshObject (GameScene* gameScene, const std::string& meshName, const std::string& materialName);
+    __EAPI MeshObject (std::shared_ptr<GameScene> gameScene, const std::string& meshName, const std::string& materialName);
     __EAPI virtual ~MeshObject ();
 
     // access mesh
-    __EAPI Mesh& GetMesh ();
+    __EAPI std::shared_ptr<Mesh> GetMesh ();
 
     // material 
     __EAPI MeshObject& SetMaterial (const std::string& materialName);
-    __EAPI Material& GetMaterial () const;
+    __EAPI std::shared_ptr<Material> GetMaterial () const;
 
     // generate array of bone transformations to be loaded to shader
     __EAPI float* GetBoneTransformationsMatrixArray ();
@@ -36,10 +36,10 @@ public:
     __EAPI virtual void OnUpdate (IRenderer& renderer) override;
 
 private:
-    Mesh& mesh;
-    Material& material;
+    std::shared_ptr<Mesh> m_mesh;
+    std::shared_ptr<Material> m_material;
 
-    float boneTransformationMatrixArray[CILANTRO_MAX_BONES * 16];
+    float m_boneTransformationMatrixArray[CILANTRO_MAX_BONES * 16];
 };
 
 } // namespace cilantro

@@ -1,15 +1,16 @@
 #include "cilantroengine.h"
+#include "scene/GameScene.h"
 #include "scene/GameObject.h"
 #include "scene/Light.h"
 #include "system/Game.h"
 
 namespace cilantro {
 
-Light::Light (GameScene* gameScene) : GameObject (gameScene)
+Light::Light (std::shared_ptr<GameScene> gameScene) : GameObject (gameScene)
 {
-    isEnabled = false;
+    m_isEnabled = false;
     
-    lightColor = Vector3f (1.0f, 1.0f, 1.0f);
+    m_lightColor = Vector3f (1.0f, 1.0f, 1.0f);
 }
 
 Light::~Light ()
@@ -18,28 +19,28 @@ Light::~Light ()
 
 Light& Light::SetEnabled (bool value)
 {
-    isEnabled = value;
-    Game::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
+    m_isEnabled = value;
+    GetGameScene ()->GetGame ()-> GetMessageBus ()->Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
     return *this;
 }
 
 bool Light::IsEnabled () const
 {
-    return isEnabled;
+    return m_isEnabled;
 }
 
 Light& Light::SetColor (Vector3f color)
 {
-    lightColor = color;
-    Game::GetMessageBus ().Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
+    m_lightColor = color;
+    GetGameScene ()->GetGame ()-> GetMessageBus ()->Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
     return *this;
 }
 
 Vector3f Light::GetColor () const
 {
-    if (isEnabled)
+    if (m_isEnabled)
     {
-        return lightColor;
+        return m_lightColor;
     }
     else
     {

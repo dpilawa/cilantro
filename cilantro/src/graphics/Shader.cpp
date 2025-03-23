@@ -16,13 +16,12 @@ Shader::Shader (const std::string& path, EShaderType shaderType) : LoadableResou
 
 void Shader::Load (const std::string& path)
 {
-    std::string absolutePath = Game::GetPath() + "/" + path;
-    std::ifstream f (absolutePath, std::ios::binary);
+    std::ifstream f (path, std::ios::binary);
     std::ostringstream ss;
    
     if (!f.is_open ())
     {
-        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to read shader file" << absolutePath;
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to read shader file" << path;
     }
 
     ss << f.rdbuf ();

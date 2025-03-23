@@ -14,6 +14,8 @@ struct IRenderStage
     virtual void Initialize () = 0;
     virtual void Deinitialize () = 0;
 
+    virtual IRenderer* GetRenderer () const = 0;
+
     virtual void InitializeFramebuffer () = 0;
     virtual IFramebuffer* GetFramebuffer () const = 0;
     virtual IFramebuffer* GetLinkedColorAttachmentsFramebuffer () const = 0;

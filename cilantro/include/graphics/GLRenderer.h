@@ -121,7 +121,7 @@ struct SGlUniformSpotLightBuffer
 class __CEAPI GLRenderer : public Renderer
 {
 public:
-    __EAPI GLRenderer (GameScene* gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled);
+    __EAPI GLRenderer (std::shared_ptr<GameScene> gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled);
     __EAPI virtual ~GLRenderer ();
 
     ///////////////////////////////////////////////////////////////////////////
@@ -133,19 +133,19 @@ public:
     
     __EAPI virtual void RenderFrame () override;
     
-    __EAPI virtual void Draw (MeshObject& meshObject) override;
+    __EAPI virtual void Draw (std::shared_ptr<MeshObject> meshObject) override;
     __EAPI virtual void DrawQuad () override;
-    __EAPI virtual void DrawAllGeometryBuffers (IShaderProgram& shader) override;
+    __EAPI virtual void DrawAllGeometryBuffers (std::shared_ptr<IShaderProgram> shader) override;
     
-    __EAPI virtual void Update (MeshObject& meshObject) override;
-    __EAPI virtual void Update (Material& material, unsigned int textureUnit) override;
-    __EAPI virtual void Update (Material& material) override;
+    __EAPI virtual void Update (std::shared_ptr<MeshObject> meshObject) override;
+    __EAPI virtual void Update (std::shared_ptr<Material> material, unsigned int textureUnit) override;
+    __EAPI virtual void Update (std::shared_ptr<Material> material) override;
     
-    __EAPI virtual void Update (PointLight& pointLight) override;
-    __EAPI virtual void Update (DirectionalLight& directionalLight) override;    
-    __EAPI virtual void Update (SpotLight& spotLight) override;
+    __EAPI virtual void Update (std::shared_ptr<PointLight> pointLight) override;
+    __EAPI virtual void Update (std::shared_ptr<DirectionalLight> directionalLight) override;    
+    __EAPI virtual void Update (std::shared_ptr<SpotLight> spotLight) override;
     
-    __EAPI virtual void UpdateCameraBuffers (Camera& camera) override;
+    __EAPI virtual void UpdateCameraBuffers (std::shared_ptr<Camera> camera) override;
     __EAPI virtual void UpdateLightViewBuffers () override;
     
     __EAPI virtual size_t GetPointLightCount () const override;
@@ -177,7 +177,7 @@ private:
     void InitializeShaderLibrary ();
     
     void InitializeMatrixUniformBuffers ();
-    void LoadViewProjectionUniformBuffers (Camera* camera);
+    void LoadViewProjectionUniformBuffers (std::shared_ptr<Camera> camera);
     void LoadLightViewUniformBuffers ();
     void DeinitializeMatrixUniformBuffers ();    
     
