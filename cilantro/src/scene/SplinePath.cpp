@@ -20,10 +20,10 @@ Vector3f SplinePath::GetPositionAtDistance (float distance) const
 
     if (wIndex != 0)
     {
-        return GetModelTransformMatrix () * Vector4f (m_curves[wIndex - 1].GetCurvePoint (u), 1.0f);
+        return GetWorldTransformMatrix () * Vector4f (m_curves[wIndex - 1].GetCurvePoint (u), 1.0f);
     }
 
-    return GetModelTransformMatrix () * Vector4f (waypoints[wIndex].t.GetTranslation (), 1.0f);
+    return GetWorldTransformMatrix () * Vector4f (m_waypoints[wIndex].m_Transform->GetTranslation (), 1.0f);
 }
 
 Vector3f SplinePath::GetTangentAtDistance (float distance) const
@@ -33,40 +33,40 @@ Vector3f SplinePath::GetTangentAtDistance (float distance) const
 
     if (wIndex != 0)
     {
-        return GetModelTransformMatrix () * Vector4f (m_curves[wIndex - 1].GetCurveTangent (u), 1.0f);
+        return GetWorldTransformMatrix () * Vector4f (m_curves[wIndex - 1].GetCurveTangent (u), 1.0f);
     }
 
-    return GetModelTransformMatrix () * Vector4f (waypoints[wIndex].outTangent, 1.0f);
+    return GetWorldTransformMatrix () * Vector4f (m_waypoints[wIndex].m_outTangent, 1.0f);
 }
 
-SplinePath& SplinePath::SetStartTangent (const Vector3f& tangent)
+std::shared_ptr<SplinePath> SplinePath::SetStartTangent (const Vector3f& tangent)
 {
-    if (waypoints.size () > 1)
+    if (m_waypoints.size () > 1)
     {
-        waypoints[0].outTangent = tangent;
-        m_curves[0].SetPointsAndTangents (waypoints[0].t.GetTranslation (), waypoints[1].t.GetTranslation (), waypoints[0].outTangent, waypoints[1].inTangent);
+        m_waypoints[0].m_outTangent = tangent;
+        m_curves[0].SetPointsAndTangents (m_waypoints[0].m_Transform->GetTranslation (), m_waypoints[1].m_Transform->GetTranslation (), m_waypoints[0].m_outTangent, m_waypoints[1].m_inTangent);
     }
 
-    return *this;
+    return std::dynamic_pointer_cast<SplinePath> (shared_from_this ());
 }
 
-SplinePath& SplinePath::SetEndTangent (const Vector3f& tangent)
+std::shared_ptr<SplinePath> SplinePath::SetEndTangent (const Vector3f& tangent)
 {
-    if (waypoints.size () > 1)
+    if (m_waypoints.size () > 1)
     {
-        size_t wIndex = waypoints.size () - 1;
+        size_t wIndex = m_waypoints.size () - 1;
 
-        waypoints[wIndex].inTangent = tangent;
-        m_curves[wIndex - 1].SetPointsAndTangents (waypoints[wIndex - 1].t.GetTranslation (), waypoints[wIndex].t.GetTranslation (), waypoints[wIndex - 1].outTangent, waypoints[wIndex].inTangent);
+        m_waypoints[wIndex].m_inTangent = tangent;
+        m_curves[wIndex - 1].SetPointsAndTangents (m_waypoints[wIndex - 1].m_Transform->GetTranslation (), m_waypoints[wIndex].m_Transform->GetTranslation (), m_waypoints[wIndex - 1].m_outTangent, m_waypoints[wIndex].m_inTangent);
     }
 
-    return *this;
+    return std::dynamic_pointer_cast<SplinePath> (shared_from_this ());
 }
 
 void SplinePath::UpdatePathAtWaypoint (const std::size_t wIndex)
 {
     // create new curve if needed
-    if (m_curves.size () + 1 < waypoints.size ())
+    if (m_curves.size () + 1 < m_waypoints.size ())
     {
 		if (m_curves.size() <= wIndex - 1)
 		{
@@ -78,36 +78,36 @@ void SplinePath::UpdatePathAtWaypoint (const std::size_t wIndex)
 		}
     }
 
-    for (std::size_t i = std::max<std::size_t>(0, wIndex - 1); i < waypoints.size (); ++i)
+    for (std::size_t i = std::max<std::size_t>(0, wIndex - 1); i < m_waypoints.size (); ++i)
     {
         Vector3f tangent;
 
         if (i == 0)
         {
             // first waypoint
-            tangent = 0.5f * (waypoints[i + 1].t.GetTranslation () - waypoints[i].t.GetTranslation ());
-            waypoints[i].outTangent = tangent;
-            waypoints[i].segmentLength = 0.0f;
-            waypoints[i].cumulativeLength = 0.0f;
+            tangent = 0.5f * (m_waypoints[i + 1].m_Transform->GetTranslation () - m_waypoints[i].m_Transform->GetTranslation ());
+            m_waypoints[i].m_outTangent = tangent;
+            m_waypoints[i].m_segmentLength = 0.0f;
+            m_waypoints[i].m_cumulativeLength = 0.0f;
         }
-        else if (i == waypoints.size() - 1)
+        else if (i == m_waypoints.size() - 1)
         {
             // last waypoint
-            tangent = 0.5f * (waypoints[i].t.GetTranslation () - waypoints[i - 1].t.GetTranslation ());
-            waypoints[i].inTangent = tangent;
-            m_curves[i - 1].SetPointsAndTangents (waypoints[i - 1].t.GetTranslation (), waypoints[i].t.GetTranslation (), waypoints[i - 1].outTangent, waypoints[i].inTangent);
-            waypoints[i].segmentLength = m_curves[i - 1].GetCurveLength ();
-            waypoints[i].cumulativeLength = waypoints[i - 1].cumulativeLength + waypoints[i].segmentLength;
+            tangent = 0.5f * (m_waypoints[i].m_Transform->GetTranslation () - m_waypoints[i - 1].m_Transform->GetTranslation ());
+            m_waypoints[i].m_inTangent = tangent;
+            m_curves[i - 1].SetPointsAndTangents (m_waypoints[i - 1].m_Transform->GetTranslation (), m_waypoints[i].m_Transform->GetTranslation (), m_waypoints[i - 1].m_outTangent, m_waypoints[i].m_inTangent);
+            m_waypoints[i].m_segmentLength = m_curves[i - 1].GetCurveLength ();
+            m_waypoints[i].m_cumulativeLength = m_waypoints[i - 1].m_cumulativeLength + m_waypoints[i].m_segmentLength;
         }
         else
         {
             // internal waypoint
-            tangent = 0.5f * (waypoints[i + 1].t.GetTranslation () - waypoints[i - 1].t.GetTranslation ());
-            waypoints[i].inTangent = tangent;
-            waypoints[i].outTangent = tangent;
-            m_curves[i - 1].SetPointsAndTangents (waypoints[i - 1].t.GetTranslation (), waypoints[i].t.GetTranslation (), waypoints[i - 1].outTangent, waypoints[i].inTangent);
-            waypoints[i].segmentLength = m_curves[i - 1].GetCurveLength ();
-            waypoints[i].cumulativeLength = waypoints[i - 1].cumulativeLength + waypoints[i].segmentLength;      
+            tangent = 0.5f * (m_waypoints[i + 1].m_Transform->GetTranslation () - m_waypoints[i - 1].m_Transform->GetTranslation ());
+            m_waypoints[i].m_inTangent = tangent;
+            m_waypoints[i].m_outTangent = tangent;
+            m_curves[i - 1].SetPointsAndTangents (m_waypoints[i - 1].m_Transform->GetTranslation (), m_waypoints[i].m_Transform->GetTranslation (), m_waypoints[i - 1].m_outTangent, m_waypoints[i].m_inTangent);
+            m_waypoints[i].m_segmentLength = m_curves[i - 1].GetCurveLength ();
+            m_waypoints[i].m_cumulativeLength = m_waypoints[i - 1].m_cumulativeLength + m_waypoints[i].m_segmentLength;      
         }
     }
 }

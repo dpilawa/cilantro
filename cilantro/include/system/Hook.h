@@ -1,5 +1,5 @@
-#ifndef _HOOKPROVIDER_H_
-#define _HOOKPROVIDER_H_
+#ifndef _HOOK_H_
+#define _HOOK_H_
 
 #include <functional>
 #include <unordered_map>

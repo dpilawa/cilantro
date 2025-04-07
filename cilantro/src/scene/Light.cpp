@@ -17,11 +17,11 @@ Light::~Light ()
 {
 }
 
-Light& Light::SetEnabled (bool value)
+std::shared_ptr<Light> Light::SetEnabled (bool value)
 {
     m_isEnabled = value;
     GetGameScene ()->GetGame ()-> GetMessageBus ()->Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
-    return *this;
+    return std::dynamic_pointer_cast<Light> (shared_from_this ());
 }
 
 bool Light::IsEnabled () const
@@ -29,11 +29,11 @@ bool Light::IsEnabled () const
     return m_isEnabled;
 }
 
-Light& Light::SetColor (Vector3f color)
+std::shared_ptr<Light> Light::SetColor (Vector3f color)
 {
     m_lightColor = color;
     GetGameScene ()->GetGame ()-> GetMessageBus ()->Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
-    return *this;
+    return std::dynamic_pointer_cast<Light> (shared_from_this ());
 }
 
 Vector3f Light::GetColor () const

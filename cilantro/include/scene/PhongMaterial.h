@@ -25,15 +25,15 @@ public:
     __EAPI virtual ~PhongMaterial ();
 
     // setters
-    __EAPI PhongMaterial& SetDiffuse (const std::string& diffuse);
-    __EAPI PhongMaterial& SetNormal (const std::string& normal);
-    __EAPI PhongMaterial& SetSpecular (const std::string& specular);
-    __EAPI PhongMaterial& SetEmissive (const std::string& emissive);
+    __EAPI std::shared_ptr<PhongMaterial> SetDiffuse (const std::string& diffuse);
+    __EAPI std::shared_ptr<PhongMaterial> SetNormal (const std::string& normal);
+    __EAPI std::shared_ptr<PhongMaterial> SetSpecular (const std::string& specular);
+    __EAPI std::shared_ptr<PhongMaterial> SetEmissive (const std::string& emissive);
 
-    __EAPI PhongMaterial& SetDiffuse (const Vector3f& diffuse);
-    __EAPI PhongMaterial& SetSpecular (const Vector3f& specular);
-    __EAPI PhongMaterial& SetSpecularShininess (const float specularShininess);
-    __EAPI PhongMaterial& SetEmissive (const Vector3f& emissive);
+    __EAPI std::shared_ptr<PhongMaterial> SetDiffuse (const Vector3f& diffuse);
+    __EAPI std::shared_ptr<PhongMaterial> SetSpecular (const Vector3f& specular);
+    __EAPI std::shared_ptr<PhongMaterial> SetSpecularShininess (const float specularShininess);
+    __EAPI std::shared_ptr<PhongMaterial> SetEmissive (const Vector3f& emissive);
 
 
     // getters

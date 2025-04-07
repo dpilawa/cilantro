@@ -7,23 +7,23 @@
 #include "scene/GameObject.h"
 #include "scene/Transform.h"
 #include "system/Game.h"
-#include "system/HookProvider.h"
+#include "system/Hook.h"
 #include <string>
 
 namespace cilantro {
 
 GameObject::GameObject (std::shared_ptr<GameScene> gameScene)
 {
+    m_modelTransform = std::make_shared<Transform> ();
     m_parentObject = std::weak_ptr<GameObject> ();
     m_gameScene = gameScene;
 
-    CalculateModelTransformMatrix ();
+    CalculateWorldTransformMatrix ();
 
-    // set callbacks on transform modification
-    // this is just a passthrough of callbacks to subscribers (Scene)
-    m_localTransform.SubscribeHook ("OnUpdateTransform", [&]() 
+    // in case of Transform modification hook, recalculate world transform and send message to bus
+    m_modelTransform->SubscribeHook ("OnUpdateTransform", [&]() 
     {
-        CalculateModelTransformMatrix (); 
+        CalculateWorldTransformMatrix (); 
         GetGameScene ()->GetGame ()->GetMessageBus ()->Publish<TransformUpdateMessage> (std::make_shared<TransformUpdateMessage> (this->GetHandle ()));
     });
 }
@@ -32,18 +32,19 @@ GameObject::~GameObject ()
 {
 }
 
-GameObject& GameObject::SetParentObject (const std::string& name)
+std::shared_ptr<GameObject> GameObject::SetParentObject (const std::string& name)
 {
     if (auto s = m_gameScene.lock ())
     {
         auto parent = s->GetGameObjectManager ().GetByName<GameObject> (name);
 
         m_parentObject = parent;
-        parent->m_childObjects.push_back (std::dynamic_pointer_cast<GameObject>(this->GetPointer ()));
+        parent->m_childObjects.push_back (shared_from_this ());
+        CalculateWorldTransformMatrix ();
         GetGameScene ()->GetGame ()->GetMessageBus ()->Publish<SceneGraphUpdateMessage> (std::make_shared<SceneGraphUpdateMessage> (this->GetHandle ()));
     }
      
-    return *this;
+    return std::dynamic_pointer_cast<GameObject> (shared_from_this ());
 }
 
 std::shared_ptr<GameScene> GameObject::GetGameScene ()
@@ -56,7 +57,7 @@ std::shared_ptr<GameObject> GameObject::GetParentObject ()
     return m_parentObject.lock ();
 }
 
-std::vector<std::shared_ptr<GameObject>> GameObject::GetChildObjects ()
+std::vector<std::weak_ptr<GameObject>> GameObject::GetChildren ()
 {
     return m_childObjects;
 }
@@ -81,41 +82,41 @@ void GameObject::OnEnd ()
 {
 }
 
-Transform& GameObject::GetLocalTransform ()
+std::shared_ptr<Transform> GameObject::GetModelTransform ()
 {
-    return m_localTransform;
+    return m_modelTransform;
 }
 
-Matrix4f GameObject::GetModelTransformMatrix () const
+Matrix4f GameObject::GetWorldTransformMatrix () const
 {
-    return m_modelTransformMatrix;
+    return m_worldTransformMatrix;
 }
 
-void GameObject::CalculateModelTransformMatrix ()
+void GameObject::CalculateWorldTransformMatrix ()
 {
     if (auto p = m_parentObject.lock ())
     {
-        m_modelTransformMatrix = p->GetModelTransformMatrix () * m_localTransform.GetTransformMatrix ();
+        m_worldTransformMatrix = p->GetWorldTransformMatrix () * m_modelTransform->GetTransformMatrix ();
     }
     else
     {
-        m_modelTransformMatrix = m_localTransform.GetTransformMatrix ();
+        m_worldTransformMatrix = m_modelTransform->GetTransformMatrix ();
     }
 
     for (auto&& childObject : m_childObjects)
     {
-        childObject->CalculateModelTransformMatrix ();
+        childObject.lock ()->CalculateWorldTransformMatrix ();
     }
 }
 
 Vector4f GameObject::GetPosition () const
 {
-    return GetModelTransformMatrix () * Vector4f (0.0f, 0.0f, 0.0f, 1.0f);
+    return GetWorldTransformMatrix () * Vector4f (0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 Vector3f GameObject::GetScaling () const
 {
-    Matrix4f m = GetModelTransformMatrix ();
+    Matrix4f m = GetWorldTransformMatrix ();
 
     float sx = Mathf::Length (Vector3f (m[0][0], m[1][0], m[2][0]));
     float sy = Mathf::Length (Vector3f (m[0][1], m[1][1], m[2][1]));
@@ -126,7 +127,7 @@ Vector3f GameObject::GetScaling () const
 
 Quaternion GameObject::GetRotation () const
 {
-    Matrix4f m = GetModelTransformMatrix ();
+    Matrix4f m = GetWorldTransformMatrix ();
 
     /* convert to pure rotation matrix */
     m[3][0] = 0.0f;
@@ -155,21 +156,21 @@ Quaternion GameObject::GetRotation () const
 
 Vector3f GameObject::GetRight () const
 {
-    Matrix4f modelTransforMatrix = GetModelTransformMatrix ();
+    Matrix4f modelTransforMatrix = GetWorldTransformMatrix ();
 
     return Mathf::Normalize (Vector3f (modelTransforMatrix[0][0], modelTransforMatrix[1][0], modelTransforMatrix[2][0]));
 }
 
 Vector3f GameObject::GetUp () const
 {
-    Matrix4f modelTransforMatrix = GetModelTransformMatrix ();
+    Matrix4f modelTransforMatrix = GetWorldTransformMatrix ();
 
     return Mathf::Normalize (Vector3f (modelTransforMatrix[0][1], modelTransforMatrix[1][1], modelTransforMatrix[2][1]));
 }
 
 Vector3f GameObject::GetForward () const
 {
-    Matrix4f modelTransforMatrix = GetModelTransformMatrix ();
+    Matrix4f modelTransforMatrix = GetWorldTransformMatrix ();
 
     return Mathf::Normalize (Vector3f (modelTransforMatrix[0][2], modelTransforMatrix[1][2], modelTransforMatrix[2][2]));
 }

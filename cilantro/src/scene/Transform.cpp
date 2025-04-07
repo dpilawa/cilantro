@@ -1,5 +1,5 @@
 #include "cilantroengine.h"
-#include "system/HookProvider.h"
+#include "system/Hook.h"
 #include "scene/Transform.h"
 #include "math/Matrix4f.h"
 #include "math/Vector3f.h"
@@ -12,138 +12,144 @@ namespace cilantro
 
 Transform::Transform ()
 {
-    isValid = true;
+    m_isValid = true;
 
     // calculate initial matrices
-    Translate (0.0f, 0.0f, 0.0f);
-    Scale (1.0f, 1.0f, 1.0f);
-    Rotate (0.0f, 0.0f, 0.0f);
+    m_translate = Vector3f (0.0f, 0.0f, 0.0f);
+    m_translationMatrix = Mathf::GenTranslationMatrix (m_translate);
 
+    m_scale = Vector3f (1.0f, 1.0f, 1.0f);
+    m_scalingMatrix = Mathf::GenScalingMatrix (m_scale);
+    
+    m_rotate = Mathf::EulerToQuaternion (Mathf::Deg2Rad ({0.0f, 0.0f, 0.0f}));
+    m_rotationMatrix = Mathf::GenRotationMatrix (m_rotate);
+
+    m_transformMatrix = m_translationMatrix * m_rotationMatrix * m_scalingMatrix;
 }
 
 Transform::~Transform ()
 {
 }
 
-Matrix4f& Transform::GetTransformMatrix ()
+Matrix4f Transform::GetTransformMatrix ()
 {
     // multiply transformation matrices (first scale, then rotate, then translate)
-    if (isValid == false) 
+    if (m_isValid == false) 
     {
-        transformMatrix = translationMatrix * rotationMatrix * scalingMatrix;
-        isValid = true;
+        m_transformMatrix = m_translationMatrix * m_rotationMatrix * m_scalingMatrix;
+        m_isValid = true;
     }
 
-    return transformMatrix;
+    return m_transformMatrix;
 }
 
-Transform& Transform::SetTransformMatrix (const Matrix4f& m)
+std::shared_ptr<Transform> Transform::SetTransformMatrix (const Matrix4f& m)
 {
-    isValid = true; // OK because model matrix is calculated
+    m_isValid = true; // OK because model matrix is calculated
 
-    transformMatrix = m;
+    m_transformMatrix = m;
 
-    translate = Mathf::GetTranslationFromTransformationMatrix (m);
-    translationMatrix = Mathf::GenTranslationMatrix (translate);
+    m_translate = Mathf::GetTranslationFromTransformationMatrix (m);
+    m_translationMatrix = Mathf::GenTranslationMatrix (m_translate);
 
-    scale = Mathf::GetScalingFromTransformationMatrix (m);
-    scalingMatrix = Mathf::GenScalingMatrix (scale);
+    m_scale = Mathf::GetScalingFromTransformationMatrix (m);
+    m_scalingMatrix = Mathf::GenScalingMatrix (m_scale);
 
-    rotate = Mathf::GetRotationFromTransformationMatrix (m);
-    rotationMatrix = Mathf::GenRotationMatrix (rotate);
+    m_rotate = Mathf::GetRotationFromTransformationMatrix (m);
+    m_rotationMatrix = Mathf::GenRotationMatrix (m_rotate);
 
     InvokeHook ("OnUpdateTransform");
 
-    return *this;
+    return std::dynamic_pointer_cast<Transform> (shared_from_this ());
 }
 
-Matrix4f& Transform::GetTranslationMatrix ()
+Matrix4f Transform::GetTranslationMatrix ()
 {
-    return translationMatrix;
+    return m_translationMatrix;
 }
 
-Matrix4f& Transform::GetScalingMatrix ()
+Matrix4f Transform::GetScalingMatrix ()
 {
-    return scalingMatrix;
+    return m_scalingMatrix;
 }
 
-Matrix4f& Transform::GetRotationMatrix ()
+Matrix4f Transform::GetRotationMatrix ()
 {
-    return rotationMatrix;
+    return m_rotationMatrix;
 }
 
-Transform& Transform::Translate (float x, float y, float z)
+std::shared_ptr<Transform> Transform::Translate (float x, float y, float z)
 {
     return Translate (Vector3f (x, y, z));
 }
 
-Transform& Transform::Translate (const Vector3f & t)
+std::shared_ptr<Transform> Transform::Translate (const Vector3f & t)
 {
-    isValid = false;
+    m_isValid = false;
 
-    translate = t;
-    translationMatrix = Mathf::GenTranslationMatrix (translate);
+    m_translate = t;
+    m_translationMatrix = Mathf::GenTranslationMatrix (m_translate);
 
     InvokeHook ("OnUpdateTransform");
 
-    return *this;
+    return std::dynamic_pointer_cast<Transform> (shared_from_this ());
 }
 
 Vector3f Transform::GetTranslation () const
 {
     Vector3f t;
 
-    t[0] = translationMatrix[0][3];
-    t[1] = translationMatrix[1][3];
-    t[2] = translationMatrix[2][3];
+    t[0] = m_translationMatrix[0][3];
+    t[1] = m_translationMatrix[1][3];
+    t[2] = m_translationMatrix[2][3];
 
     return t;
 }
 
-Transform& Transform::TranslateBy (float x, float y, float z)
+std::shared_ptr<Transform> Transform::TranslateBy (float x, float y, float z)
 {
     return TranslateBy (Vector3f (x, y, z));
 }
 
-Transform& Transform::TranslateBy (const Vector3f& t) 
+std::shared_ptr<Transform> Transform::TranslateBy (const Vector3f& t) 
 {
     return Translate (GetTranslation () + t);
 }
 
-Transform& Transform::Scale (float x, float y, float z) 
+std::shared_ptr<Transform> Transform::Scale (float x, float y, float z) 
 {
     return Scale (Vector3f (x, y, z));
 }
 
-Transform& Transform::Scale (const Vector3f& s)
+std::shared_ptr<Transform> Transform::Scale (const Vector3f& s)
 {
-    isValid = false;
+    m_isValid = false;
 
-    scale = s;
-    scalingMatrix = Mathf::GenScalingMatrix (scale);
+    m_scale = s;
+    m_scalingMatrix = Mathf::GenScalingMatrix (m_scale);
 
     InvokeHook ("OnUpdateTransform");
 
-    return *this;
+    return std::dynamic_pointer_cast<Transform> (shared_from_this ());
 }
 
 Vector3f Transform::GetScale () const
 {
     Vector3f s;
 
-    s[0] = scalingMatrix[0][0];
-    s[1] = scalingMatrix[1][1];
-    s[2] = scalingMatrix[2][2];
+    s[0] = m_scalingMatrix[0][0];
+    s[1] = m_scalingMatrix[1][1];
+    s[2] = m_scalingMatrix[2][2];
 
     return s;
 }
 
-Transform& Transform::ScaleBy (float x, float y, float z)
+std::shared_ptr<Transform> Transform::ScaleBy (float x, float y, float z)
 {
     return ScaleBy (Vector3f (x, y, z));
 }
 
-Transform& Transform::ScaleBy (const Vector3f& s) 
+std::shared_ptr<Transform> Transform::ScaleBy (const Vector3f& s) 
 {
     Vector3f sNew;
 
@@ -156,82 +162,82 @@ Transform& Transform::ScaleBy (const Vector3f& s)
     return Scale (sNew);
 }
 
-Transform& Transform::Scale (float s)
+std::shared_ptr<Transform> Transform::Scale (float s)
 {
     return Scale (Vector3f (s, s, s));
 }
 
-Transform& Transform::ScaleBy (float s)
+std::shared_ptr<Transform> Transform::ScaleBy (float s)
 {
     return Scale (GetScale () * s);
 }
 
-Transform& Transform::Rotate (float x, float y, float z)
+std::shared_ptr<Transform> Transform::Rotate (float x, float y, float z)
 {
     return Rotate (Vector3f (x, y, z));
 }
 
-Transform& Transform::Rotate (const Vector3f& euler)
+std::shared_ptr<Transform> Transform::Rotate (const Vector3f& euler)
 {
-    isValid = false;
+    m_isValid = false;
 
-    rotate = Mathf::EulerToQuaternion (Mathf::Deg2Rad (euler));
-    rotationMatrix = Mathf::GenRotationMatrix (rotate);
+    m_rotate = Mathf::EulerToQuaternion (Mathf::Deg2Rad (euler));
+    m_rotationMatrix = Mathf::GenRotationMatrix (m_rotate);
 
     InvokeHook ("OnUpdateTransform");
 
-    return *this;
+    return std::dynamic_pointer_cast<Transform> (shared_from_this ());
 }
 
-Transform& Transform::Rotate (const Quaternion& q)
+std::shared_ptr<Transform> Transform::Rotate (const Quaternion& q)
 {
-    isValid = false;
+    m_isValid = false;
 
-    rotate = q;
-    rotationMatrix = Mathf::GenRotationMatrix (rotate);
+    m_rotate = q;
+    m_rotationMatrix = Mathf::GenRotationMatrix (m_rotate);
 
     InvokeHook ("OnUpdateTransform");
 
-    return *this;
+    return std::dynamic_pointer_cast<Transform> (shared_from_this ());
 }
 
-Transform& Transform::Rotate (const Vector3f& axis, float theta)
+std::shared_ptr<Transform> Transform::Rotate (const Vector3f& axis, float theta)
 {
-    isValid = false;
+    m_isValid = false;
 
-    rotate = Mathf::GenRotationQuaternion (axis, Mathf::Deg2Rad (theta));
-    rotationMatrix = Mathf::GenRotationMatrix (rotate);
+    m_rotate = Mathf::GenRotationQuaternion (axis, Mathf::Deg2Rad (theta));
+    m_rotationMatrix = Mathf::GenRotationMatrix (m_rotate);
 
     InvokeHook ("OnUpdateTransform");
 
-    return *this;
+    return std::dynamic_pointer_cast<Transform> (shared_from_this ());
 }
 
 Vector3f Transform::GetRotation () const
 {
-    return (Mathf::Rad2Deg (Mathf::QuaternionToEuler (rotate)));
+    return (Mathf::Rad2Deg (Mathf::QuaternionToEuler (m_rotate)));
 }
 
 Quaternion Transform::GetRotationQuaternion () const
 {
-    return rotate;
+    return m_rotate;
 }
 
-Transform& Transform::RotateBy (float x, float y, float z)
+std::shared_ptr<Transform> Transform::RotateBy (float x, float y, float z)
 {
     return RotateBy (Vector3f (x, y, z));
 }
 
-Transform& Transform::RotateBy (const Vector3f& r) 
+std::shared_ptr<Transform> Transform::RotateBy (const Vector3f& r) 
 {
     return Rotate (GetRotation () + r);
 }
 
-Transform& Transform::RotateBy (const Quaternion& q)
+std::shared_ptr<Transform> Transform::RotateBy (const Quaternion& q)
 {
     Quaternion newRotation;
 
-    newRotation = Mathf::Product (q, rotate);
+    newRotation = Mathf::Product (q, m_rotate);
 
     return Rotate (newRotation);
 }

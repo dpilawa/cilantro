@@ -24,7 +24,7 @@ public:
     __EAPI std::shared_ptr<Mesh> GetMesh ();
 
     // material 
-    __EAPI MeshObject& SetMaterial (const std::string& materialName);
+    __EAPI std::shared_ptr<MeshObject> SetMaterial (const std::string& materialName);
     __EAPI std::shared_ptr<Material> GetMaterial () const;
 
     // generate array of bone transformations to be loaded to shader

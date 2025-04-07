@@ -3,7 +3,7 @@
 
 #include "cilantroengine.h"
 #include "resource/Resource.h"
-#include "system/HookProvider.h"
+#include "system/Hook.h"
 #include "math/Vector2f.h"
 #include "math/Vector3f.h"
 #include <cstdint>
@@ -20,7 +20,7 @@ struct Vector3Hash
     }
 };
 
-class __CEAPI Mesh : public Resource, public Hook<std::string>
+class __CEAPI Mesh : public Resource, public Hook<std::string>, public std::enable_shared_from_this<Mesh>
 {
 
 public:
@@ -29,14 +29,14 @@ public:
     __EAPI virtual ~Mesh ();
 
     // Cleans up contents of used collections
-    __EAPI Mesh& Clear ();
+    __EAPI std::shared_ptr<Mesh> Clear ();
 
     // calculate vertex normals
-    __EAPI Mesh& CalculateVertexNormals ();
-    __EAPI Mesh& SetSmoothNormals (bool smoothNormals);
+    __EAPI std::shared_ptr<Mesh> CalculateVertexNormals ();
+    __EAPI std::shared_ptr<Mesh> SetSmoothNormals (bool smoothNormals);
 
     // calculate tangents and bitangents
-    __EAPI Mesh& CalculateTangentsBitangents ();
+    __EAPI std::shared_ptr<Mesh> CalculateTangentsBitangents ();
 
     // get mesh counts
     __EAPI size_t GetVertexCount () const;
@@ -57,11 +57,11 @@ public:
     __EAPI uint32_t* GetFacesData ();
 
     // add vertices and primitives
-    __EAPI Mesh& AddVertex (const Vector3f& vertex, const Vector2f& uv);
-    __EAPI Mesh& AddFace (size_t v1, size_t v2, size_t v3);
-    __EAPI Mesh& AddNormal (const Vector3f& normal);
-    __EAPI Mesh& AddTangentBitangent (const Vector3f& tangent, const Vector3f& bitangent);
-    __EAPI Mesh& AddVertexBoneInfluence (size_t v, float weight, handle_t boneHandle);
+    __EAPI std::shared_ptr<Mesh> AddVertex (const Vector3f& vertex, const Vector2f& uv);
+    __EAPI std::shared_ptr<Mesh> AddFace (size_t v1, size_t v2, size_t v3);
+    __EAPI std::shared_ptr<Mesh> AddNormal (const Vector3f& normal);
+    __EAPI std::shared_ptr<Mesh> AddTangentBitangent (const Vector3f& tangent, const Vector3f& bitangent);
+    __EAPI std::shared_ptr<Mesh> AddVertexBoneInfluence (size_t v, float weight, handle_t boneHandle);
 
 
 private:
@@ -73,9 +73,9 @@ private:
     Vector3f GetTangent (size_t index) const;
     Vector3f GetBitangent (size_t index) const;
 
-    Mesh& SetNormal (size_t index, const Vector3f& normal);
-    Mesh& SetTangent (size_t index, const Vector3f& tangent);
-    Mesh& SetBitangent (size_t index, const Vector3f& bitangent);
+    std::shared_ptr<Mesh> SetNormal (size_t index, const Vector3f& normal);
+    std::shared_ptr<Mesh> SetTangent (size_t index, const Vector3f& tangent);
+    std::shared_ptr<Mesh> SetBitangent (size_t index, const Vector3f& bitangent);
 
     bool smoothNormals;
 

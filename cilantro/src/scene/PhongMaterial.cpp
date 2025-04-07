@@ -31,67 +31,67 @@ PhongMaterial::~PhongMaterial ()
 {
 }
 
-PhongMaterial& PhongMaterial::SetDiffuse (const std::string& diffuse)
+std::shared_ptr<PhongMaterial> PhongMaterial::SetDiffuse (const std::string& diffuse)
 {
     auto tDiffuse = GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<Texture> (diffuse);
     SetTexture (static_cast<int>(PhongTexture::Diffuse), "tDiffuse", tDiffuse);
 
-    return *this;
+    return std::dynamic_pointer_cast<PhongMaterial> (shared_from_this ());
 }
 
-PhongMaterial& PhongMaterial::SetNormal (const std::string& normal)
+std::shared_ptr<PhongMaterial> PhongMaterial::SetNormal (const std::string& normal)
 {
     auto tNormal = GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<Texture> (normal);
     SetTexture (static_cast<int>(PhongTexture::Normal), "tNormal", tNormal);
 
-    return *this;
+    return std::dynamic_pointer_cast<PhongMaterial> (shared_from_this ());
 }
 
-PhongMaterial& PhongMaterial::SetSpecular (const std::string& specular)
+std::shared_ptr<PhongMaterial> PhongMaterial::SetSpecular (const std::string& specular)
 {
     auto tSpecular = GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<Texture> (specular);
     SetTexture (static_cast<int>(PhongTexture::Specular), "tSpecular", tSpecular);
 
-    return *this;
+    return std::dynamic_pointer_cast<PhongMaterial> (shared_from_this ());
 }
 
-PhongMaterial& PhongMaterial::SetEmissive (const std::string& emissive)
+std::shared_ptr<PhongMaterial> PhongMaterial::SetEmissive (const std::string& emissive)
 {
     auto tEmissive = GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<Texture> (emissive);
     SetTexture (static_cast<int>(PhongTexture::Emissive), "tEmissive", tEmissive);
     
-    return *this;
+    return std::dynamic_pointer_cast<PhongMaterial> (shared_from_this ());
 }
 
-PhongMaterial& PhongMaterial::SetDiffuse (const Vector3f& diffuse)
+std::shared_ptr<PhongMaterial> PhongMaterial::SetDiffuse (const Vector3f& diffuse)
 {
     m_diffuse->GenerateSolid (1, 1, diffuse);
     SetTexture (static_cast<int>(PhongTexture::Diffuse), "tDiffuse", m_diffuse);
 
-    return *this;
+    return std::dynamic_pointer_cast<PhongMaterial> (shared_from_this ());
 }
 
-PhongMaterial& PhongMaterial::SetSpecular (const Vector3f& specular)
+std::shared_ptr<PhongMaterial> PhongMaterial::SetSpecular (const Vector3f& specular)
 {
     m_specular->GenerateSolid (1, 1, specular);
     SetTexture (static_cast<int>(PhongTexture::Specular), "tSpecular", m_specular);
 
-    return *this;
+    return std::dynamic_pointer_cast<PhongMaterial> (shared_from_this ());
 }
 
-PhongMaterial& PhongMaterial::SetSpecularShininess (float specularShininess)
+std::shared_ptr<PhongMaterial> PhongMaterial::SetSpecularShininess (float specularShininess)
 {
     SetProperty ("fSpecularShininess", specularShininess);
 
-    return *this;
+    return std::dynamic_pointer_cast<PhongMaterial> (shared_from_this ());
 }
 
-PhongMaterial& PhongMaterial::SetEmissive (const Vector3f& emissive)
+std::shared_ptr<PhongMaterial> PhongMaterial::SetEmissive (const Vector3f& emissive)
 {
     m_emissive->GenerateSolid (1, 1, emissive);
     SetTexture (static_cast<int>(PhongTexture::Emissive), "tEmissive", m_emissive);
 
-    return *this;
+    return std::dynamic_pointer_cast<PhongMaterial> (shared_from_this ());
 }
 
 std::shared_ptr<Texture> PhongMaterial::GetDiffuse ()

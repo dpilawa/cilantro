@@ -18,25 +18,25 @@ PointLight::~PointLight ()
 {
 }
 
-PointLight& PointLight::SetConstantAttenuationFactor (const float attenuation)
+std::shared_ptr<PointLight> PointLight::SetConstantAttenuationFactor (const float attenuation)
 {
     m_attenuationConst = attenuation;
     GetGameScene ()->GetGame ()->GetMessageBus ()->Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
-    return *this;
+    return std::dynamic_pointer_cast<PointLight> (shared_from_this ());
 }
 
-PointLight& PointLight::SetLinearAttenuationFactor (const float attenuation)
+std::shared_ptr<PointLight> PointLight::SetLinearAttenuationFactor (const float attenuation)
 {
     m_attenuationLinear = attenuation;
     GetGameScene ()->GetGame ()->GetMessageBus ()->Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
-    return *this;
+    return std::dynamic_pointer_cast<PointLight> (shared_from_this ());
 }
 
-PointLight& PointLight::SetQuadraticAttenuationFactor (const float attenuation)
+std::shared_ptr<PointLight> PointLight::SetQuadraticAttenuationFactor (const float attenuation)
 {
     m_attenuationQuadratic = attenuation;
     GetGameScene ()->GetGame ()->GetMessageBus ()->Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
-    return *this;
+    return std::dynamic_pointer_cast<PointLight> (shared_from_this ());
 }
 
 float PointLight::GetConstantAttenuationFactor () const
@@ -57,7 +57,7 @@ float PointLight::GetQuadraticAttenuationFactor () const
 void PointLight::OnUpdate (IRenderer& renderer)
 {
     Light::OnUpdate (renderer);
-    renderer.Update (std::dynamic_pointer_cast<PointLight> (this->GetPointer ()));
+    renderer.Update (std::dynamic_pointer_cast<PointLight> (shared_from_this ()));
 }
 
 } // namespace cilantro

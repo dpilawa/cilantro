@@ -6,25 +6,26 @@
 #include "scene/Transform.h"
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace cilantro {
 
 class GameScene;
 struct IRenderer;
 
-class __CEAPI GameObject : public Resource
+class __CEAPI GameObject : public Resource, public std::enable_shared_from_this<GameObject>
 {
 public:
     __EAPI GameObject (std::shared_ptr<GameScene> gameScene);
     __EAPI virtual ~GameObject ();
 
     // set pointer to parent object (i.e. put current object inside hierarchy)
-    __EAPI GameObject& SetParentObject (const std::string& name);
+    __EAPI std::shared_ptr<GameObject> SetParentObject (const std::string& name);
 
     // get related objects
     __EAPI std::shared_ptr<GameScene> GetGameScene ();
     __EAPI std::shared_ptr<GameObject> GetParentObject ();
-    __EAPI std::vector<std::shared_ptr<GameObject>> GetChildObjects ();
+    __EAPI std::vector<std::weak_ptr<GameObject>> GetChildren ();
 
     // invoked by game loop during initializaton
     __EAPI virtual void OnStart ();
@@ -38,11 +39,11 @@ public:
     __EAPI virtual void OnEnd ();
 
     // get transformation object's reference
-    __EAPI Transform& GetLocalTransform ();
+    __EAPI std::shared_ptr<Transform> GetModelTransform ();
 
     // get transformation matrices
-    __EAPI Matrix4f GetModelTransformMatrix () const;
-    __EAPI void CalculateModelTransformMatrix ();
+    __EAPI Matrix4f GetWorldTransformMatrix () const;
+    __EAPI void CalculateWorldTransformMatrix ();
 
     // get object origin's orientation in world space
     __EAPI Vector4f GetPosition () const;
@@ -64,13 +65,13 @@ protected:
 
 private:
     // vector of child objects
-    std::vector<std::shared_ptr<GameObject>> m_childObjects;
+    std::vector<std::weak_ptr<GameObject>> m_childObjects;
 
-    // object's transformation in relation to parent
-    Transform m_localTransform;
+    // object's transformation in relation its origin
+    std::shared_ptr<Transform> m_modelTransform;
 
-    // transform matrix in model space
-    Matrix4f m_modelTransformMatrix;
+    // transform matrix in world space
+    Matrix4f m_worldTransformMatrix;
 };
 
 } // namespace cilantro

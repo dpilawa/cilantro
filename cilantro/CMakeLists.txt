@@ -94,7 +94,8 @@ include/scene/Primitives.h
 include/scene/SplinePath.h
 include/scene/SpotLight.h
 include/scene/Transform.h
-include/system/HookProvider.h
+include/scene/Waypoint.h
+include/system/Hook.h
 include/system/Game.h
 include/system/LogMessage.h
 include/system/Timer.h
@@ -156,6 +157,7 @@ src/scene/Primitives.cpp
 src/scene/SplinePath.cpp
 src/scene/SpotLight.cpp
 src/scene/Transform.cpp
+src/scene/Waypoint.cpp
 src/system/Game.cpp
 src/system/LogMessage.cpp
 src/system/Timer.cpp

@@ -11,7 +11,7 @@ public:
     ControlledCamera (std::shared_ptr<GameScene> gameScene, float fov, float near, float far, float speed, float sensitivity);
     virtual ~ControlledCamera ();
 
-    void Initialize ();
+    std::shared_ptr<ControlledCamera> Initialize ();
 
     void MoveRight (float offset);
     void MoveForward (float offset);

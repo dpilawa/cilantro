@@ -26,16 +26,16 @@ public:
     __EAPI virtual ~PBRMaterial ();
 
     // setters
-    __EAPI PBRMaterial& SetAlbedo (const std::string& albedo);
-    __EAPI PBRMaterial& SetNormal (const std::string& normal);
-    __EAPI PBRMaterial& SetMetallic (const std::string& metallic);
-    __EAPI PBRMaterial& SetRoughness (const std::string& roughness);
-    __EAPI PBRMaterial& SetAO (const std::string& ao);
+    __EAPI std::shared_ptr<PBRMaterial> SetAlbedo (const std::string& albedo);
+    __EAPI std::shared_ptr<PBRMaterial> SetNormal (const std::string& normal);
+    __EAPI std::shared_ptr<PBRMaterial> SetMetallic (const std::string& metallic);
+    __EAPI std::shared_ptr<PBRMaterial> SetRoughness (const std::string& roughness);
+    __EAPI std::shared_ptr<PBRMaterial> SetAO (const std::string& ao);
 
-    __EAPI PBRMaterial& SetAlbedo (const Vector3f& albedo);
-    __EAPI PBRMaterial& SetMetallic (const float metallic);
-    __EAPI PBRMaterial& SetRoughness (const float roughness);
-    __EAPI PBRMaterial& SetAO (const float ao);
+    __EAPI std::shared_ptr<PBRMaterial> SetAlbedo (const Vector3f& albedo);
+    __EAPI std::shared_ptr<PBRMaterial> SetMetallic (const float metallic);
+    __EAPI std::shared_ptr<PBRMaterial> SetRoughness (const float roughness);
+    __EAPI std::shared_ptr<PBRMaterial> SetAO (const float ao);
 
     // getters
     __EAPI std::shared_ptr<Texture> GetAlbedo ();

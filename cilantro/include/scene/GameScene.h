@@ -22,7 +22,7 @@ namespace cilantro {
 
 // This class represents a game world (a.k.a scene or level)
 // It contains all visible and invisible objects in a game
-class __CEAPI GameScene : public Resource
+class __CEAPI GameScene : public Resource, public std::enable_shared_from_this<GameScene>
 {
 public:
 
@@ -94,7 +94,7 @@ template <typename T, typename ...Params>
 std::shared_ptr<T> GameScene::Create (const std::string& name, Params&&... params)
     requires (std::is_base_of_v<GameObject,T>)
 {
-    auto gameObject = m_gameObjects.Create<T> (name, std::static_pointer_cast<GameScene>(this->GetPointer ()), params...);
+    auto gameObject = m_gameObjects.Create<T> (name, shared_from_this (), params...);
     handle_t handle = gameObject->GetHandle ();
 
     // update renderer data
@@ -138,7 +138,7 @@ template <typename T, typename ...Params>
 std::shared_ptr<T> GameScene::Create (const std::string& name, Params&&... params)
     requires (std::is_base_of_v<Material,T>)
 {
-    auto material = m_materials.Create<T> (name, std::static_pointer_cast<GameScene>(this->GetPointer ()), params...);
+    auto material = m_materials.Create<T> (name, shared_from_this (), params...);
     handle_t handle = material->GetHandle ();
 
     // update renderer data
@@ -152,7 +152,7 @@ template <typename T, typename ...Params>
 std::shared_ptr<T> GameScene::Create (Params&&... params)
     requires (std::is_base_of_v<IRenderer,T>)
 {
-    auto newRenderer = std::make_shared<T> (std::static_pointer_cast<GameScene>(this->GetPointer ()), params...);
+    auto newRenderer = std::make_shared<T> (shared_from_this (), params...);
     this->m_renderer = newRenderer;
     this->m_renderer->Initialize ();
 

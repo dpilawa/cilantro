@@ -120,13 +120,13 @@ void AssimpModelLoader::ImportNode (const aiScene* scene, const aiNode* node, co
 void AssimpModelLoader::ImportGameObject (const aiNode* node, const aiNode* parent, const aiMatrix4x4& transform)
 {
     auto gameObject = CreateGameObject (node, parent);
-    gameObject->GetLocalTransform ().SetTransformMatrix (ConvertMatrix (transform));
+    gameObject->GetModelTransform ()->SetTransformMatrix (ConvertMatrix (transform));
 }
 
 void AssimpModelLoader::ImportBone (const aiNode* node, const aiNode* parent, const aiMatrix4x4& transform)
 {
     auto bone = CreateBone (node, parent);
-    bone->GetLocalTransform ().SetTransformMatrix (ConvertMatrix (transform));
+    bone->GetModelTransform ()->SetTransformMatrix (ConvertMatrix (transform));
 }
 
 void AssimpModelLoader::ImportMesh (const aiScene* scene, const aiMesh* mesh, const aiNode* parent, const aiMatrix4x4& transform)
@@ -139,7 +139,7 @@ void AssimpModelLoader::ImportMesh (const aiScene* scene, const aiMesh* mesh, co
     ImportMeshMaterial (myMesh, scene, mesh);
 
     auto meshObject = CreateMeshObject (myMesh, scene, mesh, parent);
-    meshObject->GetLocalTransform ().SetTransformMatrix (ConvertMatrix (transform));
+    meshObject->GetModelTransform ()->SetTransformMatrix (ConvertMatrix (transform));
 }
 
 void AssimpModelLoader::ImportMeshPositions (std::shared_ptr<Mesh> myMesh, const aiScene* scene, const aiMesh* mesh)
@@ -331,8 +331,8 @@ void AssimpModelLoader::ImportNodeAnimation (std::shared_ptr<AnimationObject> my
             myAnimationObject->AddAnimationProperty<Vector3f> (
                 propertyNameT, 
                 ConvertVector3f (nodeAnimation->mPositionKeys[i].mValue), 
-                [&] (Vector3f v) {
-                    node->GetLocalTransform ().Translate (v);
+                [node] (Vector3f v) {
+                    node->GetModelTransform ()->Translate (v);
                 },
                 [] (Vector3f v0, Vector3f v1, float u) { 
                     return Mathf::Lerp (v0, v1, u); 
@@ -354,8 +354,8 @@ void AssimpModelLoader::ImportNodeAnimation (std::shared_ptr<AnimationObject> my
             myAnimationObject->AddAnimationProperty<Quaternion> (
                 propertyNameR, 
                 ConvertQuaterion (nodeAnimation->mRotationKeys[i].mValue), 
-                [&] (Quaternion q) {
-                    node->GetLocalTransform ().Rotate (q);
+                [node] (Quaternion q) {
+                    node->GetModelTransform ()->Rotate (q);
                 },
                 [] (Quaternion q0, Quaternion q1, float u) { 
                     return Mathf::Slerp (q0, q1, u); 
@@ -377,8 +377,8 @@ void AssimpModelLoader::ImportNodeAnimation (std::shared_ptr<AnimationObject> my
             myAnimationObject->AddAnimationProperty<Vector3f> (
                 propertyNameS, 
                 ConvertVector3f (nodeAnimation->mScalingKeys[i].mValue), 
-                [&] (Vector3f v) {
-                    node->GetLocalTransform ().Scale (v);
+                [node] (Vector3f v) {
+                    node->GetModelTransform ()->Scale (v);
                 },
                 [] (Vector3f v0, Vector3f v1, float u) { 
                     return Mathf::Lerp (v0, v1, u); 

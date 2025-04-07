@@ -15,9 +15,9 @@ public:
     __EAPI virtual ~PointLight ();
 
     // set attenuation factors
-    __EAPI PointLight& SetConstantAttenuationFactor (const float attenuation);
-    __EAPI PointLight& SetLinearAttenuationFactor (const float attenuation);
-    __EAPI PointLight& SetQuadraticAttenuationFactor (const float attenuation);
+    __EAPI std::shared_ptr<PointLight> SetConstantAttenuationFactor (const float attenuation);
+    __EAPI std::shared_ptr<PointLight> SetLinearAttenuationFactor (const float attenuation);
+    __EAPI std::shared_ptr<PointLight> SetQuadraticAttenuationFactor (const float attenuation);
 
     // getters
     __EAPI float GetConstantAttenuationFactor () const;

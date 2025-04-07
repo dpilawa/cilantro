@@ -16,11 +16,11 @@ public:
     __EAPI virtual ~Light ();
 
     // enable or disable light
-    __EAPI Light& SetEnabled (bool value);
+    __EAPI std::shared_ptr<Light> SetEnabled (bool value);
     __EAPI bool IsEnabled () const;
 
     // set color of the light
-    __EAPI Light& SetColor (const Vector3f color);
+    __EAPI std::shared_ptr<Light> SetColor (const Vector3f color);
 
     // get color of the light
     __EAPI Vector3f GetColor () const;

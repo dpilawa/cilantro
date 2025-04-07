@@ -4,7 +4,6 @@
 #include "scene/Bone.h"
 #include "math/Vector3f.h"
 #include "math/Mathf.h"
-#include "system/HookProvider.h"
 #include "system/LogMessage.h"
 #include "system/Game.h"
 
@@ -24,7 +23,7 @@ Mesh::~Mesh ()
 {
 }
 
-Mesh& Mesh::Clear ()
+std::shared_ptr<Mesh> Mesh::Clear ()
 {
     vertices.clear ();
     normals.clear ();
@@ -42,10 +41,10 @@ Mesh& Mesh::Clear ()
 
     InvokeHook ("OnUpdateMesh");
 
-    return *this;
+    return std::dynamic_pointer_cast<Mesh> (shared_from_this ());
 }
 
-Mesh& Mesh::CalculateVertexNormals ()
+std::shared_ptr<Mesh> Mesh::CalculateVertexNormals ()
 {
     Vector3f normal;
     Vector3f va;
@@ -132,10 +131,10 @@ Mesh& Mesh::CalculateVertexNormals ()
         SetNormal (v, Mathf::Normalize (normal));
     }
 
-    return *this;
+    return std::dynamic_pointer_cast<Mesh> (shared_from_this ());
 }
 
-Mesh& Mesh::CalculateTangentsBitangents ()
+std::shared_ptr<Mesh> Mesh::CalculateTangentsBitangents ()
 {
     Vector3f v0, v1, v2;
     Vector2f uv0, uv1, uv2;
@@ -184,16 +183,16 @@ Mesh& Mesh::CalculateTangentsBitangents ()
         SetBitangent (GetFaceVertexIndex (f, 2), bitangent);
     }
 
-    return *this;
+    return std::dynamic_pointer_cast<Mesh> (shared_from_this ());
 }
 
-Mesh& Mesh::SetSmoothNormals (bool smoothNormals)
+std::shared_ptr<Mesh> Mesh::SetSmoothNormals (bool smoothNormals)
 {
     this->smoothNormals = smoothNormals;
     this->CalculateVertexNormals ();
     InvokeHook ("OnUpdateMesh");
 
-    return *this;
+    return std::dynamic_pointer_cast<Mesh> (shared_from_this ());
 }
 
 size_t Mesh::GetVertexCount () const
@@ -256,7 +255,7 @@ std::vector<handle_t>& Mesh::GetMeshBones ()
     return meshBones;
 }
 
-Mesh& Mesh::AddVertex (const Vector3f& vertex, const Vector2f& uv)
+std::shared_ptr<Mesh> Mesh::AddVertex (const Vector3f& vertex, const Vector2f& uv)
 {
     vertices.push_back (vertex[0]);
     vertices.push_back (vertex[1]);
@@ -272,28 +271,28 @@ Mesh& Mesh::AddVertex (const Vector3f& vertex, const Vector2f& uv)
     boneInfluenceWeights[boneInfluenceWeights.size () - CILANTRO_MAX_BONE_INFLUENCES] = 1.0f;
     boneInfluenceIndices.resize (GetVertexCount () * CILANTRO_MAX_BONE_INFLUENCES, 0);
 
-    return *this;
+    return std::dynamic_pointer_cast<Mesh> (shared_from_this ());
 }
 
-Mesh& Mesh::AddFace (size_t v1, size_t v2, size_t v3)
+std::shared_ptr<Mesh> Mesh::AddFace (size_t v1, size_t v2, size_t v3)
 {
     indices.push_back ((uint32_t) v1);
     indices.push_back ((uint32_t) v2);
     indices.push_back ((uint32_t) v3);
 
-    return *this;
+    return std::dynamic_pointer_cast<Mesh> (shared_from_this ());
 }
 
-Mesh& Mesh::AddNormal (const Vector3f& normal)
+std::shared_ptr<Mesh> Mesh::AddNormal (const Vector3f& normal)
 {
     normals.push_back (normal[0]);
     normals.push_back (normal[1]);
     normals.push_back (normal[2]);
 
-    return *this;
+    return std::dynamic_pointer_cast<Mesh> (shared_from_this ());
 }
 
-Mesh& Mesh::AddTangentBitangent (const Vector3f& tangent, const Vector3f& bitangent)
+std::shared_ptr<Mesh> Mesh::AddTangentBitangent (const Vector3f& tangent, const Vector3f& bitangent)
 {
     tangents.push_back (tangent[0]);
     tangents.push_back (tangent[1]);
@@ -303,10 +302,10 @@ Mesh& Mesh::AddTangentBitangent (const Vector3f& tangent, const Vector3f& bitang
     bitangents.push_back (bitangent[1]);
     bitangents.push_back (bitangent[2]);
 
-    return *this;
+    return std::dynamic_pointer_cast<Mesh> (shared_from_this ());
 }
 
-Mesh& Mesh::AddVertexBoneInfluence (size_t v, float weight, handle_t boneHandle)
+std::shared_ptr<Mesh> Mesh::AddVertexBoneInfluence (size_t v, float weight, handle_t boneHandle)
 {
     size_t offset = boneInfluenceCounts[v];
     size_t index;
@@ -335,7 +334,7 @@ Mesh& Mesh::AddVertexBoneInfluence (size_t v, float weight, handle_t boneHandle)
         LogMessage(MSG_LOCATION, EXIT_FAILURE) << "Too many bone influences in mesh" << this->GetName () << "vertex" << v;
     }
 
-    return *this;
+    return std::dynamic_pointer_cast<Mesh> (shared_from_this ());
 }
 
 
@@ -369,31 +368,31 @@ Vector3f Mesh::GetBitangent (size_t index) const
     return Vector3f (bitangents[index * 3], bitangents[index * 3 + 1], bitangents[index * 3 + 2]);
 }
 
-Mesh& Mesh::SetNormal (size_t index, const Vector3f& normal)
+std::shared_ptr<Mesh> Mesh::SetNormal (size_t index, const Vector3f& normal)
 {
     normals[index * 3] = normal[0];
     normals[index * 3 + 1] = normal[1];
     normals[index * 3 + 2] = normal[2];
 
-    return *this;
+    return std::dynamic_pointer_cast<Mesh> (shared_from_this ());
 }
 
-Mesh& Mesh::SetTangent (size_t index, const Vector3f& tangent)
+std::shared_ptr<Mesh> Mesh::SetTangent (size_t index, const Vector3f& tangent)
 {
     tangents[index * 3] = tangent[0];
     tangents[index * 3 + 1] = tangent[1];
     tangents[index * 3 + 2] = tangent[2];
 
-    return *this;
+    return std::dynamic_pointer_cast<Mesh> (shared_from_this ());
 }
 
-Mesh& Mesh::SetBitangent (size_t index, const Vector3f& bitangent)
+std::shared_ptr<Mesh> Mesh::SetBitangent (size_t index, const Vector3f& bitangent)
 {
     bitangents[index * 3] = bitangent[0];
     bitangents[index * 3 + 1] = bitangent[1];
     bitangents[index * 3 + 2] = bitangent[2];
 
-    return *this;
+    return std::dynamic_pointer_cast<Mesh> (shared_from_this ());
 }
 
 } // namespace cilantro

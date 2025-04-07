@@ -19,15 +19,15 @@ namespace cilantro {
 typedef std::map<unsigned int, std::pair<std::string, std::shared_ptr<Texture>>> texture_map_t;
 typedef std::unordered_map<std::string, std::vector<float>> property_map_t;
 
-class __CEAPI Material : public Resource
+class __CEAPI Material : public Resource, public std::enable_shared_from_this<Material>
 {
 public:
     __EAPI Material (std::shared_ptr<GameScene> scene);
     __EAPI virtual ~Material ();
 
-    __EAPI Material& SetForwardShaderProgram (const std::string& name);
-    __EAPI Material& SetDeferredGeometryPassShaderProgram (const std::string& name);
-    __EAPI Material& SetDeferredLightingPassShaderProgram (const std::string& name);
+    __EAPI std::shared_ptr<Material> SetForwardShaderProgram (const std::string& name);
+    __EAPI std::shared_ptr<Material> SetDeferredGeometryPassShaderProgram (const std::string& name);
+    __EAPI std::shared_ptr<Material> SetDeferredLightingPassShaderProgram (const std::string& name);
     __EAPI std::string GetForwardShaderProgram () const;
     __EAPI std::string GetDeferredGeometryPassShaderProgram () const;
     __EAPI std::string GetDeferredLightingPassShaderProgram () const;
@@ -39,9 +39,9 @@ public:
 
 protected:
 
-    Material& SetTexture (unsigned int textureUnit, const std::string& label, std::shared_ptr<Texture> texture);
-    Material& SetProperty (const std::string& propertyName, float propertyValue);
-    Material& SetProperty (const std::string& propertyName, Vector3f propertyValue);
+    std::shared_ptr<Material> SetTexture (unsigned int textureUnit, const std::string& label, std::shared_ptr<Texture> texture);
+    std::shared_ptr<Material> SetProperty (const std::string& propertyName, float propertyValue);
+    std::shared_ptr<Material> SetProperty (const std::string& propertyName, Vector3f propertyValue);
 
     // parent game scene
     std::weak_ptr<GameScene> m_gameScene;

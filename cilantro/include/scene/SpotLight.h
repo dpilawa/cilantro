@@ -15,8 +15,8 @@ public:
     __EAPI virtual ~SpotLight ();
 
     // set attenuation factors
-    __EAPI SpotLight& SetInnerCutoff (const float cutoff);
-    __EAPI SpotLight& SetOuterCutoff (const float cutOff);
+    __EAPI std::shared_ptr<SpotLight> SetInnerCutoff (const float cutoff);
+    __EAPI std::shared_ptr<SpotLight> SetOuterCutoff (const float cutOff);
 
     // getters
     __EAPI float GetInnerCutoff () const;

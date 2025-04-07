@@ -1,4 +1,3 @@
-/*
 #include "cilantroengine.h"
 #include "scene/GameScene.h"
 #include "scene/PointLight.h"
@@ -21,54 +20,56 @@ using namespace cilantro;
 
 int main (int argc, char* argv [])
 {
-    Game::Initialize (std::filesystem::current_path ().string ());
+    auto game = std::make_shared<Game> ();
+    game->Initialize ();
 
-    GameScene& gameScene = Game::Create<GameScene> ("scene");
-    GLFWRenderer& renderer = gameScene.Create<GLFWRenderer> (800, 600, true, false, "Test 04", false, true, true);
-    InputController& inputController = Game::Create<GLFWInputController> ();
+    auto scene = game->Create<GameScene> ("scene");
+    auto renderer = scene->Create<GLFWRenderer> (800, 600, true, false, "Test 04", false, true, true);
+    auto inputController = game->Create<GLFWInputController> ();
 
-    AssimpModelLoader modelLoader;
+    AssimpModelLoader modelLoader (game);
 
-    renderer.Create<QuadRenderStage> ("hdr_postprocess").SetShaderProgram ("post_hdr_shader").SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);
-    renderer.Create<QuadRenderStage> ("fxaa_postprocess").SetShaderProgram ("post_fxaa_shader").SetRenderStageParameterFloat ("fMaxSpan", 4.0f).SetRenderStageParameterVector2f ("vInvResolution", Vector2f (1.0f / renderer.GetWidth (), 1.0f / renderer.GetHeight ())).SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);   
-    renderer.Create<QuadRenderStage> ("gamma_postprocess+screen").SetShaderProgram ("post_gamma_shader").SetRenderStageParameterFloat ("fGamma", 2.1f).SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS).SetFramebufferEnabled (false);
+    renderer->Create<QuadRenderStage> ("hdr_postprocess")->SetShaderProgram ("post_hdr_shader").SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);
+    renderer->Create<QuadRenderStage> ("fxaa_postprocess")->SetShaderProgram ("post_fxaa_shader").SetRenderStageParameterFloat ("fMaxSpan", 4.0f).SetRenderStageParameterVector2f ("vInvResolution", Vector2f (1.0f / renderer->GetWidth (), 1.0f / renderer->GetHeight ())).SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);   
+    renderer->Create<QuadRenderStage> ("gamma_postprocess+screen")->SetShaderProgram ("post_gamma_shader").SetRenderStageParameterFloat ("fGamma", 2.1f).SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS).SetFramebufferEnabled (false);
 
     modelLoader.Load ("scene", "assets/Cerberus_LP.FBX");
-    Game::GetResourceManager ().Load<Texture> ("tAlbedo", "assets/Textures/Cerberus_A.tga");
-    Game::GetResourceManager ().Load<Texture> ("tNormal", "assets/Textures/Cerberus_N.tga");
-    Game::GetResourceManager ().Load<Texture> ("tMetalness", "assets/Textures/Cerberus_M.tga");
-    Game::GetResourceManager ().Load<Texture> ("tRoughness", "assets/Textures/Cerberus_R.tga");
+    game->GetResourceManager ().Load<Texture> ("tAlbedo", "assets/Textures/Cerberus_A.tga");
+    game->GetResourceManager ().Load<Texture> ("tNormal", "assets/Textures/Cerberus_N.tga");
+    game->GetResourceManager ().Load<Texture> ("tMetalness", "assets/Textures/Cerberus_M.tga");
+    game->GetResourceManager ().Load<Texture> ("tRoughness", "assets/Textures/Cerberus_R.tga");
   
-    inputController.CreateInputEvent ("exit", EInputKey::KeyEsc, EInputTrigger::Press, {});
-    inputController.BindInputEvent ("exit", [ & ]() { Game::Stop (); });
+    inputController->CreateInputEvent ("exit", EInputKey::KeyEsc, EInputTrigger::Press, {});
+    inputController->BindInputEvent ("exit", [ & ]() { game->Stop (); });
 
-    inputController.CreateInputEvent ("mousemode", EInputKey::KeySpace, EInputTrigger::Release, {});
-    inputController.BindInputEvent ("mousemode", [ & ]() { inputController.SetMouseGameMode (!inputController.IsGameMode ()); });
+    inputController->CreateInputEvent ("mousemode", EInputKey::KeySpace, EInputTrigger::Release, {});
+    inputController->BindInputEvent ("mousemode", [ & ]() { inputController->SetMouseGameMode (!inputController->IsGameMode ()); });
 
-    PBRMaterial& m = gameScene.Create<PBRMaterial> ("gunMaterial");
-    m.SetAlbedo ("tAlbedo").SetNormal ("tNormal").SetMetallic ("tMetalness").SetRoughness ("tRoughness");
+    scene->Create<PBRMaterial> ("gunMaterial")
+        ->SetAlbedo ("tAlbedo")
+        ->SetNormal ("tNormal")
+        ->SetMetallic ("tMetalness")
+        ->SetRoughness ("tRoughness");
 
-    MeshObject& gun = gameScene.GetGameObjectManager ().GetByName<MeshObject> ("Cerberus00_Fixed");
-    gun.SetMaterial ("gunMaterial");
-    gun.GetLocalTransform ().Rotate (0.0f, 0.0f, 135.0f);
+    scene->GetGameObjectManager ().GetByName<MeshObject> ("Cerberus00_Fixed")
+        ->SetMaterial ("gunMaterial")
+        ->GetModelTransform ()->Rotate (0.0f, 0.0f, 135.0f);
 
-    ControlledCamera& cam = gameScene.Create<ControlledCamera> ("camera", 60.0f, 10.0f, 250.0f, 1.5f, 0.1f);
-    cam.Initialize ();
-    cam.GetLocalTransform ().Translate (0.0f, 0.0f, 50.0f);
-    gameScene.SetActiveCamera ("camera");
+    scene->Create<ControlledCamera> ("camera", 60.0f, 10.0f, 250.0f, 1.5f, 0.1f)
+        ->Initialize ()
+        ->GetModelTransform ()->Translate (0.0f, 0.0f, 50.0f);
 
-    DirectionalLight& light = gameScene.Create<DirectionalLight> ("light");
-    light.GetLocalTransform ().Rotate (45.0f, -120.0f, 0.0f);
-    light.SetColor (Vector3f (2.5f, 2.1f, 1.7f));
-    light.SetEnabled (true);
+    scene->SetActiveCamera ("camera");
 
-    Game::Run ();
+    scene->Create<DirectionalLight> ("light")
+        ->SetColor (Vector3f (2.5f, 2.1f, 1.7f))
+        ->SetEnabled (true)    
+        ->GetModelTransform ()->Rotate (45.0f, -120.0f, 0.0f);
 
-    Game::Deinitialize ();
+    game->Run ();
+
+    game->Deinitialize ();
 
     return 0;
 }
 
-*/
-
-int main() {}

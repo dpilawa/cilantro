@@ -41,6 +41,8 @@ public:
     template <typename T>
     std::shared_ptr<T> GetByName (const std::string& name) const;
 
+    __EAPI size_t GetCount () const;
+
     template <typename T>
     bool HasName (const std::string& name) const;
 

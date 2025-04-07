@@ -13,7 +13,7 @@ ControlledCamera::~ControlledCamera()
 {
 }
 
-void ControlledCamera::Initialize ()
+std::shared_ptr<ControlledCamera> ControlledCamera::Initialize ()
 {
     auto c = std::dynamic_pointer_cast<GLFWInputController> (GetGameScene ()->GetGame ()->GetInputController ());
 
@@ -30,24 +30,26 @@ void ControlledCamera::Initialize ()
     c->BindInputAxis ("moveforward", [&](float a) { MoveForward (a); });
     c->BindInputAxis ("camerapitch", [&](float a) { PitchBy (a); });
     c->BindInputAxis ("camerayaw", [&](float a) { YawBy (a); });
+
+    return std::dynamic_pointer_cast<ControlledCamera> (shared_from_this ());
 }
 
 void ControlledCamera::MoveRight (float offset)
 {
-    GetLocalTransform ().TranslateBy (GetRight () * offset * speed);
+    GetModelTransform ()->TranslateBy (GetRight () * offset * speed);
 }
 
 void ControlledCamera::MoveForward (float offset)
 {
-    GetLocalTransform ().TranslateBy (-GetForward () * offset * speed);
+    GetModelTransform ()->TranslateBy (-GetForward () * offset * speed);
 }
 
 void ControlledCamera::YawBy (float angle)
 {
-    GetLocalTransform ().RotateBy (0.0f, angle * sensitivity, 0.0f);
+    GetModelTransform ()->RotateBy (0.0f, angle * sensitivity, 0.0f);
 }
 
 void ControlledCamera::PitchBy (float angle)
 {
-    GetLocalTransform ().RotateBy (angle * sensitivity, 0.0f, 0.0f);
+    GetModelTransform ()->RotateBy (angle * sensitivity, 0.0f, 0.0f);
 }

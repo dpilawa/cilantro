@@ -9,14 +9,14 @@ using namespace cilantro;
 class Orbiter : public GameObject
 {
 public:
-    Orbiter (GameScene* gameScene, GameObject& parent, float axisPeriod, float axisAngle, float orbitingPeriod, float orbitingDistance, float orbitInclination);
+    Orbiter (std::shared_ptr<GameScene> gameScene, std::shared_ptr<GameObject> parent, float axisPeriod, float axisAngle, float orbitingPeriod, float orbitingDistance, float orbitInclination);
     ~Orbiter ();
 
     void OnFrame ();
 
 private:
 
-    GameObject& parent;
+    std::weak_ptr<GameObject> parent;
 
     // axis and plane of the orbit
     Quaternion tilt;

@@ -31,76 +31,76 @@ PBRMaterial::~PBRMaterial ()
 {
 }
 
-PBRMaterial& PBRMaterial::SetAlbedo (const std::string& albedo)
+std::shared_ptr<PBRMaterial> PBRMaterial::SetAlbedo (const std::string& albedo)
 {
     auto tAlbedo = GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<Texture> (albedo);
     SetTexture (static_cast<int>(PBRTexture::Albedo), "tAlbedo", tAlbedo);
 
-    return *this;
+    return std::dynamic_pointer_cast<PBRMaterial> (shared_from_this ());
 }
 
-PBRMaterial& PBRMaterial::SetNormal (const std::string& normal)
+std::shared_ptr<PBRMaterial> PBRMaterial::SetNormal (const std::string& normal)
 {
     auto tNormal = GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<Texture> (normal);
     SetTexture (static_cast<int>(PBRTexture::Normal), "tNormal", tNormal);
 
-    return *this;
+    return std::dynamic_pointer_cast<PBRMaterial> (shared_from_this ());
 }
 
-PBRMaterial& PBRMaterial::SetMetallic (const std::string& metallic)
+std::shared_ptr<PBRMaterial> PBRMaterial::SetMetallic (const std::string& metallic)
 {
     auto tMetallic = GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<Texture> (metallic);
     SetTexture (static_cast<int>(PBRTexture::Metallic), "tMetallic", tMetallic);
 
-    return *this;
+    return std::dynamic_pointer_cast<PBRMaterial> (shared_from_this ());
 }
 
-PBRMaterial& PBRMaterial::SetRoughness (const std::string& roughness)
+std::shared_ptr<PBRMaterial> PBRMaterial::SetRoughness (const std::string& roughness)
 {
     auto tRoughness = GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<Texture> (roughness);
     SetTexture (static_cast<int>(PBRTexture::Roughness), "tRoughness", tRoughness);
 
-    return *this;
+    return std::dynamic_pointer_cast<PBRMaterial> (shared_from_this ());
 }
 
-PBRMaterial& PBRMaterial::SetAO (const std::string& ao)
+std::shared_ptr<PBRMaterial> PBRMaterial::SetAO (const std::string& ao)
 {
     auto tAO = GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<Texture> (ao);
     SetTexture (static_cast<int>(PBRTexture::AO), "tAO", tAO);
 
-    return *this;
+    return std::dynamic_pointer_cast<PBRMaterial> (shared_from_this ());
 }
 
-PBRMaterial& PBRMaterial::SetAlbedo (const Vector3f& albedo)
+std::shared_ptr<PBRMaterial> PBRMaterial::SetAlbedo (const Vector3f& albedo)
 {
     m_albedo->GenerateSolid (1, 1, albedo);
     SetTexture (static_cast<int>(PBRTexture::Albedo), "tAlbedo", m_albedo);
 
-    return *this;
+    return std::dynamic_pointer_cast<PBRMaterial> (shared_from_this ());
 }
 
-PBRMaterial& PBRMaterial::SetMetallic (const float metallic)
+std::shared_ptr<PBRMaterial> PBRMaterial::SetMetallic (const float metallic)
 {
     m_metallic->GenerateSolid (1, 1, metallic);
     SetTexture (static_cast<int>(PBRTexture::Metallic), "tMetallic", m_metallic);
 
-    return *this;
+    return std::dynamic_pointer_cast<PBRMaterial> (shared_from_this ());
 }
 
-PBRMaterial& PBRMaterial::SetRoughness (const float roughness)
+std::shared_ptr<PBRMaterial> PBRMaterial::SetRoughness (const float roughness)
 {
     m_roughness->GenerateSolid (1, 1, roughness);
     SetTexture (static_cast<int>(PBRTexture::Roughness), "tRoughness", m_roughness);
 
-    return *this;
+    return std::dynamic_pointer_cast<PBRMaterial> (shared_from_this ());
 }
 
-PBRMaterial& PBRMaterial::SetAO (const float ao)
+std::shared_ptr<PBRMaterial> PBRMaterial::SetAO (const float ao)
 {
     m_ao->GenerateSolid (1, 1, ao);
     SetTexture (static_cast<int>(PBRTexture::AO), "tAO", m_ao);
 
-    return *this;
+    return std::dynamic_pointer_cast<PBRMaterial> (shared_from_this ());
 }
 
 std::shared_ptr<Texture> PBRMaterial::GetAlbedo ()

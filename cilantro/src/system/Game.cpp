@@ -8,7 +8,6 @@ namespace cilantro {
 Game::Game ()
 {
     m_inputController = nullptr;
-    m_currentGameScene = nullptr;
     m_messageBus = nullptr;
 }
 
@@ -50,7 +49,7 @@ ResourceManager<GameScene>& Game::GetGameSceneManager ()
 
 std::shared_ptr<GameScene> Game::GetCurrentGameScene ()
 {
-    return m_currentGameScene;
+    return m_currentGameScene.lock ();
 }
 
 void Game::SetCurrentGameScene (const std::string sceneName)
@@ -101,7 +100,7 @@ void Game::Stop ()
 void Game::Step ()
 {
     // step current scene
-    m_currentGameScene->OnFrame ();
+    m_currentGameScene.lock ()->OnFrame ();
 
     // process input
     m_inputController->OnFrame ();

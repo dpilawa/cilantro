@@ -23,6 +23,12 @@ ResourceManager<Base>::~ResourceManager ()
 }
 
 template <typename Base>
+size_t ResourceManager<Base>::GetCount () const
+{
+    return m_resources.size ();
+}
+
+template <typename Base>
 typename ResourceManager<Base>::iterator ResourceManager<Base>::begin ()
 { 
     return m_resources.begin (); 
@@ -70,7 +76,6 @@ std::shared_ptr<Base> ResourceManager<Base>::Push (const std::string& name, std:
     {
         resource->m_name = name;
         resource->m_handle = m_nextHandle++;
-        resource->m_pointer = resource;
         m_resources.push_back (resource);
         resourceNames[name] = resource->m_handle;
     }
@@ -82,6 +87,7 @@ std::shared_ptr<Base> ResourceManager<Base>::Push (const std::string& name, std:
 
 template __EAPI ResourceManager<Resource>::ResourceManager ();
 template __EAPI ResourceManager<Resource>::~ResourceManager ();
+template __EAPI size_t ResourceManager<Resource>::GetCount () const;
 template __EAPI ResourceManager<Resource>::iterator ResourceManager<Resource>::begin ();
 template __EAPI ResourceManager<Resource>::iterator ResourceManager<Resource>::end ();
 template __EAPI ResourceManager<Resource>::const_iterator ResourceManager<Resource>::begin () const;
@@ -92,6 +98,7 @@ template __EAPI std::shared_ptr<Resource> ResourceManager<Resource>::Push (const
 
 template __EAPI ResourceManager<GameScene>::ResourceManager ();
 template __EAPI ResourceManager<GameScene>::~ResourceManager ();
+template __EAPI size_t ResourceManager<GameScene>::GetCount () const;
 template __EAPI ResourceManager<GameScene>::iterator ResourceManager<GameScene>::begin ();
 template __EAPI ResourceManager<GameScene>::iterator ResourceManager<GameScene>::end ();
 template __EAPI ResourceManager<GameScene>::const_iterator ResourceManager<GameScene>::begin () const;
@@ -102,6 +109,7 @@ template __EAPI std::shared_ptr<GameScene> ResourceManager<GameScene>::Push (con
 
 template __EAPI ResourceManager<Material>::ResourceManager ();
 template __EAPI ResourceManager<Material>::~ResourceManager ();
+template __EAPI size_t ResourceManager<Material>::GetCount () const;
 template __EAPI ResourceManager<Material>::iterator ResourceManager<Material>::begin ();
 template __EAPI ResourceManager<Material>::iterator ResourceManager<Material>::end ();
 template __EAPI ResourceManager<Material>::const_iterator ResourceManager<Material>::begin () const;
@@ -112,6 +120,7 @@ template __EAPI std::shared_ptr<Material> ResourceManager<Material>::Push (const
 
 template __EAPI ResourceManager<GameObject>::ResourceManager ();
 template __EAPI ResourceManager<GameObject>::~ResourceManager ();
+template __EAPI size_t ResourceManager<GameObject>::GetCount () const;
 template __EAPI ResourceManager<GameObject>::iterator ResourceManager<GameObject>::begin ();
 template __EAPI ResourceManager<GameObject>::iterator ResourceManager<GameObject>::end ();
 template __EAPI ResourceManager<GameObject>::const_iterator ResourceManager<GameObject>::begin () const;
@@ -122,6 +131,7 @@ template __EAPI std::shared_ptr<GameObject> ResourceManager<GameObject>::Push (c
 
 template __EAPI ResourceManager<ShaderProgram>::ResourceManager ();
 template __EAPI ResourceManager<ShaderProgram>::~ResourceManager ();
+template __EAPI size_t ResourceManager<ShaderProgram>::GetCount () const;
 template __EAPI ResourceManager<ShaderProgram>::iterator ResourceManager<ShaderProgram>::begin ();
 template __EAPI ResourceManager<ShaderProgram>::iterator ResourceManager<ShaderProgram>::end ();
 template __EAPI ResourceManager<ShaderProgram>::const_iterator ResourceManager<ShaderProgram>::begin () const;
@@ -132,6 +142,7 @@ template __EAPI std::shared_ptr<ShaderProgram> ResourceManager<ShaderProgram>::P
 
 template __EAPI ResourceManager<RenderStage>::ResourceManager ();
 template __EAPI ResourceManager<RenderStage>::~ResourceManager ();
+template __EAPI size_t ResourceManager<RenderStage>::GetCount () const;
 template __EAPI ResourceManager<RenderStage>::iterator ResourceManager<RenderStage>::begin ();
 template __EAPI ResourceManager<RenderStage>::iterator ResourceManager<RenderStage>::end ();
 template __EAPI ResourceManager<RenderStage>::const_iterator ResourceManager<RenderStage>::begin () const;

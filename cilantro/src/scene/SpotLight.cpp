@@ -16,20 +16,20 @@ SpotLight::~SpotLight ()
 {
 }
 
-SpotLight& SpotLight::SetInnerCutoff (const float cutoff)
+std::shared_ptr<SpotLight> SpotLight::SetInnerCutoff (const float cutoff)
 {
     m_innerCutoff = cutoff;
     GetGameScene ()->GetGame ()->GetMessageBus ()->Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
 
-    return *this;
+    return std::dynamic_pointer_cast<SpotLight> (shared_from_this ());
 }
 
-SpotLight& SpotLight::SetOuterCutoff (const float cutOff)
+std::shared_ptr<SpotLight> SpotLight::SetOuterCutoff (const float cutOff)
 {
     m_outerCutoff = cutOff;
     GetGameScene ()->GetGame ()->GetMessageBus ()->Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
 
-    return *this;
+    return std::dynamic_pointer_cast<SpotLight> (shared_from_this ());
 }
 
 float SpotLight::GetInnerCutoff () const
@@ -45,7 +45,7 @@ float SpotLight::GetOuterCutoff () const
 void SpotLight::OnUpdate (IRenderer& renderer)
 {
     Light::OnUpdate (renderer);
-    renderer.Update (std::dynamic_pointer_cast<SpotLight> (this->GetPointer ()));
+    renderer.Update (std::dynamic_pointer_cast<SpotLight> (shared_from_this ()));
 }
 
 } // namespace cilantro

@@ -11,7 +11,7 @@ class __CEAPI OrthographicCamera : public Camera
 {
 public:
     __EAPI OrthographicCamera (std::shared_ptr<GameScene> gameScene, float width, float near, float far);
-    __EAPI ~OrthographicCamera ();
+    __EAPI virtual ~OrthographicCamera ();
 
     __EAPI Matrix4f GetProjectionMatrix (unsigned int xRes, unsigned int yRes) const;
 

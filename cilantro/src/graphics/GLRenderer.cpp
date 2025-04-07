@@ -195,10 +195,10 @@ void GLRenderer::Draw (std::shared_ptr<MeshObject> meshObject)
     }
 
     // get world matrix for drawn objects and set uniform value
-    geometryShaderProgram->SetUniformMatrix4f ("mModel", meshObject->GetModelTransformMatrix ());
+    geometryShaderProgram->SetUniformMatrix4f ("mModel", meshObject->GetWorldTransformMatrix ());
 
     // calculate normal matrix for drawn objects and set uniform value
-    geometryShaderProgram->SetUniformMatrix3f ("mNormal", Mathf::Invert (Mathf::Transpose (Matrix3f (meshObject->GetModelTransformMatrix ()))));
+    geometryShaderProgram->SetUniformMatrix3f ("mNormal", Mathf::Invert (Mathf::Transpose (Matrix3f (meshObject->GetWorldTransformMatrix ()))));
 
     // get camera position in world space and set uniform value
     if (!m_isDeferredRendering)
@@ -241,7 +241,7 @@ void GLRenderer::DrawAllGeometryBuffers (std::shared_ptr<IShaderProgram> shader)
         auto m = GetGameScene ()->GetGameObjectManager ().GetByHandle<MeshObject> (geomertyBuffer.first);
 
         // load model matrix to currently bound shader
-        shader->SetUniformMatrix4f ("mModel", m->GetModelTransformMatrix ());
+        shader->SetUniformMatrix4f ("mModel", m->GetWorldTransformMatrix ());
 
         // set bone transformation matrix array uniform
         shader->SetUniformMatrix4fv ("mBoneTransformations", m->GetBoneTransformationsMatrixArray (), CILANTRO_MAX_BONES);
@@ -1365,9 +1365,9 @@ void GLRenderer::UpdateLightBufferRecursive (handle_t objectHandle)
         light->OnUpdate (*this);
     }
 
-    for (auto& childObject : light->GetChildObjects ())
+    for (auto&& childObject : light->GetChildren ())
     {
-        UpdateLightBufferRecursive (childObject->GetHandle ());
+        UpdateLightBufferRecursive (childObject.lock ()->GetHandle ());
     }
 
 }

@@ -56,7 +56,7 @@ private:
     
     ResourceManager<Resource> m_resourceManager;
     ResourceManager<GameScene> m_gameSceneManager;
-    std::shared_ptr<GameScene> m_currentGameScene;
+    std::weak_ptr<GameScene> m_currentGameScene;
     std::shared_ptr<InputController> m_inputController;
     std::shared_ptr<MessageBus> m_messageBus;
 
@@ -72,7 +72,7 @@ std::shared_ptr<T> Game::Create (const std::string& name, Params&&... params)
 {
     auto gameScene = m_gameSceneManager.Create<T> (name, shared_from_this (), std::forward<Params>(params)...);
 
-    if (m_currentGameScene == nullptr)
+    if (!m_currentGameScene.lock())
     {
         m_currentGameScene = gameScene;
     }

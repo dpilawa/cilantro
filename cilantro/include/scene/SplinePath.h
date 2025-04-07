@@ -18,8 +18,8 @@ public:
     __EAPI Vector3f GetPositionAtDistance (float distance) const;
     __EAPI Vector3f GetTangentAtDistance (float distance) const;
 
-    __EAPI SplinePath& SetStartTangent (const Vector3f& tangent);
-    __EAPI SplinePath& SetEndTangent (const Vector3f& tangent);
+    __EAPI std::shared_ptr<SplinePath> SetStartTangent (const Vector3f& tangent);
+    __EAPI std::shared_ptr<SplinePath> SetEndTangent (const Vector3f& tangent);
 
 private:
     std::vector<CubicHermite<Vector3f>> m_curves;

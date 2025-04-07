@@ -11,7 +11,6 @@
 #include "math/Matrix4f.h"
 #include "math/Mathf.h"
 #include "system/Game.h"
-#include "system/HookProvider.h"
 #include "graphics/Renderer.h"
 #include "graphics/GLFWRenderer.h"
 #include "graphics/RenderStage.h"
