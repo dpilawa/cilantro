@@ -156,9 +156,9 @@ int main (int argc, char* argv [])
             lamp->GetModelTransform ()->Translate (lp->GetPositionAtDistance (lp->GetPathLength () * t));
             lamp->GetModelTransform ()->Rotate (lp->GetRotationAtDistance (lp->GetPathLength () * t));
         },
-        [] (float t0, float t1, float u) { return Mathf::Lerp (t0, t1, u); });
+        [] (float t0, float t1, float u) { return Mathf::Lerp (t0, t1, u); })
+        ->AddKeyframe (5.0f, 1.0f);
 
-    lightAnimation->AddKeyframe<float> ("t", 5.0f, 1.0f);
     lightAnimation->SetLooping (true);
     lightAnimation->Play ();
 

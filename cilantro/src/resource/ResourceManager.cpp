@@ -3,8 +3,22 @@
 #include "scene/GameScene.h"
 #include "scene/Material.h"
 #include "scene/GameObject.h"
+#include "scene/AnimationObject.h"
+#include "scene/AnimationProperty.h"
 #include "graphics/ShaderProgram.h"
 #include "graphics/RenderStage.h"
+
+#define INSTANTIATE_RESOURCE_MANAGER(ClassName) \
+template __EAPI ResourceManager<ClassName>::ResourceManager (); \
+template __EAPI ResourceManager<ClassName>::~ResourceManager (); \
+template __EAPI size_t ResourceManager<ClassName>::GetCount () const; \
+template __EAPI ResourceManager<ClassName>::iterator ResourceManager<ClassName>::begin (); \
+template __EAPI ResourceManager<ClassName>::iterator ResourceManager<ClassName>::end (); \
+template __EAPI ResourceManager<ClassName>::const_iterator ResourceManager<ClassName>::begin () const; \
+template __EAPI ResourceManager<ClassName>::const_iterator ResourceManager<ClassName>::end () const; \
+template __EAPI ResourceManager<ClassName>::const_iterator ResourceManager<ClassName>::cbegin () const; \
+template __EAPI ResourceManager<ClassName>::const_iterator ResourceManager<ClassName>::cend () const; \
+template __EAPI std::shared_ptr<ClassName> ResourceManager<ClassName>::Push (const std::string& name, std::shared_ptr<ClassName> resource);
 
 namespace cilantro {
 
@@ -85,70 +99,14 @@ std::shared_ptr<Base> ResourceManager<Base>::Push (const std::string& name, std:
 
 // template instantiations
 
-template __EAPI ResourceManager<Resource>::ResourceManager ();
-template __EAPI ResourceManager<Resource>::~ResourceManager ();
-template __EAPI size_t ResourceManager<Resource>::GetCount () const;
-template __EAPI ResourceManager<Resource>::iterator ResourceManager<Resource>::begin ();
-template __EAPI ResourceManager<Resource>::iterator ResourceManager<Resource>::end ();
-template __EAPI ResourceManager<Resource>::const_iterator ResourceManager<Resource>::begin () const;
-template __EAPI ResourceManager<Resource>::const_iterator ResourceManager<Resource>::end () const;
-template __EAPI ResourceManager<Resource>::const_iterator ResourceManager<Resource>::cbegin () const;
-template __EAPI ResourceManager<Resource>::const_iterator ResourceManager<Resource>::cend () const;
-template __EAPI std::shared_ptr<Resource> ResourceManager<Resource>::Push (const std::string& name, std::shared_ptr<Resource> resource);
-
-template __EAPI ResourceManager<GameScene>::ResourceManager ();
-template __EAPI ResourceManager<GameScene>::~ResourceManager ();
-template __EAPI size_t ResourceManager<GameScene>::GetCount () const;
-template __EAPI ResourceManager<GameScene>::iterator ResourceManager<GameScene>::begin ();
-template __EAPI ResourceManager<GameScene>::iterator ResourceManager<GameScene>::end ();
-template __EAPI ResourceManager<GameScene>::const_iterator ResourceManager<GameScene>::begin () const;
-template __EAPI ResourceManager<GameScene>::const_iterator ResourceManager<GameScene>::end () const;
-template __EAPI ResourceManager<GameScene>::const_iterator ResourceManager<GameScene>::cbegin () const;
-template __EAPI ResourceManager<GameScene>::const_iterator ResourceManager<GameScene>::cend () const;
-template __EAPI std::shared_ptr<GameScene> ResourceManager<GameScene>::Push (const std::string& name, std::shared_ptr<GameScene> resource);
-
-template __EAPI ResourceManager<Material>::ResourceManager ();
-template __EAPI ResourceManager<Material>::~ResourceManager ();
-template __EAPI size_t ResourceManager<Material>::GetCount () const;
-template __EAPI ResourceManager<Material>::iterator ResourceManager<Material>::begin ();
-template __EAPI ResourceManager<Material>::iterator ResourceManager<Material>::end ();
-template __EAPI ResourceManager<Material>::const_iterator ResourceManager<Material>::begin () const;
-template __EAPI ResourceManager<Material>::const_iterator ResourceManager<Material>::end () const;
-template __EAPI ResourceManager<Material>::const_iterator ResourceManager<Material>::cbegin () const;
-template __EAPI ResourceManager<Material>::const_iterator ResourceManager<Material>::cend () const;
-template __EAPI std::shared_ptr<Material> ResourceManager<Material>::Push (const std::string& name, std::shared_ptr<Material> resource);
-
-template __EAPI ResourceManager<GameObject>::ResourceManager ();
-template __EAPI ResourceManager<GameObject>::~ResourceManager ();
-template __EAPI size_t ResourceManager<GameObject>::GetCount () const;
-template __EAPI ResourceManager<GameObject>::iterator ResourceManager<GameObject>::begin ();
-template __EAPI ResourceManager<GameObject>::iterator ResourceManager<GameObject>::end ();
-template __EAPI ResourceManager<GameObject>::const_iterator ResourceManager<GameObject>::begin () const;
-template __EAPI ResourceManager<GameObject>::const_iterator ResourceManager<GameObject>::end () const;
-template __EAPI ResourceManager<GameObject>::const_iterator ResourceManager<GameObject>::cbegin () const;
-template __EAPI ResourceManager<GameObject>::const_iterator ResourceManager<GameObject>::cend () const;
-template __EAPI std::shared_ptr<GameObject> ResourceManager<GameObject>::Push (const std::string& name, std::shared_ptr<GameObject> resource);
-
-template __EAPI ResourceManager<ShaderProgram>::ResourceManager ();
-template __EAPI ResourceManager<ShaderProgram>::~ResourceManager ();
-template __EAPI size_t ResourceManager<ShaderProgram>::GetCount () const;
-template __EAPI ResourceManager<ShaderProgram>::iterator ResourceManager<ShaderProgram>::begin ();
-template __EAPI ResourceManager<ShaderProgram>::iterator ResourceManager<ShaderProgram>::end ();
-template __EAPI ResourceManager<ShaderProgram>::const_iterator ResourceManager<ShaderProgram>::begin () const;
-template __EAPI ResourceManager<ShaderProgram>::const_iterator ResourceManager<ShaderProgram>::end () const;
-template __EAPI ResourceManager<ShaderProgram>::const_iterator ResourceManager<ShaderProgram>::cbegin () const;
-template __EAPI ResourceManager<ShaderProgram>::const_iterator ResourceManager<ShaderProgram>::cend () const;
-template __EAPI std::shared_ptr<ShaderProgram> ResourceManager<ShaderProgram>::Push (const std::string& name, std::shared_ptr<ShaderProgram> resource);
-
-template __EAPI ResourceManager<RenderStage>::ResourceManager ();
-template __EAPI ResourceManager<RenderStage>::~ResourceManager ();
-template __EAPI size_t ResourceManager<RenderStage>::GetCount () const;
-template __EAPI ResourceManager<RenderStage>::iterator ResourceManager<RenderStage>::begin ();
-template __EAPI ResourceManager<RenderStage>::iterator ResourceManager<RenderStage>::end ();
-template __EAPI ResourceManager<RenderStage>::const_iterator ResourceManager<RenderStage>::begin () const;
-template __EAPI ResourceManager<RenderStage>::const_iterator ResourceManager<RenderStage>::end () const;
-template __EAPI ResourceManager<RenderStage>::const_iterator ResourceManager<RenderStage>::cbegin () const;
-template __EAPI ResourceManager<RenderStage>::const_iterator ResourceManager<RenderStage>::cend () const;
-template __EAPI std::shared_ptr<RenderStage> ResourceManager<RenderStage>::Push (const std::string& name, std::shared_ptr<RenderStage> resource);
+INSTANTIATE_RESOURCE_MANAGER(Resource)
+INSTANTIATE_RESOURCE_MANAGER(GameScene)
+INSTANTIATE_RESOURCE_MANAGER(Material)
+INSTANTIATE_RESOURCE_MANAGER(GameObject)
+INSTANTIATE_RESOURCE_MANAGER(ShaderProgram)
+INSTANTIATE_RESOURCE_MANAGER(RenderStage)
+INSTANTIATE_RESOURCE_MANAGER(AnimationProperty<float>)
+INSTANTIATE_RESOURCE_MANAGER(AnimationProperty<Vector3f>)
+INSTANTIATE_RESOURCE_MANAGER(AnimationProperty<Quaternion>)
 
 } // namespace cilantro

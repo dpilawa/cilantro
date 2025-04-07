@@ -101,9 +101,9 @@ int main (int argc, char* argv [])
         [](float t0, float t1, float u)
         {
             return Mathf::Smootherstep (t0, t1, u);
-        }
-    );
-    animation->AddKeyframe("u", 10.0f, 1.0f);
+        })
+        ->AddKeyframe (10.0f, 1.0f);
+
     animation->SetLooping (false);
     animation->Play ();
 

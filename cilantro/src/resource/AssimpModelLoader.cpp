@@ -342,7 +342,7 @@ void AssimpModelLoader::ImportNodeAnimation (std::shared_ptr<AnimationObject> my
         else 
         {
             // create keyframe
-            myAnimationObject->AddKeyframe<Vector3f> (propertyNameT, (float)(nodeAnimation->mPositionKeys[i].mTime / animation->mTicksPerSecond), ConvertVector3f (nodeAnimation->mPositionKeys[i].mValue));
+            myAnimationObject->GetProperties<Vector3f> ().GetByName<AnimationProperty<Vector3f>> (propertyNameT)->AddKeyframe ((float)(nodeAnimation->mPositionKeys[i].mTime / animation->mTicksPerSecond), ConvertVector3f (nodeAnimation->mPositionKeys[i].mValue));
         }
     }
 
@@ -365,7 +365,7 @@ void AssimpModelLoader::ImportNodeAnimation (std::shared_ptr<AnimationObject> my
         else 
         {
             // create keyframe
-            myAnimationObject->AddKeyframe<Quaternion> (propertyNameR, (float)(nodeAnimation->mRotationKeys[i].mTime / animation->mTicksPerSecond), ConvertQuaterion (nodeAnimation->mRotationKeys[i].mValue));
+            myAnimationObject->GetProperties<Quaternion> ().GetByName<AnimationProperty<Quaternion>> (propertyNameR)->AddKeyframe ((float)(nodeAnimation->mRotationKeys[i].mTime / animation->mTicksPerSecond), ConvertQuaterion (nodeAnimation->mRotationKeys[i].mValue));
         }
     }
 
@@ -388,7 +388,7 @@ void AssimpModelLoader::ImportNodeAnimation (std::shared_ptr<AnimationObject> my
         else 
         {
             // create keyframe
-            myAnimationObject->AddKeyframe<Vector3f> (propertyNameS, (float)(nodeAnimation->mScalingKeys[i].mTime / animation->mTicksPerSecond), ConvertVector3f (nodeAnimation->mScalingKeys[i].mValue));
+            myAnimationObject->GetProperties<Vector3f> ().GetByName<AnimationProperty<Vector3f>> (propertyNameS)->AddKeyframe ((float)(nodeAnimation->mScalingKeys[i].mTime / animation->mTicksPerSecond), ConvertVector3f (nodeAnimation->mScalingKeys[i].mValue));
         }
     }
 

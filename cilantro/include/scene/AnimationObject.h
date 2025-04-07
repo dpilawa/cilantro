@@ -2,6 +2,7 @@
 #define _ANIMATIONOBJECT_H_
 
 #include "cilantroengine.h"
+#include "resource/ResourceManager.h"
 #include "scene/AnimationProperty.h"
 #include "scene/GameObject.h"
 #include "math/Vector3f.h"
@@ -16,11 +17,13 @@ public:
     __EAPI virtual ~AnimationObject ();
 
     template <typename P>
-    __EAPI void AddAnimationProperty (const std::string& propertyName, P startValue, std::function<void (P)> updateFunction, std::function<P (P, P, float)> interpolateFunc);
+    __EAPI std::shared_ptr<AnimationProperty<P>> AddAnimationProperty (const std::string& propertyName, P startValue, std::function<void (P)> updateFunction, std::function<P (P, P, float)> interpolateFunc);
 
     template <typename P>
-    __EAPI void AddKeyframe (const std::string& propertyName, float time, P value);
-    
+    ResourceManager<AnimationProperty<P>>& GetProperties ();
+
+    __EAPI void SetTotalTime (float totalTime);
+
     __EAPI void Play ();
     __EAPI void Stop ();
     __EAPI void Seek (float time);
@@ -34,18 +37,15 @@ private:
     template <typename P>
     void UpdateProperties ();
 
-    template <typename P>
-    std::unordered_map<std::string, std::shared_ptr<AnimationProperty<P>>>& GetProperties () = delete;
+    bool m_isLooping;
+    bool m_isPlaying;
 
-    bool isLooping;
-    bool isPlaying;
+    float m_playedTime;
+    float m_totalTime;
 
-    float playedTime;
-    float maxAnimationTime;
-
-    std::unordered_map<std::string, std::shared_ptr<AnimationProperty<float>>> floatProperties;
-    std::unordered_map<std::string, std::shared_ptr<AnimationProperty<Vector3f>>> vectorProperties;
-    std::unordered_map<std::string, std::shared_ptr<AnimationProperty<Quaternion>>> quaternionProperties;
+    ResourceManager<AnimationProperty<float>> m_floatProperties;
+    ResourceManager<AnimationProperty<Vector3f>> m_vectorProperties;
+    ResourceManager<AnimationProperty<Quaternion>> m_quaternionProperties;
 };
 
 } // namespace cilantro
