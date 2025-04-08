@@ -82,7 +82,7 @@ void AnimationObject::OnFrame ()
 template <typename P>
 std::shared_ptr<AnimationProperty<P>> AnimationObject::AddAnimationProperty (const std::string& propertyName, P startValue, std::function<void (P)> updateFunction, std::function<P (P, P, float)> interpolateFunction)
 {
-    auto property = GetProperties<P> ().Create<AnimationProperty<P>> (propertyName, std::static_pointer_cast<AnimationObject> (shared_from_this ()), updateFunction, interpolateFunction);
+    auto property = GetProperties<P> ().template Create<AnimationProperty<P>> (propertyName, std::static_pointer_cast<AnimationObject> (shared_from_this ()), updateFunction, interpolateFunction);
     property->AddKeyframe (0.0f, startValue);
 
     return property;
