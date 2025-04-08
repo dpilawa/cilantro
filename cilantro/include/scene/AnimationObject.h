@@ -20,7 +20,7 @@ public:
     __EAPI std::shared_ptr<AnimationProperty<P>> AddAnimationProperty (const std::string& propertyName, P startValue, std::function<void (P)> updateFunction, std::function<P (P, P, float)> interpolateFunc);
 
     template <typename P>
-    ResourceManager<AnimationProperty<P>>& GetProperties ();
+    std::shared_ptr<ResourceManager<AnimationProperty<P>>> GetProperties ();
 
     __EAPI void SetTotalTime (float totalTime);
 
@@ -43,9 +43,9 @@ private:
     float m_playedTime;
     float m_totalTime;
 
-    ResourceManager<AnimationProperty<float>> m_floatProperties;
-    ResourceManager<AnimationProperty<Vector3f>> m_vectorProperties;
-    ResourceManager<AnimationProperty<Quaternion>> m_quaternionProperties;
+    std::shared_ptr<ResourceManager<AnimationProperty<float>>> m_floatProperties;
+    std::shared_ptr<ResourceManager<AnimationProperty<Vector3f>>> m_vectorProperties;
+    std::shared_ptr<ResourceManager<AnimationProperty<Quaternion>>> m_quaternionProperties;
 };
 
 } // namespace cilantro

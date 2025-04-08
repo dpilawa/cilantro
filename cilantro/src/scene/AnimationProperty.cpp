@@ -29,6 +29,8 @@ std::shared_ptr<AnimationProperty<P>> AnimationProperty<P>::AddKeyframe (float t
     {
         LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to add keyframe at time" << time << "for property" << this->GetName ();
     }
+
+    return nullptr;
 }
 
 template<typename P>

@@ -24,6 +24,10 @@ AnimationObject::AnimationObject (std::shared_ptr<GameScene> gameScene) : GameOb
     m_isLooping = true;
     m_playedTime = 0.0f;
     m_totalTime = 0.0f;
+
+    m_floatProperties = std::make_shared<ResourceManager<AnimationProperty<float>>> ();
+    m_vectorProperties = std::make_shared<ResourceManager<AnimationProperty<Vector3f>>> ();
+    m_quaternionProperties = std::make_shared<ResourceManager<AnimationProperty<Quaternion>>> ();
 }
 
 AnimationObject::~AnimationObject()
@@ -82,26 +86,26 @@ void AnimationObject::OnFrame ()
 template <typename P>
 std::shared_ptr<AnimationProperty<P>> AnimationObject::AddAnimationProperty (const std::string& propertyName, P startValue, std::function<void (P)> updateFunction, std::function<P (P, P, float)> interpolateFunction)
 {
-    auto property = GetProperties<P> ().template Create<AnimationProperty<P>> (propertyName, std::static_pointer_cast<AnimationObject> (shared_from_this ()), updateFunction, interpolateFunction);
+    auto property = GetProperties<P> ()->template Create<AnimationProperty<P>> (propertyName, std::static_pointer_cast<AnimationObject> (shared_from_this ()), updateFunction, interpolateFunction);
     property->AddKeyframe (0.0f, startValue);
 
     return property;
 }
 
 template <>
-ResourceManager<AnimationProperty<float>>& AnimationObject::GetProperties<float> ()
+std::shared_ptr<ResourceManager<AnimationProperty<float>>> AnimationObject::GetProperties<float> ()
 {
     return m_floatProperties;
 }
 
 template <>
-ResourceManager<AnimationProperty<Vector3f>>& AnimationObject::GetProperties<Vector3f> ()
+std::shared_ptr<ResourceManager<AnimationProperty<Vector3f>>> AnimationObject::GetProperties<Vector3f> ()
 {
     return m_vectorProperties;
 }
 
 template <>
-ResourceManager<AnimationProperty<Quaternion>>& AnimationObject::GetProperties<Quaternion> ()
+std::shared_ptr<ResourceManager<AnimationProperty<Quaternion>>> AnimationObject::GetProperties<Quaternion> ()
 {
     return m_quaternionProperties;
 }
