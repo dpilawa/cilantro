@@ -52,8 +52,8 @@ public:
     requires (std::is_base_of_v<Material,T>);
 
     // return reference to map
-    __EAPI ResourceManager<GameObject>& GetGameObjectManager ();
-    __EAPI ResourceManager<Material>& GetMaterialManager ();
+    __EAPI std::shared_ptr<ResourceManager<GameObject>> GetGameObjectManager ();
+    __EAPI std::shared_ptr<ResourceManager<Material>> GetMaterialManager ();
 
     // renderer control
     template <typename T, typename ...Params> 
@@ -76,10 +76,10 @@ private:
     std::weak_ptr<Game> m_game;
 
     // map of all GameObjects in the scene
-    ResourceManager<GameObject> m_gameObjects;
+    std::shared_ptr<ResourceManager<GameObject>> m_gameObjectManager;
 
     // map of all Materials in the scene
-    ResourceManager<Material> m_materials;
+    std::shared_ptr<ResourceManager<Material>> m_materialManager;
 
     // systems
     std::shared_ptr<Timer> m_timer;
@@ -94,7 +94,7 @@ template <typename T, typename ...Params>
 std::shared_ptr<T> GameScene::Create (const std::string& name, Params&&... params)
     requires (std::is_base_of_v<GameObject,T>)
 {
-    auto gameObject = m_gameObjects.Create<T> (name, shared_from_this (), params...);
+    auto gameObject = m_gameObjectManager->Create<T> (name, shared_from_this (), params...);
     handle_t handle = gameObject->GetHandle ();
 
     // update renderer data
@@ -116,7 +116,7 @@ template <typename T>
 std::shared_ptr<T> GameScene::Add (const std::string& name, std::shared_ptr<T> gameObject)
 requires (std::is_base_of_v<GameObject,T>)
 {
-    m_gameObjects.Add<T> (name, gameObject);
+    m_gameObjectManager->Add<T> (name, gameObject);
     handle_t handle = gameObject->GetHandle ();
 
     // update renderer data
@@ -138,7 +138,7 @@ template <typename T, typename ...Params>
 std::shared_ptr<T> GameScene::Create (const std::string& name, Params&&... params)
     requires (std::is_base_of_v<Material,T>)
 {
-    auto material = m_materials.Create<T> (name, shared_from_this (), params...);
+    auto material = m_materialManager->Create<T> (name, shared_from_this (), params...);
     handle_t handle = material->GetHandle ();
 
     // update renderer data

@@ -34,10 +34,10 @@ int main (int argc, char* argv [])
     renderer->Create<QuadRenderStage> ("gamma_postprocess+screen")->SetShaderProgram ("post_gamma_shader").SetRenderStageParameterFloat ("fGamma", 2.1f).SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS).SetFramebufferEnabled (false);
 
     modelLoader.Load ("scene", "assets/Cerberus_LP.FBX");
-    game->GetResourceManager ().Load<Texture> ("tAlbedo", "assets/Textures/Cerberus_A.tga");
-    game->GetResourceManager ().Load<Texture> ("tNormal", "assets/Textures/Cerberus_N.tga");
-    game->GetResourceManager ().Load<Texture> ("tMetalness", "assets/Textures/Cerberus_M.tga");
-    game->GetResourceManager ().Load<Texture> ("tRoughness", "assets/Textures/Cerberus_R.tga");
+    game->GetResourceManager ()->Load<Texture> ("tAlbedo", "assets/Textures/Cerberus_A.tga");
+    game->GetResourceManager ()->Load<Texture> ("tNormal", "assets/Textures/Cerberus_N.tga");
+    game->GetResourceManager ()->Load<Texture> ("tMetalness", "assets/Textures/Cerberus_M.tga");
+    game->GetResourceManager ()->Load<Texture> ("tRoughness", "assets/Textures/Cerberus_R.tga");
   
     inputController->CreateInputEvent ("exit", EInputKey::KeyEsc, EInputTrigger::Press, {});
     inputController->BindInputEvent ("exit", [ & ]() { game->Stop (); });
@@ -51,7 +51,7 @@ int main (int argc, char* argv [])
         ->SetMetallic ("tMetalness")
         ->SetRoughness ("tRoughness");
 
-    scene->GetGameObjectManager ().GetByName<MeshObject> ("Cerberus00_Fixed")
+    scene->GetGameObjectManager ()->GetByName<MeshObject> ("Cerberus00_Fixed")
         ->SetMaterial ("gunMaterial")
         ->GetModelTransform ()->Rotate (0.0f, 0.0f, 135.0f);
 

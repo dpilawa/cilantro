@@ -50,9 +50,9 @@ void DeferredGeometryRenderStage::OnFrame ()
     for (auto gameObject : m_renderer->GetGameScene ()->GetGameObjectManager ())
     {
         // overwrite stencil value with material Id
-        if (MeshObject* meshObject = dynamic_cast<MeshObject*>(gameObject.get ()))
+        if (auto meshObject = dynamic_pointer_cast<MeshObject>(gameObject))
         {
-            m_renderer->SetStencilTestFunction (EStencilTestFunction::FUNCTION_ALWAYS, (int) m_renderer->GetShaderProgramManager ().GetByName<ShaderProgram>(meshObject->GetMaterial ()->GetDeferredLightingPassShaderProgram ())->GetHandle ());
+            m_renderer->SetStencilTestFunction (EStencilTestFunction::FUNCTION_ALWAYS, (int) m_renderer->GetShaderProgramManager ()->GetByName<ShaderProgram>(meshObject->GetMaterial ()->GetDeferredLightingPassShaderProgram ())->GetHandle ());
         }
 
         // draw to g-buffer

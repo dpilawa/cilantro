@@ -51,10 +51,10 @@ struct IRenderer
     virtual std::shared_ptr<GameScene> GetGameScene () = 0;
 
     // shader library manipulation
-    virtual TShaderProgramManager& GetShaderProgramManager () = 0;
+    virtual std::shared_ptr<TShaderProgramManager> GetShaderProgramManager () = 0;
 
     // render pipeline
-    virtual TRenderStageManager& GetRenderStageManager () = 0;
+    virtual std::shared_ptr<TRenderStageManager> GetRenderStageManager () = 0;
     
     virtual std::shared_ptr<IRenderStage> GetCurrentRenderStage () = 0;
     virtual TRenderPipeline& GetRenderPipeline () = 0;

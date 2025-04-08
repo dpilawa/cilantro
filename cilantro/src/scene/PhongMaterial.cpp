@@ -33,7 +33,7 @@ PhongMaterial::~PhongMaterial ()
 
 std::shared_ptr<PhongMaterial> PhongMaterial::SetDiffuse (const std::string& diffuse)
 {
-    auto tDiffuse = GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<Texture> (diffuse);
+    auto tDiffuse = GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<Texture> (diffuse);
     SetTexture (static_cast<int>(PhongTexture::Diffuse), "tDiffuse", tDiffuse);
 
     return std::dynamic_pointer_cast<PhongMaterial> (shared_from_this ());
@@ -41,7 +41,7 @@ std::shared_ptr<PhongMaterial> PhongMaterial::SetDiffuse (const std::string& dif
 
 std::shared_ptr<PhongMaterial> PhongMaterial::SetNormal (const std::string& normal)
 {
-    auto tNormal = GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<Texture> (normal);
+    auto tNormal = GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<Texture> (normal);
     SetTexture (static_cast<int>(PhongTexture::Normal), "tNormal", tNormal);
 
     return std::dynamic_pointer_cast<PhongMaterial> (shared_from_this ());
@@ -49,7 +49,7 @@ std::shared_ptr<PhongMaterial> PhongMaterial::SetNormal (const std::string& norm
 
 std::shared_ptr<PhongMaterial> PhongMaterial::SetSpecular (const std::string& specular)
 {
-    auto tSpecular = GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<Texture> (specular);
+    auto tSpecular = GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<Texture> (specular);
     SetTexture (static_cast<int>(PhongTexture::Specular), "tSpecular", tSpecular);
 
     return std::dynamic_pointer_cast<PhongMaterial> (shared_from_this ());
@@ -57,7 +57,7 @@ std::shared_ptr<PhongMaterial> PhongMaterial::SetSpecular (const std::string& sp
 
 std::shared_ptr<PhongMaterial> PhongMaterial::SetEmissive (const std::string& emissive)
 {
-    auto tEmissive = GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<Texture> (emissive);
+    auto tEmissive = GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<Texture> (emissive);
     SetTexture (static_cast<int>(PhongTexture::Emissive), "tEmissive", tEmissive);
     
     return std::dynamic_pointer_cast<PhongMaterial> (shared_from_this ());

@@ -47,16 +47,16 @@ int main (int argc, char* argv [])
     inputController->CreateInputEvent ("mousemode", EInputKey::KeySpace, EInputTrigger::Release, {});
     inputController->BindInputEvent ("mousemode", [ & ]() { inputController->SetMouseGameMode (!inputController->IsGameMode ()); });
 
-    game->GetResourceManager ().Load<Texture> ("tAlbedoMetal", "textures/scuffed-metal1_albedo.png");
-    game->GetResourceManager ().Load<Texture> ("tMetalnessMetal", "textures/scuffed-metal1_metallic.png");
-    game->GetResourceManager ().Load<Texture> ("tNormalMetal", "textures/scuffed-metal1_normal-dx.png");
-    game->GetResourceManager ().Load<Texture> ("tRoughnessMetal", "textures/scuffed-metal1_roughness.png");
-    game->GetResourceManager ().Load<Texture> ("tAOMetal", "textures/scuffed-metal1_ao.png");
+    game->GetResourceManager ()->Load<Texture> ("tAlbedoMetal", "textures/scuffed-metal1_albedo.png");
+    game->GetResourceManager ()->Load<Texture> ("tMetalnessMetal", "textures/scuffed-metal1_metallic.png");
+    game->GetResourceManager ()->Load<Texture> ("tNormalMetal", "textures/scuffed-metal1_normal-dx.png");
+    game->GetResourceManager ()->Load<Texture> ("tRoughnessMetal", "textures/scuffed-metal1_roughness.png");
+    game->GetResourceManager ()->Load<Texture> ("tAOMetal", "textures/scuffed-metal1_ao.png");
 
-    game->GetResourceManager ().Load<Texture> ("tAlbedoGold", "textures/Metal007_1K_Color.png");
-    game->GetResourceManager ().Load<Texture> ("tMetalnessGold", "textures/Metal007_1K_Metalness.png");
-    game->GetResourceManager ().Load<Texture> ("tNormalGold", "textures/Metal007_1K_Normal.png");
-    game->GetResourceManager ().Load<Texture> ("tRoughnessGold", "textures/Metal007_1K_Roughness.png");
+    game->GetResourceManager ()->Load<Texture> ("tAlbedoGold", "textures/Metal007_1K_Color.png");
+    game->GetResourceManager ()->Load<Texture> ("tMetalnessGold", "textures/Metal007_1K_Metalness.png");
+    game->GetResourceManager ()->Load<Texture> ("tNormalGold", "textures/Metal007_1K_Normal.png");
+    game->GetResourceManager ()->Load<Texture> ("tRoughnessGold", "textures/Metal007_1K_Roughness.png");
 
     scene->Create<PBRMaterial> ("greenMaterial")
         ->SetAlbedo (Vector3f (0.1f, 0.4f, 0.1f))
@@ -92,23 +92,23 @@ int main (int argc, char* argv [])
     
     scene->SetActiveCamera ("camera");
 
-    Primitives::GenerateCube (game->GetResourceManager ().Create<Mesh> ("cubeMesh"));
+    Primitives::GenerateCube (game->GetResourceManager ()->Create<Mesh> ("cubeMesh"));
     scene->Create<MeshObject> ("cube", "cubeMesh", "redMaterial")
         ->GetModelTransform ()->Scale (0.5f)->Translate (0.0f, 1.1f, 0.0f);
 
-    Primitives::GenerateCone (game->GetResourceManager ().Create<Mesh> ("coneMesh")->SetSmoothNormals (false), 32);
+    Primitives::GenerateCone (game->GetResourceManager ()->Create<Mesh> ("coneMesh")->SetSmoothNormals (false), 32);
     scene->Create<MeshObject> ("cone", "coneMesh", "goldMaterial")
         ->GetModelTransform ()->Translate (-1.5f, 0.5f, 1.0f)->Scale (0.5f);
 
-    Primitives::GenerateCylinder (game->GetResourceManager ().Create<Mesh> ("cylinderMesh")->SetSmoothNormals (false), 32);
+    Primitives::GenerateCylinder (game->GetResourceManager ()->Create<Mesh> ("cylinderMesh")->SetSmoothNormals (false), 32);
     scene->Create<MeshObject> ("cylinder", "cylinderMesh", "blueMaterial")
         ->GetModelTransform ()->Rotate (90.0f, 12.5f, 0.0f)->Translate (1.7f, 0.5f, 0.7f)->Scale (0.5f);
 
-    Primitives::GenerateSphere (game->GetResourceManager ().Create<Mesh> ("lampMesh"), 3);
+    Primitives::GenerateSphere (game->GetResourceManager ()->Create<Mesh> ("lampMesh"), 3);
     scene->Create<MeshObject> ("lamp", "lampMesh", "lampMaterial")
         ->GetModelTransform ()->Scale (0.1f, 0.1f, 0.1f)->Translate (1.0f, 0.75f, 1.0f);
 
-    Primitives::GenerateCube (game->GetResourceManager ().Create<Mesh> ("floorMesh"));
+    Primitives::GenerateCube (game->GetResourceManager ()->Create<Mesh> ("floorMesh"));
     scene->Create<MeshObject> ("floor", "floorMesh", "greenMaterial")
         ->GetModelTransform ()->Scale (2.5f, 0.05f, 2.5f)->Translate (0.0f, -0.05f, 0.0f);
 
@@ -151,8 +151,8 @@ int main (int argc, char* argv [])
     lightAnimation->AddAnimationProperty<float> (
         "t", 0.0f,
         [lightAnimation] (float t) {
-            auto lamp = lightAnimation->GetGameScene ()->GetGameObjectManager ().GetByName<MeshObject> ("lamp");
-            auto lp = lightAnimation->GetGameScene ()->GetGameObjectManager ().GetByName<SplinePath> ("splinepath");
+            auto lamp = lightAnimation->GetGameScene ()->GetGameObjectManager ()->GetByName<MeshObject> ("lamp");
+            auto lp = lightAnimation->GetGameScene ()->GetGameObjectManager ()->GetByName<SplinePath> ("splinepath");
             lamp->GetModelTransform ()->Translate (lp->GetPositionAtDistance (lp->GetPathLength () * t));
             lamp->GetModelTransform ()->Rotate (lp->GetRotationAtDistance (lp->GetPathLength () * t));
         },

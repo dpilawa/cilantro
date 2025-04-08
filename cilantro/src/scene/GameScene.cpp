@@ -13,11 +13,14 @@ namespace cilantro {
 
 GameScene::GameScene(std::shared_ptr<Game> game)
 { 
-    this->m_game = game;
-    this->m_timer = std::make_shared<Timer> ();
+    m_game = game;
+    m_timer = std::make_shared<Timer> ();
     m_timer->Tick ();
 
-    this->m_renderer = nullptr;
+    m_gameObjectManager = std::make_shared<ResourceManager<GameObject>> ();
+    m_materialManager = std::make_shared<ResourceManager<Material>> ();
+
+    m_renderer = nullptr;
 }
 
 GameScene::~GameScene()
@@ -30,7 +33,7 @@ GameScene::~GameScene()
 
 void GameScene::OnStart ()
 {
-    for (auto gameObject : m_gameObjects)
+    for (auto gameObject : m_gameObjectManager)
     {
         gameObject->OnStart ();
     }
@@ -40,7 +43,7 @@ void GameScene::OnFrame ()
 {
     m_timer->Tick ();
 
-    for (auto gameObject : m_gameObjects)
+    for (auto gameObject : m_gameObjectManager)
     {
         gameObject->OnFrame ();
     }
@@ -52,20 +55,20 @@ void GameScene::OnFrame ()
 
 void GameScene::OnEnd ()
 {
-    for (auto gameObject : m_gameObjects)
+    for (auto gameObject : m_gameObjectManager)
     {
         gameObject->OnEnd ();
     }
 }
 
-ResourceManager<GameObject>& GameScene::GetGameObjectManager ()
+std::shared_ptr<ResourceManager<GameObject>> GameScene::GetGameObjectManager ()
 {
-    return m_gameObjects;
+    return m_gameObjectManager;
 }
 
-ResourceManager<Material>& GameScene::GetMaterialManager ()
+std::shared_ptr<ResourceManager<Material>> GameScene::GetMaterialManager ()
 {
-    return m_materials;
+    return m_materialManager;
 }
 
 std::shared_ptr<IRenderer> GameScene::GetRenderer () const
@@ -85,7 +88,7 @@ std::shared_ptr<Game> GameScene::GetGame () const
 
 void GameScene::SetActiveCamera (const std::string& name)
 {
-    m_activeCamera = m_gameObjects.GetByName<Camera> (name);
+    m_activeCamera = m_gameObjectManager->GetByName<Camera> (name);
 }
 
 std::shared_ptr<Camera> GameScene::GetActiveCamera () const

@@ -32,16 +32,16 @@ int main (int argc, char* argv [])
     auto inputController = game->Create<GLFWInputController> ();
 
     renderer->Create<QuadRenderStage> ("screen")->SetShaderProgram ("flatquad_shader").SetFramebufferEnabled (false).SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);
-    renderer->GetRenderStageManager ().GetByName<IRenderStage> ("forward")->SetMultisampleEnabled (true);
+    renderer->GetRenderStageManager ()->GetByName<IRenderStage> ("forward")->SetMultisampleEnabled (true);
 
     inputController->CreateInputEvent ("exit", EInputKey::KeyEsc, EInputTrigger::Press, {});
     inputController->BindInputEvent ("exit", [ & ]() { game->Stop (); });
 
-    game->GetResourceManager().Load<Texture> ("tEarthDiffuse", "textures/2k_earth_daymap.jpg");
-    game->GetResourceManager().Load<Texture> ("tEarthSpec", "textures/2k_earth_specular_map.png");
-    game->GetResourceManager().Load<Texture> ("tEarthNormal", "textures/2k_earth_normal_map.png");
-    game->GetResourceManager().Load<Texture> ("tMoon", "textures/2k_moon.jpg");
-    game->GetResourceManager().Load<Texture> ("tSun", "textures/2k_sun.jpg");
+    game->GetResourceManager()->Load<Texture> ("tEarthDiffuse", "textures/2k_earth_daymap.jpg");
+    game->GetResourceManager()->Load<Texture> ("tEarthSpec", "textures/2k_earth_specular_map.png");
+    game->GetResourceManager()->Load<Texture> ("tEarthNormal", "textures/2k_earth_normal_map.png");
+    game->GetResourceManager()->Load<Texture> ("tMoon", "textures/2k_moon.jpg");
+    game->GetResourceManager()->Load<Texture> ("tSun", "textures/2k_sun.jpg");
 
     scene->Create<PhongMaterial> ("mSun")
         ->SetEmissive ("tSun");
@@ -62,18 +62,18 @@ int main (int argc, char* argv [])
     
     scene->SetActiveCamera ("camera");
 
-    Primitives::GenerateSphere (game->GetResourceManager().Create<Mesh> ("sunMesh"), 8);
+    Primitives::GenerateSphere (game->GetResourceManager()->Create<Mesh> ("sunMesh"), 8);
     scene->Create<MeshObject> ("sun", "sunMesh", "mSun")
         ->GetModelTransform ()->Scale (10.0f);
 
-    scene->Create<Orbiter> ("earthOrbit", scene->GetGameObjectManager ().GetByName<GameObject> ("sun"), 1.0f, 23.5f, 365.256f, 50.0f, 0.0f);
-    Primitives::GenerateSphere (game->GetResourceManager().Create<Mesh> ("earthMesh")->SetSmoothNormals (true), 8);
+    scene->Create<Orbiter> ("earthOrbit", scene->GetGameObjectManager ()->GetByName<GameObject> ("sun"), 1.0f, 23.5f, 365.256f, 50.0f, 0.0f);
+    Primitives::GenerateSphere (game->GetResourceManager()->Create<Mesh> ("earthMesh")->SetSmoothNormals (true), 8);
     scene->Create<MeshObject> ("earth", "earthMesh", "mEarth")
         ->SetParentObject ("earthOrbit")
         ->GetModelTransform ()->Scale (3.0f);
 
-    scene->Create<Orbiter> ("moonOrbit", scene->GetGameObjectManager ().GetByName<GameObject> ("earth"), 27.321f, -6.68f, 27.321f, 20.0f, -5.14f);
-    Primitives::GenerateSphere (game->GetResourceManager().Create<Mesh> ("moonMesh")->SetSmoothNormals (true), 8);
+    scene->Create<Orbiter> ("moonOrbit", scene->GetGameObjectManager ()->GetByName<GameObject> ("earth"), 27.321f, -6.68f, 27.321f, 20.0f, -5.14f);
+    Primitives::GenerateSphere (game->GetResourceManager()->Create<Mesh> ("moonMesh")->SetSmoothNormals (true), 8);
     scene->Create<MeshObject> ("moon", "moonMesh", "mMoon")
         ->SetParentObject ("moonOrbit")
         ->GetModelTransform ()->Scale (0.273f * 5.0f);
@@ -93,8 +93,8 @@ int main (int argc, char* argv [])
     animation->AddAnimationProperty<float> ("u", 0.0f, 
         [animation](float u) 
         {
-            auto cam = animation->GetGameScene ()->GetGameObjectManager ().GetByName<PerspectiveCamera> ("camera");
-            auto path = animation->GetGameScene ()->GetGameObjectManager ().GetByName<SplinePath> ("path");
+            auto cam = animation->GetGameScene ()->GetGameObjectManager ()->GetByName<PerspectiveCamera> ("camera");
+            auto path = animation->GetGameScene ()->GetGameObjectManager ()->GetByName<SplinePath> ("path");
             cam->GetModelTransform ()->Translate (path->GetPositionAtDistance (u * path->GetPathLength ()));
             cam->GetModelTransform ()->Rotate (path->GetRotationAtDistance (u * path->GetPathLength ()));
         },

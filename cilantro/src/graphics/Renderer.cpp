@@ -23,6 +23,9 @@ Renderer::Renderer (std::shared_ptr<GameScene> gameScene, unsigned int width, un
     m_totalFrameRenderTime = 0.0f;
 
     m_lightingShaderStagesCount = 0;
+
+    m_renderStageManager = std::make_shared<TRenderStageManager> ();
+    m_shaderProgramManager = std::make_shared<TShaderProgramManager> ();
 }
 
 Renderer::~Renderer ()
@@ -74,12 +77,12 @@ std::shared_ptr<GameScene> Renderer::GetGameScene ()
     return m_gameScene.lock ();
 }
 
-TShaderProgramManager& Renderer::GetShaderProgramManager ()
+std::shared_ptr<TShaderProgramManager> Renderer::GetShaderProgramManager ()
 {
     return m_shaderProgramManager;
 }
 
-TRenderStageManager& Renderer::GetRenderStageManager ()
+std::shared_ptr<TRenderStageManager> Renderer::GetRenderStageManager ()
 {
     return m_renderStageManager;
 }
@@ -120,31 +123,31 @@ IFramebuffer* Renderer::GetPipelineFramebuffer (EPipelineLink link)
 
     if (link == EPipelineLink::LINK_FIRST)
     {
-        return GetRenderStageManager ().GetByHandle<IRenderStage> (m_renderPipeline.front ())->GetFramebuffer ();
+        return GetRenderStageManager ()->GetByHandle<IRenderStage> (m_renderPipeline.front ())->GetFramebuffer ();
     }
     else if (link == EPipelineLink::LINK_SECOND)
     {
-        return GetRenderStageManager ().GetByHandle<IRenderStage> (m_renderPipeline[1])->GetFramebuffer ();
+        return GetRenderStageManager ()->GetByHandle<IRenderStage> (m_renderPipeline[1])->GetFramebuffer ();
     }
     else if (link == EPipelineLink::LINK_THIRD)
     {
-        return GetRenderStageManager ().GetByHandle<IRenderStage> (m_renderPipeline[2])->GetFramebuffer ();
+        return GetRenderStageManager ()->GetByHandle<IRenderStage> (m_renderPipeline[2])->GetFramebuffer ();
     }
     else if (link == EPipelineLink::LINK_PREVIOUS)
     {
-        return GetRenderStageManager ().GetByHandle<IRenderStage> (m_renderPipeline[m_currentRenderStageIdx - 1])->GetFramebuffer ();
+        return GetRenderStageManager ()->GetByHandle<IRenderStage> (m_renderPipeline[m_currentRenderStageIdx - 1])->GetFramebuffer ();
     }
     else if (link == EPipelineLink::LINK_PREVIOUS_MINUS_1)
     {
-        return GetRenderStageManager ().GetByHandle<IRenderStage> (m_renderPipeline[m_currentRenderStageIdx - 2])->GetFramebuffer ();
+        return GetRenderStageManager ()->GetByHandle<IRenderStage> (m_renderPipeline[m_currentRenderStageIdx - 2])->GetFramebuffer ();
     }
     else if (link == EPipelineLink::LINK_LAST)
     {
-        return GetRenderStageManager ().GetByHandle<IRenderStage> (m_renderPipeline.back ())->GetFramebuffer ();
+        return GetRenderStageManager ()->GetByHandle<IRenderStage> (m_renderPipeline.back ())->GetFramebuffer ();
     }
     else /* LINK_CURRENT */
     {
-        return GetRenderStageManager ().GetByHandle<IRenderStage> (m_renderPipeline[m_currentRenderStageIdx])->GetFramebuffer ();
+        return GetRenderStageManager ()->GetByHandle<IRenderStage> (m_renderPipeline[m_currentRenderStageIdx])->GetFramebuffer ();
     }
 }
 
@@ -161,7 +164,7 @@ void Renderer::RenderFrame ()
     // run stages
     for (handle_t stageHandle : m_renderPipeline)
     {
-        m_currentRenderStage = m_renderStageManager.GetByHandle<IRenderStage> (stageHandle);
+        m_currentRenderStage = m_renderStageManager->GetByHandle<IRenderStage> (stageHandle);
         m_currentRenderStage->OnFrame ();
         m_currentRenderStageIdx++;
     }

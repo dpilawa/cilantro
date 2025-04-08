@@ -159,6 +159,23 @@ bool ResourceManager<Base>::HasName (const std::string& name) const
     return true;
 }
 
+// trait and concept to allow iteration over shared_ptr<ResourceManager<T>>
+template <typename T>
+struct is_shared_resourcemanager : std::false_type {};
+
+template <typename T>
+struct is_shared_resourcemanager<std::shared_ptr<ResourceManager<T>>> : std::true_type {};
+
+template <typename T>
+concept SharedResourceManager = is_shared_resourcemanager<T>::value;
+
+// begin/end overloads for shared_ptr<MyContainer<T>>
+template <SharedResourceManager Ptr>
+auto begin (Ptr& ptr) { return ptr->begin(); }
+
+template <SharedResourceManager Ptr>
+auto end (Ptr& ptr) { return ptr->end(); }
+
 // deduction guide for clang (c++17)
 ResourceManager () -> ResourceManager<Resource>;
 

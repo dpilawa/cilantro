@@ -30,9 +30,9 @@ public:
 
     __EAPI std::shared_ptr<GameScene> GetGameScene () override final;
 
-    __EAPI virtual TShaderProgramManager& GetShaderProgramManager () override final;
+    __EAPI virtual std::shared_ptr<TShaderProgramManager> GetShaderProgramManager () override final;
 
-    __EAPI virtual TRenderStageManager& GetRenderStageManager () override final;
+    __EAPI virtual std::shared_ptr<TRenderStageManager> GetRenderStageManager () override final;
     
     __EAPI virtual std::shared_ptr<IRenderStage> GetCurrentRenderStage () override final;
     __EAPI virtual TRenderPipeline& GetRenderPipeline () override final;
@@ -59,11 +59,11 @@ protected:
     // render pipeline
     size_t m_currentRenderStageIdx;
     std::shared_ptr<IRenderStage> m_currentRenderStage;
-    TRenderStageManager m_renderStageManager;
+    std::shared_ptr<TRenderStageManager> m_renderStageManager;
     TRenderPipeline m_renderPipeline;
 
     // shader library
-    TShaderProgramManager m_shaderProgramManager;
+    std::shared_ptr<TShaderProgramManager> m_shaderProgramManager;
 
     // set of handles of distinct lighting pass shader programs used in the scene
     TLightingShaderSet m_lightingShaders;
@@ -92,7 +92,7 @@ template <typename T, typename ...Params>
 std::shared_ptr<T> Renderer::Create (const std::string& name, Params&&... params)
     requires (std::is_base_of_v<IRenderStage,T>)
 {
-    auto renderStage = m_renderStageManager.Create<T> (name, params...);
+    auto renderStage = m_renderStageManager->Create<T> (name, params...);
     renderStage->m_renderer = this;
 
     // initialize
@@ -107,7 +107,7 @@ template <typename T, typename ...Params>
 std::shared_ptr<T> Renderer::Create (const std::string& name, Params&&... params)
     requires (std::is_base_of_v<IShaderProgram,T>)
 {
-    auto shaderProgram = m_shaderProgramManager.Create<T> (name, params...);
+    auto shaderProgram = m_shaderProgramManager->Create<T> (name, params...);
 
     // return program
     return shaderProgram;

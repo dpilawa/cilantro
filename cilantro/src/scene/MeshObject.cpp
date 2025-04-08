@@ -19,8 +19,8 @@ namespace cilantro
 MeshObject::MeshObject (std::shared_ptr<GameScene> gameScene, const std::string& meshName, const std::string& materialName)
     : GameObject (gameScene)
 {
-    m_mesh = GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<Mesh> (meshName);
-    m_material = GetGameScene ()->GetMaterialManager ().GetByName<Material> (materialName);
+    m_mesh = GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<Mesh> (meshName);
+    m_material = GetGameScene ()->GetMaterialManager ()->GetByName<Material> (materialName);
     m_mesh->SubscribeHook ("OnUpdateMesh", [&] () { GetGameScene ()->GetGame ()->GetMessageBus ()->Publish<MeshObjectUpdateMessage> (std::make_shared<MeshObjectUpdateMessage> (this->GetHandle ())); });
 }
 
@@ -35,7 +35,7 @@ std::shared_ptr<Mesh> MeshObject::GetMesh ()
 
 std::shared_ptr<MeshObject> MeshObject::SetMaterial (const std::string& materialName)
 {
-    m_material = m_gameScene.lock ()->GetMaterialManager ().GetByName<Material> (materialName);
+    m_material = m_gameScene.lock ()->GetMaterialManager ()->GetByName<Material> (materialName);
 
     return std::dynamic_pointer_cast<MeshObject> (shared_from_this ());
 }
@@ -58,7 +58,7 @@ float* MeshObject::GetBoneTransformationsMatrixArray ()
     // copy remaining bones
     for (handle_t boneHandle : m_mesh->GetMeshBones ())
     {
-        auto b = m_gameScene.lock ()->GetGameObjectManager ().GetByHandle<Bone> (boneHandle);
+        auto b = m_gameScene.lock ()->GetGameObjectManager ()->GetByHandle<Bone> (boneHandle);
         boneTransformation = b->GetWorldTransformMatrix () * b->GetOffsetMatrix ();
 
         std::memcpy (m_boneTransformationMatrixArray + index, boneTransformation[0], 16 * sizeof (float));

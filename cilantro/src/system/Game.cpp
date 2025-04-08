@@ -9,6 +9,9 @@ Game::Game ()
 {
     m_inputController = nullptr;
     m_messageBus = nullptr;
+
+    m_resourceManager = std::make_shared<ResourceManager<Resource>> ();
+    m_gameSceneManager = std::make_shared<ResourceManager<GameScene>> ();
 }
 
 Game::~Game ()
@@ -37,12 +40,12 @@ void Game::Deinitialize ()
     LogMessage () << "Engine stopping";
 }
 
-ResourceManager<Resource>& Game::GetResourceManager ()
+std::shared_ptr<ResourceManager<Resource>> Game::GetResourceManager ()
 {
     return m_resourceManager;
 }
 
-ResourceManager<GameScene>& Game::GetGameSceneManager ()
+std::shared_ptr<ResourceManager<GameScene>> Game::GetGameSceneManager ()
 {
     return m_gameSceneManager;
 }
@@ -54,7 +57,7 @@ std::shared_ptr<GameScene> Game::GetCurrentGameScene ()
 
 void Game::SetCurrentGameScene (const std::string sceneName)
 {
-    m_currentGameScene = m_gameSceneManager.GetByName<GameScene>(sceneName);
+    m_currentGameScene = m_gameSceneManager->GetByName<GameScene>(sceneName);
 }
 
 std::shared_ptr<InputController> Game::GetInputController ()

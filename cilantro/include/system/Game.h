@@ -31,8 +31,8 @@ public:
     __EAPI bool IsRunning ();
 
     // managers
-    __EAPI ResourceManager<Resource>& GetResourceManager ();
-    __EAPI ResourceManager<GameScene>& GetGameSceneManager ();
+    __EAPI std::shared_ptr<ResourceManager<Resource>> GetResourceManager ();
+    __EAPI std::shared_ptr<ResourceManager<GameScene>> GetGameSceneManager ();
 
     // scene control
     template <typename T, typename ...Params> 
@@ -54,8 +54,8 @@ public:
 
 private:
     
-    ResourceManager<Resource> m_resourceManager;
-    ResourceManager<GameScene> m_gameSceneManager;
+    std::shared_ptr<ResourceManager<Resource>> m_resourceManager;
+    std::shared_ptr<ResourceManager<GameScene>> m_gameSceneManager;
     std::weak_ptr<GameScene> m_currentGameScene;
     std::shared_ptr<InputController> m_inputController;
     std::shared_ptr<MessageBus> m_messageBus;
@@ -70,7 +70,7 @@ template <typename T, typename ...Params>
 std::shared_ptr<T> Game::Create (const std::string& name, Params&&... params)
     requires (std::is_base_of_v<GameScene,T>)
 {
-    auto gameScene = m_gameSceneManager.Create<T> (name, shared_from_this (), std::forward<Params>(params)...);
+    auto gameScene = m_gameSceneManager->Create<T> (name, shared_from_this (), std::forward<Params>(params)...);
 
     if (!m_currentGameScene.lock())
     {

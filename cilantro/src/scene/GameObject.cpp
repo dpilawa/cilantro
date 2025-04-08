@@ -36,7 +36,7 @@ std::shared_ptr<GameObject> GameObject::SetParentObject (const std::string& name
 {
     if (auto s = m_gameScene.lock ())
     {
-        auto parent = s->GetGameObjectManager ().GetByName<GameObject> (name);
+        auto parent = s->GetGameObjectManager ()->GetByName<GameObject> (name);
 
         m_parentObject = parent;
         parent->m_childObjects.push_back (shared_from_this ());

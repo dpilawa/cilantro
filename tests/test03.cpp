@@ -52,7 +52,7 @@ int main (int argc, char* argv[])
         ->SetRoughness (0.1f)
         ->SetMetallic (0.6f);
 
-    Primitives::GenerateCube (game->GetResourceManager ().Create<Mesh> ("floorMesh"));
+    Primitives::GenerateCube (game->GetResourceManager ()->Create<Mesh> ("floorMesh"));
     scene->Create<MeshObject> ("floor", "floorMesh", "floorMaterial")
         ->GetModelTransform ()->Scale (1000.0f, 0.1f, 1000.0f)->Translate (0.0f, -0.05f, 0.0f);
 
@@ -72,7 +72,7 @@ int main (int argc, char* argv[])
         ->SetEnabled (true) 
         ->GetModelTransform ()->Rotate (60.0f, 180.0f, 0.0f);
 
-    auto anim = scene->GetGameObjectManager ().GetByName<AnimationObject> ("mixamo.com");
+    auto anim = scene->GetGameObjectManager ()->GetByName<AnimationObject> ("mixamo.com");
     anim->SetLooping (true);
     anim->Play();
 

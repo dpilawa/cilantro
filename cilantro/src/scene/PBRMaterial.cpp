@@ -33,7 +33,7 @@ PBRMaterial::~PBRMaterial ()
 
 std::shared_ptr<PBRMaterial> PBRMaterial::SetAlbedo (const std::string& albedo)
 {
-    auto tAlbedo = GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<Texture> (albedo);
+    auto tAlbedo = GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<Texture> (albedo);
     SetTexture (static_cast<int>(PBRTexture::Albedo), "tAlbedo", tAlbedo);
 
     return std::dynamic_pointer_cast<PBRMaterial> (shared_from_this ());
@@ -41,7 +41,7 @@ std::shared_ptr<PBRMaterial> PBRMaterial::SetAlbedo (const std::string& albedo)
 
 std::shared_ptr<PBRMaterial> PBRMaterial::SetNormal (const std::string& normal)
 {
-    auto tNormal = GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<Texture> (normal);
+    auto tNormal = GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<Texture> (normal);
     SetTexture (static_cast<int>(PBRTexture::Normal), "tNormal", tNormal);
 
     return std::dynamic_pointer_cast<PBRMaterial> (shared_from_this ());
@@ -49,7 +49,7 @@ std::shared_ptr<PBRMaterial> PBRMaterial::SetNormal (const std::string& normal)
 
 std::shared_ptr<PBRMaterial> PBRMaterial::SetMetallic (const std::string& metallic)
 {
-    auto tMetallic = GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<Texture> (metallic);
+    auto tMetallic = GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<Texture> (metallic);
     SetTexture (static_cast<int>(PBRTexture::Metallic), "tMetallic", tMetallic);
 
     return std::dynamic_pointer_cast<PBRMaterial> (shared_from_this ());
@@ -57,7 +57,7 @@ std::shared_ptr<PBRMaterial> PBRMaterial::SetMetallic (const std::string& metall
 
 std::shared_ptr<PBRMaterial> PBRMaterial::SetRoughness (const std::string& roughness)
 {
-    auto tRoughness = GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<Texture> (roughness);
+    auto tRoughness = GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<Texture> (roughness);
     SetTexture (static_cast<int>(PBRTexture::Roughness), "tRoughness", tRoughness);
 
     return std::dynamic_pointer_cast<PBRMaterial> (shared_from_this ());
@@ -65,7 +65,7 @@ std::shared_ptr<PBRMaterial> PBRMaterial::SetRoughness (const std::string& rough
 
 std::shared_ptr<PBRMaterial> PBRMaterial::SetAO (const std::string& ao)
 {
-    auto tAO = GetGameScene ()->GetGame ()->GetResourceManager ().GetByName<Texture> (ao);
+    auto tAO = GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<Texture> (ao);
     SetTexture (static_cast<int>(PBRTexture::AO), "tAO", tAO);
 
     return std::dynamic_pointer_cast<PBRMaterial> (shared_from_this ());

@@ -54,7 +54,7 @@ void ShadowMapRenderStage::OnFrame ()
     m_renderer->UpdateLightViewBuffers ();
 
     // draw all objects in scene
-    m_renderer->DrawAllGeometryBuffers (m_renderer->GetShaderProgramManager ().GetByName<IShaderProgram> ("shadowmap_directional_shader"));
+    m_renderer->DrawAllGeometryBuffers (m_renderer->GetShaderProgramManager ()->GetByName<IShaderProgram> ("shadowmap_directional_shader"));
 
     if (m_framebuffer != nullptr)
     {

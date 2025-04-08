@@ -58,7 +58,7 @@ void QuadRenderStage::OnFrame ()
 
 QuadRenderStage& QuadRenderStage::SetShaderProgram (const std::string& shaderProgramName)
 {
-    m_shaderProgram = m_renderer->GetShaderProgramManager ().GetByName<ShaderProgram> (shaderProgramName);
+    m_shaderProgram = m_renderer->GetShaderProgramManager ()->GetByName<ShaderProgram> (shaderProgramName);
 
     return *this;
 }

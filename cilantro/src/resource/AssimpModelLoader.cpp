@@ -33,7 +33,7 @@ AssimpModelLoader::~AssimpModelLoader ()
 void AssimpModelLoader::Load (std::string sceneName, std::string path)
 {
     const aiScene* scene = m_importer.ReadFile (path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_LimitBoneWeights);
-    m_gameScene = m_game->GetGameSceneManager ().GetByName<GameScene> (sceneName);
+    m_gameScene = m_game->GetGameSceneManager ()->GetByName<GameScene> (sceneName);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) 
     {
@@ -131,7 +131,7 @@ void AssimpModelLoader::ImportBone (const aiNode* node, const aiNode* parent, co
 
 void AssimpModelLoader::ImportMesh (const aiScene* scene, const aiMesh* mesh, const aiNode* parent, const aiMatrix4x4& transform)
 {
-    auto myMesh = m_game->GetResourceManager ().Create<Mesh> (mesh->mName.C_Str ());
+    auto myMesh = m_game->GetResourceManager ()->Create<Mesh> (mesh->mName.C_Str ());
 
     ImportMeshPositions (myMesh, scene, mesh);
     ImportMeshFaces (myMesh, scene, mesh);
@@ -205,7 +205,7 @@ void AssimpModelLoader::ImportMeshBones (std::shared_ptr<Mesh> myMesh, const aiS
         {
             aiBone* bone = mesh->mBones[i];
 
-            std::shared_ptr<Bone> b = m_gameScene->GetGameObjectManager ().GetByName<Bone> (bone->mName.C_Str ());
+            std::shared_ptr<Bone> b = m_gameScene->GetGameObjectManager ()->GetByName<Bone> (bone->mName.C_Str ());
             b->SetOffsetMatrix (ConvertMatrix (bone->mOffsetMatrix));
 
             for (unsigned j = 0; j < bone->mNumWeights; j++)
@@ -230,7 +230,7 @@ void AssimpModelLoader::ImportMeshMaterial (std::shared_ptr<Mesh> myMesh, const 
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
         // skip if material already loaded
-        if (m_gameScene->GetMaterialManager ().HasName<Material> (material->GetName ().C_Str ()))
+        if (m_gameScene->GetMaterialManager ()->HasName<Material> (material->GetName ().C_Str ()))
         {
             return;
         }
@@ -318,7 +318,7 @@ void AssimpModelLoader::ImportAnimation (const aiAnimation* animation)
 void AssimpModelLoader::ImportNodeAnimation (std::shared_ptr<AnimationObject> myAnimationObject, const aiAnimation* animation, const aiNodeAnim* nodeAnimation)
 {
     std::string nodeName = nodeAnimation->mNodeName.C_Str ();
-    std::shared_ptr<GameObject> node = m_gameScene->GetGameObjectManager ().GetByName <GameObject> (nodeName);
+    std::shared_ptr<GameObject> node = m_gameScene->GetGameObjectManager ()->GetByName <GameObject> (nodeName);
     std::string propertyNameT = nodeName + "_T";
     std::string propertyNameR = nodeName + "_R";
     std::string propertyNameS = nodeName + "_S";
@@ -458,9 +458,9 @@ std::shared_ptr<Texture> AssimpModelLoader::ImportMeshMaterialTexture (aiMateria
 #endif
 
     // if texture already exists, return it
-    if (m_game->GetResourceManager ().HasName<Texture> (sysPath))
+    if (m_game->GetResourceManager ()->HasName<Texture> (sysPath))
     {
-        return m_game->GetResourceManager ().GetByName<Texture> (sysPath);
+        return m_game->GetResourceManager ()->GetByName<Texture> (sysPath);
     }
     else 
     {
@@ -469,7 +469,7 @@ std::shared_ptr<Texture> AssimpModelLoader::ImportMeshMaterialTexture (aiMateria
             LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Stacked textures not supported" << sysPath;
         }
 
-        return m_game->GetResourceManager ().Load<Texture> (sysPath, sysPath);
+        return m_game->GetResourceManager ()->Load<Texture> (sysPath, sysPath);
 
     }
 }
