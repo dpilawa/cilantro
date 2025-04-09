@@ -13,7 +13,7 @@ class Vector4f;
 class __CEAPI QuadRenderStage : public RenderStage
 {
 public:
-    __EAPI QuadRenderStage ();
+    __EAPI QuadRenderStage (std::shared_ptr<IRenderer> renderer);
     __EAPI virtual ~QuadRenderStage ();
 
     ///////////////////////////////////////////////////////////////////////////
@@ -27,12 +27,12 @@ public:
 
     ///////////////////////////////////////////////////////////////////////////
 
-    __EAPI virtual QuadRenderStage& SetShaderProgram (const std::string& shaderProgramName);
+    __EAPI virtual std::shared_ptr<QuadRenderStage> SetShaderProgram (const std::string& shaderProgramName);
 
-    __EAPI virtual QuadRenderStage& SetRenderStageParameterFloat (const std::string& parameterName, float parameterValue);
-    __EAPI virtual QuadRenderStage& SetRenderStageParameterVector2f (const std::string& parameterName, const Vector2f& parameterValue);
-    __EAPI virtual QuadRenderStage& SetRenderStageParameterVector3f (const std::string& parameterName, const Vector3f& parameterValue);
-    __EAPI virtual QuadRenderStage& SetRenderStageParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue);
+    __EAPI virtual std::shared_ptr<QuadRenderStage> SetRenderStageParameterFloat (const std::string& parameterName, float parameterValue);
+    __EAPI virtual std::shared_ptr<QuadRenderStage> SetRenderStageParameterVector2f (const std::string& parameterName, const Vector2f& parameterValue);
+    __EAPI virtual std::shared_ptr<QuadRenderStage> SetRenderStageParameterVector3f (const std::string& parameterName, const Vector3f& parameterValue);
+    __EAPI virtual std::shared_ptr<QuadRenderStage> SetRenderStageParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue);
 
 protected:
     std::shared_ptr<ShaderProgram> m_shaderProgram;

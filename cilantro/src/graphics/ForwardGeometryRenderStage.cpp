@@ -7,8 +7,8 @@
 
 namespace cilantro {
 
-ForwardGeometryRenderStage::ForwardGeometryRenderStage () 
-    : RenderStage ()
+ForwardGeometryRenderStage::ForwardGeometryRenderStage (std::shared_ptr<IRenderer> renderer) 
+    : RenderStage (renderer)
 {
 }
 
@@ -29,7 +29,7 @@ void ForwardGeometryRenderStage::InitializeFramebuffer ()
 {
     if (m_isFramebufferEnabled)
     {
-        m_framebuffer = m_renderer->CreateFramebuffer (m_renderer->GetWidth (), m_renderer->GetHeight (), 0, 1, 0, true, m_isMultisampleEnabled);
+        m_framebuffer = GetRenderer ()->CreateFramebuffer (GetRenderer ()->GetWidth (), GetRenderer ()->GetHeight (), 0, 1, 0, true, m_isMultisampleEnabled);
     }
 }
 
@@ -38,12 +38,12 @@ void ForwardGeometryRenderStage::OnFrame ()
     RenderStage::OnFrame ();
 
     // load uniform buffers
-    m_renderer->UpdateCameraBuffers (m_renderer->GetGameScene ()->GetActiveCamera ());
+    GetRenderer ()->UpdateCameraBuffers (GetRenderer ()->GetGameScene ()->GetActiveCamera ());
 
     // draw all objects in scene
-    for (auto gameObject : m_renderer->GetGameScene ()->GetGameObjectManager ())
+    for (auto gameObject : GetRenderer ()->GetGameScene ()->GetGameObjectManager ())
     {
-        gameObject->OnDraw (*m_renderer);
+        gameObject->OnDraw (*(m_renderer.lock ()));
     }
 
     if (m_framebuffer != nullptr)

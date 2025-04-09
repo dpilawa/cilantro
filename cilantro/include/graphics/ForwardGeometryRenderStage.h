@@ -10,7 +10,7 @@ class MeshObject;
 class __CEAPI ForwardGeometryRenderStage : public RenderStage
 {
 public:
-    __EAPI ForwardGeometryRenderStage ();
+    __EAPI ForwardGeometryRenderStage (std::shared_ptr<IRenderer> renderer);
     __EAPI virtual ~ForwardGeometryRenderStage ();
 
     ///////////////////////////////////////////////////////////////////////////

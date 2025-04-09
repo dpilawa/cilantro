@@ -8,7 +8,7 @@ namespace cilantro {
 class __CEAPI ShadowMapRenderStage : public RenderStage
 {
 public:
-    __EAPI ShadowMapRenderStage ();
+    __EAPI ShadowMapRenderStage (std::shared_ptr<IRenderer> renderer);
     __EAPI virtual ~ShadowMapRenderStage () {};
 
     ///////////////////////////////////////////////////////////////////////////

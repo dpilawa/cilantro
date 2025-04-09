@@ -129,7 +129,7 @@ public:
     __EAPI virtual void Initialize () override;
     __EAPI virtual void Deinitialize () override;
     
-    __EAPI virtual IRenderer& SetViewport (unsigned int x, unsigned int y, unsigned int sx, unsigned int sy) override;
+    __EAPI virtual std::shared_ptr<IRenderer> SetViewport (unsigned int x, unsigned int y, unsigned int sx, unsigned int sy) override;
     
     __EAPI virtual void RenderFrame () override;
     
@@ -152,7 +152,7 @@ public:
     __EAPI virtual size_t GetDirectionalLightCount () const override;
     __EAPI virtual size_t GetSpotLightCount () const override;
     
-    __EAPI virtual IFramebuffer* CreateFramebuffer (unsigned int width, unsigned int height, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayTextureCount, bool depthStencilRenderbufferEnabled, bool multisampleEnabled) override;
+    __EAPI virtual std::shared_ptr<IFramebuffer> CreateFramebuffer (unsigned int width, unsigned int height, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayTextureCount, bool depthStencilRenderbufferEnabled, bool multisampleEnabled) override;
     __EAPI virtual void BindDefaultFramebuffer () override;
     __EAPI virtual void BindDefaultDepthBuffer () override;
     __EAPI virtual void BindDefaultStencilBuffer () override;

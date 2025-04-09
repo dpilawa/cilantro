@@ -8,12 +8,13 @@
 #include <string>
 #include <vector>
 #include <set>
+#include <memory>
 
 namespace cilantro {
 
 class GameScene;
 
-class __CEAPI Renderer : public IRenderer
+class __CEAPI Renderer : public IRenderer, public std::enable_shared_from_this<Renderer>
 {
 public:
     __EAPI Renderer (std::shared_ptr<GameScene> gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled);
@@ -26,7 +27,7 @@ public:
 
     __EAPI unsigned int GetWidth () const override final;
     __EAPI unsigned int GetHeight () const override final;
-    __EAPI IRenderer& SetResolution (unsigned int width, unsigned int height) override;
+    __EAPI std::shared_ptr<IRenderer> SetResolution (unsigned int width, unsigned int height) override;
 
     __EAPI std::shared_ptr<GameScene> GetGameScene () override final;
 
@@ -36,9 +37,9 @@ public:
     
     __EAPI virtual std::shared_ptr<IRenderStage> GetCurrentRenderStage () override final;
     __EAPI virtual TRenderPipeline& GetRenderPipeline () override final;
-    __EAPI virtual IRenderer& RotateRenderPipelineLeft () override final;
-    __EAPI virtual IRenderer& RotateRenderPipelineRight () override final;
-    __EAPI virtual IFramebuffer* GetPipelineFramebuffer (EPipelineLink link) override final;
+    __EAPI virtual std::shared_ptr<IRenderer> RotateRenderPipelineLeft () override final;
+    __EAPI virtual std::shared_ptr<IRenderer> RotateRenderPipelineRight () override final;
+    __EAPI virtual std::shared_ptr<IFramebuffer> GetPipelineFramebuffer (EPipelineLink link) override final;
     
     __EAPI virtual void RenderFrame () override;   
     
@@ -92,8 +93,7 @@ template <typename T, typename ...Params>
 std::shared_ptr<T> Renderer::Create (const std::string& name, Params&&... params)
     requires (std::is_base_of_v<IRenderStage,T>)
 {
-    auto renderStage = m_renderStageManager->Create<T> (name, params...);
-    renderStage->m_renderer = this;
+    auto renderStage = m_renderStageManager->Create<T> (name, shared_from_this(), params...);
 
     // initialize
     renderStage->Initialize ();

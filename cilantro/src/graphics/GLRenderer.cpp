@@ -117,11 +117,11 @@ void GLRenderer::Deinitialize ()
     DeinitializeLightUniformBuffers ();
 }
 
-IRenderer& GLRenderer::SetViewport (unsigned int x, unsigned int y, unsigned int sx, unsigned int sy)
+std::shared_ptr<IRenderer> GLRenderer::SetViewport (unsigned int x, unsigned int y, unsigned int sx, unsigned int sy)
 {
     glViewport (x, y, sx, sy);
 
-    return *this;
+    return std::dynamic_pointer_cast<IRenderer> (shared_from_this ());
 }
 
 void GLRenderer::RenderFrame ()
@@ -467,7 +467,7 @@ void GLRenderer::Update (std::shared_ptr<Material> material)
             m_lightingShaders.insert (shaderProgramHandle);
             auto q = Create <QuadRenderStage> ("deferred_lighting_" + shaderProgramName);
             q->SetShaderProgram (shaderProgramName);
-            q->SetStencilTestEnabled (true).SetStencilTest (EStencilTestFunction::FUNCTION_EQUAL, static_cast<int> (shaderProgramHandle));
+            q->SetStencilTestEnabled (true)->SetStencilTest (EStencilTestFunction::FUNCTION_EQUAL, static_cast<int> (shaderProgramHandle));
             q->SetClearColorOnFrameEnabled (true);
             q->SetClearDepthOnFrameEnabled (true);
             q->SetClearStencilOnFrameEnabled (false);
@@ -699,21 +699,21 @@ size_t GLRenderer::GetSpotLightCount () const
     return m_uniformSpotLightBuffer->spotLightCount;
 }
 
-IFramebuffer* GLRenderer::CreateFramebuffer (unsigned int width, unsigned int height, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayTextureCount, bool depthStencilRenderbufferEnabled, bool multisampleEnabled)
+std::shared_ptr<IFramebuffer> GLRenderer::CreateFramebuffer (unsigned int width, unsigned int height, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayTextureCount, bool depthStencilRenderbufferEnabled, bool multisampleEnabled)
 {
-    IFramebuffer* framebuffer;
+    std::shared_ptr<IFramebuffer> framebuffer;
 
     if (multisampleEnabled)
     {
 #if (CILANTRO_GL_VERSION <= 150)
         LogMessage (MSG_LOCATION, EXIT_FAILURE) << "OpenGL 3.2 required for multisample framebuffers";
 #else
-        framebuffer = new GLMultisampleFramebuffer (width, height, rgbTextureCount, rgbaTextureCount, depthBufferArrayTextureCount, depthStencilRenderbufferEnabled);
+        framebuffer = std::make_shared<GLMultisampleFramebuffer> (width, height, rgbTextureCount, rgbaTextureCount, depthBufferArrayTextureCount, depthStencilRenderbufferEnabled);
 #endif
     }
     else
     {
-        framebuffer = new GLFramebuffer (width, height, rgbTextureCount, rgbaTextureCount, depthBufferArrayTextureCount, depthStencilRenderbufferEnabled);
+        framebuffer = std::make_shared<GLFramebuffer> (width, height, rgbTextureCount, rgbaTextureCount, depthBufferArrayTextureCount, depthStencilRenderbufferEnabled);
     }
     
     framebuffer->Initialize ();

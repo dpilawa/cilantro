@@ -5,8 +5,8 @@
 
 namespace cilantro {
 
-QuadRenderStage::QuadRenderStage () 
-    : RenderStage ()
+QuadRenderStage::QuadRenderStage (std::shared_ptr<IRenderer> renderer) 
+    : RenderStage (renderer)
     , m_shaderProgram (nullptr)
 {
 }
@@ -28,7 +28,7 @@ void QuadRenderStage::InitializeFramebuffer ()
 {   
     if (m_isFramebufferEnabled)
     {
-        m_framebuffer = m_renderer->CreateFramebuffer (m_renderer->GetWidth (), m_renderer->GetHeight (), 0, 1, 0, true, m_isMultisampleEnabled);
+        m_framebuffer = GetRenderer ()->CreateFramebuffer (GetRenderer ()->GetWidth (), GetRenderer ()->GetHeight (), 0, 1, 0, true, m_isMultisampleEnabled);
     }
 }
 
@@ -47,7 +47,7 @@ void QuadRenderStage::OnFrame ()
     }
 
     // draw quad
-    m_renderer->DrawQuad ();
+    GetRenderer ()->DrawQuad ();
 
     // blit framebuffer
     if (m_framebuffer != nullptr)
@@ -56,39 +56,39 @@ void QuadRenderStage::OnFrame ()
     }
 }
 
-QuadRenderStage& QuadRenderStage::SetShaderProgram (const std::string& shaderProgramName)
+std::shared_ptr<QuadRenderStage> QuadRenderStage::SetShaderProgram (const std::string& shaderProgramName)
 {
-    m_shaderProgram = m_renderer->GetShaderProgramManager ()->GetByName<ShaderProgram> (shaderProgramName);
+    m_shaderProgram = GetRenderer ()->GetShaderProgramManager ()->GetByName<ShaderProgram> (shaderProgramName);
 
-    return *this;
+    return std::dynamic_pointer_cast<QuadRenderStage> (shared_from_this ());
 }
 
-QuadRenderStage& QuadRenderStage::SetRenderStageParameterFloat (const std::string& parameterName, float parameterValue)
+std::shared_ptr<QuadRenderStage> QuadRenderStage::SetRenderStageParameterFloat (const std::string& parameterName, float parameterValue)
 {
     m_shaderProgram->SetUniformFloat (parameterName, parameterValue);
 
-    return *this;
+    return std::dynamic_pointer_cast<QuadRenderStage> (shared_from_this ());
 }
 
-QuadRenderStage& QuadRenderStage::SetRenderStageParameterVector2f (const std::string& parameterName, const Vector2f& parameterValue)
+std::shared_ptr<QuadRenderStage> QuadRenderStage::SetRenderStageParameterVector2f (const std::string& parameterName, const Vector2f& parameterValue)
 {
     m_shaderProgram->SetUniformVector2f (parameterName, parameterValue);
     
-    return *this;
+    return std::dynamic_pointer_cast<QuadRenderStage> (shared_from_this ());
 }
 
-QuadRenderStage& QuadRenderStage::SetRenderStageParameterVector3f (const std::string& parameterName, const Vector3f& parameterValue)
+std::shared_ptr<QuadRenderStage> QuadRenderStage::SetRenderStageParameterVector3f (const std::string& parameterName, const Vector3f& parameterValue)
 {    
     m_shaderProgram->SetUniformVector3f (parameterName, parameterValue);
     
-    return *this;
+    return std::dynamic_pointer_cast<QuadRenderStage> (shared_from_this ());
 }
 
-QuadRenderStage& QuadRenderStage::SetRenderStageParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue)
+std::shared_ptr<QuadRenderStage> QuadRenderStage::SetRenderStageParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue)
 {
     m_shaderProgram->SetUniformVector4f (parameterName, parameterValue);
     
-    return *this;
+    return std::dynamic_pointer_cast<QuadRenderStage> (shared_from_this ());
 }
 
 

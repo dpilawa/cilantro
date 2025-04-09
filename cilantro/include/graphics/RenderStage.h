@@ -4,41 +4,41 @@
 #include "graphics/IRenderer.h"
 #include "graphics/IRenderStage.h"
 #include "resource/Resource.h"
+#include <memory>
 
 namespace cilantro {
 
-class __CEAPI RenderStage : public IRenderStage, public Resource
+class __CEAPI RenderStage : public IRenderStage, public Resource, public std::enable_shared_from_this<RenderStage>
 {
-    friend class Renderer;
 public:
-    __EAPI RenderStage ();
+    __EAPI RenderStage (std::shared_ptr<IRenderer> renderer);
     __EAPI virtual ~RenderStage ();
 
     ///////////////////////////////////////////////////////////////////////////
 
-    __EAPI virtual IRenderer* GetRenderer () const override final;
+    __EAPI virtual std::shared_ptr<IRenderer> GetRenderer () const override final;
 
-    __EAPI virtual IFramebuffer* GetFramebuffer () const override final;
-    __EAPI virtual IFramebuffer* GetLinkedColorAttachmentsFramebuffer () const override final;
-    __EAPI virtual IFramebuffer* GetLinkedDepthStencilFramebuffer () const override final;
-    __EAPI virtual IFramebuffer* GetLinkedDepthArrayFramebuffer () const override final;
-    __EAPI virtual IFramebuffer* GetLinkedDrawFramebuffer () const override final;
+    __EAPI virtual std::shared_ptr<IFramebuffer> GetFramebuffer () const override final;
+    __EAPI virtual std::shared_ptr<IFramebuffer> GetLinkedColorAttachmentsFramebuffer () const override final;
+    __EAPI virtual std::shared_ptr<IFramebuffer> GetLinkedDepthStencilFramebuffer () const override final;
+    __EAPI virtual std::shared_ptr<IFramebuffer> GetLinkedDepthArrayFramebuffer () const override final;
+    __EAPI virtual std::shared_ptr<IFramebuffer> GetLinkedDrawFramebuffer () const override final;
 
     __EAPI virtual void OnFrame () override;
-    __EAPI virtual IRenderStage& SetViewport (float u, float v, float su, float sv) override;
+    __EAPI virtual std::shared_ptr<IRenderStage> SetViewport (float u, float v, float su, float sv) override;
 
-    __EAPI virtual IRenderStage& SetMultisampleEnabled (bool value) override;
-    __EAPI virtual IRenderStage& SetStencilTestEnabled (bool value) override;
-    __EAPI virtual IRenderStage& SetDepthTestEnabled (bool value) override;
-    __EAPI virtual IRenderStage& SetFaceCullingEnabled (bool value) override;
-    __EAPI virtual IRenderStage& SetFramebufferEnabled (bool value) override;
+    __EAPI virtual std::shared_ptr<IRenderStage> SetMultisampleEnabled (bool value) override;
+    __EAPI virtual std::shared_ptr<IRenderStage> SetStencilTestEnabled (bool value) override;
+    __EAPI virtual std::shared_ptr<IRenderStage> SetDepthTestEnabled (bool value) override;
+    __EAPI virtual std::shared_ptr<IRenderStage> SetFaceCullingEnabled (bool value) override;
+    __EAPI virtual std::shared_ptr<IRenderStage> SetFramebufferEnabled (bool value) override;
 
-    __EAPI virtual IRenderStage& SetClearColorOnFrameEnabled (bool value) override final;
-    __EAPI virtual IRenderStage& SetClearDepthOnFrameEnabled (bool value) override final;
-    __EAPI virtual IRenderStage& SetClearStencilOnFrameEnabled (bool value) override final;
+    __EAPI virtual std::shared_ptr<IRenderStage> SetClearColorOnFrameEnabled (bool value) override final;
+    __EAPI virtual std::shared_ptr<IRenderStage> SetClearDepthOnFrameEnabled (bool value) override final;
+    __EAPI virtual std::shared_ptr<IRenderStage> SetClearStencilOnFrameEnabled (bool value) override final;
 
-    __EAPI virtual IRenderStage& SetStencilTest (EStencilTestFunction stencilTestFunction, int stencilTestValue) override final;
-    __EAPI virtual IRenderStage& SetFaceCullingMode (EFaceCullingFace faceCullingFace, EFaceCullingDirection faceCullingDirection) override final;
+    __EAPI virtual std::shared_ptr<IRenderStage> SetStencilTest (EStencilTestFunction stencilTestFunction, int stencilTestValue) override final;
+    __EAPI virtual std::shared_ptr<IRenderStage> SetFaceCullingMode (EFaceCullingFace faceCullingFace, EFaceCullingDirection faceCullingDirection) override final;
 
     __EAPI bool IsMultisampleEnabled () const override final;
     __EAPI bool IsStencilTestEnabled () const override final;
@@ -50,10 +50,10 @@ public:
     __EAPI bool IsClearDepthOnFrameEnabled () const override final;
     __EAPI bool IsClearStencilOnFrameEnabled () const override final;
 
-    __EAPI virtual IRenderStage& SetColorAttachmentsFramebufferLink (EPipelineLink link) override final;
-    __EAPI virtual IRenderStage& SetDepthStencilFramebufferLink (EPipelineLink link) override final;
-    __EAPI virtual IRenderStage& SetDepthArrayFramebufferLink (EPipelineLink link) override final;
-    __EAPI virtual IRenderStage& SetOutputFramebufferLink (EPipelineLink link) override final;
+    __EAPI virtual std::shared_ptr<IRenderStage> SetColorAttachmentsFramebufferLink (EPipelineLink link) override final;
+    __EAPI virtual std::shared_ptr<IRenderStage> SetDepthStencilFramebufferLink (EPipelineLink link) override final;
+    __EAPI virtual std::shared_ptr<IRenderStage> SetDepthArrayFramebufferLink (EPipelineLink link) override final;
+    __EAPI virtual std::shared_ptr<IRenderStage> SetOutputFramebufferLink (EPipelineLink link) override final;
 
     ///////////////////////////////////////////////////////////////////////////
 
@@ -76,10 +76,10 @@ protected:
     float m_viewportSizeV;
 
     // parent renderer
-    IRenderer* m_renderer;
+    std::weak_ptr<IRenderer> m_renderer;
 
     // this stage's framebuffer
-    IFramebuffer* m_framebuffer;
+    std::shared_ptr<IFramebuffer> m_framebuffer;
 
     // these indicate which framebuffer and which render buffer should be current stage's input
     // and where to write to
@@ -89,10 +89,10 @@ protected:
     EPipelineLink m_drawFramebufferLink;
 
     // linked framebuffers
-    IFramebuffer* m_linkedColorAttachmentsFramebuffer;
-    IFramebuffer* m_linkedDepthStencilFramebuffer;
-    IFramebuffer* m_linkedDepthArrayFramebuffer;
-    IFramebuffer* m_linkedDrawFramebuffer;
+    std::shared_ptr<IFramebuffer> m_linkedColorAttachmentsFramebuffer;
+    std::shared_ptr<IFramebuffer> m_linkedDepthStencilFramebuffer;
+    std::shared_ptr<IFramebuffer> m_linkedDepthArrayFramebuffer;
+    std::shared_ptr<IFramebuffer> m_linkedDrawFramebuffer;
 
     // stencil testing parameters
     EStencilTestFunction m_stencilTestFunction;

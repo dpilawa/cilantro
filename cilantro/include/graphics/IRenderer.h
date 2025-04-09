@@ -44,8 +44,8 @@ struct IRenderer
     // get and set rendering resolution
     virtual unsigned int GetWidth () const = 0;
     virtual unsigned int GetHeight () const = 0;
-    virtual IRenderer& SetResolution (unsigned int width, unsigned int height) = 0;
-    virtual IRenderer& SetViewport (unsigned int x, unsigned int y, unsigned int sx, unsigned int sy) = 0;
+    virtual std::shared_ptr<IRenderer> SetResolution (unsigned int width, unsigned int height) = 0;
+    virtual std::shared_ptr<IRenderer> SetViewport (unsigned int x, unsigned int y, unsigned int sx, unsigned int sy) = 0;
 
     // access scene
     virtual std::shared_ptr<GameScene> GetGameScene () = 0;
@@ -58,9 +58,9 @@ struct IRenderer
     
     virtual std::shared_ptr<IRenderStage> GetCurrentRenderStage () = 0;
     virtual TRenderPipeline& GetRenderPipeline () = 0;
-    virtual IRenderer& RotateRenderPipelineLeft () = 0;
-    virtual IRenderer& RotateRenderPipelineRight () = 0;
-    virtual IFramebuffer* GetPipelineFramebuffer (EPipelineLink link) = 0;    
+    virtual std::shared_ptr<IRenderer> RotateRenderPipelineLeft () = 0;
+    virtual std::shared_ptr<IRenderer> RotateRenderPipelineRight () = 0;
+    virtual std::shared_ptr<IFramebuffer> GetPipelineFramebuffer (EPipelineLink link) = 0;    
     
     // render current frame
     virtual void RenderFrame () = 0;
@@ -87,7 +87,7 @@ struct IRenderer
     virtual size_t GetSpotLightCount () const = 0;
 
     // framebuffer control
-    virtual IFramebuffer* CreateFramebuffer (unsigned int width, unsigned int height, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayTextureCount, bool depthStencilRenderbufferEnabled, bool multisampleEnabled) = 0;
+    virtual std::shared_ptr<IFramebuffer> CreateFramebuffer (unsigned int width, unsigned int height, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayTextureCount, bool depthStencilRenderbufferEnabled, bool multisampleEnabled) = 0;
     virtual void BindDefaultFramebuffer () = 0;
     virtual void BindDefaultDepthBuffer () = 0;
     virtual void BindDefaultStencilBuffer () = 0;

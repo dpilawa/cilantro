@@ -5,7 +5,7 @@
 
 namespace cilantro {
 
-RenderStage::RenderStage ()
+RenderStage::RenderStage (std::shared_ptr<IRenderer> renderer)
     
     : m_isMultisampleEnabled (false)
     , m_isStencilTestEnabled (false)
@@ -22,7 +22,7 @@ RenderStage::RenderStage ()
     , m_viewportSizeU (1.0f)
     , m_viewportSizeV (1.0f)
 
-    , m_renderer (nullptr)
+    , m_renderer (renderer)
     , m_framebuffer (nullptr)
 
     , m_colorAttachmentsFramebufferLink (EPipelineLink::LINK_CURRENT)
@@ -49,38 +49,37 @@ RenderStage::~RenderStage ()
     if (m_framebuffer != nullptr)
     {
         m_framebuffer->Deinitialize ();
-        delete m_framebuffer;
     }
 }
 
-IRenderer* RenderStage::GetRenderer () const
+std::shared_ptr<IRenderer> RenderStage::GetRenderer () const
 {
-    return m_renderer;
+    return m_renderer.lock ();
 }
 
-IFramebuffer* RenderStage::GetFramebuffer () const
+std::shared_ptr<IFramebuffer> RenderStage::GetFramebuffer () const
 {
     return m_framebuffer;
 }
 
-IFramebuffer* RenderStage::GetLinkedColorAttachmentsFramebuffer () const
+std::shared_ptr<IFramebuffer> RenderStage::GetLinkedColorAttachmentsFramebuffer () const
 {
-    return m_renderer->GetPipelineFramebuffer (m_colorAttachmentsFramebufferLink);
+    return GetRenderer ()->GetPipelineFramebuffer (m_colorAttachmentsFramebufferLink);
 }
 
-IFramebuffer* RenderStage::GetLinkedDepthStencilFramebuffer () const
+std::shared_ptr<IFramebuffer> RenderStage::GetLinkedDepthStencilFramebuffer () const
 {
-    return m_renderer->GetPipelineFramebuffer (m_depthStencilFramebufferLink);
+    return GetRenderer ()->GetPipelineFramebuffer (m_depthStencilFramebufferLink);
 }
 
-IFramebuffer* RenderStage::GetLinkedDepthArrayFramebuffer () const
+std::shared_ptr<IFramebuffer> RenderStage::GetLinkedDepthArrayFramebuffer () const
 {
-    return m_renderer->GetPipelineFramebuffer (m_depthArrayFramebufferLink);
+    return GetRenderer ()->GetPipelineFramebuffer (m_depthArrayFramebufferLink);
 }
 
-IFramebuffer* RenderStage::GetLinkedDrawFramebuffer () const
+std::shared_ptr<IFramebuffer> RenderStage::GetLinkedDrawFramebuffer () const
 {
-    return m_renderer->GetPipelineFramebuffer (m_drawFramebufferLink);
+    return GetRenderer ()->GetPipelineFramebuffer (m_drawFramebufferLink);
 }
 
 void RenderStage::OnFrame ()
@@ -101,7 +100,7 @@ void RenderStage::OnFrame ()
     }
     else
     {
-        m_renderer->BindDefaultFramebuffer ();
+        GetRenderer ()->BindDefaultFramebuffer ();
     }
     
     // bind depth and stencil buffers from previous/linked stage
@@ -117,49 +116,49 @@ void RenderStage::OnFrame ()
         }
         else
         {
-            m_renderer->BindDefaultDepthBuffer ();
-            m_renderer->BindDefaultStencilBuffer ();
+            GetRenderer ()->BindDefaultDepthBuffer ();
+            GetRenderer ()->BindDefaultStencilBuffer ();
         }
     }
 
     // optionally clear
     if (m_isClearColorOnFrameEnabled)
     {
-        m_renderer->ClearColorBuffer (Vector4f (0.0f, 0.0f, 0.0f, 1.0f));
+        GetRenderer ()->ClearColorBuffer (Vector4f (0.0f, 0.0f, 0.0f, 1.0f));
     }
 
     if (m_isClearDepthOnFrameEnabled)
     {
-        m_renderer->ClearDepthBuffer ();
+        GetRenderer ()->ClearDepthBuffer ();
     }
 
     if (m_isClearStencilOnFrameEnabled)
     {
-        m_renderer->ClearStencilBuffer ();
+        GetRenderer ()->ClearStencilBuffer ();
     }
 
     // optionally enable depth test
-    m_renderer->SetDepthTestEnabled (m_isDepthTestEnabled);
+    GetRenderer ()->SetDepthTestEnabled (m_isDepthTestEnabled);
     if (m_isDepthTestEnabled)
     {
-        m_renderer->ClearDepthBuffer ();
+        GetRenderer ()->ClearDepthBuffer ();
     }
 
     // optionally enable face culling
-    m_renderer->SetFaceCullingEnabled (m_isFaceCullingEnabled);
+    GetRenderer ()->SetFaceCullingEnabled (m_isFaceCullingEnabled);
     if (m_isFaceCullingEnabled)
     {
-        m_renderer->SetFaceCullingMode (m_faceCullingFace, m_faceCullingDirection);
+        GetRenderer ()->SetFaceCullingMode (m_faceCullingFace, m_faceCullingDirection);
     }
 
     // optionally enable multisampling
-    m_renderer->SetMultisamplingEnabled (m_isMultisampleEnabled);
+    GetRenderer ()->SetMultisamplingEnabled (m_isMultisampleEnabled);
 
     // optionally enable stencil test
-    m_renderer->SetStencilTestEnabled (m_isStencilTestEnabled);
+    GetRenderer ()->SetStencilTestEnabled (m_isStencilTestEnabled);
     if (m_isStencilTestEnabled)
     {
-        m_renderer->SetStencilTestFunction (m_stencilTestFunction, m_stencilTestValue);
+        GetRenderer ()->SetStencilTestFunction (m_stencilTestFunction, m_stencilTestValue);
     }
 
     // set viewport
@@ -171,11 +170,11 @@ void RenderStage::OnFrame ()
     }
     else
     {
-        width = m_renderer->GetWidth ();
-        height = m_renderer->GetHeight ();
+        width = GetRenderer ()->GetWidth ();
+        height = GetRenderer ()->GetHeight ();
     }
 
-    m_renderer->SetViewport 
+    GetRenderer ()->SetViewport 
         ( (unsigned int) (m_viewportU * width)
         , (unsigned int) (m_viewportV * height)
         , (unsigned int) (m_viewportSizeU * width)
@@ -183,17 +182,17 @@ void RenderStage::OnFrame ()
 
 }
 
-IRenderStage& RenderStage::SetViewport (float u, float v, float su, float sv)
+std::shared_ptr<IRenderStage> RenderStage::SetViewport (float u, float v, float su, float sv)
 {
     m_viewportU = u;
     m_viewportV = v;
     m_viewportSizeU = su;
     m_viewportSizeV = sv;
 
-    return *this;
+    return std::dynamic_pointer_cast<IRenderStage> (shared_from_this ());
 }
 
-IRenderStage& RenderStage::SetMultisampleEnabled (bool value)
+std::shared_ptr<IRenderStage> RenderStage::SetMultisampleEnabled (bool value)
 {
     unsigned int rgbTextureCount;
     unsigned int rgbaTextureCount;
@@ -219,38 +218,36 @@ IRenderStage& RenderStage::SetMultisampleEnabled (bool value)
             height = m_framebuffer->GetHeight ();
 
             m_framebuffer->Deinitialize ();
-            delete m_framebuffer;
-
-            m_framebuffer = m_renderer->CreateFramebuffer (width, height, rgbTextureCount, rgbaTextureCount, dsArraySize, hasDSRenderbuffer, m_isMultisampleEnabled);
+            m_framebuffer = GetRenderer ()->CreateFramebuffer (width, height, rgbTextureCount, rgbaTextureCount, dsArraySize, hasDSRenderbuffer, m_isMultisampleEnabled);
             m_framebuffer->Initialize ();
         }
     }
 
-    return *this;
+    return std::dynamic_pointer_cast<IRenderStage> (shared_from_this ());
 }
 
-IRenderStage& RenderStage::SetStencilTestEnabled (bool value)
+std::shared_ptr<IRenderStage> RenderStage::SetStencilTestEnabled (bool value)
 {
     m_isStencilTestEnabled = value;
 
-    return *this;
+    return std::dynamic_pointer_cast<IRenderStage> (shared_from_this ());
 }
 
-IRenderStage& RenderStage::SetDepthTestEnabled (bool value)
+std::shared_ptr<IRenderStage> RenderStage::SetDepthTestEnabled (bool value)
 {
     m_isDepthTestEnabled = value;
 
-    return *this;
+    return std::dynamic_pointer_cast<IRenderStage> (shared_from_this ());
 }
 
-IRenderStage& RenderStage::SetFaceCullingEnabled (bool value)
+std::shared_ptr<IRenderStage> RenderStage::SetFaceCullingEnabled (bool value)
 {
     m_isFaceCullingEnabled = value;
 
-    return *this;
+    return std::dynamic_pointer_cast<IRenderStage> (shared_from_this ());
 }
 
-IRenderStage& RenderStage::SetFramebufferEnabled (bool value)
+std::shared_ptr<IRenderStage> RenderStage::SetFramebufferEnabled (bool value)
 {
     if (m_isFramebufferEnabled != value)
     {
@@ -258,9 +255,7 @@ IRenderStage& RenderStage::SetFramebufferEnabled (bool value)
         {
             if (m_framebuffer != nullptr)
             {
-                m_framebuffer->Deinitialize ();
-                
-                delete m_framebuffer;
+                m_framebuffer->Deinitialize ();              
                 m_framebuffer = nullptr;
             }
         }
@@ -271,44 +266,44 @@ IRenderStage& RenderStage::SetFramebufferEnabled (bool value)
     }    
 
     m_isFramebufferEnabled = value;
-    return *this;
+    return std::dynamic_pointer_cast<IRenderStage> (shared_from_this ());
 }
 
-IRenderStage& RenderStage::SetClearColorOnFrameEnabled (bool value)
+std::shared_ptr<IRenderStage> RenderStage::SetClearColorOnFrameEnabled (bool value)
 {
     m_isClearColorOnFrameEnabled = value;
 
-    return *this;
+    return std::dynamic_pointer_cast<IRenderStage> (shared_from_this ());
 }
 
-IRenderStage& RenderStage::SetClearDepthOnFrameEnabled (bool value)
+std::shared_ptr<IRenderStage> RenderStage::SetClearDepthOnFrameEnabled (bool value)
 {
     m_isClearDepthOnFrameEnabled = value;
 
-    return *this;
+    return std::dynamic_pointer_cast<IRenderStage> (shared_from_this ());
 }
 
-IRenderStage& RenderStage::SetClearStencilOnFrameEnabled (bool value)
+std::shared_ptr<IRenderStage> RenderStage::SetClearStencilOnFrameEnabled (bool value)
 {
     m_isClearStencilOnFrameEnabled = value;
 
-    return *this;
+    return std::dynamic_pointer_cast<IRenderStage> (shared_from_this ());
 }
 
-IRenderStage& RenderStage::SetStencilTest (EStencilTestFunction stencilTestFunction, int stencilTestValue)
+std::shared_ptr<IRenderStage> RenderStage::SetStencilTest (EStencilTestFunction stencilTestFunction, int stencilTestValue)
 {
     m_stencilTestFunction = stencilTestFunction;
     m_stencilTestValue = stencilTestValue;
 
-    return *this;
+    return std::dynamic_pointer_cast<IRenderStage> (shared_from_this ());
 }
 
-IRenderStage& RenderStage::SetFaceCullingMode (EFaceCullingFace faceCullingFace, EFaceCullingDirection faceCullingDirection)
+std::shared_ptr<IRenderStage> RenderStage::SetFaceCullingMode (EFaceCullingFace faceCullingFace, EFaceCullingDirection faceCullingDirection)
 {
     m_faceCullingFace = faceCullingFace;
     m_faceCullingDirection = faceCullingDirection;
 
-    return *this;
+    return std::dynamic_pointer_cast<IRenderStage> (shared_from_this ());
 }
 
 bool RenderStage::IsMultisampleEnabled () const
@@ -351,32 +346,32 @@ bool RenderStage::IsClearStencilOnFrameEnabled () const
     return m_isClearStencilOnFrameEnabled;
 }
 
-IRenderStage& RenderStage::SetColorAttachmentsFramebufferLink (EPipelineLink link)
+std::shared_ptr<IRenderStage> RenderStage::SetColorAttachmentsFramebufferLink (EPipelineLink link)
 {
     m_colorAttachmentsFramebufferLink = link;
 
-    return *this;
+    return std::dynamic_pointer_cast<IRenderStage> (shared_from_this ());
 }
 
-IRenderStage& RenderStage::SetDepthStencilFramebufferLink (EPipelineLink link)
+std::shared_ptr<IRenderStage> RenderStage::SetDepthStencilFramebufferLink (EPipelineLink link)
 {
     m_depthStencilFramebufferLink = link;
 
-    return *this;
+    return std::dynamic_pointer_cast<IRenderStage> (shared_from_this ());
 }
 
-IRenderStage& RenderStage::SetDepthArrayFramebufferLink (EPipelineLink link)
+std::shared_ptr<IRenderStage> RenderStage::SetDepthArrayFramebufferLink (EPipelineLink link)
 {
     m_depthArrayFramebufferLink = link;
 
-    return *this;
+    return std::dynamic_pointer_cast<IRenderStage> (shared_from_this ());
 }
 
-IRenderStage& RenderStage::SetOutputFramebufferLink (EPipelineLink link)
+std::shared_ptr<IRenderStage> RenderStage::SetOutputFramebufferLink (EPipelineLink link)
 {
     m_drawFramebufferLink = link;
 
-    return *this;
+    return std::dynamic_pointer_cast<IRenderStage> (shared_from_this ());
 }
 
 } // namespace cilantro

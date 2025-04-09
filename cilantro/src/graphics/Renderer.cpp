@@ -54,22 +54,21 @@ unsigned int Renderer::GetHeight () const
     return this->m_height;
 }
 
-IRenderer& Renderer::SetResolution (unsigned int width, unsigned int height)
+std::shared_ptr<IRenderer> Renderer::SetResolution (unsigned int width, unsigned int height)
 {
-    IFramebuffer* fb;
     this->m_width = width;
     this->m_height = height;
 
     for (auto& stage : m_renderStageManager)
     {
-        fb = stage->GetFramebuffer ();
+        auto fb = stage->GetFramebuffer ();
         if (fb != nullptr)
         {
             fb->SetFramebufferResolution (width, height);
         }
     }
 
-    return *this;
+    return std::dynamic_pointer_cast<IRenderer> (shared_from_this ());
 }
 
 std::shared_ptr<GameScene> Renderer::GetGameScene ()
@@ -97,21 +96,21 @@ TRenderPipeline& Renderer::GetRenderPipeline ()
     return m_renderPipeline;
 }
 
-IRenderer& Renderer::RotateRenderPipelineLeft ()
+std::shared_ptr<IRenderer> Renderer::RotateRenderPipelineLeft ()
 {
     std::rotate (m_renderPipeline.begin (), m_renderPipeline.begin () + 1, m_renderPipeline.end ());
 
-    return *this;
+    return std::dynamic_pointer_cast<IRenderer> (shared_from_this ());
 }
 
-IRenderer& Renderer::RotateRenderPipelineRight ()
+std::shared_ptr<IRenderer> Renderer::RotateRenderPipelineRight ()
 {
     std::rotate (m_renderPipeline.rbegin (), m_renderPipeline.rbegin () + 1, m_renderPipeline.rend ());
 
-    return *this;
+    return std::dynamic_pointer_cast<IRenderer> (shared_from_this ());
 }
 
-IFramebuffer* Renderer::GetPipelineFramebuffer (EPipelineLink link)
+std::shared_ptr<IFramebuffer> Renderer::GetPipelineFramebuffer (EPipelineLink link)
 {
     if ((m_currentRenderStageIdx == 0 && link == EPipelineLink::LINK_PREVIOUS) || 
         (m_currentRenderStageIdx < 2 && link == EPipelineLink::LINK_PREVIOUS_MINUS_1) ||

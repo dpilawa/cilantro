@@ -37,9 +37,21 @@ int main (int argc, char* argv [])
     auto renderer = scene->Create<GLFWRenderer> (800, 600, true, true, "Test 01", false, true, true);
     auto inputController = game->Create<GLFWInputController> ();
     
-    renderer->Create<QuadRenderStage> ("hdr_postprocess")->SetShaderProgram ("post_hdr_shader").SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);
-    renderer->Create<QuadRenderStage> ("fxaa_postprocess")->SetShaderProgram ("post_fxaa_shader").SetRenderStageParameterFloat ("fMaxSpan", 4.0f).SetRenderStageParameterVector2f ("vInvResolution", Vector2f (1.0f / renderer->GetWidth (), 1.0f / renderer->GetHeight ())).SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);
-    renderer->Create<QuadRenderStage> ("gamma_postprocess+screen")->SetShaderProgram ("post_gamma_shader").SetRenderStageParameterFloat ("fGamma", 2.1f).SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS).SetFramebufferEnabled (false);  
+    renderer->Create<QuadRenderStage> ("hdr_postprocess")
+        ->SetShaderProgram ("post_hdr_shader")
+        ->SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);
+
+    renderer->Create<QuadRenderStage> ("fxaa_postprocess")
+        ->SetShaderProgram ("post_fxaa_shader")
+        ->SetRenderStageParameterFloat ("fMaxSpan", 4.0f)
+        ->SetRenderStageParameterVector2f ("vInvResolution", Vector2f (1.0f / renderer->GetWidth (), 1.0f / renderer->GetHeight ()))
+        ->SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);
+
+    renderer->Create<QuadRenderStage> ("gamma_postprocess+screen")
+        ->SetShaderProgram ("post_gamma_shader")
+        ->SetRenderStageParameterFloat ("fGamma", 2.1f)
+        ->SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS)
+        ->SetFramebufferEnabled (false);  
 
     inputController->CreateInputEvent ("exit", EInputKey::KeyEsc, EInputTrigger::Press, {});
     inputController->BindInputEvent ("exit", [ & ]() { game->Stop (); });

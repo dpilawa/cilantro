@@ -10,7 +10,7 @@ class MeshObject;
 class __CEAPI DeferredGeometryRenderStage : public RenderStage
 {
 public:
-    __EAPI DeferredGeometryRenderStage ();
+    __EAPI DeferredGeometryRenderStage (std::shared_ptr<IRenderer> renderer);
     __EAPI virtual ~DeferredGeometryRenderStage ();
 
     ///////////////////////////////////////////////////////////////////////////

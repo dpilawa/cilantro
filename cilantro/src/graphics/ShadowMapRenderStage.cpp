@@ -7,8 +7,8 @@
 
 namespace cilantro {
 
-ShadowMapRenderStage::ShadowMapRenderStage ()
-    : RenderStage ()
+ShadowMapRenderStage::ShadowMapRenderStage (std::shared_ptr<IRenderer> renderer)
+    : RenderStage (renderer)
 {
 
 }
@@ -24,7 +24,6 @@ void ShadowMapRenderStage::Initialize ()
             if (m_framebuffer != nullptr)
             {
                 m_framebuffer->Deinitialize ();
-                delete m_framebuffer;
             }
 
             InitializeFramebuffer ();
@@ -37,11 +36,11 @@ void ShadowMapRenderStage::InitializeFramebuffer ()
 {   
     if (m_isFramebufferEnabled)
     {
-        size_t numLights = m_renderer->GetDirectionalLightCount ();
+        size_t numLights = GetRenderer ()->GetDirectionalLightCount ();
 
         if (numLights > 0)
         {
-            m_framebuffer = m_renderer->CreateFramebuffer (CILANTRO_SHADOW_MAP_SIZE, CILANTRO_SHADOW_MAP_SIZE, 0, 0, (unsigned int) numLights, false, m_isMultisampleEnabled);
+            m_framebuffer = GetRenderer ()->CreateFramebuffer (CILANTRO_SHADOW_MAP_SIZE, CILANTRO_SHADOW_MAP_SIZE, 0, 0, (unsigned int) numLights, false, m_isMultisampleEnabled);
         }
     }
 }
@@ -51,10 +50,10 @@ void ShadowMapRenderStage::OnFrame ()
     RenderStage::OnFrame ();
 
     // load uniform buffers
-    m_renderer->UpdateLightViewBuffers ();
+    GetRenderer ()->UpdateLightViewBuffers ();
 
     // draw all objects in scene
-    m_renderer->DrawAllGeometryBuffers (m_renderer->GetShaderProgramManager ()->GetByName<IShaderProgram> ("shadowmap_directional_shader"));
+    GetRenderer ()->DrawAllGeometryBuffers (GetRenderer ()->GetShaderProgramManager ()->GetByName<IShaderProgram> ("shadowmap_directional_shader"));
 
     if (m_framebuffer != nullptr)
     {

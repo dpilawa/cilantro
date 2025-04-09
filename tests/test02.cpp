@@ -31,7 +31,11 @@ int main (int argc, char* argv [])
     auto renderer = scene->Create<GLFWRenderer> (960, 600, true, false, "Test 02", false, true, true);
     auto inputController = game->Create<GLFWInputController> ();
 
-    renderer->Create<QuadRenderStage> ("screen")->SetShaderProgram ("flatquad_shader").SetFramebufferEnabled (false).SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);
+    renderer->Create<QuadRenderStage> ("screen")
+        ->SetShaderProgram ("flatquad_shader")
+        ->SetFramebufferEnabled (false)
+        ->SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);
+        
     renderer->GetRenderStageManager ()->GetByName<IRenderStage> ("forward")->SetMultisampleEnabled (true);
 
     inputController->CreateInputEvent ("exit", EInputKey::KeyEsc, EInputTrigger::Press, {});
