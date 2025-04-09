@@ -162,7 +162,7 @@ int main (int argc, char* argv [])
 
     lightAnimation->AddAnimationProperty<float> (
         "t", 0.0f,
-        [lightAnimation] (float t) {
+        [&lightAnimation] (float t) {
             auto lamp = lightAnimation->GetGameScene ()->GetGameObjectManager ()->GetByName<MeshObject> ("lamp");
             auto lp = lightAnimation->GetGameScene ()->GetGameObjectManager ()->GetByName<SplinePath> ("splinepath");
             lamp->GetModelTransform ()->Translate (lp->GetPositionAtDistance (lp->GetPathLength () * t));

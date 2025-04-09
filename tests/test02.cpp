@@ -95,7 +95,7 @@ int main (int argc, char* argv [])
 
     auto animation = scene->Create<AnimationObject> ("animation");
     animation->AddAnimationProperty<float> ("u", 0.0f, 
-        [animation](float u) 
+        [&animation](float u) 
         {
             auto cam = animation->GetGameScene ()->GetGameObjectManager ()->GetByName<PerspectiveCamera> ("camera");
             auto path = animation->GetGameScene ()->GetGameObjectManager ()->GetByName<SplinePath> ("path");

@@ -39,11 +39,12 @@
 #include "scene/LinearPath.h"
 #include "scene/SplinePath.h"
 #include "scene/AnimationObject.h"
+#include "scene/AnimationProperty.h"
 
 
 namespace py = pybind11;
 namespace c = cilantro;
-/*
+
 // Create Python bindings
 
 PYBIND11_MODULE(pycilantro, m) {
@@ -217,22 +218,22 @@ PYBIND11_MODULE(pycilantro, m) {
 
 // classes
 
-    py::class_<c::Game>(m, "Game")
-        .def_static("Initialize", &c::Game::Initialize)
-        .def_static("Deinitialize", &c::Game::Deinitialize)
-        .def_static("Run", &c::Game::Run)
-        .def_static("Stop", &c::Game::Stop)
-        .def_static("Step", &c::Game::Step)
-        .def_static("GetPath", &c::Game::GetPath)
-        .def_static("IsRunning", &c::Game::IsRunning)
-        .def_static("GetResourceManager", &c::Game::GetResourceManager, py::return_value_policy::reference)
-        .def_static("GetGameSceneManager", &c::Game::GetGameSceneManager, py::return_value_policy::reference)
-        .def_static("CreateGameScene", &c::Game::Create<c::GameScene, std::string>, py::return_value_policy::reference)
-        .def_static("GetCurrentGameScene", &c::Game::GetCurrentGameScene, py::return_value_policy::reference)
-        .def_static("SetCurrentGameScene", &c::Game::SetCurrentGameScene)
-        .def_static("CreateGLFWInputController", &c::Game::Create<c::GLFWInputController>, py::return_value_policy::reference)
-        .def_static("GetInputController", &c::Game::GetInputController, py::return_value_policy::reference)
-        .def_static("GetMessageBus", &c::Game::GetMessageBus, py::return_value_policy::reference);
+    py::class_<c::Game, std::shared_ptr<c::Game>>(m, "Game")
+        .def(py::init<>())
+        .def("Initialize", &c::Game::Initialize)
+        .def("Deinitialize", &c::Game::Deinitialize)
+        .def("Run", &c::Game::Run)
+        .def("Stop", &c::Game::Stop)
+        .def("Step", &c::Game::Step)
+        .def("IsRunning", &c::Game::IsRunning)
+        .def("GetResourceManager", &c::Game::GetResourceManager, py::return_value_policy::automatic)
+        .def("GetGameSceneManager", &c::Game::GetGameSceneManager, py::return_value_policy::automatic)
+        .def("CreateGameScene", &c::Game::Create<c::GameScene>, py::return_value_policy::automatic)
+        .def("GetCurrentGameScene", &c::Game::GetCurrentGameScene, py::return_value_policy::automatic)
+        .def("SetCurrentGameScene", &c::Game::SetCurrentGameScene)
+        .def("CreateGLFWInputController", &c::Game::Create<c::GLFWInputController>, py::return_value_policy::automatic)
+        .def("GetInputController", &c::Game::GetInputController, py::return_value_policy::automatic)
+        .def("GetMessageBus", &c::Game::GetMessageBus, py::return_value_policy::automatic);
 
     py::class_<c::Primitives>(m, "Primitives")
         .def_static("GeneratePlane", &c::Primitives::GeneratePlane)
@@ -242,43 +243,35 @@ PYBIND11_MODULE(pycilantro, m) {
         .def_static("GenerateCylinder", &c::Primitives::GenerateCylinder);
     
     py::class_<c::GameScene, std::shared_ptr<c::GameScene>>(m, "GameScene")
-        .def("CreateGLFWRenderer", &c::GameScene::Create<c::GLFWRenderer, unsigned int, unsigned int, bool, bool, std::string, bool, bool, bool>, py::return_value_policy::reference)
-        .def("AddGameObject", &c::GameScene::Add<c::GameObject>, py::return_value_policy::reference)
+        .def("CreateGLFWRenderer", &c::GameScene::Create<c::GLFWRenderer, unsigned int, unsigned int, bool, bool, std::string, bool, bool, bool>, py::return_value_policy::automatic)
+        .def("AddGameObject", &c::GameScene::Add<c::GameObject>, py::return_value_policy::automatic)
         .def("SetActiveCamera", &c::GameScene::SetActiveCamera)
-        .def("CreateMeshObject", &c::GameScene::Create<c::MeshObject, const std::string&, const std::string&>, py::return_value_policy::reference)
-        .def("CreatePointLight", &c::GameScene::Create<c::PointLight>, py::return_value_policy::reference)
-        .def("CreateDirectionalLight", &c::GameScene::Create<c::DirectionalLight>, py::return_value_policy::reference)
-        .def("CreateSpotLight", &c::GameScene::Create<c::SpotLight>, py::return_value_policy::reference)
-        .def("CreatePBRMaterial", &c::GameScene::Create<c::PBRMaterial>, py::return_value_policy::reference)
-        .def("CreatePhongMaterial", &c::GameScene::Create<c::PhongMaterial>, py::return_value_policy::reference)
-        .def("CreateLinearPath", &c::GameScene::Create<c::LinearPath>, py::return_value_policy::reference)
-        .def("CreateSplinePath", &c::GameScene::Create<c::SplinePath>, py::return_value_policy::reference)
-        .def("CreateAnimationObject", &c::GameScene::Create<c::AnimationObject>, py::return_value_policy::reference)
-        .def("OnStart", &c::GameScene::OnStart)
-        .def("OnFrame", &c::GameScene::OnFrame)
-        .def("OnEnd", &c::GameScene::OnEnd)
-        .def("GetGameObjectManager", &c::GameScene::GetGameObjectManager, py::return_value_policy::reference)
-        .def("GetMaterialManager", &c::GameScene::GetMaterialManager, py::return_value_policy::reference)
-        .def("GetRenderer", &c::GameScene::GetRenderer, py::return_value_policy::reference)
-        .def("GetTimer", &c::GameScene::GetTimer, py::return_value_policy::reference)
-        .def("GetActiveCamera", &c::GameScene::GetActiveCamera, py::return_value_policy::reference);
+        .def("CreateMeshObject", &c::GameScene::Create<c::MeshObject, const std::string&, const std::string&>, py::return_value_policy::automatic)
+        .def("CreatePointLight", &c::GameScene::Create<c::PointLight>, py::return_value_policy::automatic)
+        .def("CreateDirectionalLight", &c::GameScene::Create<c::DirectionalLight>, py::return_value_policy::automatic)
+        .def("CreateSpotLight", &c::GameScene::Create<c::SpotLight>, py::return_value_policy::automatic)
+        .def("CreatePBRMaterial", &c::GameScene::Create<c::PBRMaterial>, py::return_value_policy::automatic)
+        .def("CreatePhongMaterial", &c::GameScene::Create<c::PhongMaterial>, py::return_value_policy::automatic)
+        .def("CreateLinearPath", &c::GameScene::Create<c::LinearPath>, py::return_value_policy::automatic)
+        .def("CreateSplinePath", &c::GameScene::Create<c::SplinePath>, py::return_value_policy::automatic)
+        .def("CreateAnimationObject", &c::GameScene::Create<c::AnimationObject>, py::return_value_policy::automatic)
+        .def("GetActiveCamera", &c::GameScene::GetActiveCamera, py::return_value_policy::automatic);
 
-    py::class_<c::RenderStage>(m, "RenderStage")
-        .def("SetFramebufferEnabled", &c::RenderStage::SetFramebufferEnabled, py::return_value_policy::reference)
-        .def("SetColorAttachmentsFramebufferLink", &c::RenderStage::SetColorAttachmentsFramebufferLink, py::return_value_policy::reference)
-        .def("SetMultisampleEnabled", &c::RenderStage::SetMultisampleEnabled, py::return_value_policy::reference);
+    py::class_<c::RenderStage, std::shared_ptr<c::RenderStage>>(m, "RenderStage")
+        .def("SetFramebufferEnabled", &c::RenderStage::SetFramebufferEnabled, py::return_value_policy::automatic)
+        .def("SetColorAttachmentsFramebufferLink", &c::RenderStage::SetColorAttachmentsFramebufferLink, py::return_value_policy::automatic)
+        .def("SetMultisampleEnabled", &c::RenderStage::SetMultisampleEnabled, py::return_value_policy::automatic);
 
-    py::class_<c::QuadRenderStage, c::RenderStage>(m, "QuadRenderStage")
-        .def("SetShaderProgram", &c::QuadRenderStage::SetShaderProgram, py::return_value_policy::reference)
-        .def("SetColorAttachmentsFramebufferLink", &c::QuadRenderStage::SetColorAttachmentsFramebufferLink, py::return_value_policy::reference)
-        .def("SetRenderStageParameterFloat", &c::QuadRenderStage::SetRenderStageParameterFloat, py::return_value_policy::reference)
-        .def("SetRenderStageParameterVector2f", &c::QuadRenderStage::SetRenderStageParameterVector2f, py::return_value_policy::reference)
-        .def("SetRenderStageParameterVector3f", &c::QuadRenderStage::SetRenderStageParameterVector3f, py::return_value_policy::reference)
-        .def("SetRenderStageParameterVector4f", &c::QuadRenderStage::SetRenderStageParameterVector4f, py::return_value_policy::reference);
+    py::class_<c::QuadRenderStage, c::RenderStage, std::shared_ptr<c::QuadRenderStage>>(m, "QuadRenderStage")
+        .def("SetShaderProgram", &c::QuadRenderStage::SetShaderProgram, py::return_value_policy::automatic)
+        .def("SetColorAttachmentsFramebufferLink", &c::QuadRenderStage::SetColorAttachmentsFramebufferLink, py::return_value_policy::automatic)
+        .def("SetRenderStageParameterFloat", &c::QuadRenderStage::SetRenderStageParameterFloat, py::return_value_policy::automatic)
+        .def("SetRenderStageParameterVector2f", &c::QuadRenderStage::SetRenderStageParameterVector2f, py::return_value_policy::automatic)
+        .def("SetRenderStageParameterVector3f", &c::QuadRenderStage::SetRenderStageParameterVector3f, py::return_value_policy::automatic)
+        .def("SetRenderStageParameterVector4f", &c::QuadRenderStage::SetRenderStageParameterVector4f, py::return_value_policy::automatic);
 
     py::class_<c::Renderer, std::shared_ptr<c::Renderer>>(m, "Renderer")
-        .def("CreateQuadRenderStage", &c::Renderer::Create<c::QuadRenderStage>, py::return_value_policy::reference)
-        .def("GetRenderStageManager", &c::Renderer::GetRenderStageManager, py::return_value_policy::reference)
+        .def("CreateQuadRenderStage", &c::Renderer::Create<c::QuadRenderStage>, py::return_value_policy::automatic)
         .def("GetWidth", &c::Renderer::GetWidth)
         .def("GetHeight", &c::Renderer::GetHeight);
 
@@ -286,48 +279,40 @@ PYBIND11_MODULE(pycilantro, m) {
 
     py::class_<c::GLFWRenderer, c::GLRenderer, std::shared_ptr<c::GLFWRenderer>>(m, "GLFWRenderer");
 
-    py::class_<c::Transform>(m, "Transform")
+    py::class_<c::Transform, std::shared_ptr<c::Transform>>(m, "Transform")
         .def(py::init<>())
-        .def("GetTransformMatrix", &c::Transform::GetTransformMatrix, py::return_value_policy::reference)
-        .def("SetTransformMatrix", &c::Transform::SetTransformMatrix, py::return_value_policy::reference)
-        .def("GetTranslationMatrix", &c::Transform::GetTranslationMatrix, py::return_value_policy::reference)
-        .def("GetScalingMatrix", &c::Transform::GetScalingMatrix, py::return_value_policy::reference)
-        .def("GetRotationMatrix", &c::Transform::GetRotationMatrix, py::return_value_policy::reference)
-        .def("Translate", py::overload_cast<float, float, float>(&c::Transform::Translate), py::return_value_policy::reference)
-        .def("Translate", py::overload_cast<const c::Vector3f&>(&c::Transform::Translate), py::return_value_policy::reference)
+        .def("GetTransformMatrix", &c::Transform::GetTransformMatrix, py::return_value_policy::automatic)
+        .def("SetTransformMatrix", &c::Transform::SetTransformMatrix, py::return_value_policy::automatic)
+        .def("GetTranslationMatrix", &c::Transform::GetTranslationMatrix, py::return_value_policy::automatic)
+        .def("GetScalingMatrix", &c::Transform::GetScalingMatrix, py::return_value_policy::automatic)
+        .def("GetRotationMatrix", &c::Transform::GetRotationMatrix, py::return_value_policy::automatic)
+        .def("Translate", py::overload_cast<float, float, float>(&c::Transform::Translate), py::return_value_policy::automatic)
+        .def("Translate", py::overload_cast<const c::Vector3f&>(&c::Transform::Translate), py::return_value_policy::automatic)
         .def("GetTranslation", &c::Transform::GetTranslation)
-        .def("TranslateBy", py::overload_cast<float, float, float>(&c::Transform::TranslateBy), py::return_value_policy::reference)
-        .def("TranslateBy", py::overload_cast<const c::Vector3f&>(&c::Transform::TranslateBy), py::return_value_policy::reference)
-        .def("Scale", py::overload_cast<float, float, float>(&c::Transform::Scale), py::return_value_policy::reference)
-        .def("Scale", py::overload_cast<const c::Vector3f&>(&c::Transform::Scale), py::return_value_policy::reference)
+        .def("TranslateBy", py::overload_cast<float, float, float>(&c::Transform::TranslateBy), py::return_value_policy::automatic)
+        .def("TranslateBy", py::overload_cast<const c::Vector3f&>(&c::Transform::TranslateBy), py::return_value_policy::automatic)
+        .def("Scale", py::overload_cast<float, float, float>(&c::Transform::Scale), py::return_value_policy::automatic)
+        .def("Scale", py::overload_cast<const c::Vector3f&>(&c::Transform::Scale), py::return_value_policy::automatic)
         .def("GetScale", &c::Transform::GetScale)
-        .def("ScaleBy", py::overload_cast<float, float, float>(&c::Transform::ScaleBy), py::return_value_policy::reference)
-        .def("ScaleBy", py::overload_cast<const c::Vector3f&>(&c::Transform::ScaleBy), py::return_value_policy::reference)
-        .def("Scale", py::overload_cast<float>(&c::Transform::Scale), py::return_value_policy::reference)
-        .def("ScaleBy", py::overload_cast<float>(&c::Transform::ScaleBy), py::return_value_policy::reference)
-        .def("Rotate", py::overload_cast<float, float, float>(&c::Transform::Rotate), py::return_value_policy::reference)
-        .def("Rotate", py::overload_cast<const c::Vector3f&>(&c::Transform::Rotate), py::return_value_policy::reference)
-        .def("Rotate", py::overload_cast<const c::Quaternion&>(&c::Transform::Rotate), py::return_value_policy::reference)
-        .def("Rotate", py::overload_cast<const c::Vector3f&, float>(&c::Transform::Rotate), py::return_value_policy::reference)
+        .def("ScaleBy", py::overload_cast<float, float, float>(&c::Transform::ScaleBy), py::return_value_policy::automatic)
+        .def("ScaleBy", py::overload_cast<const c::Vector3f&>(&c::Transform::ScaleBy), py::return_value_policy::automatic)
+        .def("Scale", py::overload_cast<float>(&c::Transform::Scale), py::return_value_policy::automatic)
+        .def("ScaleBy", py::overload_cast<float>(&c::Transform::ScaleBy), py::return_value_policy::automatic)
+        .def("Rotate", py::overload_cast<float, float, float>(&c::Transform::Rotate), py::return_value_policy::automatic)
+        .def("Rotate", py::overload_cast<const c::Vector3f&>(&c::Transform::Rotate), py::return_value_policy::automatic)
+        .def("Rotate", py::overload_cast<const c::Quaternion&>(&c::Transform::Rotate), py::return_value_policy::automatic)
+        .def("Rotate", py::overload_cast<const c::Vector3f&, float>(&c::Transform::Rotate), py::return_value_policy::automatic)
         .def("GetRotation", &c::Transform::GetRotation)
         .def("GetRotationQuaternion", &c::Transform::GetRotationQuaternion)
-        .def("RotateBy", py::overload_cast<float, float, float>(&c::Transform::RotateBy), py::return_value_policy::reference)
-        .def("RotateBy", py::overload_cast<const c::Vector3f&>(&c::Transform::RotateBy), py::return_value_policy::reference)
-        .def("RotateBy", py::overload_cast<const c::Quaternion&>(&c::Transform::RotateBy), py::return_value_policy::reference);
+        .def("RotateBy", py::overload_cast<float, float, float>(&c::Transform::RotateBy), py::return_value_policy::automatic)
+        .def("RotateBy", py::overload_cast<const c::Vector3f&>(&c::Transform::RotateBy), py::return_value_policy::automatic)
+        .def("RotateBy", py::overload_cast<const c::Quaternion&>(&c::Transform::RotateBy), py::return_value_policy::automatic);
     
     py::class_<c::GameObject, std::shared_ptr<c::GameObject>>(m, "GameObject")
-        .def(py::init<c::GameScene*>())
-        .def("SetParentObject", &c::GameObject::SetParentObject, py::return_value_policy::reference)
-        .def("GetParentObject", &c::GameObject::GetParentObject)
-        .def("GetChildObjects", &c::GameObject::GetChildObjects)
-        .def("OnStart", &c::GameObject::OnStart)
-        .def("OnFrame", &c::GameObject::OnFrame)
-        .def("OnDraw", &c::GameObject::OnDraw)
-        .def("OnUpdate", &c::GameObject::OnUpdate)
-        .def("OnEnd", &c::GameObject::OnEnd)
-        .def("GetLocalTransform", &c::GameObject::GetLocalTransform, py::return_value_policy::reference)
-        .def("GetModelTransformMatrix", &c::GameObject::GetModelTransformMatrix)
-        .def("CalculateModelTransformMatrix", &c::GameObject::CalculateModelTransformMatrix)
+        .def(py::init<std::shared_ptr<c::GameScene>>())
+        .def("SetParentObject", &c::GameObject::SetParentObject, py::return_value_policy::automatic)
+        .def("GetParentObject", &c::GameObject::GetParentObject, py::return_value_policy::automatic)
+        .def("GetLocalTransform", &c::GameObject::GetModelTransform, py::return_value_policy::automatic)
         .def("GetPosition", &c::GameObject::GetPosition)
         .def("GetScaling", &c::GameObject::GetScaling)
         .def("GetRotation", &c::GameObject::GetRotation)
@@ -337,165 +322,156 @@ PYBIND11_MODULE(pycilantro, m) {
 
     py::class_<c::MeshObject, c::GameObject, std::shared_ptr<c::MeshObject>>(m, "MeshObject");
 
-    py::class_<c::Camera, c::GameObject, std::shared_ptr<c::Camera>>(m, "Camera")
-        .def("GetViewMatrix", &c::Camera::GetViewMatrix)
-        .def("GetProjectionMatrix", &c::Camera::GetProjectionMatrix);
+    py::class_<c::Camera, c::GameObject, std::shared_ptr<c::Camera>>(m, "Camera");
 
     py::class_<c::Light, c::GameObject, std::shared_ptr<c::Light>>(m, "Light")
-        .def(py::init<c::GameScene*>())
-        .def("SetEnabled", &c::Light::SetEnabled, py::return_value_policy::reference)
+        .def(py::init<std::shared_ptr<c::GameScene>>())
+        .def("SetEnabled", &c::Light::SetEnabled, py::return_value_policy::automatic)
         .def("IsEnabled", &c::Light::IsEnabled)
-        .def("SetColor", &c::Light::SetColor, py::return_value_policy::reference)
+        .def("SetColor", &c::Light::SetColor, py::return_value_policy::automatic)
         .def("GetColor", &c::Light::GetColor);
 
     py::class_<c::PointLight, c::Light, std::shared_ptr<c::PointLight>>(m, "PointLight")
-        .def(py::init<c::GameScene*>())
-        .def("SetConstantAttenuationFactor", &c::PointLight::SetConstantAttenuationFactor, py::return_value_policy::reference)
-        .def("SetLinearAttenuationFactor", &c::PointLight::SetLinearAttenuationFactor, py::return_value_policy::reference)
-        .def("SetQuadraticAttenuationFactor", &c::PointLight::SetQuadraticAttenuationFactor, py::return_value_policy::reference)
+        .def(py::init<std::shared_ptr<c::GameScene>>())
+        .def("SetConstantAttenuationFactor", &c::PointLight::SetConstantAttenuationFactor, py::return_value_policy::automatic)
+        .def("SetLinearAttenuationFactor", &c::PointLight::SetLinearAttenuationFactor, py::return_value_policy::automatic)
+        .def("SetQuadraticAttenuationFactor", &c::PointLight::SetQuadraticAttenuationFactor, py::return_value_policy::automatic)
         .def("GetConstantAttenuationFactor", &c::PointLight::GetConstantAttenuationFactor)
         .def("GetLinearAttenuationFactor", &c::PointLight::GetLinearAttenuationFactor)
         .def("GetQuadraticAttenuationFactor", &c::PointLight::GetQuadraticAttenuationFactor);
 
     py::class_<c::DirectionalLight, c::Light, std::shared_ptr<c::DirectionalLight>>(m, "DirectionalLight")
-        .def(py::init<c::GameScene*>());
+        .def(py::init<std::shared_ptr<c::GameScene>>());
 
     py::class_<c::SpotLight, c::PointLight, std::shared_ptr<c::SpotLight>>(m, "SpotLight")
-        .def(py::init<c::GameScene*>())
-        .def("SetInnerCutoff", &c::SpotLight::SetInnerCutoff, py::return_value_policy::reference)
-        .def("SetOuterCutoff", &c::SpotLight::SetOuterCutoff, py::return_value_policy::reference)
+        .def(py::init<std::shared_ptr<c::GameScene>>())
+        .def("SetInnerCutoff", &c::SpotLight::SetInnerCutoff, py::return_value_policy::automatic)
+        .def("SetOuterCutoff", &c::SpotLight::SetOuterCutoff, py::return_value_policy::automatic)
         .def("GetInnerCutoff", &c::SpotLight::GetInnerCutoff)
         .def("GetOuterCutoff", &c::SpotLight::GetOuterCutoff);
 
     py::class_<c::PerspectiveCamera, c::Camera, std::shared_ptr<c::PerspectiveCamera>>(m, "PerspectiveCamera")
-        .def(py::init<c::GameScene*, float, float, float>());
+        .def(py::init<std::shared_ptr<c::GameScene>, float, float, float>());
 
     py::class_<c::Path, c::GameObject, std::shared_ptr<c::Path>>(m, "Path")
-        .def("AddWaypoint", py::overload_cast<std::size_t, const c::Vector3f&, const c::Quaternion&>(&c::Path::AddWaypoint), py::return_value_policy::reference)
-        .def("AddWaypoint", py::overload_cast<const c::Vector3f&, const c::Quaternion&>(&c::Path::AddWaypoint), py::return_value_policy::reference)
-        .def("SetWaypoint", &c::Path::SetWaypoint, py::return_value_policy::reference)
+        .def("AddWaypoint", py::overload_cast<std::size_t, const c::Vector3f&, const c::Quaternion&>(&c::Path::AddWaypoint), py::return_value_policy::automatic)
+        .def("AddWaypoint", py::overload_cast<const c::Vector3f&, const c::Quaternion&>(&c::Path::AddWaypoint), py::return_value_policy::automatic)
+        .def("SetWaypoint", &c::Path::SetWaypoint, py::return_value_policy::automatic)
         .def("GetPositionAtDistance", &c::Path::GetPositionAtDistance)
         .def("GetTangentAtDistance", &c::Path::GetTangentAtDistance)
         .def("GetRotationAtDistance", &c::Path::GetRotationAtDistance)
         .def("GetPathLength", &c::Path::GetPathLength);
 
     py::class_<c::LinearPath, c::Path, std::shared_ptr<c::LinearPath>>(m, "LinearPath")
-        .def(py::init<c::GameScene*>())
+        .def(py::init<std::shared_ptr<c::GameScene>>())
         .def("GetPositionAtDistance", &c::LinearPath::GetPositionAtDistance)
         .def("GetTangentAtDistance", &c::LinearPath::GetTangentAtDistance);
 
     py::class_<c::SplinePath, c::Path, std::shared_ptr<c::SplinePath>>(m, "SplinePath")
-        .def(py::init<c::GameScene*>())
+        .def(py::init<std::shared_ptr<c::GameScene>>())
         .def("GetPositionAtDistance", &c::SplinePath::GetPositionAtDistance)
         .def("GetTangentAtDistance", &c::SplinePath::GetTangentAtDistance)
-        .def("SetStartTangent", &c::SplinePath::SetStartTangent, py::return_value_policy::reference)
-        .def("SetEndTangent", &c::SplinePath::SetEndTangent, py::return_value_policy::reference);
+        .def("SetStartTangent", &c::SplinePath::SetStartTangent, py::return_value_policy::automatic)
+        .def("SetEndTangent", &c::SplinePath::SetEndTangent, py::return_value_policy::automatic);
 
     py::class_<c::AnimationObject, c::GameObject, std::shared_ptr<c::AnimationObject>>(m, "AnimationObject")
-        .def(py::init<c::GameScene*>())
-        .def("AddAnimationProperty", py::overload_cast<const std::string&, float, std::function<void(float)>, std::function<float(float, float, float)>>(&c::AnimationObject::AddAnimationProperty<float>))
-        .def("AddAnimationProperty", py::overload_cast<const std::string&, c::Vector3f, std::function<void(c::Vector3f)>, std::function<c::Vector3f(c::Vector3f, c::Vector3f, float)>>(&c::AnimationObject::AddAnimationProperty<c::Vector3f>))
-        .def("AddAnimationProperty", py::overload_cast<const std::string&, c::Quaternion, std::function<void(c::Quaternion)>, std::function<c::Quaternion(c::Quaternion, c::Quaternion, float)>>(&c::AnimationObject::AddAnimationProperty<c::Quaternion>))
-        .def("AddKeyframe", py::overload_cast<const std::string&, float, float>(&c::AnimationObject::AddKeyframe<float>))
-        .def("AddKeyframe", py::overload_cast<const std::string&, float, c::Vector3f>(&c::AnimationObject::AddKeyframe<c::Vector3f>))
-        .def("AddKeyframe", py::overload_cast<const std::string&, float, c::Quaternion>(&c::AnimationObject::AddKeyframe<c::Quaternion>))
+        .def(py::init<std::shared_ptr<c::GameScene>>())
+        .def("AddAnimationProperty", py::overload_cast<const std::string&, float, std::function<void(float)>, std::function<float(float, float, float)>>(&c::AnimationObject::AddAnimationProperty<float>), py::return_value_policy::automatic)
+        .def("AddAnimationProperty", py::overload_cast<const std::string&, c::Vector3f, std::function<void(c::Vector3f)>, std::function<c::Vector3f(c::Vector3f, c::Vector3f, float)>>(&c::AnimationObject::AddAnimationProperty<c::Vector3f>), py::return_value_policy::automatic)
+        .def("AddAnimationProperty", py::overload_cast<const std::string&, c::Quaternion, std::function<void(c::Quaternion)>, std::function<c::Quaternion(c::Quaternion, c::Quaternion, float)>>(&c::AnimationObject::AddAnimationProperty<c::Quaternion>), py::return_value_policy::automatic)
         .def("Play", &c::AnimationObject::Play)
         .def("Stop", &c::AnimationObject::Stop)
         .def("Seek", &c::AnimationObject::Seek)
         .def("SetLooping", &c::AnimationObject::SetLooping);
+
+    py::class_<c::AnimationProperty<float>, std::shared_ptr<c::AnimationProperty<float>>>(m, "AnimationPropertyFloat")
+        .def(py::init<std::shared_ptr<c::AnimationObject>, std::function<void(float)>, std::function<float(float, float, float)>>())
+        .def("AddKeyframe", py::overload_cast<float, float>(&c::AnimationProperty<float>::AddKeyframe), py::return_value_policy::automatic);
+
+    py::class_<c::AnimationProperty<c::Vector3f>, std::shared_ptr<c::AnimationProperty<c::Vector3f>>>(m, "AnimationPropertyVector3f")
+        .def(py::init<std::shared_ptr<c::AnimationObject>, std::function<void(c::Vector3f)>, std::function<c::Vector3f(c::Vector3f, c::Vector3f, float)>>())
+        .def("AddKeyframe", py::overload_cast<float, c::Vector3f>(&c::AnimationProperty<c::Vector3f>::AddKeyframe), py::return_value_policy::automatic);
+
+    py::class_<c::AnimationProperty<c::Quaternion>, std::shared_ptr<c::AnimationProperty<c::Quaternion>>>(m, "AnimationPropertyQuaternion")
+        .def(py::init<std::shared_ptr<c::AnimationObject>, std::function<void(c::Quaternion)>, std::function<c::Quaternion(c::Quaternion, c::Quaternion, float)>>())
+        .def("AddKeyframe", py::overload_cast<float, c::Quaternion>(&c::AnimationProperty<c::Quaternion>::AddKeyframe), py::return_value_policy::automatic);
 
     py::class_<c::Resource, std::shared_ptr<c::Resource>>(m, "Resource")
         .def("GetHandle", &c::Resource::GetHandle)
         .def("GetName", &c::Resource::GetName);
 
     py::class_<c::LoadableResource, c::Resource, std::shared_ptr<c::LoadableResource>>(m, "LoadableResource")
-        .def("Load", &c::LoadableResource::Load, py::return_value_policy::reference);
+        .def("Load", &c::LoadableResource::Load, py::return_value_policy::automatic);
 
     py::class_<c::Texture, c::LoadableResource, std::shared_ptr<c::Texture>>(m, "Texture")
         .def(py::init<const int, const int, float>())
         .def(py::init<const int, const int, const c::Vector3f&>())
         .def(py::init<const std::string&>())
-        .def("GenerateSolid", py::overload_cast<const int, const int, float>(&c::Texture::GenerateSolid), py::return_value_policy::reference)
-        .def("GenerateSolid", py::overload_cast<const int, const int, const c::Vector3f&>(&c::Texture::GenerateSolid), py::return_value_policy::reference)
-        .def("Data", &c::Texture::Data)
+        .def("GenerateSolid", py::overload_cast<const int, const int, float>(&c::Texture::GenerateSolid), py::return_value_policy::automatic)
+        .def("GenerateSolid", py::overload_cast<const int, const int, const c::Vector3f&>(&c::Texture::GenerateSolid), py::return_value_policy::automatic)
         .def("GetWidth", &c::Texture::GetWidth)
-        .def("GetHeight", &c::Texture::GetHeight)
-        .def("GetChannels", &c::Texture::GetChannels);
+        .def("GetHeight", &c::Texture::GetHeight);
 
     py::class_<c::Mesh, c::Resource, std::shared_ptr<c::Mesh>>(m, "Mesh")
         .def(py::init<>())
-        .def("Clear", &c::Mesh::Clear, py::return_value_policy::reference)
-        .def("CalculateVertexNormals", &c::Mesh::CalculateVertexNormals, py::return_value_policy::reference)
-        .def("SetSmoothNormals", &c::Mesh::SetSmoothNormals, py::return_value_policy::reference)
-        .def("CalculateTangentsBitangents", &c::Mesh::CalculateTangentsBitangents, py::return_value_policy::reference)
+        .def("Clear", &c::Mesh::Clear, py::return_value_policy::automatic)
+        .def("CalculateVertexNormals", &c::Mesh::CalculateVertexNormals, py::return_value_policy::automatic)
+        .def("SetSmoothNormals", &c::Mesh::SetSmoothNormals, py::return_value_policy::automatic)
+        .def("CalculateTangentsBitangents", &c::Mesh::CalculateTangentsBitangents, py::return_value_policy::automatic)
         .def("GetVertexCount", &c::Mesh::GetVertexCount)
         .def("GetFaceCount", &c::Mesh::GetFaceCount)
         .def("GetIndexCount", &c::Mesh::GetIndexCount)
-        .def("GetVerticesData", &c::Mesh::GetVerticesData)
-        .def("GetNormalsData", &c::Mesh::GetNormalsData)
-        .def("GetUVData", &c::Mesh::GetUVData)
-        .def("GetTangentData", &c::Mesh::GetTangentData)
-        .def("GetBitangentData", &c::Mesh::GetBitangentData)
-        .def("GetBoneIndicesData", &c::Mesh::GetBoneIndicesData)
-        .def("GetBoneWeightsData", &c::Mesh::GetBoneWeightsData)
-        .def("GetMeshBones", &c::Mesh::GetMeshBones)
-        .def("GetFacesData", &c::Mesh::GetFacesData)
-        .def("AddVertex", &c::Mesh::AddVertex, py::return_value_policy::reference)
-        .def("AddFace", &c::Mesh::AddFace, py::return_value_policy::reference)
-        .def("AddNormal", &c::Mesh::AddNormal, py::return_value_policy::reference)
-        .def("AddTangentBitangent", &c::Mesh::AddTangentBitangent, py::return_value_policy::reference)
-        .def("AddVertexBoneInfluence", &c::Mesh::AddVertexBoneInfluence, py::return_value_policy::reference);
+        .def("AddVertex", &c::Mesh::AddVertex, py::return_value_policy::automatic)
+        .def("AddFace", &c::Mesh::AddFace, py::return_value_policy::automatic)
+        .def("AddNormal", &c::Mesh::AddNormal, py::return_value_policy::automatic)
+        .def("AddTangentBitangent", &c::Mesh::AddTangentBitangent, py::return_value_policy::automatic)
+        .def("AddVertexBoneInfluence", &c::Mesh::AddVertexBoneInfluence, py::return_value_policy::automatic);
 
     py::class_<c::Material, c::Resource, std::shared_ptr<c::Material>>(m, "Material")
-        .def("SetForwardShaderProgram", &c::Material::SetForwardShaderProgram, py::return_value_policy::reference)
-        .def("SetDeferredGeometryPassShaderProgram", &c::Material::SetDeferredGeometryPassShaderProgram, py::return_value_policy::reference)
-        .def("SetDeferredLightingPassShaderProgram", &c::Material::SetDeferredLightingPassShaderProgram, py::return_value_policy::reference)
-        .def("GetForwardShaderProgram", &c::Material::GetForwardShaderProgram, py::return_value_policy::reference)
-        .def("GetDeferredGeometryPassShaderProgram", &c::Material::GetDeferredGeometryPassShaderProgram, py::return_value_policy::reference)
-        .def("GetDeferredLightingPassShaderProgram", &c::Material::GetDeferredLightingPassShaderProgram, py::return_value_policy::reference)
-        .def("GetTexturesMap", &c::Material::GetTexturesMap, py::return_value_policy::reference)
-        .def("GetPropertiesMap", &c::Material::GetPropertiesMap, py::return_value_policy::reference);
+        .def("SetForwardShaderProgram", &c::Material::SetForwardShaderProgram, py::return_value_policy::automatic)
+        .def("SetDeferredGeometryPassShaderProgram", &c::Material::SetDeferredGeometryPassShaderProgram, py::return_value_policy::automatic)
+        .def("SetDeferredLightingPassShaderProgram", &c::Material::SetDeferredLightingPassShaderProgram, py::return_value_policy::automatic);
 
     py::class_<c::PBRMaterial, c::Material, std::shared_ptr<c::PBRMaterial>>(m, "PBRMaterial")
-        .def(py::init<>())
-        .def("SetAlbedo", py::overload_cast<const std::string&>(&c::PBRMaterial::SetAlbedo), py::return_value_policy::reference)
-        .def("SetAlbedo", py::overload_cast<const c::Vector3f&>(&c::PBRMaterial::SetAlbedo), py::return_value_policy::reference)
-        .def("SetNormal", &c::PBRMaterial::SetNormal, py::return_value_policy::reference)
-        .def("SetMetallic", py::overload_cast<const std::string&>(&c::PBRMaterial::SetMetallic), py::return_value_policy::reference)
-        .def("SetMetallic", py::overload_cast<float>(&c::PBRMaterial::SetMetallic), py::return_value_policy::reference)
-        .def("SetRoughness", py::overload_cast<const std::string&>(&c::PBRMaterial::SetRoughness), py::return_value_policy::reference)
-        .def("SetRoughness", py::overload_cast<float>(&c::PBRMaterial::SetRoughness), py::return_value_policy::reference)
-        .def("SetAO", py::overload_cast<const std::string&>(&c::PBRMaterial::SetAO), py::return_value_policy::reference)
-        .def("SetAO", py::overload_cast<float>(&c::PBRMaterial::SetAO), py::return_value_policy::reference)
-        .def("GetAlbedo", &c::PBRMaterial::GetAlbedo, py::return_value_policy::reference)
-        .def("GetNormal", &c::PBRMaterial::GetNormal, py::return_value_policy::reference)
-        .def("GetMetallic", &c::PBRMaterial::GetMetallic, py::return_value_policy::reference)
-        .def("GetRoughness", &c::PBRMaterial::GetRoughness, py::return_value_policy::reference)
-        .def("GetAO", &c::PBRMaterial::GetAO, py::return_value_policy::reference);
+        .def(py::init<std::shared_ptr<c::GameScene>>())
+        .def("SetAlbedo", py::overload_cast<const std::string&>(&c::PBRMaterial::SetAlbedo), py::return_value_policy::automatic)
+        .def("SetAlbedo", py::overload_cast<const c::Vector3f&>(&c::PBRMaterial::SetAlbedo), py::return_value_policy::automatic)
+        .def("SetNormal", &c::PBRMaterial::SetNormal, py::return_value_policy::automatic)
+        .def("SetMetallic", py::overload_cast<const std::string&>(&c::PBRMaterial::SetMetallic), py::return_value_policy::automatic)
+        .def("SetMetallic", py::overload_cast<float>(&c::PBRMaterial::SetMetallic), py::return_value_policy::automatic)
+        .def("SetRoughness", py::overload_cast<const std::string&>(&c::PBRMaterial::SetRoughness), py::return_value_policy::automatic)
+        .def("SetRoughness", py::overload_cast<float>(&c::PBRMaterial::SetRoughness), py::return_value_policy::automatic)
+        .def("SetAO", py::overload_cast<const std::string&>(&c::PBRMaterial::SetAO), py::return_value_policy::automatic)
+        .def("SetAO", py::overload_cast<float>(&c::PBRMaterial::SetAO), py::return_value_policy::automatic)
+        .def("GetAlbedo", &c::PBRMaterial::GetAlbedo, py::return_value_policy::automatic)
+        .def("GetNormal", &c::PBRMaterial::GetNormal, py::return_value_policy::automatic)
+        .def("GetMetallic", &c::PBRMaterial::GetMetallic, py::return_value_policy::automatic)
+        .def("GetRoughness", &c::PBRMaterial::GetRoughness, py::return_value_policy::automatic)
+        .def("GetAO", &c::PBRMaterial::GetAO, py::return_value_policy::automatic);
 
     py::class_<c::PhongMaterial, c::Material, std::shared_ptr<c::PhongMaterial>>(m, "PhongMaterial")
-        .def(py::init<>())
-        .def("SetDiffuse", py::overload_cast<const std::string&>(&c::PhongMaterial::SetDiffuse), py::return_value_policy::reference)
-        .def("SetDiffuse", py::overload_cast<const c::Vector3f&>(&c::PhongMaterial::SetDiffuse), py::return_value_policy::reference)
-        .def("SetNormal", &c::PhongMaterial::SetNormal, py::return_value_policy::reference)
-        .def("SetSpecular", py::overload_cast<const std::string&>(&c::PhongMaterial::SetSpecular), py::return_value_policy::reference)
-        .def("SetSpecular", py::overload_cast<const c::Vector3f&>(&c::PhongMaterial::SetSpecular), py::return_value_policy::reference)
-        .def("SetSpecularShininess", &c::PhongMaterial::SetSpecularShininess, py::return_value_policy::reference)
-        .def("SetEmissive", py::overload_cast<const std::string&>(&c::PhongMaterial::SetEmissive), py::return_value_policy::reference)
-        .def("SetEmissive", py::overload_cast<const c::Vector3f&>(&c::PhongMaterial::SetEmissive), py::return_value_policy::reference)
-        .def("GetDiffuse", &c::PhongMaterial::GetDiffuse, py::return_value_policy::reference)
-        .def("GetNormal", &c::PhongMaterial::GetNormal, py::return_value_policy::reference)
-        .def("GetSpecular", &c::PhongMaterial::GetSpecular, py::return_value_policy::reference)
-        .def("GetSpecularShininess", &c::PhongMaterial::GetSpecularShininess, py::return_value_policy::reference)
-        .def("GetEmissive", &c::PhongMaterial::GetEmissive, py::return_value_policy::reference);
+        .def(py::init<std::shared_ptr<c::GameScene>>())
+        .def("SetDiffuse", py::overload_cast<const std::string&>(&c::PhongMaterial::SetDiffuse), py::return_value_policy::automatic)
+        .def("SetDiffuse", py::overload_cast<const c::Vector3f&>(&c::PhongMaterial::SetDiffuse), py::return_value_policy::automatic)
+        .def("SetNormal", &c::PhongMaterial::SetNormal, py::return_value_policy::automatic)
+        .def("SetSpecular", py::overload_cast<const std::string&>(&c::PhongMaterial::SetSpecular), py::return_value_policy::automatic)
+        .def("SetSpecular", py::overload_cast<const c::Vector3f&>(&c::PhongMaterial::SetSpecular), py::return_value_policy::automatic)
+        .def("SetSpecularShininess", &c::PhongMaterial::SetSpecularShininess, py::return_value_policy::automatic)
+        .def("SetEmissive", py::overload_cast<const std::string&>(&c::PhongMaterial::SetEmissive), py::return_value_policy::automatic)
+        .def("SetEmissive", py::overload_cast<const c::Vector3f&>(&c::PhongMaterial::SetEmissive), py::return_value_policy::automatic)
+        .def("GetDiffuse", &c::PhongMaterial::GetDiffuse, py::return_value_policy::automatic)
+        .def("GetNormal", &c::PhongMaterial::GetNormal, py::return_value_policy::automatic)
+        .def("GetSpecular", &c::PhongMaterial::GetSpecular, py::return_value_policy::automatic)
+        .def("GetSpecularShininess", &c::PhongMaterial::GetSpecularShininess, py::return_value_policy::automatic)
+        .def("GetEmissive", &c::PhongMaterial::GetEmissive, py::return_value_policy::automatic);
 
-    py::class_<c::ResourceManager<c::Resource>>(m, "ResourceManager")
-        .def("LoadTexture", &c::ResourceManager<c::Resource>::Load<c::Texture>, py::return_value_policy::reference)
-        .def("CreateMesh", &c::ResourceManager<c::Resource>::Create<c::Mesh>, py::return_value_policy::reference)
-        .def("GetByName", &c::ResourceManager<c::Resource>::GetByName<c::Resource>, py::return_value_policy::reference)
-        .def("GetByHandle", &c::ResourceManager<c::Resource>::GetByHandle<c::Resource>, py::return_value_policy::reference);
+    py::class_<c::ResourceManager<c::Resource>, std::shared_ptr<c::ResourceManager<c::Resource>>>(m, "ResourceManager")
+        .def("LoadTexture", &c::ResourceManager<c::Resource>::Load<c::Texture>, py::return_value_policy::automatic)
+        .def("CreateMesh", &c::ResourceManager<c::Resource>::Create<c::Mesh>, py::return_value_policy::automatic)
+        .def("GetByName", &c::ResourceManager<c::Resource>::GetByName<c::Resource>, py::return_value_policy::automatic)
+        .def("GetByHandle", &c::ResourceManager<c::Resource>::GetByHandle<c::Resource>, py::return_value_policy::automatic);
 
-    py::class_<c::InputController>(m, "InputController")
+    py::class_<c::InputController, std::shared_ptr<c::InputController>>(m, "InputController")
         .def("Initialize", &c::InputController::Initialize)
         .def("Deinitialize", &c::InputController::Deinitialize)
         .def("OnFrame", &c::InputController::OnFrame)
@@ -506,8 +482,8 @@ PYBIND11_MODULE(pycilantro, m) {
         .def("SetMouseGameMode", &c::InputController::SetMouseGameMode)
         .def("IsGameMode", &c::InputController::IsGameMode);
 
-    py::class_<c::GLFWInputController, c::InputController>(m, "GLFWInputController")
-        .def(py::init<>())
+    py::class_<c::GLFWInputController, c::InputController, std::shared_ptr<c::GLFWInputController>>(m, "GLFWInputController")
+        .def(py::init<std::shared_ptr<c::Game>>())
         .def("Initialize", &c::GLFWInputController::Initialize)
         .def("Deinitialize", &c::GLFWInputController::Deinitialize)
         .def("OnFrame", &c::GLFWInputController::OnFrame)
@@ -563,8 +539,8 @@ PYBIND11_MODULE(pycilantro, m) {
         .value("Press", c::EInputTrigger::Press)
         .value("Release", c::EInputTrigger::Release);
 
+
 }
 
-*/
 
-PYBIND11_MODULE(pycilantro, m) {}
+

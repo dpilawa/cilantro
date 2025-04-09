@@ -1,8 +1,4 @@
-import os
-import sys
-sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../build"))
 import pycilantro as c
-import os
 
 class ControlledCamera (c.PerspectiveCamera):
     def __init__(self, game_scene, fov, near, far, speed, sensitivity):
@@ -11,7 +7,7 @@ class ControlledCamera (c.PerspectiveCamera):
         self.sensitivity = sensitivity
 
     def Initialize(self):
-        controller = c.Game.GetInputController()
+        controller = game.GetInputController()
 
         controller.CreateInputAxis("moveforward", c.InputKey.KeyW, set(), 1.0)
         controller.CreateInputAxis("moveforward", c.InputKey.KeyS, set(), -1.0)
@@ -39,31 +35,34 @@ class ControlledCamera (c.PerspectiveCamera):
     def PitchBy(self, angle):
         self.GetLocalTransform ().RotateBy (angle * self.sensitivity, 0.0, 0.0)
 
-c.Game.Initialize (os.path.dirname (os.path.realpath(__file__)))
-scene = c.Game.CreateGameScene ("scene")
+
+game = c.Game ()
+game.Initialize ()
+scene = game.CreateGameScene ("scene")
+
 renderer = scene.CreateGLFWRenderer (800, 600, True, True, "Test 01", False, True, True)
-input = c.Game.CreateGLFWInputController ()
+input = game.CreateGLFWInputController ()
 
 renderer.CreateQuadRenderStage ("hdr_postprocess").SetShaderProgram ("post_hdr_shader").SetColorAttachmentsFramebufferLink (c.PipelineLink.LINK_PREVIOUS);
 renderer.CreateQuadRenderStage ("fxaa_postprocess").SetShaderProgram ("post_fxaa_shader").SetRenderStageParameterFloat ("fMaxSpan", 4.0).SetRenderStageParameterVector2f ("vInvResolution", c.Vector2f (1.0 / renderer.GetWidth (), 1.0 / renderer.GetHeight ())).SetColorAttachmentsFramebufferLink (c.PipelineLink.LINK_PREVIOUS)
 renderer.CreateQuadRenderStage ("gamma_postprocess+screen").SetShaderProgram ("post_gamma_shader").SetRenderStageParameterFloat ("fGamma", 2.1).SetColorAttachmentsFramebufferLink (c.PipelineLink.LINK_PREVIOUS).SetFramebufferEnabled (False)
 
 input.CreateInputEvent ("exit", c.InputKey.KeyEsc, c.InputTrigger.Press, set())
-input.BindInputEvent ("exit", lambda: c.Game.Stop ())
+input.BindInputEvent ("exit", lambda: game.Stop ())
 
 input.CreateInputEvent ("mousemode", c.InputKey.KeySpace, c.InputTrigger.Release, set())
 input.BindInputEvent ("mousemode", lambda: input.SetMouseGameMode (not input.IsGameMode ()))
 
-c.Game.GetResourceManager ().LoadTexture ("tAlbedoMetal", "textures/scuffed-metal1_albedo.png")
-c.Game.GetResourceManager ().LoadTexture ("tMetalnessMetal", "textures/scuffed-metal1_metallic.png")
-c.Game.GetResourceManager ().LoadTexture ("tNormalMetal", "textures/scuffed-metal1_normal-dx.png")
-c.Game.GetResourceManager ().LoadTexture ("tRoughnessMetal", "textures/scuffed-metal1_roughness.png")
-c.Game.GetResourceManager ().LoadTexture ("tAOMetal", "textures/scuffed-metal1_ao.png")
+game.GetResourceManager ().LoadTexture ("tAlbedoMetal", "textures/scuffed-metal1_albedo.png")
+game.GetResourceManager ().LoadTexture ("tMetalnessMetal", "textures/scuffed-metal1_metallic.png")
+game.GetResourceManager ().LoadTexture ("tNormalMetal", "textures/scuffed-metal1_normal-dx.png")
+game.GetResourceManager ().LoadTexture ("tRoughnessMetal", "textures/scuffed-metal1_roughness.png")
+game.GetResourceManager ().LoadTexture ("tAOMetal", "textures/scuffed-metal1_ao.png")
 
-c.Game.GetResourceManager ().LoadTexture ("tAlbedoGold", "textures/Metal007_1K_Color.png")
-c.Game.GetResourceManager ().LoadTexture ("tMetalnessGold", "textures/Metal007_1K_Metalness.png")
-c.Game.GetResourceManager ().LoadTexture ("tNormalGold", "textures/Metal007_1K_Normal.png")
-c.Game.GetResourceManager ().LoadTexture ("tRoughnessGold", "textures/Metal007_1K_Roughness.png")
+game.GetResourceManager ().LoadTexture ("tAlbedoGold", "textures/Metal007_1K_Color.png")
+game.GetResourceManager ().LoadTexture ("tMetalnessGold", "textures/Metal007_1K_Metalness.png")
+game.GetResourceManager ().LoadTexture ("tNormalGold", "textures/Metal007_1K_Normal.png")
+game.GetResourceManager ().LoadTexture ("tRoughnessGold", "textures/Metal007_1K_Roughness.png")
 
 scene.CreatePBRMaterial("greenMaterial").SetAlbedo(c.Vector3f(0.1, 0.4, 0.1)).SetRoughness(0.1).SetMetallic(0.6).SetNormal("tNormalMetal")
 scene.CreatePBRMaterial("redMaterial").SetAlbedo("tAlbedoMetal").SetMetallic("tMetalnessMetal").SetRoughness("tRoughnessMetal").SetNormal("tNormalMetal").SetAO("tAOMetal")
@@ -77,27 +76,27 @@ cam.Initialize ()
 cam.GetLocalTransform ().Translate (5.0, 2.5, 5.0).Rotate (-20.0, 45.0, 0.0)
 scene.SetActiveCamera ("camera")
 
-cubeMesh = c.Game.GetResourceManager ().CreateMesh ("cubeMesh")
+cubeMesh = game.GetResourceManager ().CreateMesh ("cubeMesh")
 c.Primitives.GenerateCube (cubeMesh)
 cube = scene.CreateMeshObject ("cube", "cubeMesh", "redMaterial")
 cube.GetLocalTransform ().Scale (0.5).Translate (0.0, 1.1, 0.0)
 
-coneMesh = c.Game.GetResourceManager().CreateMesh("coneMesh").SetSmoothNormals(False)
+coneMesh = game.GetResourceManager().CreateMesh("coneMesh").SetSmoothNormals(False)
 c.Primitives.GenerateCone(coneMesh, 32)
 cone = scene.CreateMeshObject("cone", "coneMesh", "goldMaterial")
 cone.GetLocalTransform().Translate(-1.5, 0.5, 1.0).Scale(0.5)
 
-cylinderMesh = c.Game.GetResourceManager().CreateMesh("cylinderMesh").SetSmoothNormals(False)
+cylinderMesh = game.GetResourceManager().CreateMesh("cylinderMesh").SetSmoothNormals(False)
 c.Primitives.GenerateCylinder(cylinderMesh, 32)
 cylinder = scene.CreateMeshObject("cylinder", "cylinderMesh", "blueMaterial")
 cylinder.GetLocalTransform().Rotate(90.0, 12.5, 0.0).Translate(1.7, 0.5, 0.7).Scale(0.5)
 
-lampMesh = c.Game.GetResourceManager().CreateMesh("lampMesh")
+lampMesh = game.GetResourceManager().CreateMesh("lampMesh")
 c.Primitives.GenerateSphere(lampMesh, 3)
 lamp = scene.CreateMeshObject("lamp", "lampMesh", "lampMaterial")
 lamp.GetLocalTransform().Scale(0.1, 0.1, 0.1).Translate(1.0, 0.75, 1.0)
 
-floorMesh = c.Game.GetResourceManager().CreateMesh("floorMesh")
+floorMesh = game.GetResourceManager().CreateMesh("floorMesh")
 c.Primitives.GenerateCube(floorMesh)
 floor = scene.CreateMeshObject("floor", "floorMesh", "greenMaterial")
 floor.GetLocalTransform().Scale(2.5, 0.05, 2.5).Translate(0.0, -0.05, 0.0)
@@ -143,10 +142,17 @@ def update_lamp (t):
     lamp.GetLocalTransform ().Translate (lp.GetPositionAtDistance (lp.GetPathLength () * t))
     lamp.GetLocalTransform ().Rotate (lp.GetRotationAtDistance (lp.GetPathLength () * t))
 
-lightAnimation.AddAnimationProperty ("t", 0.0, update_lamp, lambda t0, t1, u: c.Mathf.Lerp(t0, t1, u))
-lightAnimation.AddKeyframe ("t", 5.0, 1.0)
+t = lightAnimation.AddAnimationProperty ("t", 0.0, update_lamp, lambda t0, t1, u: c.Mathf.Lerp(t0, t1, u))
+t.AddKeyframe (5.0, 1.0)
 lightAnimation.SetLooping (True)
 lightAnimation.Play ()
 
-c.Game.Run ()
-c.Game.Deinitialize ()
+
+game.Run ()
+game.Deinitialize ()
+
+game = None
+renderer = None
+scene = None
+input = None
+lightAnimation = None
