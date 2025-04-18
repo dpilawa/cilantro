@@ -21,7 +21,20 @@ MeshObject::MeshObject (std::shared_ptr<GameScene> gameScene, const std::string&
 {
     m_mesh = GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<Mesh> (meshName);
     m_material = GetGameScene ()->GetMaterialManager ()->GetByName<Material> (materialName);
-    m_mesh->SubscribeHook ("OnUpdateMesh", [&] () { GetGameScene ()->GetGame ()->GetMessageBus ()->Publish<MeshObjectUpdateMessage> (std::make_shared<MeshObjectUpdateMessage> (this->GetHandle ())); });
+
+    // in case of mesh update, publish message to bus (recipients incl. for renderer)
+    m_mesh->SubscribeHook ("OnUpdateMesh", [&] () 
+    { 
+        GetGameScene ()->GetGame ()->GetMessageBus ()->Publish<MeshObjectUpdateMessage> (std::make_shared<MeshObjectUpdateMessage> (this->GetHandle ())); 
+    });
+
+    // in case of transform update, set aab dirty flag so that it is recalculated when queried
+    GetModelTransform ()->SubscribeHook ("OnUpdateTransform", [&]() 
+    {
+        m_aabbDirty = true; 
+    });
+
+    m_aabbDirty = true;
 }
 
 MeshObject::~MeshObject ()
@@ -43,6 +56,16 @@ std::shared_ptr<MeshObject> MeshObject::SetMaterial (const std::string& material
 std::shared_ptr<Material> MeshObject::GetMaterial () const
 {
     return m_material;
+}
+
+AABB MeshObject::GetAABB ()
+{
+    if (m_aabbDirty)
+    {
+        m_aabb.CalculateForMesh (m_mesh, GetWorldTransformMatrix ());
+    }
+
+    return m_aabb;
 }
 
 float* MeshObject::GetBoneTransformationsMatrixArray ()

@@ -2,6 +2,7 @@
 #define _MESHOBJECT_H_
 
 #include "cilantroengine.h"
+#include "math/AABB.h"
 #include "scene/GameObject.h"
 #include "scene/Material.h"
 #include "resource/Mesh.h"
@@ -27,6 +28,9 @@ public:
     __EAPI std::shared_ptr<MeshObject> SetMaterial (const std::string& materialName);
     __EAPI std::shared_ptr<Material> GetMaterial () const;
 
+    // get axis aligned bounding box of mesh object
+    __EAPI AABB GetAABB ();
+
     // generate array of bone transformations to be loaded to shader
     __EAPI float* GetBoneTransformationsMatrixArray ();
 
@@ -38,6 +42,9 @@ public:
 private:
     std::shared_ptr<Mesh> m_mesh;
     std::shared_ptr<Material> m_material;
+
+    AABB m_aabb;
+    bool m_aabbDirty;
 
     float m_boneTransformationMatrixArray[CILANTRO_MAX_BONES * 16];
 };

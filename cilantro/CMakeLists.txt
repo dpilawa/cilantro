@@ -53,6 +53,7 @@ include/graphics/Shader.h
 include/graphics/ShaderProgram.h
 include/input/InputController.h
 include/input/Input.h
+include/math/AABB.h
 include/math/Bezier.h
 include/math/BSpline.h
 include/math/CubicHermite.h
@@ -117,6 +118,7 @@ src/graphics/ShadowMapRenderStage.cpp
 src/graphics/Shader.cpp
 src/graphics/ShaderProgram.cpp
 src/input/InputController.cpp
+src/math/AABB.cpp
 src/math/Bezier.cpp
 src/math/BSpline.cpp
 src/math/CubicHermite.cpp
