@@ -14,7 +14,7 @@
 #include "resource/ResourceManager.h"
 #include "resource/Texture.h"
 #include "graphics/AABBRenderStage.h"
-#include "graphics/QuadRenderStage.h"
+#include "graphics/SurfaceRenderStage.h"
 #include "graphics/GLFWRenderer.h"
 #include "input/GLFWInputController.h"
 #include "math/Mathf.h"
@@ -46,17 +46,17 @@ int main (int argc, char* argv [])
         ->SetDepthTestEnabled (true)
         ->SetFramebufferEnabled (false);
     
-    renderer->Create<QuadRenderStage> ("hdr_postprocess")
+    renderer->Create<SurfaceRenderStage> ("hdr_postprocess")
         ->SetShaderProgram ("post_hdr_shader")
         ->SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_THIRD);
 
-    renderer->Create<QuadRenderStage> ("fxaa_postprocess")
+    renderer->Create<SurfaceRenderStage> ("fxaa_postprocess")
         ->SetShaderProgram ("post_fxaa_shader")
         ->SetRenderStageParameterFloat ("fMaxSpan", 4.0f)
         ->SetRenderStageParameterVector2f ("vInvResolution", Vector2f (1.0f / renderer->GetWidth (), 1.0f / renderer->GetHeight ()))
         ->SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);
 
-    renderer->Create<QuadRenderStage> ("gamma_postprocess+screen")
+    renderer->Create<SurfaceRenderStage> ("gamma_postprocess+screen")
         ->SetShaderProgram ("post_gamma_shader")
         ->SetRenderStageParameterFloat ("fGamma", 2.1f)
         ->SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS)

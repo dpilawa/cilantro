@@ -1,30 +1,30 @@
-#include "graphics/QuadRenderStage.h"
+#include "graphics/SurfaceRenderStage.h"
 #include "graphics/IRenderer.h"
 #include "graphics/IFramebuffer.h"
 #include "graphics/ShaderProgram.h"
 
 namespace cilantro {
 
-QuadRenderStage::QuadRenderStage (std::shared_ptr<IRenderer> renderer) 
+SurfaceRenderStage::SurfaceRenderStage (std::shared_ptr<IRenderer> renderer) 
     : RenderStage (renderer)
     , m_shaderProgram (nullptr)
 {
 }
 
-QuadRenderStage::~QuadRenderStage ()
+SurfaceRenderStage::~SurfaceRenderStage ()
 {
 }
 
-void QuadRenderStage::Initialize ()
+void SurfaceRenderStage::Initialize ()
 {
     InitializeFramebuffer ();
 }
 
-void QuadRenderStage::Deinitialize ()
+void SurfaceRenderStage::Deinitialize ()
 {
 }
 
-void QuadRenderStage::InitializeFramebuffer ()
+void SurfaceRenderStage::InitializeFramebuffer ()
 {   
     if (m_isFramebufferEnabled)
     {
@@ -32,7 +32,7 @@ void QuadRenderStage::InitializeFramebuffer ()
     }
 }
 
-void QuadRenderStage::OnFrame ()
+void SurfaceRenderStage::OnFrame ()
 {
     RenderStage::OnFrame ();
 
@@ -56,39 +56,39 @@ void QuadRenderStage::OnFrame ()
     }
 }
 
-std::shared_ptr<QuadRenderStage> QuadRenderStage::SetShaderProgram (const std::string& shaderProgramName)
+std::shared_ptr<SurfaceRenderStage> SurfaceRenderStage::SetShaderProgram (const std::string& shaderProgramName)
 {
     m_shaderProgram = GetRenderer ()->GetShaderProgramManager ()->GetByName<ShaderProgram> (shaderProgramName);
 
-    return std::dynamic_pointer_cast<QuadRenderStage> (shared_from_this ());
+    return std::dynamic_pointer_cast<SurfaceRenderStage> (shared_from_this ());
 }
 
-std::shared_ptr<QuadRenderStage> QuadRenderStage::SetRenderStageParameterFloat (const std::string& parameterName, float parameterValue)
+std::shared_ptr<SurfaceRenderStage> SurfaceRenderStage::SetRenderStageParameterFloat (const std::string& parameterName, float parameterValue)
 {
     m_shaderProgram->SetUniformFloat (parameterName, parameterValue);
 
-    return std::dynamic_pointer_cast<QuadRenderStage> (shared_from_this ());
+    return std::dynamic_pointer_cast<SurfaceRenderStage> (shared_from_this ());
 }
 
-std::shared_ptr<QuadRenderStage> QuadRenderStage::SetRenderStageParameterVector2f (const std::string& parameterName, const Vector2f& parameterValue)
+std::shared_ptr<SurfaceRenderStage> SurfaceRenderStage::SetRenderStageParameterVector2f (const std::string& parameterName, const Vector2f& parameterValue)
 {
     m_shaderProgram->SetUniformVector2f (parameterName, parameterValue);
     
-    return std::dynamic_pointer_cast<QuadRenderStage> (shared_from_this ());
+    return std::dynamic_pointer_cast<SurfaceRenderStage> (shared_from_this ());
 }
 
-std::shared_ptr<QuadRenderStage> QuadRenderStage::SetRenderStageParameterVector3f (const std::string& parameterName, const Vector3f& parameterValue)
+std::shared_ptr<SurfaceRenderStage> SurfaceRenderStage::SetRenderStageParameterVector3f (const std::string& parameterName, const Vector3f& parameterValue)
 {    
     m_shaderProgram->SetUniformVector3f (parameterName, parameterValue);
     
-    return std::dynamic_pointer_cast<QuadRenderStage> (shared_from_this ());
+    return std::dynamic_pointer_cast<SurfaceRenderStage> (shared_from_this ());
 }
 
-std::shared_ptr<QuadRenderStage> QuadRenderStage::SetRenderStageParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue)
+std::shared_ptr<SurfaceRenderStage> SurfaceRenderStage::SetRenderStageParameterVector4f (const std::string& parameterName, const Vector4f& parameterValue)
 {
     m_shaderProgram->SetUniformVector4f (parameterName, parameterValue);
     
-    return std::dynamic_pointer_cast<QuadRenderStage> (shared_from_this ());
+    return std::dynamic_pointer_cast<SurfaceRenderStage> (shared_from_this ());
 }
 
 

@@ -5,7 +5,7 @@
 #if (CILANTRO_GL_VERSION > 140)
 #include "graphics/GLMultisampleFramebuffer.h"
 #endif
-#include "graphics/QuadRenderStage.h"
+#include "graphics/SurfaceRenderStage.h"
 
 #include "system/Game.h"
 #include "math/Mathf.h"
@@ -539,7 +539,7 @@ void GLRenderer::Update (std::shared_ptr<Material> material)
             // create and append new lighting stage
             m_lightingShaderStagesCount++;
             m_lightingShaders.insert (shaderProgramHandle);
-            auto q = Create <QuadRenderStage> ("deferred_lighting_" + shaderProgramName);
+            auto q = Create <SurfaceRenderStage> ("deferred_lighting_" + shaderProgramName);
             q->SetShaderProgram (shaderProgramName);
             q->SetStencilTestEnabled (true)->SetStencilTest (EStencilTestFunction::FUNCTION_EQUAL, static_cast<int> (shaderProgramHandle));
             q->SetClearColorOnFrameEnabled (true);
@@ -567,7 +567,7 @@ void GLRenderer::Update (std::shared_ptr<Material> material)
             {
                 handle_t stageHandle = GetRenderPipeline ()[2 + (m_isShadowMapping ? 1 : 0)];
 
-                auto stage = m_renderStageManager->GetByHandle<QuadRenderStage> (stageHandle);
+                auto stage = m_renderStageManager->GetByHandle<SurfaceRenderStage> (stageHandle);
                 stage->SetClearColorOnFrameEnabled (false);
                 stage->SetFramebufferEnabled (false);
             }

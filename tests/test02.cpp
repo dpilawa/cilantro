@@ -9,7 +9,7 @@
 #include "scene/SplinePath.h"
 #include "resource/ResourceManager.h"
 #include "graphics/Renderer.h"
-#include "graphics/QuadRenderStage.h"
+#include "graphics/SurfaceRenderStage.h"
 #include "graphics/GLFWRenderer.h"
 #include "input/GLFWInputController.h"
 #include "math/Mathf.h"
@@ -31,7 +31,7 @@ int main (int argc, char* argv [])
     auto renderer = scene->Create<GLFWRenderer> (960, 600, true, false, "Test 02", false, true, true);
     auto inputController = game->Create<GLFWInputController> ();
 
-    renderer->Create<QuadRenderStage> ("screen")
+    renderer->Create<SurfaceRenderStage> ("screen")
         ->SetShaderProgram ("flatquad_shader")
         ->SetFramebufferEnabled (false)
         ->SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);

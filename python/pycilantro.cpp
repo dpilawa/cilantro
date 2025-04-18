@@ -14,7 +14,7 @@
 #include "graphics/Renderer.h"
 #include "graphics/GLFWRenderer.h"
 #include "graphics/RenderStage.h"
-#include "graphics/QuadRenderStage.h"
+#include "graphics/SurfaceRenderStage.h"
 #include "input/Input.h"
 #include "input/GLFWInputController.h"
 #include "resource/Resource.h"
@@ -262,16 +262,16 @@ PYBIND11_MODULE(pycilantro, m) {
         .def("SetColorAttachmentsFramebufferLink", &c::RenderStage::SetColorAttachmentsFramebufferLink, py::return_value_policy::automatic)
         .def("SetMultisampleEnabled", &c::RenderStage::SetMultisampleEnabled, py::return_value_policy::automatic);
 
-    py::class_<c::QuadRenderStage, c::RenderStage, std::shared_ptr<c::QuadRenderStage>>(m, "QuadRenderStage")
-        .def("SetShaderProgram", &c::QuadRenderStage::SetShaderProgram, py::return_value_policy::automatic)
-        .def("SetColorAttachmentsFramebufferLink", &c::QuadRenderStage::SetColorAttachmentsFramebufferLink, py::return_value_policy::automatic)
-        .def("SetRenderStageParameterFloat", &c::QuadRenderStage::SetRenderStageParameterFloat, py::return_value_policy::automatic)
-        .def("SetRenderStageParameterVector2f", &c::QuadRenderStage::SetRenderStageParameterVector2f, py::return_value_policy::automatic)
-        .def("SetRenderStageParameterVector3f", &c::QuadRenderStage::SetRenderStageParameterVector3f, py::return_value_policy::automatic)
-        .def("SetRenderStageParameterVector4f", &c::QuadRenderStage::SetRenderStageParameterVector4f, py::return_value_policy::automatic);
+    py::class_<c::SurfaceRenderStage, c::RenderStage, std::shared_ptr<c::SurfaceRenderStage>>(m, "SurfaceRenderStage")
+        .def("SetShaderProgram", &c::SurfaceRenderStage::SetShaderProgram, py::return_value_policy::automatic)
+        .def("SetColorAttachmentsFramebufferLink", &c::SurfaceRenderStage::SetColorAttachmentsFramebufferLink, py::return_value_policy::automatic)
+        .def("SetRenderStageParameterFloat", &c::SurfaceRenderStage::SetRenderStageParameterFloat, py::return_value_policy::automatic)
+        .def("SetRenderStageParameterVector2f", &c::SurfaceRenderStage::SetRenderStageParameterVector2f, py::return_value_policy::automatic)
+        .def("SetRenderStageParameterVector3f", &c::SurfaceRenderStage::SetRenderStageParameterVector3f, py::return_value_policy::automatic)
+        .def("SetRenderStageParameterVector4f", &c::SurfaceRenderStage::SetRenderStageParameterVector4f, py::return_value_policy::automatic);
 
     py::class_<c::Renderer, std::shared_ptr<c::Renderer>>(m, "Renderer")
-        .def("CreateQuadRenderStage", &c::Renderer::Create<c::QuadRenderStage>, py::return_value_policy::automatic)
+        .def("CreateSurfaceRenderStage", &c::Renderer::Create<c::SurfaceRenderStage>, py::return_value_policy::automatic)
         .def("GetWidth", &c::Renderer::GetWidth)
         .def("GetHeight", &c::Renderer::GetHeight);
 

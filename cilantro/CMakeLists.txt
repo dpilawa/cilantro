@@ -44,7 +44,7 @@ include/graphics/GLShaderProgram.h
 include/graphics/IRenderer.h
 include/graphics/Renderer.h
 include/graphics/GLRenderer.h
-include/graphics/QuadRenderStage.h
+include/graphics/SurfaceRenderStage.h
 include/graphics/ShadowMapRenderStage.h
 include/graphics/IRenderStage.h
 include/graphics/RenderStage.h
@@ -115,7 +115,7 @@ src/graphics/GLShaderProgram.cpp
 src/graphics/Renderer.cpp
 src/graphics/GLRenderer.cpp
 src/graphics/RenderStage.cpp
-src/graphics/QuadRenderStage.cpp
+src/graphics/SurfaceRenderStage.cpp
 src/graphics/ShadowMapRenderStage.cpp
 src/graphics/Shader.cpp
 src/graphics/ShaderProgram.cpp
