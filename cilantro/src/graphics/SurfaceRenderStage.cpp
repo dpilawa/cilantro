@@ -47,7 +47,7 @@ void SurfaceRenderStage::OnFrame ()
     }
 
     // draw quad
-    GetRenderer ()->DrawQuad ();
+    GetRenderer ()->DrawSurface ();
 
     // blit framebuffer
     if (m_framebuffer != nullptr)

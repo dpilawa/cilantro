@@ -26,7 +26,7 @@ namespace cilantro {
 GLRenderer::GLRenderer (std::shared_ptr<GameScene> gameScene, unsigned int width, unsigned int height, bool shadowMappingEnabled, bool deferredRenderingEnabled) 
     : Renderer (gameScene, width, height, shadowMappingEnabled, deferredRenderingEnabled)
 {
-    m_quadGeometryBuffer = new SGlGeometryBuffers ();
+    m_surfaceGeometryBuffer = new SGlGeometryBuffers ();
     m_uniformBuffers = new SGlUniformBuffers ();
     m_uniformMatrixBuffer = new SGlUniformMatrixBuffer ();
     m_uniformPointLightBuffer = new SGlUniformPointLightBuffer ();
@@ -41,7 +41,7 @@ GLRenderer::~GLRenderer ()
         delete objectBuffer.second;
     }
 
-    delete m_quadGeometryBuffer;
+    delete m_surfaceGeometryBuffer;
     delete m_uniformBuffers;
     delete m_uniformMatrixBuffer;
     delete m_uniformPointLightBuffer;
@@ -235,9 +235,9 @@ void GLRenderer::Draw (std::shared_ptr<MeshObject> meshObject)
     RenderGeometryBuffer (b, GL_TRIANGLES);
 }
 
-void GLRenderer::DrawQuad ()
+void GLRenderer::DrawSurface ()
 {
-    RenderGeometryBuffer (m_quadGeometryBuffer, GL_TRIANGLES);
+    RenderGeometryBuffer (m_surfaceGeometryBuffer, GL_TRIANGLES);
 }
 
 void GLRenderer::DrawSceneGeometryBuffers (std::shared_ptr<IShaderProgram> shader)
@@ -572,17 +572,6 @@ void GLRenderer::Update (std::shared_ptr<Material> material)
                 stage->SetFramebufferEnabled (false);
             }
 
-            // update pipeline links of 1st stage following deferred lighting stages
-            if (m_renderPipeline.size () > m_lightingShaderStagesCount + 1 + (m_isShadowMapping ? 1 : 0))
-            {
-                handle_t stageHandle = m_renderPipeline[m_lightingShaderStagesCount + 1 + (m_isShadowMapping ? 1 : 0)];
-
-                auto stage = m_renderStageManager->GetByHandle<IRenderStage> (stageHandle);
-                stage->SetColorAttachmentsFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_THIRD : EPipelineLink::LINK_SECOND);
-                // FIXME
-                //stage->SetDepthStencilFramebufferLink (EPipelineLink::LINK_CURRENT);
-                //stage->SetDrawFramebufferLink (EPipelineLink::LINK_CURRENT);
-            }
         }
     }
 }
@@ -1370,39 +1359,39 @@ void GLRenderer::InitializeQuadGeometryBuffer ()
         2, 1, 3
     };
 
-    glGenVertexArrays (1, &m_quadGeometryBuffer->VAO);    
-    glBindVertexArray (m_quadGeometryBuffer->VAO);
+    glGenVertexArrays (1, &m_surfaceGeometryBuffer->VAO);    
+    glBindVertexArray (m_surfaceGeometryBuffer->VAO);
 
-    glGenBuffers (1, &m_quadGeometryBuffer->VBO[EGlVboType::VBO_VERTICES]);
-    glGenBuffers (1, &m_quadGeometryBuffer->VBO[EGlVboType::VBO_UVS]);
+    glGenBuffers (1, &m_surfaceGeometryBuffer->VBO[EGlVboType::VBO_VERTICES]);
+    glGenBuffers (1, &m_surfaceGeometryBuffer->VBO[EGlVboType::VBO_UVS]);
 
-    glBindBuffer (GL_ARRAY_BUFFER, m_quadGeometryBuffer->VBO[EGlVboType::VBO_VERTICES]);
+    glBindBuffer (GL_ARRAY_BUFFER, m_surfaceGeometryBuffer->VBO[EGlVboType::VBO_VERTICES]);
     glBufferData (GL_ARRAY_BUFFER, sizeof (quadVertices), &quadVertices, GL_STATIC_DRAW);
     glVertexAttribPointer (EGlVboType::VBO_VERTICES, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 
-    glBindBuffer (GL_ARRAY_BUFFER, m_quadGeometryBuffer->VBO[EGlVboType::VBO_UVS]);
+    glBindBuffer (GL_ARRAY_BUFFER, m_surfaceGeometryBuffer->VBO[EGlVboType::VBO_UVS]);
     glBufferData (GL_ARRAY_BUFFER, sizeof (quadUV), &quadUV, GL_STATIC_DRAW);
     glVertexAttribPointer (EGlVboType::VBO_UVS, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 
     glEnableVertexAttribArray (EGlVboType::VBO_VERTICES);
     glEnableVertexAttribArray (EGlVboType::VBO_UVS);
 
-    glGenBuffers (1, &m_quadGeometryBuffer->EBO);
-    glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, m_quadGeometryBuffer->EBO);
+    glGenBuffers (1, &m_surfaceGeometryBuffer->EBO);
+    glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, m_surfaceGeometryBuffer->EBO);
     glBufferData (GL_ELEMENT_ARRAY_BUFFER, sizeof (quadIndices), &quadIndices, GL_STATIC_DRAW);
 
     glBindBuffer (GL_ARRAY_BUFFER, 0);
     glBindVertexArray (0);    
 
-    m_quadGeometryBuffer->indexCount = 6;
+    m_surfaceGeometryBuffer->indexCount = 6;
 
     CheckGLError (MSG_LOCATION);
 }
 
 void GLRenderer::DeinitializeQuadGeometryBuffer ()
 {
-    glDeleteVertexArrays(1, &m_quadGeometryBuffer->VAO);
-    glDeleteBuffers(1, &m_quadGeometryBuffer->VBO[EGlVboType::VBO_VERTICES]);
+    glDeleteVertexArrays(1, &m_surfaceGeometryBuffer->VAO);
+    glDeleteBuffers(1, &m_surfaceGeometryBuffer->VBO[EGlVboType::VBO_VERTICES]);
 }
 
 void GLRenderer::InitializeLightUniformBuffers ()

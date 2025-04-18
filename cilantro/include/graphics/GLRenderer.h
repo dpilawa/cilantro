@@ -134,7 +134,7 @@ public:
     __EAPI virtual void RenderFrame () override;
     
     __EAPI virtual void Draw (std::shared_ptr<MeshObject> meshObject) override;
-    __EAPI virtual void DrawQuad () override;
+    __EAPI virtual void DrawSurface () override;
     __EAPI virtual void DrawSceneGeometryBuffers (std::shared_ptr<IShaderProgram> shader) override;
     __EAPI virtual void DrawAABBGeometryBuffers (std::shared_ptr<IShaderProgram> shader) override;
     
@@ -201,7 +201,7 @@ private:
     // buffers with geometry data to be passed to GPU (key is object handle)
     TObjectGeometryBufferMap m_sceneGeometryBuffers;
     TObjectGeometryBufferMap m_aabbGeometryBuffers;
-    SGlGeometryBuffers* m_quadGeometryBuffer;
+    SGlGeometryBuffers* m_surfaceGeometryBuffer;
 
     // Buffers for uniforms shared by entire scene
     SGlUniformBuffers* m_uniformBuffers;
