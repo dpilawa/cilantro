@@ -89,9 +89,9 @@ private:
     std::vector<float> tangents;
     std::vector<float> bitangents;
 
-    std::vector<size_t> boneInfluenceCounts;
-    std::vector<uint32_t> boneInfluenceIndices;
-    std::vector<float> boneInfluenceWeights;
+    std::vector<size_t> boneInfluenceCounts;    // number of influences per vertex
+    std::vector<uint32_t> boneInfluenceIndices; // indices of bones influencing the vertex
+    std::vector<float> boneInfluenceWeights;    // weights of bones influencing the vertex
 
 };
 

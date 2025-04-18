@@ -9,6 +9,7 @@
 #include "scene/DirectionalLight.h"
 #include "resource/ResourceManager.h"
 #include "resource/AssimpModelLoader.h"
+#include "graphics/AABBRenderStage.h"
 #include "graphics/QuadRenderStage.h"
 #include "graphics/GLFWRenderer.h"
 #include "graphics/Renderer.h"
@@ -35,9 +36,17 @@ int main (int argc, char* argv[])
 
     AssimpModelLoader modelLoader (game);
 
+    renderer->Create<AABBRenderStage> ("aabb")
+        ->SetDepthStencilFramebufferLink (EPipelineLink::LINK_SECOND)
+        ->SetClearColorOnFrameEnabled (false)
+        ->SetClearDepthOnFrameEnabled (false)
+        ->SetDrawFramebufferLink (EPipelineLink::LINK_THIRD)
+        ->SetDepthTestEnabled (true)
+        ->SetFramebufferEnabled (false);
+
     renderer->Create<QuadRenderStage> ("hdr_postprocess")
         ->SetShaderProgram ("post_hdr_shader")
-        ->SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);
+        ->SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_THIRD); // LINK_PREVIOUS
 
     renderer->Create<QuadRenderStage> ("fxaa_postprocess")
         ->SetShaderProgram ("post_fxaa_shader")

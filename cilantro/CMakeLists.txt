@@ -33,6 +33,7 @@ endif()
 set(CILANTRO_FILES ${CILANTRO_FILES}
 include/cilantroengine.h
 
+include/graphics/AABBRenderStage.h
 include/graphics/IFramebuffer.h
 include/graphics/Framebuffer.h
 include/graphics/GLFramebuffer.h
@@ -104,6 +105,7 @@ include/system/Timer.h
 include/system/Message.h
 include/system/MessageBus.h
 
+src/graphics/AABBRenderStage.cpp
 src/graphics/Framebuffer.cpp
 src/graphics/GLFramebuffer.cpp
 src/graphics/DeferredGeometryRenderStage.cpp

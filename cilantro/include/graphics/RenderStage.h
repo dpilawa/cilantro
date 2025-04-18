@@ -53,7 +53,7 @@ public:
     __EAPI virtual std::shared_ptr<IRenderStage> SetColorAttachmentsFramebufferLink (EPipelineLink link) override final;
     __EAPI virtual std::shared_ptr<IRenderStage> SetDepthStencilFramebufferLink (EPipelineLink link) override final;
     __EAPI virtual std::shared_ptr<IRenderStage> SetDepthArrayFramebufferLink (EPipelineLink link) override final;
-    __EAPI virtual std::shared_ptr<IRenderStage> SetOutputFramebufferLink (EPipelineLink link) override final;
+    __EAPI virtual std::shared_ptr<IRenderStage> SetDrawFramebufferLink (EPipelineLink link) override final;
 
     ///////////////////////////////////////////////////////////////////////////
 

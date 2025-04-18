@@ -52,7 +52,7 @@ struct IRenderStage
     virtual std::shared_ptr<IRenderStage> SetColorAttachmentsFramebufferLink (EPipelineLink link) = 0;
     virtual std::shared_ptr<IRenderStage> SetDepthStencilFramebufferLink (EPipelineLink link) = 0;
     virtual std::shared_ptr<IRenderStage> SetDepthArrayFramebufferLink (EPipelineLink link) = 0;
-    virtual std::shared_ptr<IRenderStage> SetOutputFramebufferLink (EPipelineLink link) = 0;
+    virtual std::shared_ptr<IRenderStage> SetDrawFramebufferLink (EPipelineLink link) = 0;
 
 };
 

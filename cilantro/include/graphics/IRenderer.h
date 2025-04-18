@@ -68,9 +68,11 @@ struct IRenderer
     // geometry
     virtual void Draw (std::shared_ptr<MeshObject> meshObject) = 0;
     virtual void DrawQuad () = 0;
-    virtual void DrawAllGeometryBuffers (std::shared_ptr<IShaderProgram> shader) = 0;
+    virtual void DrawSceneGeometryBuffers (std::shared_ptr<IShaderProgram> shader) = 0;
+    virtual void DrawAABBGeometryBuffers (std::shared_ptr<IShaderProgram> shader) = 0;
 
     virtual void Update (std::shared_ptr<MeshObject> meshObject) = 0;
+    virtual void UpdateAABB (std::shared_ptr<MeshObject> meshObject) = 0;
     virtual void Update (std::shared_ptr<Material>, unsigned int textureUnit) = 0;
     virtual void Update (std::shared_ptr<Material> material) = 0;
     

@@ -135,9 +135,11 @@ public:
     
     __EAPI virtual void Draw (std::shared_ptr<MeshObject> meshObject) override;
     __EAPI virtual void DrawQuad () override;
-    __EAPI virtual void DrawAllGeometryBuffers (std::shared_ptr<IShaderProgram> shader) override;
+    __EAPI virtual void DrawSceneGeometryBuffers (std::shared_ptr<IShaderProgram> shader) override;
+    __EAPI virtual void DrawAABBGeometryBuffers (std::shared_ptr<IShaderProgram> shader) override;
     
     __EAPI virtual void Update (std::shared_ptr<MeshObject> meshObject) override;
+    __EAPI virtual void UpdateAABB (std::shared_ptr<MeshObject> meshObject) override;
     __EAPI virtual void Update (std::shared_ptr<Material> material, unsigned int textureUnit) override;
     __EAPI virtual void Update (std::shared_ptr<Material> material) override;
     
@@ -191,13 +193,14 @@ private:
     void DeinitializeLightUniformBuffers ();
     void UpdateLightBufferRecursive (handle_t objectHandle);
 
-    void RenderGeometryBuffer (SGlGeometryBuffers* buffer); 
+    void RenderGeometryBuffer (SGlGeometryBuffers* buffer, GLuint type); 
   
     void CheckGLError (const std::string& location);
 
 private:
     // buffers with geometry data to be passed to GPU (key is object handle)
     TObjectGeometryBufferMap m_sceneGeometryBuffers;
+    TObjectGeometryBufferMap m_aabbGeometryBuffers;
     SGlGeometryBuffers* m_quadGeometryBuffer;
 
     // Buffers for uniforms shared by entire scene

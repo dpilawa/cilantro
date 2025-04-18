@@ -13,6 +13,7 @@
 #include "resource/Mesh.h"
 #include "resource/ResourceManager.h"
 #include "resource/Texture.h"
+#include "graphics/AABBRenderStage.h"
 #include "graphics/QuadRenderStage.h"
 #include "graphics/GLFWRenderer.h"
 #include "input/GLFWInputController.h"
@@ -37,9 +38,17 @@ int main (int argc, char* argv [])
     auto renderer = scene->Create<GLFWRenderer> (800, 600, true, true, "Test 01", false, true, true);
     auto inputController = game->Create<GLFWInputController> ();
     
+    renderer->Create<AABBRenderStage> ("aabb")
+        ->SetDepthStencilFramebufferLink (EPipelineLink::LINK_SECOND)
+        ->SetClearColorOnFrameEnabled (false)
+        ->SetClearDepthOnFrameEnabled (false)
+        ->SetDrawFramebufferLink (EPipelineLink::LINK_THIRD)
+        ->SetDepthTestEnabled (true)
+        ->SetFramebufferEnabled (false);
+    
     renderer->Create<QuadRenderStage> ("hdr_postprocess")
         ->SetShaderProgram ("post_hdr_shader")
-        ->SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);
+        ->SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_THIRD);
 
     renderer->Create<QuadRenderStage> ("fxaa_postprocess")
         ->SetShaderProgram ("post_fxaa_shader")
@@ -51,7 +60,7 @@ int main (int argc, char* argv [])
         ->SetShaderProgram ("post_gamma_shader")
         ->SetRenderStageParameterFloat ("fGamma", 2.1f)
         ->SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS)
-        ->SetFramebufferEnabled (false);  
+        ->SetFramebufferEnabled (false);
 
     inputController->CreateInputEvent ("exit", EInputKey::KeyEsc, EInputTrigger::Press, {});
     inputController->BindInputEvent ("exit", [ & ]() { game->Stop (); });

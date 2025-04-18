@@ -32,6 +32,7 @@ MeshObject::MeshObject (std::shared_ptr<GameScene> gameScene, const std::string&
     GetModelTransform ()->SubscribeHook ("OnUpdateTransform", [&]() 
     {
         m_aabbDirty = true; 
+        GetGameScene ()->GetGame ()->GetMessageBus ()->Publish<MeshObjectUpdateMessage> (std::make_shared<MeshObjectUpdateMessage> (this->GetHandle ())); 
     });
 
     m_aabbDirty = true;
@@ -63,6 +64,7 @@ AABB MeshObject::GetAABB ()
     if (m_aabbDirty)
     {
         m_aabb.CalculateForMesh (m_mesh, GetWorldTransformMatrix ());
+        m_aabbDirty = false;
     }
 
     return m_aabb;

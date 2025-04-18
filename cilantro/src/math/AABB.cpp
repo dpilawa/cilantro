@@ -95,6 +95,25 @@ std::array<Vector3f, 8> AABB::GetVertices () const
     return vertices;
 }
 
+float* AABB::GetVerticesData ()
+{
+    m_vertices.clear ();
+    m_vertices.reserve (8 * 3);
+    auto vertices = GetVertices ();
+    for (const auto& vertex : vertices)
+    {
+        m_vertices.push_back (vertex[0]);
+        m_vertices.push_back (vertex[1]);
+        m_vertices.push_back (vertex[2]);
+    }
+    return m_vertices.data ();
+}
+
+uint32_t* AABB::GetIndicesData ()
+{
+    return m_indices.data ();
+}
+
 AABB operator+ (AABB u, const AABB& v)
 {
     u += v;

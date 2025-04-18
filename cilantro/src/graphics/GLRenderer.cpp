@@ -64,6 +64,7 @@ void GLRenderer::Initialize ()
         [&](const std::shared_ptr<MeshObjectUpdateMessage>& message) 
         { 
             Update (GetGameScene ()->GetGameObjectManager ()->GetByHandle<MeshObject> (message->GetHandle ()));
+            UpdateAABB (GetGameScene ()->GetGameObjectManager ()->GetByHandle<MeshObject> (message->GetHandle ()));
         }
     );
 
@@ -97,11 +98,18 @@ void GLRenderer::Initialize ()
         }
     );
 
-    // set callback for modified transforms (currently this only requires to reload light buffers)
+    // set callback for modified transforms (reload light buffers, reload AABB geometry buffers)
     GetGameScene ()->GetGame ()->GetMessageBus ()->Subscribe<TransformUpdateMessage> (
         [&](const std::shared_ptr<TransformUpdateMessage>& message) 
         { 
+            // lights
             UpdateLightBufferRecursive (message->GetHandle ());
+
+            // AABBs
+            if (std::dynamic_pointer_cast<MeshObject> (GetGameScene ()->GetGameObjectManager ()->GetByHandle<GameObject> (message->GetHandle ())) != nullptr)
+            {
+                UpdateAABB (GetGameScene ()->GetGameObjectManager ()->GetByHandle<MeshObject> (message->GetHandle ()));
+            }
         }
     );
     
@@ -224,21 +232,21 @@ void GLRenderer::Draw (std::shared_ptr<MeshObject> meshObject)
     // draw mesh
     SGlGeometryBuffers* b = m_sceneGeometryBuffers[meshObject->GetHandle ()];
     geometryShaderProgram->Use ();
-    RenderGeometryBuffer (b);
+    RenderGeometryBuffer (b, GL_TRIANGLES);
 }
 
 void GLRenderer::DrawQuad ()
 {
-    RenderGeometryBuffer (m_quadGeometryBuffer);
+    RenderGeometryBuffer (m_quadGeometryBuffer, GL_TRIANGLES);
 }
 
-void GLRenderer::DrawAllGeometryBuffers (std::shared_ptr<IShaderProgram> shader)
+void GLRenderer::DrawSceneGeometryBuffers (std::shared_ptr<IShaderProgram> shader)
 {
     shader->Use ();
 
-    for (auto&& geomertyBuffer : m_sceneGeometryBuffers)
+    for (auto&& geometryBuffer : m_sceneGeometryBuffers)
     {
-        auto m = GetGameScene ()->GetGameObjectManager ()->GetByHandle<MeshObject> (geomertyBuffer.first);
+        auto m = GetGameScene ()->GetGameObjectManager ()->GetByHandle<MeshObject> (geometryBuffer.first);
 
         // load model matrix to currently bound shader
         shader->SetUniformMatrix4f ("mModel", m->GetWorldTransformMatrix ());
@@ -247,7 +255,17 @@ void GLRenderer::DrawAllGeometryBuffers (std::shared_ptr<IShaderProgram> shader)
         shader->SetUniformMatrix4fv ("mBoneTransformations", m->GetBoneTransformationsMatrixArray (), CILANTRO_MAX_BONES);
 
         // draw
-        RenderGeometryBuffer (geomertyBuffer.second);
+        RenderGeometryBuffer (geometryBuffer.second, GL_TRIANGLES);
+    }
+}
+
+void GLRenderer::DrawAABBGeometryBuffers (std::shared_ptr<IShaderProgram> shader)
+{
+    shader->Use ();
+
+    for (auto&& geometryBuffer : m_aabbGeometryBuffers)
+    {
+        RenderGeometryBuffer (geometryBuffer.second, GL_LINES);
     }
 }
 
@@ -325,6 +343,7 @@ void GLRenderer::Update (std::shared_ptr<MeshObject> meshObject)
 
         // unbind VAO
         glBindVertexArray (0);
+
     }
 
     // resize buffers and load data
@@ -367,6 +386,61 @@ void GLRenderer::Update (std::shared_ptr<MeshObject> meshObject)
     glBufferData (GL_ELEMENT_ARRAY_BUFFER, meshObject->GetMesh ()->GetIndexCount () * sizeof (uint32_t), meshObject->GetMesh ()->GetFacesData (), GL_STATIC_DRAW);
 
     // unbind VAO
+    glBindVertexArray (0);
+
+}
+
+void GLRenderer::UpdateAABB (std::shared_ptr<MeshObject> meshObject)
+{
+    handle_t objectHandle = meshObject->GetHandle ();
+
+    // check of object's buffers are already initialized
+    auto find = m_aabbGeometryBuffers.find (objectHandle);
+
+    if (find == m_aabbGeometryBuffers.end ())
+    {
+        // it is a new object, so generate buffers 
+        SGlGeometryBuffers* w = new SGlGeometryBuffers ();
+        m_aabbGeometryBuffers.insert ({ objectHandle, w });
+
+        // generate and bind Vertex Array Object (VAO) - wireframes
+        glGenVertexArrays (1, &w->VAO);
+        glBindVertexArray (w->VAO);
+
+        // generate vertex buffer - wireframes
+        glGenBuffers (1, &w->VBO[EGlVboType::VBO_VERTICES]);
+        glBindBuffer (GL_ARRAY_BUFFER, w->VBO[EGlVboType::VBO_VERTICES]);
+        // location = 0 (vertex position)
+        glVertexAttribPointer (EGlVboType::VBO_VERTICES, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (GLvoid*)0);
+
+        // generate index buffer
+        glGenBuffers (1, &w->EBO);
+        glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, w->EBO);
+
+        // enable VBO arrays
+        glEnableVertexAttribArray (EGlVboType::VBO_VERTICES);
+
+        // unbind VAO
+        glBindVertexArray (0);
+
+    }
+
+    // resize buffers and load data
+    SGlGeometryBuffers* w = m_aabbGeometryBuffers[objectHandle];
+    w->indexCount = 12; // AABB has 12 edges
+
+    // bind Vertex Array Object (VAO) - wireframes
+    glBindVertexArray (w->VAO);
+
+    // load vertex buffer - wireframes
+    glBindBuffer (GL_ARRAY_BUFFER, w->VBO[EGlVboType::VBO_VERTICES]);
+    glBufferData (GL_ARRAY_BUFFER, 8 * sizeof (float) * 3, meshObject->GetAABB ().GetVerticesData () , GL_STATIC_DRAW);
+
+    // load index buffer - wireframes
+    glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, w->EBO);
+    glBufferData (GL_ELEMENT_ARRAY_BUFFER, 12 * 2 * sizeof (uint32_t), meshObject->GetAABB ().GetIndicesData (), GL_STATIC_DRAW);
+
+    // unbind VAO - wireframes
     glBindVertexArray (0);
 
 }
@@ -469,13 +543,13 @@ void GLRenderer::Update (std::shared_ptr<Material> material)
             q->SetShaderProgram (shaderProgramName);
             q->SetStencilTestEnabled (true)->SetStencilTest (EStencilTestFunction::FUNCTION_EQUAL, static_cast<int> (shaderProgramHandle));
             q->SetClearColorOnFrameEnabled (true);
-            q->SetClearDepthOnFrameEnabled (true);
+            q->SetClearDepthOnFrameEnabled (false);
             q->SetClearStencilOnFrameEnabled (false);
             q->SetDepthTestEnabled (false);
             q->SetColorAttachmentsFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_SECOND : EPipelineLink::LINK_FIRST);
             q->SetDepthStencilFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_SECOND : EPipelineLink::LINK_FIRST);
             q->SetDepthArrayFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_FIRST : EPipelineLink::LINK_CURRENT);
-            q->SetOutputFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_THIRD : EPipelineLink::LINK_SECOND);
+            q->SetDrawFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_THIRD : EPipelineLink::LINK_SECOND);
             q->SetFramebufferEnabled (true);
 
             q->Initialize ();
@@ -505,8 +579,9 @@ void GLRenderer::Update (std::shared_ptr<Material> material)
 
                 auto stage = m_renderStageManager->GetByHandle<IRenderStage> (stageHandle);
                 stage->SetColorAttachmentsFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_THIRD : EPipelineLink::LINK_SECOND);
-                stage->SetDepthStencilFramebufferLink (EPipelineLink::LINK_CURRENT);
-                stage->SetOutputFramebufferLink (EPipelineLink::LINK_CURRENT);
+                // FIXME
+                //stage->SetDepthStencilFramebufferLink (EPipelineLink::LINK_CURRENT);
+                //stage->SetDrawFramebufferLink (EPipelineLink::LINK_CURRENT);
             }
         }
     }
@@ -768,10 +843,13 @@ void GLRenderer::SetDepthTestEnabled (bool value)
     if (value == true)
     {
         glEnable (GL_DEPTH_TEST);
+        glDepthMask (GL_TRUE);
+
     }
     else
     {   
         glDisable (GL_DEPTH_TEST);
+        glDepthMask (GL_FALSE);
     }    
 }
 
@@ -896,6 +974,8 @@ void GLRenderer::InitializeShaderLibrary ()
     GetGameScene ()->GetGame ()->GetResourceManager ()->Load<GLShader> ("shadowmap_vertex_shader", "shaders/shadowmap.vs", EShaderType::VERTEX_SHADER);
     GetGameScene ()->GetGame ()->GetResourceManager ()->Load<GLShader> ("shadowmap_directional_geometry_shader", "shaders/shadowmap_directional.gs", EShaderType::GEOMETRY_SHADER);
     GetGameScene ()->GetGame ()->GetResourceManager ()->Load<GLShader> ("shadowmap_fragment_shader", "shaders/shadowmap.fs", EShaderType::FRAGMENT_SHADER);
+    GetGameScene ()->GetGame ()->GetResourceManager ()->Load<GLShader> ("aabb_vertex_shader", "shaders/aabb.vs", EShaderType::VERTEX_SHADER);
+    GetGameScene ()->GetGame ()->GetResourceManager ()->Load<GLShader> ("aabb_fragment_shader", "shaders/aabb.fs", EShaderType::FRAGMENT_SHADER);
 
     // PBR model (forward)
     p = Create<GLShaderProgram> ("pbr_forward_shader");
@@ -1049,12 +1129,12 @@ void GLRenderer::InitializeShaderLibrary ()
     p = Create<GLShaderProgram> ("flatquad_shader");
     p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("flatquad_vertex_shader"));
     p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("flatquad_fragment_shader"));   
+    p->Link ();
+    p->Use (); 
 #if (CILANTRO_GL_VERSION < 330)	
     glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
     glBindAttribLocation (p->GetProgramId (), 1, "vTextureCoordinates");
-#endif
-    p->Link ();
-    p->Use (); 
+#endif    
 #if (CILANTRO_GL_VERSION < 420)
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "fScreenTexture"), 0);
 #endif
@@ -1064,12 +1144,12 @@ void GLRenderer::InitializeShaderLibrary ()
     p = Create<GLShaderProgram> ("post_hdr_shader");
     p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("flatquad_vertex_shader"));
     p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("post_hdr_fragment_shader"));
+    p->Link ();
+    p->Use ();
 #if (CILANTRO_GL_VERSION < 330)	
     glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
     glBindAttribLocation (p->GetProgramId (), 1, "vTextureCoordinates");
 #endif
-    p->Link ();
-    p->Use ();
 #if (CILANTRO_GL_VERSION < 420)
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "fScreenTexture"), 0);
 #endif
@@ -1079,12 +1159,12 @@ void GLRenderer::InitializeShaderLibrary ()
     p = Create<GLShaderProgram> ("post_gamma_shader");
     p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("flatquad_vertex_shader"));
     p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("post_gamma_fragment_shader"));   
+    p->Link ();
+    p->Use (); 
 #if (CILANTRO_GL_VERSION < 330)	
     glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
     glBindAttribLocation (p->GetProgramId (), 1, "vTextureCoordinates");
 #endif
-    p->Link ();
-    p->Use (); 
 #if (CILANTRO_GL_VERSION < 420)
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "fScreenTexture"), 0);
 #endif
@@ -1094,12 +1174,12 @@ void GLRenderer::InitializeShaderLibrary ()
     p = Create<GLShaderProgram> ("post_fxaa_shader");
     p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("flatquad_vertex_shader"));
     p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("post_fxaa_fragment_shader"));   
+    p->Link ();
+    p->Use (); 
 #if (CILANTRO_GL_VERSION < 330)	
     glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
     glBindAttribLocation (p->GetProgramId (), 1, "vTextureCoordinates");
 #endif
-    p->Link ();
-    p->Use (); 
 #if (CILANTRO_GL_VERSION < 420)
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "fScreenTexture"), 0);
 #endif
@@ -1110,14 +1190,26 @@ void GLRenderer::InitializeShaderLibrary ()
     p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("shadowmap_vertex_shader"));
     p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("shadowmap_directional_geometry_shader"));
     p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("shadowmap_fragment_shader"));
+    p->Link ();
+    p->Use (); 
 #if (CILANTRO_GL_VERSION < 330)	
     glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
 #endif
-    p->Link ();
-    p->Use (); 
 #if (CILANTRO_GL_VERSION < 420)
 #endif
     p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL);
+    CheckGLError (MSG_LOCATION);
+
+    // AABB rendering
+    p = Create<GLShaderProgram> ("aabb_shader");
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("aabb_vertex_shader"));
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("aabb_fragment_shader"));
+    p->Link ();
+    p->Use ();
+#if (CILANTRO_GL_VERSION < 330)
+    glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
+#endif
+    p->BindUniformBlock ("UniformMatricesBlock", EBindingPoint::BP_MATRICES);
     CheckGLError (MSG_LOCATION);
 
 }
@@ -1372,13 +1464,13 @@ void GLRenderer::UpdateLightBufferRecursive (handle_t objectHandle)
 
 }
 
-void GLRenderer::RenderGeometryBuffer (SGlGeometryBuffers* buffer)
+void GLRenderer::RenderGeometryBuffer (SGlGeometryBuffers* buffer, GLuint type)
 {
     // bind
     glBindVertexArray (buffer->VAO);
     
     // draw
-    glDrawElements (GL_TRIANGLES, static_cast<GLsizei> (buffer->indexCount) * sizeof (GLuint), GL_UNSIGNED_INT, 0);
+    glDrawElements (type, static_cast<GLsizei> (buffer->indexCount) * sizeof (GLuint), GL_UNSIGNED_INT, 0);
     
     // unbind
     glBindVertexArray (0);

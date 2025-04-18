@@ -139,10 +139,6 @@ void RenderStage::OnFrame ()
 
     // optionally enable depth test
     GetRenderer ()->SetDepthTestEnabled (m_isDepthTestEnabled);
-    if (m_isDepthTestEnabled)
-    {
-        GetRenderer ()->ClearDepthBuffer ();
-    }
 
     // optionally enable face culling
     GetRenderer ()->SetFaceCullingEnabled (m_isFaceCullingEnabled);
@@ -367,7 +363,7 @@ std::shared_ptr<IRenderStage> RenderStage::SetDepthArrayFramebufferLink (EPipeli
     return std::dynamic_pointer_cast<IRenderStage> (shared_from_this ());
 }
 
-std::shared_ptr<IRenderStage> RenderStage::SetOutputFramebufferLink (EPipelineLink link)
+std::shared_ptr<IRenderStage> RenderStage::SetDrawFramebufferLink (EPipelineLink link)
 {
     m_drawFramebufferLink = link;
 
