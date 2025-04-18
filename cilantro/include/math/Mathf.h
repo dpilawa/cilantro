@@ -8,6 +8,7 @@
 #include "math/Matrix3f.h"
 #include "math/Matrix4f.h"
 #include "math/Quaternion.h"
+#include "math/Triangle.h"
 #include "math/GaussLegendreIntegrator.h"
 #include <vector>
 
@@ -132,6 +133,17 @@ public:
     // system of linear equations
     template <typename T>
     __EAPI static void SolveSystemOfLinearEquations (std::vector<std::vector<float>>& A, std::vector<T>& b);
+
+    // intersect line with plane perpendicular to the axes
+    __EAPI static Vector3f IntersectWithXPlane (const Vector3f& p0, const Vector3f& p1, float x);
+    __EAPI static Vector3f IntersectWithYPlane (const Vector3f& p0, const Vector3f& p1, float y);
+    __EAPI static Vector3f IntersectWithZPlane (const Vector3f& p0, const Vector3f& p1, float z);
+
+    // intersect line with plane defined by normal and point on the plane
+    __EAPI static Vector3f IntersectWithPlane (const Vector3f& p0, const Vector3f& p1, const Vector3f& planeNormal, const Vector3f& planePoint);
+
+    // clip triangles to planes perpendicular to the axes
+    __EAPI static void ClipTrianglesToPlanes (std::vector<Triangle<Vector3f>>& triangles, const Vector3f& minPlanes, const Vector3f& maxPlanes);
 
 private:
     static GaussLegendreIntegrator<INTEGRATOR_DEGREE> integrator;

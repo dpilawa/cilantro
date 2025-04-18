@@ -63,6 +63,7 @@ include/math/Matrix3f.h
 include/math/Matrix4f.h
 include/math/NURBS.h
 include/math/Quaternion.h
+include/math/Triangle.h
 include/math/Vector2f.h
 include/math/Vector3f.h
 include/math/Vector4f.h
@@ -126,6 +127,7 @@ src/math/Matrix3f.cpp
 src/math/Matrix4f.cpp
 src/math/NURBS.cpp
 src/math/Quaternion.cpp
+src/math/Triangle.cpp
 src/math/Vector2f.cpp
 src/math/Vector3f.cpp
 src/math/Vector4f.cpp

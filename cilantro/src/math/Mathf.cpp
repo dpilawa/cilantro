@@ -1,11 +1,5 @@
 #include "cilantroengine.h"
-#include "math/Vector2f.h"
-#include "math/Vector3f.h"
-#include "math/Vector4f.h"
-#include "math/Matrix3f.h"
-#include "math/Matrix4f.h"
 #include "math/Mathf.h"
-#include "math/GaussLegendreIntegrator.h"
 
 #include <cmath>
 #include <vector>
@@ -864,6 +858,235 @@ void Mathf::SolveSystemOfLinearEquations (std::vector<std::vector<float>>& A, st
     }
 
    
+}
+
+Vector3f Mathf::IntersectWithXPlane (const Vector3f& p0, const Vector3f& p1, float x)
+{
+    float t = (x - p0[0]) / (p1[0] - p0[0]);
+    return {x, p0[1] + t * (p1[1] - p0[1]), p0[2] + t * (p1[2] - p0[2])};
+}
+
+Vector3f Mathf::IntersectWithYPlane (const Vector3f& p0, const Vector3f& p1, float y)
+{
+    float t = (y - p0[1]) / (p1[1] - p0[1]);
+    return {p0[0] + t * (p1[0] - p0[0]), y, p0[2] + t * (p1[2] - p0[2])};
+}
+
+Vector3f Mathf::IntersectWithZPlane (const Vector3f& p0, const Vector3f& p1, float z)
+{
+    float t = (z - p0[2]) / (p1[2] - p0[2]);
+    return {p0[0] + t * (p1[0] - p0[0]), p0[1] + t * (p1[1] - p0[1]), z};
+}
+
+Vector3f Mathf::IntersectWithPlane (const Vector3f& p0, const Vector3f& p1, const Vector3f& planeNormal, const Vector3f& planePoint)
+{
+    float t = Mathf::Dot ((planePoint - p0), planeNormal) / Mathf::Dot ((p1 - p0), planeNormal);
+    return p0 + t * (p1 - p0);
+}
+
+void Mathf::ClipTrianglesToPlanes (std::vector<Triangle<Vector3f>>& triangles, const Vector3f& minPlanes, const Vector3f& maxPlanes)
+{
+    // iterate over all triangles
+    // for each triangle, clip it against all the planes
+    // if new triangles are created, add them to the list
+    // if a triangle is completely outside, mark it as culled
+
+    std::vector<bool> culled (triangles.size (), false);
+    std::vector<Triangle<Vector3f>> trianglesOut = triangles;
+    Triangle<bool> verticesOut;
+    Vector3f planeNormal;
+    Vector3f planePoint;
+
+    for (unsigned int pIdx = 0; pIdx < 6; pIdx++)
+    {
+
+        // set plane normal and intersection point
+        if (pIdx == 0 || pIdx == 1) // left or right plane
+        {
+            planeNormal = Vector3f (pIdx == 0 ? -1.0f : 1.0f, 0.0f, 0.0f);
+            planePoint = Vector3f (pIdx == 0 ? minPlanes[0] : maxPlanes[0], 0.0f, 0.0f);
+        }
+        else if (pIdx == 2 || pIdx == 3) // bottom or top plane
+        {
+            planeNormal = Vector3f (0.0f, pIdx == 2 ? -1.0f : 1.0f, 0.0f);
+            planePoint = Vector3f (0.0f, pIdx == 2 ? minPlanes[1] : maxPlanes[1], 0.0f);
+        }
+        else // back or front plane
+        {
+            planeNormal = Vector3f (0.0f, 0.0f, pIdx == 4 ? -1.0f : 1.0f);
+            planePoint = Vector3f (0.0f, 0.0f, pIdx == 4 ? minPlanes[2] : maxPlanes[2]);
+        }
+
+        // iterate over all triangles and clip them against the current plane
+        for (size_t tIdx = 0; tIdx < trianglesOut.size (); tIdx++)
+        {
+
+            if (culled[tIdx])
+            {
+                continue; // skip culled triangles
+            }
+
+            // calculate number of vertices passing the frustum test
+            unsigned int verticesOutCount = 0;
+            if (pIdx == 0) // left plane
+            {
+                for (unsigned int vIdx = 0; vIdx < 3; vIdx++)
+                {
+                    verticesOut[vIdx] = trianglesOut[tIdx][vIdx][0] < minPlanes[0];
+                    verticesOutCount += verticesOut[vIdx] ? 1 : 0;
+                }
+            }
+            else if (pIdx == 1) // right plane
+            {
+                for (unsigned int vIdx = 0; vIdx < 3; vIdx++)
+                {
+                    verticesOut[vIdx] = trianglesOut[tIdx][vIdx][0] > maxPlanes[0];
+                    verticesOutCount += verticesOut[vIdx] ? 1 : 0;
+                }
+            }
+            else if (pIdx == 2) // bottom plane
+            {
+                for (unsigned int vIdx = 0; vIdx < 3; vIdx++)
+                {
+                    verticesOut[vIdx] = trianglesOut[tIdx][vIdx][1] < minPlanes[1];
+                    verticesOutCount += verticesOut[vIdx] ? 1 : 0;
+                }
+            }
+            else if (pIdx == 3) // top plane
+            {
+                for (unsigned int vIdx = 0; vIdx < 3; vIdx++)
+                {
+                    verticesOut[vIdx] = trianglesOut[tIdx][vIdx][1] > maxPlanes[1];
+                    verticesOutCount += verticesOut[vIdx] ? 1 : 0;
+                }
+            }
+            else if (pIdx == 4) // back plane
+            {
+                for (unsigned int vIdx = 0; vIdx < 3; vIdx++)
+                {
+                    verticesOut[vIdx] = trianglesOut[tIdx][vIdx][2] < minPlanes[2];
+                    verticesOutCount += verticesOut[vIdx] ? 1 : 0;
+                }
+            }
+            else // front plane
+            {
+                for (unsigned int vIdx = 0; vIdx < 3; vIdx++)
+                {
+                    verticesOut[vIdx] = trianglesOut[tIdx][vIdx][2] > maxPlanes[2];
+                    verticesOutCount += verticesOut[vIdx] ? 1 : 0;
+                }
+            }
+            
+            // cull, leave or clip & tesselate the triangle
+            if (verticesOutCount == 3)
+            {
+                // if all vertices are outside, mark the triangle as culled
+                culled[tIdx] = true;
+            }
+            else if (verticesOutCount == 0)
+            {
+                // if all vertices are inside, do nothing
+            }
+            else if (verticesOutCount == 1)
+            {
+                // if one vertex is outside, clip the triangle against the plane
+                // and tessellate the triangle into two new triangles
+                Vector3f p0 = trianglesOut[tIdx][0];
+                Vector3f p1 = trianglesOut[tIdx][1];
+                Vector3f p2 = trianglesOut[tIdx][2];
+                culled[tIdx] = true;
+
+                if (verticesOut[0])
+                {
+                    Vector3f i1 = IntersectWithPlane (p0, p1, planeNormal, planePoint);
+                    Vector3f i2 = IntersectWithPlane (p0, p2, planeNormal, planePoint);
+                    if (Mathf::Cross (p2 - p1, i2 - p2) != Vector3f (0.0f, 0.0f, 0.0f))
+                    {
+                        trianglesOut.push_back (Triangle<Vector3f> (p1, p2, i1));
+                        culled.push_back (false);
+                    }
+                    if (Mathf::Cross (i1 - p2, i2 - i1) != Vector3f (0.0f, 0.0f, 0.0f))
+                    {
+                        trianglesOut.push_back (Triangle<Vector3f> (p2, i1, i2));
+                        culled.push_back (false);
+                    }
+                }
+                else if (verticesOut[1])
+                {
+                    Vector3f i1 = IntersectWithPlane (p1, p0, planeNormal, planePoint);
+                    Vector3f i2 = IntersectWithPlane (p1, p2, planeNormal, planePoint);
+                    if (Mathf::Cross (p2 - p0, i1 - p2) != Vector3f (0.0f, 0.0f, 0.0f))
+                    {                    
+                        trianglesOut.push_back (Triangle<Vector3f> (p0, p2, i1));
+                        culled.push_back (false);
+                    }
+                    if (Mathf::Cross (i1 - p2, i2 - i1) != Vector3f (0.0f, 0.0f, 0.0f))
+                    {
+                        trianglesOut.push_back (Triangle<Vector3f> (p2, i1, i2));
+                        culled.push_back (false);
+                    }
+                }
+                else if (verticesOut[2])
+                {
+                    Vector3f i1 = IntersectWithPlane (p2, p0, planeNormal, planePoint);
+                    Vector3f i2 = IntersectWithPlane (p2, p1, planeNormal, planePoint);
+                    if (Mathf::Cross (p1 - p0, i1 - p1) != Vector3f (0.0f, 0.0f, 0.0f))
+                    {                    
+                        trianglesOut.push_back (Triangle<Vector3f> (p0, p1, i1));
+                        culled.push_back (false);
+                    }
+                    if (Mathf::Cross (i1 - p1, i2 - i1) != Vector3f (0.0f, 0.0f, 0.0f))
+                    {                    
+                        trianglesOut.push_back (Triangle<Vector3f> (p1, i1, i2));
+                        culled.push_back (false);
+                    }
+                }
+
+            }
+            else if (verticesOutCount == 2)
+            {
+                // if two vertices are outside, clip the triangle against the plane
+
+                Vector3f p0 = trianglesOut[tIdx][0];
+                Vector3f p1 = trianglesOut[tIdx][1];
+                Vector3f p2 = trianglesOut[tIdx][2];
+
+                if (!verticesOut[0])
+                {
+                    Vector3f i1 = IntersectWithPlane (p0, p1, planeNormal, planePoint);
+                    Vector3f i2 = IntersectWithPlane (p0, p2, planeNormal, planePoint);
+                    trianglesOut[tIdx][1] = i1;
+                    trianglesOut[tIdx][2] = i2;
+                }
+                else if (!verticesOut[1])
+                {
+                    Vector3f i1 = IntersectWithPlane (p1, p0, planeNormal, planePoint);
+                    Vector3f i2 = IntersectWithPlane (p1, p2, planeNormal, planePoint);
+                    trianglesOut[tIdx][0] = i1;
+                    trianglesOut[tIdx][2] = i2;
+                }
+                else if (!verticesOut[2])
+                {
+                    Vector3f i1 = IntersectWithPlane (p2, p0, planeNormal, planePoint);
+                    Vector3f i2 = IntersectWithPlane (p2, p1, planeNormal, planePoint);
+                    trianglesOut[tIdx][0] = i1;
+                    trianglesOut[tIdx][1] = i2;
+                }
+            
+            }
+
+        }
+    }
+
+    triangles.clear ();
+    for (size_t tIdx = 0; tIdx < trianglesOut.size (); tIdx++)
+    {
+        if (!culled[tIdx])
+        {
+            triangles.push_back (trianglesOut[tIdx]);
+        }
+    }
+
 }
 
 } // namespace cilantro
