@@ -1,6 +1,6 @@
 #include "cilantroengine.h"
 #include "scene/GameScene.h"
-#include "scene/Bone.h"
+#include "scene/BoneObject.h"
 #include "scene/MeshObject.h"
 #include "scene/Material.h"
 #include "math/Vector3f.h"
@@ -12,6 +12,7 @@
 #include <vector>
 #include <unordered_map>
 #include <cstring>
+#include <span>
 
 namespace cilantro
 {
@@ -28,14 +29,15 @@ MeshObject::MeshObject (std::shared_ptr<GameScene> gameScene, const std::string&
         GetGameScene ()->GetGame ()->GetMessageBus ()->Publish<MeshObjectUpdateMessage> (std::make_shared<MeshObjectUpdateMessage> (this->GetHandle ())); 
     });
 
-    // in case of transform update, set aab dirty flag so that it is recalculated when queried
+    // in case of transform update, recalculate AABB and publish message to bus (recipients incl. for renderer)
     GetModelTransform ()->SubscribeHook ("OnUpdateTransform", [&]() 
     {
-        m_aabbDirty = true; 
-        GetGameScene ()->GetGame ()->GetMessageBus ()->Publish<MeshObjectUpdateMessage> (std::make_shared<MeshObjectUpdateMessage> (this->GetHandle ())); 
+        m_aabb.CalculateForMesh (m_mesh, GetWorldTransformMatrix ());
+        GetGameScene ()->GetGame ()->GetMessageBus ()->Publish<TransformUpdateMessage> (std::make_shared<TransformUpdateMessage> (this->GetHandle ())); 
     });
 
-    m_aabbDirty = true;
+    m_aabb.CalculateForMesh (m_mesh, GetWorldTransformMatrix ());
+
 }
 
 MeshObject::~MeshObject ()
@@ -59,15 +61,27 @@ std::shared_ptr<Material> MeshObject::GetMaterial () const
     return m_material;
 }
 
-AABB MeshObject::GetAABB ()
+AABB MeshObject::GetAABB () const
 {
-    if (m_aabbDirty)
+    return m_aabb;
+}
+
+std::shared_ptr<MeshObject> MeshObject::AddInfluencingBoneObject (std::shared_ptr<BoneObject> boneObject)
+{
+    auto it = std::find (m_influencingBoneObjects.begin (), m_influencingBoneObjects.end (), boneObject);
+
+    if (it == m_influencingBoneObjects.end ())
     {
-        m_aabb.CalculateForMesh (m_mesh, GetWorldTransformMatrix ());
-        m_aabbDirty = false;
+        // bone not found, add it
+        m_influencingBoneObjects.push_back (boneObject);
     }
 
-    return m_aabb;
+    boneObject->AddInfluencedMeshObject (std::dynamic_pointer_cast<MeshObject> (shared_from_this ()));
+
+    // update renderer buffers
+    GetGameScene ()->GetGame ()->GetMessageBus ()->Publish<MeshObjectUpdateMessage> (std::make_shared<MeshObjectUpdateMessage> (this->GetHandle ())); 
+
+    return std::dynamic_pointer_cast<MeshObject> (shared_from_this ());
 }
 
 float* MeshObject::GetBoneTransformationsMatrixArray ()
@@ -81,10 +95,22 @@ float* MeshObject::GetBoneTransformationsMatrixArray ()
     std::memcpy (m_boneTransformationMatrixArray, identity[0], 16 * sizeof (float));
 
     // copy remaining bones
+
     for (handle_t boneHandle : m_mesh->GetMeshBones ())
     {
-        auto b = m_gameScene.lock ()->GetGameObjectManager ()->GetByHandle<Bone> (boneHandle);
-        boneTransformation = b->GetWorldTransformMatrix () * b->GetOffsetMatrix ();
+        std::shared_ptr<BoneObject> boneObject = nullptr;
+        // find meshbone by bone handle
+        for (auto b : m_influencingBoneObjects)
+        {
+            if (b->GetBone ()->GetHandle () == boneHandle)
+            {
+                boneObject = b;
+                break;
+            }
+        }
+
+        //auto boneObject = GetGameScene ()->GetGameObjectManager ()->GetByHandle<BoneObject> (b);
+        boneTransformation = boneObject->GetWorldTransformMatrix () * boneObject->GetBone ()->GetOffsetMatrix ();
 
         std::memcpy (m_boneTransformationMatrixArray + index, boneTransformation[0], 16 * sizeof (float));
         index += 16;

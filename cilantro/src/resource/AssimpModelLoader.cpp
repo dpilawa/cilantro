@@ -2,13 +2,14 @@
 #include "system/LogMessage.h"
 #include "system/Game.h"
 #include "math/Mathf.h"
+#include "resource/Bone.h"
 #include "resource/Mesh.h"
 #include "resource/Texture.h"
 #include "scene/GameScene.h"
 #include "scene/AnimationObject.h"
 #include "scene/MeshObject.h"
 #include "scene/GameObject.h"
-#include "scene/Bone.h"
+#include "scene/BoneObject.h"
 #include "scene/Material.h"
 #include "scene/PhongMaterial.h"
 #include "scene/PBRMaterial.h"
@@ -125,7 +126,8 @@ void AssimpModelLoader::ImportGameObject (const aiNode* node, const aiNode* pare
 
 void AssimpModelLoader::ImportBone (const aiNode* node, const aiNode* parent, const aiMatrix4x4& transform)
 {
-    auto bone = CreateBone (node, parent);
+    auto boneResource = m_game->GetResourceManager ()->Create<Bone> (node->mName.C_Str ());
+    auto bone = CreateBoneObject (boneResource, node, parent);
     bone->GetModelTransform ()->SetTransformMatrix (ConvertMatrix (transform));
 }
 
@@ -135,11 +137,13 @@ void AssimpModelLoader::ImportMesh (const aiScene* scene, const aiMesh* mesh, co
 
     ImportMeshPositions (myMesh, scene, mesh);
     ImportMeshFaces (myMesh, scene, mesh);
-    ImportMeshBones (myMesh, scene, mesh);
     ImportMeshMaterial (myMesh, scene, mesh);
 
-    auto meshObject = CreateMeshObject (myMesh, scene, mesh, parent);
-    meshObject->GetModelTransform ()->SetTransformMatrix (ConvertMatrix (transform));
+    auto myMeshObject = CreateMeshObject (myMesh, scene, mesh, parent);
+    myMeshObject->GetModelTransform ()->SetTransformMatrix (ConvertMatrix (transform));
+
+    ImportMeshBones (myMesh, myMeshObject, scene, mesh);
+
 }
 
 void AssimpModelLoader::ImportMeshPositions (std::shared_ptr<Mesh> myMesh, const aiScene* scene, const aiMesh* mesh)
@@ -191,7 +195,7 @@ void AssimpModelLoader::ImportMeshFaces (std::shared_ptr<Mesh> myMesh, const aiS
     }
 }
 
-void AssimpModelLoader::ImportMeshBones (std::shared_ptr<Mesh> myMesh, const aiScene* scene, const aiMesh* mesh)
+void AssimpModelLoader::ImportMeshBones (std::shared_ptr<Mesh> myMesh, std::shared_ptr<MeshObject> myMeshObject, const aiScene* scene, const aiMesh* mesh)
 {
     if (mesh->HasBones ())
     {
@@ -205,15 +209,19 @@ void AssimpModelLoader::ImportMeshBones (std::shared_ptr<Mesh> myMesh, const aiS
         {
             aiBone* bone = mesh->mBones[i];
 
-            std::shared_ptr<Bone> b = m_gameScene->GetGameObjectManager ()->GetByName<Bone> (bone->mName.C_Str ());
-            b->SetOffsetMatrix (ConvertMatrix (bone->mOffsetMatrix));
+            auto bResource = m_game->GetResourceManager ()->GetByName<Bone> (bone->mName.C_Str ());
+            bResource->SetOffsetMatrix (ConvertMatrix (bone->mOffsetMatrix));
+
+            auto bObject = m_gameScene->GetGameObjectManager ()->GetByName<BoneObject> (bone->mName.C_Str ());
 
             for (unsigned j = 0; j < bone->mNumWeights; j++)
             {
                 aiVertexWeight w = bone->mWeights[j];
 
-                myMesh->AddVertexBoneInfluence (w.mVertexId, w.mWeight, b->GetHandle ());
+                myMesh->AddVertexBoneInfluence (w.mVertexId, w.mWeight, bResource->GetHandle ());
             }
+
+            myMeshObject->AddInfluencingBoneObject (bObject);
 
         }
 
@@ -406,10 +414,10 @@ std::shared_ptr<GameObject> AssimpModelLoader::CreateGameObject (const aiNode* n
     return gameObject;
 }
 
-std::shared_ptr<Bone> AssimpModelLoader::CreateBone (const aiNode* node, const aiNode* parent)
+std::shared_ptr<BoneObject> AssimpModelLoader::CreateBoneObject (std::shared_ptr<Bone> myBone, const aiNode* node, const aiNode* parent)
 {
-    auto bone = m_gameScene->Create<Bone> (node->mName.C_Str ());
-        
+    auto bone = m_gameScene->Create<BoneObject> (node->mName.C_Str (), myBone);
+    
     if (parent != nullptr)
     {
         bone->SetParentObject (parent->mName.C_Str ());

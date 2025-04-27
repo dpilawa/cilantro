@@ -1,8 +1,8 @@
-#include "scene/Bone.h"
+#include "resource/Bone.h"
 
 namespace cilantro {
 
-Bone::Bone (std::shared_ptr<GameScene> gameScene) : GameObject (gameScene)
+Bone::Bone ()
 {
 }
 
@@ -10,10 +10,10 @@ Bone::~Bone ()
 {
 }
 
-Bone& Bone::SetOffsetMatrix (const Matrix4f& m)
+std::shared_ptr<Bone> Bone::SetOffsetMatrix (const Matrix4f& m)
 {
     m_offsetMatrix = m;
-    return *this;
+    return std::dynamic_pointer_cast<Bone> (shared_from_this ());
 }
 
 Matrix4f Bone::GetOffsetMatrix () const

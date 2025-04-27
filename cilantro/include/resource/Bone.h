@@ -2,18 +2,18 @@
 #define _BONE_H_
 
 #include "cilantroengine.h"
-#include "scene/GameObject.h"
+#include "resource/Resource.h"
 #include "math/Matrix4f.h"
 
 namespace cilantro {
 
-class __CEAPI Bone : public GameObject
+class __CEAPI Bone : public Resource, public std::enable_shared_from_this<Bone>
 {
 public:
-    __EAPI Bone (std::shared_ptr<GameScene> gameScene);
+    __EAPI Bone ();
     __EAPI virtual ~Bone ();
 
-    __EAPI Bone& SetOffsetMatrix (const Matrix4f& m);
+    __EAPI std::shared_ptr<Bone> SetOffsetMatrix (const Matrix4f& m);
     __EAPI Matrix4f GetOffsetMatrix () const;
 
 private:

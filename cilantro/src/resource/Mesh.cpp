@@ -1,7 +1,7 @@
 #include "cilantroengine.h"
 #include "resource/Mesh.h"
 #include "scene/Material.h"
-#include "scene/Bone.h"
+#include "scene/BoneObject.h"
 #include "math/Vector3f.h"
 #include "math/Mathf.h"
 #include "system/LogMessage.h"
@@ -32,7 +32,6 @@ std::shared_ptr<Mesh> Mesh::Clear ()
     tangents.clear ();
     bitangents.clear ();
 
-    // clear and allocate index 0 for identity matrix
     meshBones.clear ();
 
     boneInfluenceCounts.clear ();

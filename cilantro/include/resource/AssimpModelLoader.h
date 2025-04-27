@@ -18,6 +18,7 @@ class AnimationObject;
 class Mesh;
 class MeshObject;
 class Bone;
+class BoneObject;
 class Texture;
 class Vector3f;
 class Matrix4f;
@@ -48,14 +49,14 @@ private:
 
     void ImportMeshPositions (std::shared_ptr<Mesh> myMesh, const aiScene* scene, const aiMesh* mesh);
     void ImportMeshFaces (std::shared_ptr<Mesh> myMesh, const aiScene* scene, const aiMesh* mesh);
-    void ImportMeshBones (std::shared_ptr<Mesh> myMesh, const aiScene* scene, const aiMesh* mesh);
+    void ImportMeshBones (std::shared_ptr<Mesh> myMesh, std::shared_ptr<MeshObject> myMeshObject, const aiScene* scene, const aiMesh* mesh);
     void ImportMeshMaterial (std::shared_ptr<Mesh> myMesh, const aiScene* scene, const aiMesh* mesh);
 
     void ImportAnimation (const aiAnimation* animation);
     void ImportNodeAnimation (std::shared_ptr<AnimationObject> myAnimationObject, const aiAnimation* animation, const aiNodeAnim* nodeAnimation);
 
     std::shared_ptr<GameObject> CreateGameObject (const aiNode* node, const aiNode* parent);
-    std::shared_ptr<Bone> CreateBone (const aiNode* node, const aiNode* parent);
+    std::shared_ptr<BoneObject> CreateBoneObject (std::shared_ptr<Bone> myBone, const aiNode* node, const aiNode* parent);
     std::shared_ptr<MeshObject> CreateMeshObject (std::shared_ptr<Mesh> myMesh, const aiScene* scene, const aiMesh* mesh, const aiNode* parent);
     std::shared_ptr<AnimationObject> CreateAnimationObject (const aiAnimation* animation);
 
