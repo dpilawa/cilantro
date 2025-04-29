@@ -103,7 +103,7 @@ void RenderStage::OnFrame ()
         GetRenderer ()->BindDefaultFramebuffer ();
     }
     
-    // bind depth and stencil buffers from previous/linked stage
+    // bind depth and stencil buffers from linked stage
     if (m_linkedDepthStencilFramebuffer != nullptr)
     {
         if (m_linkedDepthStencilFramebuffer->IsDepthStencilRenderbufferEnabled ()) 

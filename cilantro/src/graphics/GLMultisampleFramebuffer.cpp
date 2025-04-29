@@ -6,6 +6,11 @@ namespace cilantro {
 GLMultisampleFramebuffer::GLMultisampleFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayLayerCount, bool depthStencilRenderbufferEnabled) 
     : GLFramebuffer (bufferWidth, bufferHeight, rgbTextureCount, rgbaTextureCount, depthBufferArrayLayerCount, depthStencilRenderbufferEnabled)
 {
+    for (unsigned int i = 0; i < CILANTRO_MAX_FRAMEBUFFER_TEXTURES; ++i)
+    {
+        m_glMultisampleBuffers.colorAttachments[i] = static_cast <GLuint> (GL_COLOR_ATTACHMENT0 + i);
+    }
+    m_glMultisampleBuffers.colorNone = GL_NONE;
 }
 
 void GLMultisampleFramebuffer::Initialize ()
