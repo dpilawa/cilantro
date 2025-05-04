@@ -2,6 +2,7 @@
 #include "math/Matrix4f.h"
 #include "math/Vector4f.h"
 #include "math/Mathf.h"
+#include "math/AABB.h"
 #include "graphics/Renderer.h"
 #include "scene/GameScene.h"
 #include "scene/GameObject.h"
@@ -173,6 +174,29 @@ Vector3f GameObject::GetForward () const
     Matrix4f modelTransforMatrix = GetWorldTransformMatrix ();
 
     return Mathf::Normalize (Vector3f (modelTransforMatrix[0][2], modelTransforMatrix[1][2], modelTransforMatrix[2][2]));
+}
+
+AABB GameObject::GetHierarchyAABB ()
+{
+    return m_hierarchyAABB;
+}
+
+std::shared_ptr<GameObject> GameObject::CalculateHierarchyAABB ()
+{
+    m_hierarchyAABB = AABB ();
+
+    for (auto&& childObject : m_childObjects)
+    {
+        auto child = childObject.lock ();
+        m_hierarchyAABB += child->GetHierarchyAABB ();
+    }
+
+    if (m_parentObject.lock () != nullptr)
+    {
+        m_parentObject.lock ()->CalculateHierarchyAABB ();
+    }
+
+    return std::dynamic_pointer_cast<GameObject> (shared_from_this ());
 }
 
 } // namespace cilantro

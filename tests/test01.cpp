@@ -44,6 +44,7 @@ int main (int argc, char* argv [])
         ->SetClearDepthOnFrameEnabled (false)
         ->SetDrawFramebufferLink (EPipelineLink::LINK_THIRD)
         ->SetDepthTestEnabled (true)
+        ->SetDepthTest (EDepthTestFunction::FUNCTION_LEQUAL)
         ->SetFramebufferEnabled (false);
     
     renderer->Create<SurfaceRenderStage> ("hdr_postprocess")

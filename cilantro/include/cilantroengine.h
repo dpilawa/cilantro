@@ -4,6 +4,7 @@
 typedef size_t handle_t;
 
 // defines
+#define CILANTRO_HZ                         60.0f
 #define CILANTRO_VBO_COUNT                  7
 #define CILANTRO_UBO_COUNT                  5
 #define CILANTRO_MAX_TEXTURE_UNITS          16

@@ -65,6 +65,12 @@ Matrix3f::Matrix3f (Matrix3f&& other) : Matrix3f ()
     std::swap (m, other.m);
 }
 
+// array constructor
+Matrix3f::Matrix3f (const float* m)
+{
+    std::copy (m, m + 9, this->m);
+}
+
 // assignment operator
 Matrix3f& Matrix3f::operator= (Matrix3f other)
 {

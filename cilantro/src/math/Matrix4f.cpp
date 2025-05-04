@@ -56,6 +56,12 @@ Matrix4f::Matrix4f (Matrix4f&& other) : Matrix4f ()
     std::swap (m, other.m);
 }
 
+// array constructor
+Matrix4f::Matrix4f (const float* m)
+{
+    std::copy (m, m + 16, this->m);
+}
+
 // assignment operator
 Matrix4f& Matrix4f::operator= (Matrix4f other)
 {

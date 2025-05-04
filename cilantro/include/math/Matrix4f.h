@@ -24,6 +24,9 @@ public:
     // move constructor
     __EAPI Matrix4f (Matrix4f&& other);
 
+    // array constructor
+    __EAPI Matrix4f (const float* m);
+
     // assignment operator
     __EAPI Matrix4f& operator= (Matrix4f other);
 

@@ -20,9 +20,12 @@ public:
     __EAPI std::shared_ptr<Bone> GetBone () const;
     __EAPI std::shared_ptr<BoneObject> AddInfluencedMeshObject (std::shared_ptr<MeshObject> meshObject);
 
+    __EAPI void OnFrame () override;
+
 private:
     std::shared_ptr<Bone> m_bone;
     std::unordered_set<std::shared_ptr<MeshObject>> m_influencedMeshObjects;
+    bool m_influenceChanged;
 
 };
 

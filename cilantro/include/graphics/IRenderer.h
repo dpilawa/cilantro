@@ -22,11 +22,12 @@ class Camera;
 
 class Vector4f;
 
-enum EPipelineLink { LINK_FIRST, LINK_SECOND, LINK_THIRD, LINK_PREVIOUS, LINK_PREVIOUS_MINUS_1, LINK_CURRENT, LINK_LAST };
-enum EStencilTestFunction { FUNCTION_NEVER, FUNCTION_LESS, FUNCTION_LEQUAL, FUNCTION_GREATER, FUNCTION_GEQUAL, FUNCTION_EQUAL, FUNCTION_NOTEQUAL, FUNCTION_ALWAYS };
-enum EStencilTestOperation { OP_KEEP, OP_ZERO, OP_REPLACE, OP_INC, OP_INC_WRAP, OP_DEC, OP_DEC_WRAP, OP_INV };
-enum EFaceCullingFace { FACE_FRONT, FACE_BACK };
-enum EFaceCullingDirection { DIR_CW, DIR_CCW };
+enum class EPipelineLink { LINK_FIRST, LINK_SECOND, LINK_THIRD, LINK_PREVIOUS, LINK_PREVIOUS_MINUS_1, LINK_CURRENT, LINK_LAST };
+enum class EDepthTestFunction { FUNCTION_NEVER, FUNCTION_LESS, FUNCTION_LEQUAL, FUNCTION_GREATER, FUNCTION_GEQUAL, FUNCTION_EQUAL, FUNCTION_NOTEQUAL, FUNCTION_ALWAYS };
+enum class EStencilTestFunction { FUNCTION_NEVER, FUNCTION_LESS, FUNCTION_LEQUAL, FUNCTION_GREATER, FUNCTION_GEQUAL, FUNCTION_EQUAL, FUNCTION_NOTEQUAL, FUNCTION_ALWAYS };
+enum class EStencilTestOperation { OP_KEEP, OP_ZERO, OP_REPLACE, OP_INC, OP_INC_WRAP, OP_DEC, OP_DEC_WRAP, OP_INV };
+enum class EFaceCullingFace { FACE_FRONT, FACE_BACK };
+enum class EFaceCullingDirection { DIR_CW, DIR_CCW };
 
 typedef ResourceManager<ShaderProgram> TShaderProgramManager;
 typedef ResourceManager<RenderStage> TRenderStageManager;
@@ -100,6 +101,7 @@ struct IRenderer
     virtual void ClearStencilBuffer () = 0;
 
     virtual void SetDepthTestEnabled (bool value) = 0;
+    virtual void SetDepthTestFunction (EDepthTestFunction depthTestFunction) = 0;
     virtual void SetFaceCullingEnabled (bool value) = 0;
     virtual void SetFaceCullingMode (EFaceCullingFace face, EFaceCullingDirection direction) = 0;
     virtual void SetMultisamplingEnabled (bool value) = 0;

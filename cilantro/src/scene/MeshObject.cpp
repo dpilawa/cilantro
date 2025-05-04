@@ -22,6 +22,7 @@ MeshObject::MeshObject (std::shared_ptr<GameScene> gameScene, const std::string&
 {
     m_mesh = GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<Mesh> (meshName);
     m_material = GetGameScene ()->GetMaterialManager ()->GetByName<Material> (materialName);
+    m_aabbDirty = true;
 
     // in case of mesh update, publish message to bus (recipients incl. for renderer)
     m_mesh->SubscribeHook ("OnUpdateMesh", [&] () 
@@ -29,15 +30,11 @@ MeshObject::MeshObject (std::shared_ptr<GameScene> gameScene, const std::string&
         GetGameScene ()->GetGame ()->GetMessageBus ()->Publish<MeshObjectUpdateMessage> (std::make_shared<MeshObjectUpdateMessage> (this->GetHandle ())); 
     });
 
-    // in case of transform update, recalculate AABB and publish message to bus (recipients incl. for renderer)
+    // in case of transform update, invalidate AABB
     GetModelTransform ()->SubscribeHook ("OnUpdateTransform", [&]() 
     {
-        m_aabb.CalculateForMesh (m_mesh, GetWorldTransformMatrix ());
-        GetGameScene ()->GetGame ()->GetMessageBus ()->Publish<TransformUpdateMessage> (std::make_shared<TransformUpdateMessage> (this->GetHandle ())); 
+        InvalidateAABB ();
     });
-
-    m_aabb.CalculateForMesh (m_mesh, GetWorldTransformMatrix ());
-
 }
 
 MeshObject::~MeshObject ()
@@ -61,9 +58,29 @@ std::shared_ptr<Material> MeshObject::GetMaterial () const
     return m_material;
 }
 
-AABB MeshObject::GetAABB () const
+AABB MeshObject::GetAABB ()
 {
+    if (m_aabbDirty)
+    {
+        m_aabb.CalculateForMeshObject (std::dynamic_pointer_cast<MeshObject> (shared_from_this ()));
+        m_aabbDirty = false;
+
+        // update hierarchy AABB
+        m_hierarchyAABB = m_aabb; 
+        for (auto&& childObject : m_childObjects)
+        {
+            auto child = childObject.lock ();
+            m_hierarchyAABB += child->GetHierarchyAABB ();
+        }
+        m_parentObject.lock ()->CalculateHierarchyAABB ();
+    }
     return m_aabb;
+}
+
+std::shared_ptr<MeshObject> MeshObject::InvalidateAABB ()
+{
+    m_aabbDirty = true;
+    return std::dynamic_pointer_cast<MeshObject> (shared_from_this ());
 }
 
 std::shared_ptr<MeshObject> MeshObject::AddInfluencingBoneObject (std::shared_ptr<BoneObject> boneObject)
@@ -95,10 +112,10 @@ float* MeshObject::GetBoneTransformationsMatrixArray ()
     std::memcpy (m_boneTransformationMatrixArray, identity[0], 16 * sizeof (float));
 
     // copy remaining bones
-
     for (handle_t boneHandle : m_mesh->GetMeshBones ())
     {
         std::shared_ptr<BoneObject> boneObject = nullptr;
+        
         // find meshbone by bone handle
         for (auto b : m_influencingBoneObjects)
         {
@@ -109,7 +126,6 @@ float* MeshObject::GetBoneTransformationsMatrixArray ()
             }
         }
 
-        //auto boneObject = GetGameScene ()->GetGameObjectManager ()->GetByHandle<BoneObject> (b);
         boneTransformation = boneObject->GetWorldTransformMatrix () * boneObject->GetBone ()->GetOffsetMatrix ();
 
         std::memcpy (m_boneTransformationMatrixArray + index, boneTransformation[0], 16 * sizeof (float));

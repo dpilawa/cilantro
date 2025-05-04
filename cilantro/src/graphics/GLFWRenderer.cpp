@@ -153,7 +153,6 @@ void GLFWRenderer::RenderFrame ()
     GLRenderer::RenderFrame ();
 
     // swap front and back buffers
-    glfwSwapInterval (1);
     glfwSwapBuffers (window);
 
     // check window closing

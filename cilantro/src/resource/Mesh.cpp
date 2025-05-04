@@ -234,6 +234,11 @@ float* Mesh::GetBitangentData ()
     return bitangents.data ();
 }
 
+std::vector<size_t>& Mesh::GetBoneInfluenceCounts ()
+{
+    return boneInfluenceCounts;
+}
+
 uint32_t* Mesh::GetBoneIndicesData ()
 {
     return boneInfluenceIndices.data ();

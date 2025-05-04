@@ -165,6 +165,7 @@ public:
     __EAPI virtual void ClearStencilBuffer () override;
     
     __EAPI virtual void SetDepthTestEnabled (bool value) override;
+    __EAPI virtual void SetDepthTestFunction (EDepthTestFunction depthTestFunction) override;
     __EAPI virtual void SetFaceCullingEnabled (bool value) override;
     __EAPI virtual void SetFaceCullingMode (EFaceCullingFace face, EFaceCullingDirection direction) override;
     __EAPI virtual void SetMultisamplingEnabled (bool value) override;

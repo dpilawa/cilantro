@@ -49,6 +49,7 @@ public:
     __EAPI float* GetUVData ();
     __EAPI float* GetTangentData ();
     __EAPI float* GetBitangentData ();
+    __EAPI std::vector<size_t>& GetBoneInfluenceCounts ();
     __EAPI uint32_t* GetBoneIndicesData ();
     __EAPI float* GetBoneWeightsData ();
     __EAPI std::vector<handle_t>& GetMeshBones ();

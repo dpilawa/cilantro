@@ -10,6 +10,7 @@ namespace cilantro {
 
 class Resource;
 class GameScene;
+class GameObject;
 class InputController;
 
 class __CEAPI Game : public std::enable_shared_from_this<Game>
@@ -71,6 +72,7 @@ std::shared_ptr<T> Game::Create (const std::string& name, Params&&... params)
     requires (std::is_base_of_v<GameScene,T>)
 {
     auto gameScene = m_gameSceneManager->Create<T> (name, shared_from_this (), std::forward<Params>(params)...);
+    gameScene->GetGameObjectManager ()->Create<GameObject> ("root", gameScene);
 
     if (!m_currentGameScene.lock())
     {

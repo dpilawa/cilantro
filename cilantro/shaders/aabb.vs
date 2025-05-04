@@ -16,7 +16,6 @@ layout (std140) uniform UniformMatricesBlock
 
 void main ()
 {
-    /* world space vertex position */
     gl_Position = mProjection * mView * vec4 (vPosition, 1.0);
 }
 

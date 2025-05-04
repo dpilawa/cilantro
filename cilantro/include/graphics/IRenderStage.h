@@ -36,6 +36,7 @@ struct IRenderStage
     virtual std::shared_ptr<IRenderStage> SetClearDepthOnFrameEnabled (bool value) = 0;
     virtual std::shared_ptr<IRenderStage> SetClearStencilOnFrameEnabled (bool value) = 0;
 
+    virtual std::shared_ptr<IRenderStage> SetDepthTest (EDepthTestFunction depthTestFunction) = 0;
     virtual std::shared_ptr<IRenderStage> SetStencilTest (EStencilTestFunction stencilTestFunction, int stencilTestValue) = 0;
     virtual std::shared_ptr<IRenderStage> SetFaceCullingMode (EFaceCullingFace faceCullingFace, EFaceCullingDirection faceCullingDirection) = 0;
 

@@ -7,6 +7,8 @@ namespace cilantro
 Timer::Timer ()
 {
     ResetSplitTime ();
+    frameDeltaTime = std::chrono::high_resolution_clock::now () - std::chrono::high_resolution_clock::now ();
+    frameRenderTime = std::chrono::high_resolution_clock::now () - std::chrono::high_resolution_clock::now ();
 }
 
 Timer::~Timer ()

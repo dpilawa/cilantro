@@ -37,6 +37,8 @@ public:
     __EAPI virtual std::shared_ptr<IRenderStage> SetClearDepthOnFrameEnabled (bool value) override final;
     __EAPI virtual std::shared_ptr<IRenderStage> SetClearStencilOnFrameEnabled (bool value) override final;
 
+    __EAPI virtual std::shared_ptr<IRenderStage> SetDepthTest (EDepthTestFunction depthTestFunction) override final;
+
     __EAPI virtual std::shared_ptr<IRenderStage> SetStencilTest (EStencilTestFunction stencilTestFunction, int stencilTestValue) override final;
     __EAPI virtual std::shared_ptr<IRenderStage> SetFaceCullingMode (EFaceCullingFace faceCullingFace, EFaceCullingDirection faceCullingDirection) override final;
 
@@ -93,6 +95,9 @@ protected:
     std::shared_ptr<IFramebuffer> m_linkedDepthStencilFramebuffer;
     std::shared_ptr<IFramebuffer> m_linkedDepthArrayFramebuffer;
     std::shared_ptr<IFramebuffer> m_linkedDrawFramebuffer;
+
+    // depth testing parameters
+    EDepthTestFunction m_depthTestFunction;
 
     // stencil testing parameters
     EStencilTestFunction m_stencilTestFunction;

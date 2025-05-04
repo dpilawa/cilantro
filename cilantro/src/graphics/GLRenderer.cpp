@@ -102,14 +102,7 @@ void GLRenderer::Initialize ()
     GetGameScene ()->GetGame ()->GetMessageBus ()->Subscribe<TransformUpdateMessage> (
         [&](const std::shared_ptr<TransformUpdateMessage>& message) 
         { 
-            // lights
-            UpdateLightBufferRecursive (message->GetHandle ());
-
-            // AABBs
-            if (std::dynamic_pointer_cast<MeshObject> (GetGameScene ()->GetGameObjectManager ()->GetByHandle<GameObject> (message->GetHandle ())) != nullptr)
-            {
-                UpdateAABB (GetGameScene ()->GetGameObjectManager ()->GetByHandle<MeshObject> (message->GetHandle ()));
-            }
+            m_invalidatedObjects.insert (message->GetHandle ());
         }
     );
     
@@ -134,6 +127,18 @@ std::shared_ptr<IRenderer> GLRenderer::SetViewport (unsigned int x, unsigned int
 
 void GLRenderer::RenderFrame ()
 {
+    for (auto handle : m_invalidatedObjects)
+    {
+        // lights
+        UpdateLightBufferRecursive (handle);
+
+        // AABBs
+        if (std::dynamic_pointer_cast<MeshObject> (GetGameScene ()->GetGameObjectManager ()->GetByHandle<GameObject> (handle)) != nullptr)
+        {
+            UpdateAABB (GetGameScene ()->GetGameObjectManager ()->GetByHandle<MeshObject> (handle));
+        }
+    }
+
     Renderer::RenderFrame ();
 }
 
@@ -355,35 +360,35 @@ void GLRenderer::Update (std::shared_ptr<MeshObject> meshObject)
 
     // load vertex buffer
     glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVboType::VBO_VERTICES]);
-    glBufferData (GL_ARRAY_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (float) * 3, meshObject->GetMesh ()->GetVerticesData (), GL_STATIC_DRAW);
+    glBufferData (GL_ARRAY_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (float) * 3, meshObject->GetMesh ()->GetVerticesData (), GL_DYNAMIC_DRAW);
 
     // load normals buffer
     glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVboType::VBO_NORMALS]);
-    glBufferData (GL_ARRAY_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (float) * 3, meshObject->GetMesh ()->GetNormalsData (), GL_STATIC_DRAW);
+    glBufferData (GL_ARRAY_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (float) * 3, meshObject->GetMesh ()->GetNormalsData (), GL_DYNAMIC_DRAW);
     
     // load uv buffer
     glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVboType::VBO_UVS]);
-    glBufferData (GL_ARRAY_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (float) * 2, meshObject->GetMesh ()->GetUVData (), GL_STATIC_DRAW);
+    glBufferData (GL_ARRAY_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (float) * 2, meshObject->GetMesh ()->GetUVData (), GL_DYNAMIC_DRAW);
 
     // load tangents buffer
     glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVboType::VBO_TANGENTS]);
-    glBufferData (GL_ARRAY_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (float) * 3, meshObject->GetMesh ()->GetTangentData (), GL_STATIC_DRAW);
+    glBufferData (GL_ARRAY_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (float) * 3, meshObject->GetMesh ()->GetTangentData (), GL_DYNAMIC_DRAW);
 
     // load bitangents buffer
     glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVboType::VBO_BITANGENTS]);
-    glBufferData (GL_ARRAY_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (float) * 3, meshObject->GetMesh ()->GetBitangentData (), GL_STATIC_DRAW);
+    glBufferData (GL_ARRAY_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (float) * 3, meshObject->GetMesh ()->GetBitangentData (), GL_DYNAMIC_DRAW);
 
     // load bone index buffer
     glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVboType::VBO_BONES]);
-    glBufferData (GL_ARRAY_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (uint32_t) * CILANTRO_MAX_BONE_INFLUENCES, meshObject->GetMesh ()->GetBoneIndicesData (), GL_STATIC_DRAW);
+    glBufferData (GL_ARRAY_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (uint32_t) * CILANTRO_MAX_BONE_INFLUENCES, meshObject->GetMesh ()->GetBoneIndicesData (), GL_DYNAMIC_DRAW);
 
     // load bone weight buffer
     glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVboType::VBO_BONEWEIGHTS]);
-    glBufferData (GL_ARRAY_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (float) * CILANTRO_MAX_BONE_INFLUENCES, meshObject->GetMesh ()->GetBoneWeightsData (), GL_STATIC_DRAW);
+    glBufferData (GL_ARRAY_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (float) * CILANTRO_MAX_BONE_INFLUENCES, meshObject->GetMesh ()->GetBoneWeightsData (), GL_DYNAMIC_DRAW);
 
     // load index buffer
     glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, b->EBO);
-    glBufferData (GL_ELEMENT_ARRAY_BUFFER, meshObject->GetMesh ()->GetIndexCount () * sizeof (uint32_t), meshObject->GetMesh ()->GetFacesData (), GL_STATIC_DRAW);
+    glBufferData (GL_ELEMENT_ARRAY_BUFFER, meshObject->GetMesh ()->GetIndexCount () * sizeof (uint32_t), meshObject->GetMesh ()->GetFacesData (), GL_DYNAMIC_DRAW);
 
     // unbind VAO
     glBindVertexArray (0);
@@ -402,6 +407,7 @@ void GLRenderer::UpdateAABB (std::shared_ptr<MeshObject> meshObject)
         // it is a new object, so generate buffers 
         SGlGeometryBuffers* w = new SGlGeometryBuffers ();
         m_aabbGeometryBuffers.insert ({ objectHandle, w });
+        w->indexCount = 12; // AABB has 12 edges
 
         // generate and bind Vertex Array Object (VAO) - wireframes
         glGenVertexArrays (1, &w->VAO);
@@ -417,6 +423,10 @@ void GLRenderer::UpdateAABB (std::shared_ptr<MeshObject> meshObject)
         glGenBuffers (1, &w->EBO);
         glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, w->EBO);
 
+        // load index buffer - wireframes (this is static)
+        glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, w->EBO);
+        glBufferData (GL_ELEMENT_ARRAY_BUFFER, 12 * 2 * sizeof (uint32_t), meshObject->GetAABB ().GetIndicesData (), GL_STATIC_DRAW);
+
         // enable VBO arrays
         glEnableVertexAttribArray (EGlVboType::VBO_VERTICES);
 
@@ -425,20 +435,15 @@ void GLRenderer::UpdateAABB (std::shared_ptr<MeshObject> meshObject)
 
     }
 
-    // resize buffers and load data
+    // reload data
     SGlGeometryBuffers* w = m_aabbGeometryBuffers[objectHandle];
-    w->indexCount = 12; // AABB has 12 edges
 
     // bind Vertex Array Object (VAO) - wireframes
     glBindVertexArray (w->VAO);
 
     // load vertex buffer - wireframes
     glBindBuffer (GL_ARRAY_BUFFER, w->VBO[EGlVboType::VBO_VERTICES]);
-    glBufferData (GL_ARRAY_BUFFER, 8 * sizeof (float) * 3, meshObject->GetAABB ().GetVerticesData () , GL_STATIC_DRAW);
-
-    // load index buffer - wireframes
-    glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, w->EBO);
-    glBufferData (GL_ELEMENT_ARRAY_BUFFER, 12 * 2 * sizeof (uint32_t), meshObject->GetAABB ().GetIndicesData (), GL_STATIC_DRAW);
+    glBufferData (GL_ARRAY_BUFFER, 8 * sizeof (float) * 3, meshObject->GetAABB ().GetVerticesData () , GL_DYNAMIC_DRAW);
 
     // unbind VAO - wireframes
     glBindVertexArray (0);
@@ -832,14 +837,32 @@ void GLRenderer::SetDepthTestEnabled (bool value)
     if (value == true)
     {
         glEnable (GL_DEPTH_TEST);
-        glDepthMask (GL_TRUE);
-
     }
     else
     {   
         glDisable (GL_DEPTH_TEST);
-        glDepthMask (GL_FALSE);
     }    
+}
+
+void GLRenderer::SetDepthTestFunction (EDepthTestFunction testFunction)
+{
+    auto GLFun = [](EDepthTestFunction f)
+    {
+        switch (f)   
+        {
+            case EDepthTestFunction::FUNCTION_ALWAYS: return GL_ALWAYS; break;
+            case EDepthTestFunction::FUNCTION_EQUAL: return GL_EQUAL; break;
+            case EDepthTestFunction::FUNCTION_GEQUAL: return GL_GEQUAL; break;
+            case EDepthTestFunction::FUNCTION_GREATER: return GL_GREATER; break;
+            case EDepthTestFunction::FUNCTION_LEQUAL: return GL_LEQUAL; break;
+            case EDepthTestFunction::FUNCTION_LESS: return GL_LESS; break;
+            case EDepthTestFunction::FUNCTION_NEVER: return GL_NEVER; break;
+            case EDepthTestFunction::FUNCTION_NOTEQUAL: return GL_NOTEQUAL; break;
+            default: return GL_ALWAYS; break;
+        }
+    };
+
+    glDepthFunc (GLFun (testFunction));
 }
 
 void GLRenderer::SetFaceCullingEnabled (bool value)

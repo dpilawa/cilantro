@@ -30,7 +30,7 @@ public:
 
     __EAPI void SetLooping (float looping);
 
-    __EAPI void OnFrame ();
+    __EAPI void OnFrame () override;
 
 private:
 

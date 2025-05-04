@@ -8,11 +8,13 @@
 #include <string>
 #include <vector>
 #include <set>
+#include <unordered_set>
 #include <memory>
 
 namespace cilantro {
 
 class GameScene;
+class GameObject;
 
 class __CEAPI Renderer : public IRenderer, public std::enable_shared_from_this<Renderer>
 {
@@ -40,7 +42,7 @@ public:
     __EAPI virtual std::shared_ptr<IRenderer> RotateRenderPipelineLeft () override final;
     __EAPI virtual std::shared_ptr<IRenderer> RotateRenderPipelineRight () override final;
     __EAPI virtual std::shared_ptr<IFramebuffer> GetPipelineFramebuffer (EPipelineLink link) override final;
-    
+
     __EAPI virtual void RenderFrame () override;   
     
     ///////////////////////////////////////////////////////////////////////////
@@ -56,6 +58,9 @@ public:
 protected:
     // game scene being rendered
     std::weak_ptr<GameScene> m_gameScene;
+
+    // objects with invalidated transformation
+    std::unordered_set<handle_t> m_invalidatedObjects;
 
     // render pipeline
     size_t m_currentRenderStageIdx;
@@ -78,11 +83,13 @@ protected:
     bool m_isDeferredRendering;
     bool m_isShadowMapping;
 
-private:
     // timing data
     long int m_totalRenderedFrames;
+    long int m_totalDroppedFrames;
     float m_totalRenderTime;
     float m_totalFrameRenderTime;
+
+private:
 
     // initialize and deinitialize all required internal renderstages
     void InitializeRenderStages ();

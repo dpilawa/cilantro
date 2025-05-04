@@ -35,6 +35,8 @@ RenderStage::RenderStage (std::shared_ptr<IRenderer> renderer)
     , m_linkedDepthArrayFramebuffer (nullptr)
     , m_linkedDrawFramebuffer (nullptr)
 
+    , m_depthTestFunction (EDepthTestFunction::FUNCTION_LESS)
+    
     , m_stencilTestFunction (EStencilTestFunction::FUNCTION_ALWAYS)
     , m_stencilTestValue (0)
 
@@ -137,8 +139,9 @@ void RenderStage::OnFrame ()
         GetRenderer ()->ClearStencilBuffer ();
     }
 
-    // optionally enable depth test
+    // optionally enable depth test & function
     GetRenderer ()->SetDepthTestEnabled (m_isDepthTestEnabled);
+    GetRenderer ()->SetDepthTestFunction (m_depthTestFunction);
 
     // optionally enable face culling
     GetRenderer ()->SetFaceCullingEnabled (m_isFaceCullingEnabled);
@@ -282,6 +285,13 @@ std::shared_ptr<IRenderStage> RenderStage::SetClearDepthOnFrameEnabled (bool val
 std::shared_ptr<IRenderStage> RenderStage::SetClearStencilOnFrameEnabled (bool value)
 {
     m_isClearStencilOnFrameEnabled = value;
+
+    return std::dynamic_pointer_cast<IRenderStage> (shared_from_this ());
+}
+
+std::shared_ptr<IRenderStage> RenderStage::SetDepthTest (EDepthTestFunction depthTestFunction)
+{
+    m_depthTestFunction = depthTestFunction;
 
     return std::dynamic_pointer_cast<IRenderStage> (shared_from_this ());
 }

@@ -31,7 +31,7 @@ int main (int argc, char* argv[])
     game->Initialize ();
 
     auto scene = game->Create<GameScene> ("scene");
-    auto renderer = scene->Create<GLFWRenderer> (800, 600, true, true, "Test 03", false, true, true);
+    auto renderer = scene->Create<GLFWRenderer> (800, 600, true, true, "Test 03", false, true, false);
     auto inputController = game->Create<GLFWInputController> ();
 
     AssimpModelLoader modelLoader (game);
@@ -46,7 +46,7 @@ int main (int argc, char* argv[])
 
     renderer->Create<SurfaceRenderStage> ("hdr_postprocess")
         ->SetShaderProgram ("post_hdr_shader")
-        ->SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_THIRD); // LINK_PREVIOUS
+        ->SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_THIRD);
 
     renderer->Create<SurfaceRenderStage> ("fxaa_postprocess")
         ->SetShaderProgram ("post_fxaa_shader")

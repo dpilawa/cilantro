@@ -1,4 +1,6 @@
 #include "math/AABB.h"
+#include "scene/MeshObject.h"
+#include "resource/Mesh.h"
 #include <limits>
 #include <array>
 
@@ -69,13 +71,44 @@ void AABB::CalculateForMesh (std::shared_ptr<Mesh> mesh, const Matrix4f& worldTr
     m_upperBound = Vector3f (-std::numeric_limits<float>::infinity(), -std::numeric_limits<float>::infinity(), -std::numeric_limits<float>::infinity());
 
     float* data = mesh->GetVerticesData ();
-    size_t count = mesh->GetVertexCount ();
 
-    for (size_t i = 0; i < count; ++i)
+    // claculate AABB for each vertex in world space
+    for (size_t v = 0; v < mesh->GetVertexCount (); ++v)
     {
-        Vector3f vertex (data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+        Vector3f vertex (data[v * 3], data[v * 3 + 1], data[v * 3 + 2]);
         Vector4f worldVertex = worldTransform * Vector4f (vertex, 1.0f);
         AddVertex (worldVertex);
+    }
+}
+
+void AABB::CalculateForMeshObject (std::shared_ptr<MeshObject> meshObject)
+{
+    m_lowerBound = Vector3f (std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity());
+    m_upperBound = Vector3f (-std::numeric_limits<float>::infinity(), -std::numeric_limits<float>::infinity(), -std::numeric_limits<float>::infinity());
+
+    auto mesh = meshObject->GetMesh ();
+    float* data = mesh->GetVerticesData ();
+    auto worldTransform = meshObject->GetWorldTransformMatrix ();
+
+    // apply bone transformations
+    auto boneTransformations = meshObject->GetBoneTransformationsMatrixArray ();
+    for (size_t v = 0; v < mesh->GetVertexCount (); v++)
+    {
+        Vector3f modelVertex (data[v * 3], data[v * 3 + 1], data[v * 3 + 2]);
+        Vector4f worldVertex = worldTransform * Vector4f (modelVertex, 1.0f);
+        Vector4f transformedVertex = Vector4f (0.0f, 0.0f, 0.0f, 0.0f);
+        bool transformed = false;
+
+        for (size_t i = 0; i < mesh->GetBoneInfluenceCounts ()[v]; i++)
+        {
+            size_t boneIndex = mesh->GetBoneIndicesData ()[v * CILANTRO_MAX_BONE_INFLUENCES + i];
+            float boneWeight = mesh->GetBoneWeightsData ()[v * CILANTRO_MAX_BONE_INFLUENCES + i];
+           
+            transformedVertex += boneWeight * Matrix4f (boneTransformations + boneIndex * 16) * worldVertex;
+            transformed = true;
+        }
+
+        transformed ? AddVertex (transformedVertex) : AddVertex (worldVertex);
     }
 }
 

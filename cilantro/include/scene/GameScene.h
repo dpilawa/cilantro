@@ -6,6 +6,7 @@
 #include "resource/ResourceManager.h"
 #include "graphics/Renderer.h"
 #include "input/InputController.h"
+#include "math/AABB.h"
 #include "system/Timer.h"
 #include "system/MessageBus.h"
 #include "system/Message.h"
@@ -95,6 +96,7 @@ std::shared_ptr<T> GameScene::Create (const std::string& name, Params&&... param
     requires (std::is_base_of_v<GameObject,T>)
 {
     auto gameObject = m_gameObjectManager->Create<T> (name, shared_from_this (), params...);
+    gameObject->SetParentObject ("root");
     handle_t handle = gameObject->GetHandle ();
 
     // update renderer data

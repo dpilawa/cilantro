@@ -5,10 +5,13 @@
 #include "math/Vector3f.h"
 #include "math/Vector4f.h"
 #include "math/Matrix4f.h"
-#include "resource/Mesh.h"
-
+#include <vector>
+#include <memory>
 
 namespace cilantro {
+
+class Mesh;
+class MeshObject;
 
 // Axis-aligned bounding box (AABB)
 class __CEAPI AABB
@@ -35,8 +38,9 @@ public:
     // add vertex to AABB
     __EAPI void AddVertex (const Vector3f& v);
 
-    // calculate for Mesh
+    // calculate
     __EAPI void CalculateForMesh (std::shared_ptr<Mesh> mesh, const Matrix4f& worldTransform);
+    __EAPI void CalculateForMeshObject (std::shared_ptr<MeshObject> meshObject);
 
     // get eight vertices of AABB
     __EAPI std::array<Vector3f, 8> GetVertices () const;

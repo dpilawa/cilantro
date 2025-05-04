@@ -4,6 +4,7 @@
 #include "cilantroengine.h"
 #include "resource/Resource.h"
 #include "scene/Transform.h"
+#include "math/AABB.h"
 #include <string>
 #include <vector>
 #include <memory>
@@ -55,6 +56,10 @@ public:
     __EAPI Vector3f GetUp () const;
     __EAPI Vector3f GetForward () const;	
 
+    // get hierarchical AABB of the object with all its children
+    __EAPI AABB GetHierarchyAABB ();
+    __EAPI std::shared_ptr<GameObject> CalculateHierarchyAABB ();
+
 protected:
 
     // parent scene
@@ -63,10 +68,13 @@ protected:
     // pointer to parent object (objects may form a hierarchy)
     std::weak_ptr<GameObject> m_parentObject;
 
-private:
+    // hierarchical AABB (axis-aligned bounding box) of the object with all its children
+    AABB m_hierarchyAABB;
+
     // vector of child objects
     std::vector<std::weak_ptr<GameObject>> m_childObjects;
 
+private:
     // object's transformation in relation its origin
     std::shared_ptr<Transform> m_modelTransform;
 

@@ -19,6 +19,7 @@ Renderer::Renderer (std::shared_ptr<GameScene> gameScene, unsigned int width, un
     , m_height (height)
 {
     m_totalRenderedFrames = 0L;
+    m_totalDroppedFrames = 0L;
     m_totalRenderTime = 0.0f;
     m_totalFrameRenderTime = 0.0f;
 
@@ -41,7 +42,8 @@ void Renderer::Deinitialize ()
 {
     DeinitializeRenderStages ();
 
-    LogMessage (MSG_LOCATION) << "Rendered" << m_totalRenderedFrames << "frames in" << m_totalRenderTime << "seconds; avg FPS =" << std::round (m_totalRenderedFrames / m_totalFrameRenderTime) << "; real FPS = " << std::round (m_totalRenderedFrames / m_totalRenderTime);
+    LogMessage (MSG_LOCATION) << "Rendered" << m_totalRenderedFrames << "frames in" << m_totalRenderTime << "seconds; thoretical FPS =" << std::round (m_totalRenderedFrames / m_totalFrameRenderTime) << "; real FPS = " << std::round (m_totalRenderedFrames / m_totalRenderTime);
+    LogMessage (MSG_LOCATION) << "Dropped frames:" << std::max ((long int)(m_totalRenderTime / (1.0f / CILANTRO_HZ)) - m_totalRenderedFrames, 0L);
 }
 
 unsigned int Renderer::GetWidth () const
@@ -168,8 +170,8 @@ void Renderer::RenderFrame ()
         m_currentRenderStageIdx++;
     }
 
-    // update game clocks (Tock)
-    GetGameScene ()->GetTimer ()->Tock ();
+    // reset invalidated objects
+    m_invalidatedObjects.clear ();
 
     // update frame counters
     m_totalRenderedFrames++;

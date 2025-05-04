@@ -27,6 +27,9 @@ public:
     // move constructor
     __EAPI Matrix3f (Matrix3f&& other);
 
+    // array constructor
+    __EAPI Matrix3f (const float* m);
+
     // assignment operator
     __EAPI Matrix3f& operator= (Matrix3f other);
 
