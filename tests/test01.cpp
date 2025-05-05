@@ -38,14 +38,14 @@ int main (int argc, char* argv [])
     auto renderer = scene->Create<GLFWRenderer> (800, 600, true, true, "Test 01", false, true, true);
     auto inputController = game->Create<GLFWInputController> ();
     
-    renderer->Create<AABBRenderStage> ("aabb")
+/*     renderer->Create<AABBRenderStage> ("aabb")
         ->SetDepthStencilFramebufferLink (EPipelineLink::LINK_SECOND)
         ->SetClearColorOnFrameEnabled (false)
         ->SetClearDepthOnFrameEnabled (false)
         ->SetDrawFramebufferLink (EPipelineLink::LINK_THIRD)
         ->SetDepthTestEnabled (true)
         ->SetDepthTest (EDepthTestFunction::FUNCTION_LEQUAL)
-        ->SetFramebufferEnabled (false);
+        ->SetFramebufferEnabled (false); */
     
     renderer->Create<SurfaceRenderStage> ("hdr_postprocess")
         ->SetShaderProgram ("post_hdr_shader")

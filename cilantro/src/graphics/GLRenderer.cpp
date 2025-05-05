@@ -20,6 +20,7 @@
 #include "scene/SpotLight.h"
 #include <cmath>
 #include <cstring>
+#include <array>
 
 namespace cilantro {
 

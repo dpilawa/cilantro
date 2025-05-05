@@ -52,7 +52,7 @@ void GLFramebuffer::Initialize ()
 
         glGenTextures (1, &m_glBuffers.depthTextureArray);
         glBindTexture (GL_TEXTURE_2D_ARRAY, m_glBuffers.depthTextureArray);
-        glTexImage3D (GL_TEXTURE_2D_ARRAY, 0, GL_DEPTH_COMPONENT32F, m_bufferWidth, m_bufferHeight, static_cast<GLsizei> (m_depthBufferArrayLayerCount), 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+        glTexImage3D (GL_TEXTURE_2D_ARRAY, 0, CILANTRO_SHADOW_MAP_DEPTH == 32 ? GL_DEPTH_COMPONENT32F : GL_DEPTH_COMPONENT16, m_bufferWidth, m_bufferHeight, static_cast<GLsizei> (m_depthBufferArrayLayerCount), 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
         glTexParameteri (GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri (GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri (GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);

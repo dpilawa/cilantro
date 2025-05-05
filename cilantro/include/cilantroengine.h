@@ -4,7 +4,7 @@
 typedef size_t handle_t;
 
 // defines
-#define CILANTRO_HZ                         60.0f
+#define CILANTRO_FPS                        60.0f
 #define CILANTRO_VBO_COUNT                  7
 #define CILANTRO_UBO_COUNT                  5
 #define CILANTRO_MAX_TEXTURE_UNITS          16
@@ -15,6 +15,7 @@ typedef size_t handle_t;
 #define CILANTRO_MAX_BONES                  128
 #define CILANTRO_MAX_BONE_INFLUENCES        4
 #define CILANTRO_SHADOW_MAP_SIZE            4096
+#define CILANTRO_SHADOW_MAP_DEPTH           16
 #define CILANTRO_MULTISAMPLE                4
 
 // linking

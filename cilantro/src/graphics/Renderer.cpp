@@ -43,7 +43,7 @@ void Renderer::Deinitialize ()
     DeinitializeRenderStages ();
 
     LogMessage (MSG_LOCATION) << "Rendered" << m_totalRenderedFrames << "frames in" << m_totalRenderTime << "seconds; thoretical FPS =" << std::round (m_totalRenderedFrames / m_totalFrameRenderTime) << "; real FPS = " << std::round (m_totalRenderedFrames / m_totalRenderTime);
-    LogMessage (MSG_LOCATION) << "Dropped frames:" << std::max ((long int)(m_totalRenderTime / (1.0f / CILANTRO_HZ)) - m_totalRenderedFrames, 0L);
+    LogMessage (MSG_LOCATION) << "Dropped frames:" << std::max ((long int)(m_totalRenderTime / (1.0f / CILANTRO_FPS)) - m_totalRenderedFrames, 0L);
 }
 
 unsigned int Renderer::GetWidth () const
