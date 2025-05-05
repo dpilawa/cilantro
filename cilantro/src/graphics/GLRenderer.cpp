@@ -425,7 +425,7 @@ void GLRenderer::UpdateAABB (std::shared_ptr<MeshObject> meshObject)
 
         // load index buffer - wireframes (this is static)
         glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, w->EBO);
-        glBufferData (GL_ELEMENT_ARRAY_BUFFER, 12 * 2 * sizeof (uint32_t), meshObject->GetAABB ().GetIndicesData (), GL_STATIC_DRAW);
+        glBufferData (GL_ELEMENT_ARRAY_BUFFER, 12 * 2 * sizeof (uint32_t), meshObject->GetAABB ().GetLineIndicesData (), GL_STATIC_DRAW);
 
         // enable VBO arrays
         glEnableVertexAttribArray (EGlVboType::VBO_VERTICES);
@@ -1268,8 +1268,10 @@ void GLRenderer::LoadLightViewUniformBuffers ()
     Matrix4f invMV = Mathf::Invert (projection * view);
     Matrix4f lightView;
     Matrix4f lightViewProjection;
-    Vector3f frustumCenter {0.0f, 0.0f, 0.0f};
     std::vector<Vector4f> frustumVertices;
+    std::vector<Triangle<Vector3f>> aabbTriangles;
+    std::vector<Triangle<Vector3f>> aabbTrianglesLightSpace;
+    AABB sceneAABB;
 
     // calculate camera frustum vertices in world space
     for (size_t x = 0; x < 2; ++x)
@@ -1285,26 +1287,33 @@ void GLRenderer::LoadLightViewUniformBuffers ()
         }
     }
 
-    // find frustum center
-    for (auto&& v : frustumVertices)
+    // get scene AABB (world space)
+    sceneAABB = GetGameScene ()->GetGameObjectManager ()->GetByName<GameObject> ("root")->GetHierarchyAABB ();
+    auto aabbVertices = sceneAABB.GetVertices ();
+    auto aabbIndices = sceneAABB.GetTriangleIndicesData ();
+
+    for (unsigned int i = 0; i < 12; ++i)
     {
-        frustumCenter += v;
+        aabbTriangles.push_back (Triangle<Vector3f> (
+            aabbVertices[aabbIndices[i * 3]],
+            aabbVertices[aabbIndices[i * 3 + 1]],
+            aabbVertices[aabbIndices[i * 3 + 2]]
+        ));
     }
-    frustumCenter /= (float) frustumVertices.size ();
 
     // calculate and load lightview matrix for each directional light
     for (auto&& light : m_directionalLights)
     {
-        float minX = std::numeric_limits<float>::max();
-        float maxX = std::numeric_limits<float>::min();
-        float minY = std::numeric_limits<float>::max();
-        float maxY = std::numeric_limits<float>::min();
-        float minZ = std::numeric_limits<float>::max();
-        float maxZ = std::numeric_limits<float>::min();
+        float minX = std::numeric_limits<float>::infinity();
+        float maxX = -std::numeric_limits<float>::infinity();
+        float minY = std::numeric_limits<float>::infinity();
+        float maxY = -std::numeric_limits<float>::infinity();
+        float minZ = std::numeric_limits<float>::infinity();
+        float maxZ = -std::numeric_limits<float>::infinity();
 
         size_t lightIdx = light.second;
         auto l = GetGameScene ()->GetGameObjectManager ()->GetByHandle<DirectionalLight> (light.first);
-        lightView = Mathf::GenCameraViewMatrix (frustumCenter - l->GetForward (), frustumCenter, l->GetUp ());
+        lightView = Mathf::GenCameraViewMatrix (Vector3f(), l->GetForward (), l->GetUp ());
 
         for (auto&& v : frustumVertices)
         {
@@ -1314,8 +1323,29 @@ void GLRenderer::LoadLightViewUniformBuffers ()
             maxX = std::max (maxX, lv[0]);
             minY = std::min (minY, lv[1]);
             maxY = std::max (maxY, lv[1]);
-            minZ = std::min (minZ, lv[2]);
-            maxZ = std::max (maxZ, lv[2]);
+        }
+
+        aabbTrianglesLightSpace.clear ();
+        for (auto&& t : aabbTriangles)
+        {
+            aabbTrianglesLightSpace.push_back (Triangle<Vector3f> (
+                lightView * Vector4f {t[0][0], t[0][1], t[0][2], 1.0f},
+                lightView * Vector4f {t[1][0], t[1][1], t[1][2], 1.0f},
+                lightView * Vector4f {t[2][0], t[2][1], t[2][2], 1.0f}
+            ));
+        }
+
+        Mathf::ClipTrianglesToPlanes (aabbTrianglesLightSpace, Vector3f (minX, minY, minZ), Vector3f (maxX, maxY, maxZ));
+
+        // get minZ and maxZ from clipped triangles (near and far planes)
+        for (auto&& t : aabbTriangles)
+        {
+            minZ = std::min (minZ, t[0][2]);
+            maxZ = std::max (maxZ, t[0][2]);
+            minZ = std::min (minZ, t[1][2]);
+            maxZ = std::max (maxZ, t[1][2]);
+            minZ = std::min (minZ, t[2][2]);
+            maxZ = std::max (maxZ, t[2][2]);
         }
 
         lightViewProjection = Mathf::GenOrthographicProjectionMatrix (minX, maxX, minY, maxY, minZ, maxZ) * lightView;

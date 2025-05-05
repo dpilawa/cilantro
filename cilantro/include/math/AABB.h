@@ -45,16 +45,27 @@ public:
     // get eight vertices of AABB
     __EAPI std::array<Vector3f, 8> GetVertices () const;
     __EAPI float* GetVerticesData ();
-    __EAPI uint32_t* GetIndicesData ();
+    __EAPI uint32_t* GetLineIndicesData ();
+    __EAPI uint32_t* GetTriangleIndicesData ();
 
 private:
     Vector3f m_lowerBound; // lower bound of AABB
     Vector3f m_upperBound; // upper bound of AABB
 
     std::vector<float> m_vertices;
-    std::vector<uint32_t> m_indices = { 0, 1, 2, 3, 2, 0, 3, 1,
-                                        4, 5, 6, 7, 4, 6, 7, 5,
-                                        2, 6, 3, 7, 0, 4, 1, 5 };
+
+    // lines
+    std::vector<uint32_t> m_lineIndices = { 0, 1,  2, 3,  2, 0,  3, 1,
+                                          4, 5,  6, 7,  4, 6,  7, 5,
+                                          2, 6,  3, 7,  0, 4,  1, 5 };
+    // triangles
+    std::vector<uint32_t> m_triangleIndices = { 0, 1, 2,  2, 3, 0,
+                                             4, 5, 6,  6, 7, 4,
+                                             0, 1, 4,  4, 5, 0,
+                                             2, 3, 6,  6, 7, 2,
+                                             0, 2, 4,  4, 6, 0,
+                                             1, 3, 5,  5, 7, 1 };
+
 };
 
 __EAPI AABB operator+ (AABB u, const AABB& v);

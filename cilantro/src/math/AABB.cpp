@@ -142,10 +142,15 @@ float* AABB::GetVerticesData ()
     return m_vertices.data ();
 }
 
-uint32_t* AABB::GetIndicesData ()
+uint32_t* AABB::GetLineIndicesData ()
 {
-    return m_indices.data ();
+    return m_lineIndices.data ();
 }
+
+uint32_t* AABB::GetTriangleIndicesData ()
+{
+    return m_triangleIndices.data ();
+}   
 
 AABB operator+ (AABB u, const AABB& v)
 {
