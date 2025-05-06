@@ -5,8 +5,10 @@
 #include "math/Vector3f.h"
 #include "math/Vector4f.h"
 #include "math/Matrix4f.h"
+#include "math/Triangle.h"
 #include <vector>
 #include <memory>
+#include <array>
 
 namespace cilantro {
 
@@ -47,6 +49,9 @@ public:
     __EAPI float* GetVerticesData ();
     __EAPI uint32_t* GetLineIndicesData ();
     __EAPI uint32_t* GetTriangleIndicesData ();
+
+    // get trinagle array in given space
+    __EAPI std::array<Triangle<Vector3f>, 12> GetTriangles (const Matrix4f& spaceTransform) const;
 
 private:
     Vector3f m_lowerBound; // lower bound of AABB

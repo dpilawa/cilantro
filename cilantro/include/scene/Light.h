@@ -4,6 +4,7 @@
 #include "cilantroengine.h"
 #include "scene/GameObject.h"
 #include "math/Vector3f.h"
+#include <array>
 
 struct IRenderer;
 
@@ -27,6 +28,9 @@ public:
 
     // invoked by game loop on update	
     __EAPI void OnUpdate (IRenderer& renderStage);
+
+    // calculate tight light view projection for given camera frustum and scene AABB (for shadow mapping)
+    __EAPI Matrix4f GenLightViewProjectionMatrix (const std::array<Vector3f, 8>& frustumVertices, const AABB& sceneAABB);
 
 private:
 

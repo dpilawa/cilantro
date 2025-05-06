@@ -1264,95 +1264,17 @@ void GLRenderer::LoadViewProjectionUniformBuffers (std::shared_ptr<Camera> camer
 
 void GLRenderer::LoadLightViewUniformBuffers ()
 {
-    Matrix4f view = GetGameScene ()->GetActiveCamera ()->GetViewMatrix ();
-    Matrix4f projection = GetGameScene ()->GetActiveCamera ()->GetProjectionMatrix (m_width, m_height);
-    Matrix4f invMV = Mathf::Invert (projection * view);
-    Matrix4f lightView;
-    Matrix4f lightViewProjection;
-    std::vector<Vector4f> frustumVertices;
-    std::vector<Triangle<Vector3f>> aabbTriangles;
-    std::vector<Triangle<Vector3f>> aabbTrianglesLightSpace;
-    AABB sceneAABB;
-
-    // calculate camera frustum vertices in world space
-    for (size_t x = 0; x < 2; ++x)
-    {
-        for (size_t y = 0; y < 2; ++y)
-        {
-            for (size_t z = 0; z < 2; ++z)
-            {
-                Vector4f v = invMV * Vector4f {2.0f * x - 1.0f, 2.0f * y - 1.0f, 2.0f * z - 1.0f, 1.0f};
-
-                frustumVertices.push_back (v / v[3]);
-            }
-        }
-    }
-
-    // get scene AABB (world space)
-    sceneAABB = GetGameScene ()->GetGameObjectManager ()->GetByName<GameObject> ("root")->GetHierarchyAABB ();
-    auto aabbVertices = sceneAABB.GetVertices ();
-    auto aabbIndices = sceneAABB.GetTriangleIndicesData ();
-
-    for (unsigned int i = 0; i < 12; ++i)
-    {
-        aabbTriangles.push_back (Triangle<Vector3f> (
-            aabbVertices[aabbIndices[i * 3]],
-            aabbVertices[aabbIndices[i * 3 + 1]],
-            aabbVertices[aabbIndices[i * 3 + 2]]
-        ));
-    }
+    auto frustumVertices = GetGameScene ()->GetActiveCamera ()->GetFrustumVertices (m_width, m_height);
+    AABB sceneAABB = GetGameScene ()->GetGameObjectManager ()->GetByName<GameObject> ("root")->GetHierarchyAABB ();
 
     // calculate and load lightview matrix for each directional light
     for (auto&& light : m_directionalLights)
     {
-        float minX = std::numeric_limits<float>::infinity();
-        float maxX = -std::numeric_limits<float>::infinity();
-        float minY = std::numeric_limits<float>::infinity();
-        float maxY = -std::numeric_limits<float>::infinity();
-        float minZ = std::numeric_limits<float>::infinity();
-        float maxZ = -std::numeric_limits<float>::infinity();
-
-        size_t lightIdx = light.second;
-        auto l = GetGameScene ()->GetGameObjectManager ()->GetByHandle<DirectionalLight> (light.first);
-        lightView = Mathf::GenCameraViewMatrix (Vector3f(), l->GetForward (), l->GetUp ());
-
-        for (auto&& v : frustumVertices)
-        {
-            Vector4f lv = lightView * v;
-
-            minX = std::min (minX, lv[0]);
-            maxX = std::max (maxX, lv[0]);
-            minY = std::min (minY, lv[1]);
-            maxY = std::max (maxY, lv[1]);
-        }
-
-        aabbTrianglesLightSpace.clear ();
-        for (auto&& t : aabbTriangles)
-        {
-            aabbTrianglesLightSpace.push_back (Triangle<Vector3f> (
-                lightView * Vector4f {t[0][0], t[0][1], t[0][2], 1.0f},
-                lightView * Vector4f {t[1][0], t[1][1], t[1][2], 1.0f},
-                lightView * Vector4f {t[2][0], t[2][1], t[2][2], 1.0f}
-            ));
-        }
-
-        Mathf::ClipTrianglesToPlanes (aabbTrianglesLightSpace, Vector3f (minX, minY, minZ), Vector3f (maxX, maxY, maxZ));
-
-        // get minZ and maxZ from clipped triangles (near and far planes)
-        for (auto&& t : aabbTriangles)
-        {
-            minZ = std::min (minZ, t[0][2]);
-            maxZ = std::max (maxZ, t[0][2]);
-            minZ = std::min (minZ, t[1][2]);
-            maxZ = std::max (maxZ, t[1][2]);
-            minZ = std::min (minZ, t[2][2]);
-            maxZ = std::max (maxZ, t[2][2]);
-        }
-
-        lightViewProjection = Mathf::GenOrthographicProjectionMatrix (minX, maxX, minY, maxY, minZ, maxZ) * lightView;
+        // generate matrix
+        Matrix4f lightViewProjection = GetGameScene ()->GetGameObjectManager ()->GetByHandle<DirectionalLight> (light.first)->GenLightViewProjectionMatrix (frustumVertices, sceneAABB);
 
         // copy to buffer
-        std::memcpy (m_uniformMatrixBuffer->directionalLightView + lightIdx * 16, Mathf::Transpose (lightViewProjection)[0], 16 * sizeof (GLfloat));
+        std::memcpy (m_uniformMatrixBuffer->directionalLightView + light.second * 16, Mathf::Transpose (lightViewProjection)[0], 16 * sizeof (GLfloat));
     }
 
     // load to GPU - directional light view

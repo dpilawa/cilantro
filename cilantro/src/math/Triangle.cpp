@@ -1,4 +1,5 @@
 #include "math/Triangle.h"
+#include "math/Vector4f.h"
 #include "math/Vector3f.h"
 #include "math/Vector2f.h"
 
@@ -76,6 +77,7 @@ const T& Triangle<T>::Triangle::operator[] (unsigned int index) const
 
 
 // explicit instantiation of template class
+template class __CEAPI Triangle<Vector4f>;
 template class __CEAPI Triangle<Vector3f>;
 template class __CEAPI Triangle<Vector2f>;
 template class __CEAPI Triangle<bool>;

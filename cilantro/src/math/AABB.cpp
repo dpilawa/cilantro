@@ -152,6 +152,24 @@ uint32_t* AABB::GetTriangleIndicesData ()
     return m_triangleIndices.data ();
 }   
 
+std::array<Triangle<Vector3f>, 12> AABB::GetTriangles (const Matrix4f& spaceTransform) const
+{
+    std::array<Triangle<Vector3f>, 12> triangles;
+
+    auto aabbVertices = GetVertices ();
+
+    for (unsigned int i = 0; i < 12; ++i)
+    {
+        Vector4f v1 = spaceTransform * Vector4f (aabbVertices[m_triangleIndices[i * 3]], 1.0f);
+        Vector4f v2 = spaceTransform * Vector4f (aabbVertices[m_triangleIndices[i * 3 + 1]], 1.0f);
+        Vector4f v3 = spaceTransform * Vector4f (aabbVertices[m_triangleIndices[i * 3 + 2]], 1.0f);
+
+        triangles[i] = Triangle<Vector3f> (v1 / v1[3], v2 / v2[3], v3 / v3[3]);
+    }
+
+    return triangles;
+}
+
 AABB operator+ (AABB u, const AABB& v)
 {
     u += v;
