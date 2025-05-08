@@ -23,6 +23,10 @@ public:
 
 private:
     std::vector<CubicHermite<Vector3f>> m_curves;
+    bool m_hasStartTangent;
+    bool m_hasEndTangent;
+    Vector3f m_startTangent;
+    Vector3f m_endTangent;
 
     __EAPI void UpdatePathAtWaypoint (const std::size_t wIndex);
 };

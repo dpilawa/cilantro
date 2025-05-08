@@ -7,6 +7,8 @@ namespace cilantro {
 
 SplinePath::SplinePath (std::shared_ptr<GameScene> gameScene) : Path (gameScene)
 {
+    m_hasStartTangent = false;
+    m_hasEndTangent = false;
 }
 
 SplinePath::~SplinePath ()
@@ -41,6 +43,9 @@ Vector3f SplinePath::GetTangentAtDistance (float distance) const
 
 std::shared_ptr<SplinePath> SplinePath::SetStartTangent (const Vector3f& tangent)
 {
+    m_startTangent = tangent;
+    m_hasStartTangent = true;
+
     if (m_waypoints.size () > 1)
     {
         m_waypoints[0].m_outTangent = tangent;
@@ -52,6 +57,9 @@ std::shared_ptr<SplinePath> SplinePath::SetStartTangent (const Vector3f& tangent
 
 std::shared_ptr<SplinePath> SplinePath::SetEndTangent (const Vector3f& tangent)
 {
+    m_endTangent = tangent;
+    m_hasEndTangent = true;
+
     if (m_waypoints.size () > 1)
     {
         size_t wIndex = m_waypoints.size () - 1;
@@ -80,21 +88,31 @@ void SplinePath::UpdatePathAtWaypoint (const std::size_t wIndex)
 
     for (std::size_t i = std::max<std::size_t>(0, wIndex - 1); i < m_waypoints.size (); ++i)
     {
-        Vector3f tangent;
-
         if (i == 0)
         {
             // first waypoint
-            tangent = 0.5f * (m_waypoints[i + 1].m_Transform->GetTranslation () - m_waypoints[i].m_Transform->GetTranslation ());
-            m_waypoints[i].m_outTangent = tangent;
+            if (m_hasStartTangent)
+            {
+                m_waypoints[i].m_outTangent = m_startTangent;
+            }
+            else
+            {
+                m_waypoints[i].m_outTangent = 0.5f * (m_waypoints[i + 1].m_Transform->GetTranslation () - m_waypoints[i].m_Transform->GetTranslation ());
+            }
             m_waypoints[i].m_segmentLength = 0.0f;
             m_waypoints[i].m_cumulativeLength = 0.0f;
         }
         else if (i == m_waypoints.size() - 1)
         {
             // last waypoint
-            tangent = 0.5f * (m_waypoints[i].m_Transform->GetTranslation () - m_waypoints[i - 1].m_Transform->GetTranslation ());
-            m_waypoints[i].m_inTangent = tangent;
+            if (m_hasEndTangent)
+            {
+                m_waypoints[i].m_inTangent = m_endTangent;
+            }
+            else
+            {
+                m_waypoints[i].m_inTangent = 0.5f * (m_waypoints[i].m_Transform->GetTranslation () - m_waypoints[i - 1].m_Transform->GetTranslation ());
+            }
             m_curves[i - 1].SetPointsAndTangents (m_waypoints[i - 1].m_Transform->GetTranslation (), m_waypoints[i].m_Transform->GetTranslation (), m_waypoints[i - 1].m_outTangent, m_waypoints[i].m_inTangent);
             m_waypoints[i].m_segmentLength = m_curves[i - 1].GetCurveLength ();
             m_waypoints[i].m_cumulativeLength = m_waypoints[i - 1].m_cumulativeLength + m_waypoints[i].m_segmentLength;
@@ -102,9 +120,8 @@ void SplinePath::UpdatePathAtWaypoint (const std::size_t wIndex)
         else
         {
             // internal waypoint
-            tangent = 0.5f * (m_waypoints[i + 1].m_Transform->GetTranslation () - m_waypoints[i - 1].m_Transform->GetTranslation ());
-            m_waypoints[i].m_inTangent = tangent;
-            m_waypoints[i].m_outTangent = tangent;
+            m_waypoints[i].m_inTangent = 0.5f * (m_waypoints[i + 1].m_Transform->GetTranslation () - m_waypoints[i - 1].m_Transform->GetTranslation ());;
+            m_waypoints[i].m_outTangent = m_waypoints[i].m_inTangent;
             m_curves[i - 1].SetPointsAndTangents (m_waypoints[i - 1].m_Transform->GetTranslation (), m_waypoints[i].m_Transform->GetTranslation (), m_waypoints[i - 1].m_outTangent, m_waypoints[i].m_inTangent);
             m_waypoints[i].m_segmentLength = m_curves[i - 1].GetCurveLength ();
             m_waypoints[i].m_cumulativeLength = m_waypoints[i - 1].m_cumulativeLength + m_waypoints[i].m_segmentLength;      
