@@ -65,22 +65,10 @@ AABB MeshObject::GetAABB ()
         m_aabb.CalculateForMeshObject (std::dynamic_pointer_cast<MeshObject> (shared_from_this ()));
         m_aabbDirty = false;
 
-        // update hierarchy AABB
-        m_hierarchyAABB = m_aabb; 
-        for (auto&& childObject : m_childObjects)
-        {
-            auto child = childObject.lock ();
-            m_hierarchyAABB += child->GetHierarchyAABB ();
-        }
-        m_parentObject.lock ()->CalculateHierarchyAABB ();
+        InvalidateHierarchyAABB ();
     }
+    
     return m_aabb;
-}
-
-std::shared_ptr<MeshObject> MeshObject::InvalidateAABB ()
-{
-    m_aabbDirty = true;
-    return std::dynamic_pointer_cast<MeshObject> (shared_from_this ());
 }
 
 std::shared_ptr<MeshObject> MeshObject::AddInfluencingBoneObject (std::shared_ptr<BoneObject> boneObject)

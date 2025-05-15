@@ -56,9 +56,13 @@ public:
     __EAPI Vector3f GetUp () const;
     __EAPI Vector3f GetForward () const;	
 
-    // get hierarchical AABB of the object with all its children
+    // AABB of the object itself
+    __EAPI virtual AABB GetAABB ();
+    __EAPI std::shared_ptr<GameObject> InvalidateAABB ();
+
+    // hierarchical AABB of the object with all its children
     __EAPI AABB GetHierarchyAABB ();
-    __EAPI std::shared_ptr<GameObject> CalculateHierarchyAABB ();
+    __EAPI std::shared_ptr<GameObject> InvalidateHierarchyAABB ();
 
 protected:
 
@@ -70,6 +74,11 @@ protected:
 
     // hierarchical AABB (axis-aligned bounding box) of the object with all its children
     AABB m_hierarchyAABB;
+    bool m_hierarchyAABBDirty;
+
+    // AABB of the object itself
+    AABB m_aabb;
+    bool m_aabbDirty;
 
     // vector of child objects
     std::vector<std::weak_ptr<GameObject>> m_childObjects;

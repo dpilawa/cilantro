@@ -69,6 +69,7 @@ Matrix4f Light::GenLightViewProjectionMatrix (const std::array<Vector3f, 8>& fru
     for (auto&& v : frustumVertices)
     {
         Vector4f lv = lightView * Vector4f (v, 1.0f);
+        lv /= lv[3];
 
         minX = std::min (minX, lv[0]);
         maxX = std::max (maxX, lv[0]);
@@ -76,8 +77,9 @@ Matrix4f Light::GenLightViewProjectionMatrix (const std::array<Vector3f, 8>& fru
         maxY = std::max (maxY, lv[1]);
     }
 
-    // clip AABB in light space to these bounds
-    auto aabbTrianglesLightSpace = sceneAABB.GetTriangles (lightView);
+    // clip AABB realigned to light space axes to these bounds
+    AABB aabbLightSpace = sceneAABB.ToSpace (lightView);
+    auto aabbTrianglesLightSpace = aabbLightSpace.GetTriangles ();
     std::vector<Triangle<Vector3f>> aabbTrianglesLightSpaceClip (aabbTrianglesLightSpace.begin (), aabbTrianglesLightSpace.end ());
 
     Mathf::ClipTrianglesToPlanes (aabbTrianglesLightSpaceClip, Vector3f (minX, minY, -std::numeric_limits<float>::infinity()), Vector3f (maxX, maxY, std::numeric_limits<float>::infinity()));

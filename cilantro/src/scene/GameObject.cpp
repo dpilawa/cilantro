@@ -18,6 +18,7 @@ GameObject::GameObject (std::shared_ptr<GameScene> gameScene)
     m_modelTransform = std::make_shared<Transform> ();
     m_parentObject = std::weak_ptr<GameObject> ();
     m_gameScene = gameScene;
+    m_hierarchyAABBDirty = true;
 
     CalculateWorldTransformMatrix ();
 
@@ -176,24 +177,44 @@ Vector3f GameObject::GetForward () const
     return Mathf::Normalize (Vector3f (modelTransforMatrix[0][2], modelTransforMatrix[1][2], modelTransforMatrix[2][2]));
 }
 
+AABB GameObject::GetAABB ()
+{
+    return m_aabb;
+}
+
+std::shared_ptr<GameObject> GameObject::InvalidateAABB ()
+{
+    m_aabbDirty = true;
+    InvalidateHierarchyAABB ();
+
+    return std::dynamic_pointer_cast<GameObject> (shared_from_this ());
+}
+
 AABB GameObject::GetHierarchyAABB ()
 {
+    if (m_hierarchyAABBDirty)
+    {
+        m_hierarchyAABB = AABB ();
+    
+        for (auto&& childObject : m_childObjects)
+        {
+            m_hierarchyAABB += childObject.lock ()->GetHierarchyAABB ();
+        }
+
+        m_hierarchyAABB += GetAABB ();
+        m_hierarchyAABBDirty = false;
+    }
+    
     return m_hierarchyAABB;
 }
 
-std::shared_ptr<GameObject> GameObject::CalculateHierarchyAABB ()
+std::shared_ptr<GameObject> GameObject::InvalidateHierarchyAABB ()
 {
-    m_hierarchyAABB = AABB ();
-
-    for (auto&& childObject : m_childObjects)
-    {
-        auto child = childObject.lock ();
-        m_hierarchyAABB += child->GetHierarchyAABB ();
-    }
+    m_hierarchyAABBDirty = true;
 
     if (m_parentObject.lock () != nullptr)
     {
-        m_parentObject.lock ()->CalculateHierarchyAABB ();
+        m_parentObject.lock ()->InvalidateHierarchyAABB ();
     }
 
     return std::dynamic_pointer_cast<GameObject> (shared_from_this ());

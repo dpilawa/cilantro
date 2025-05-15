@@ -30,8 +30,7 @@ public:
     __EAPI std::shared_ptr<Material> GetMaterial () const;
 
     // get axis aligned bounding box of mesh object
-    __EAPI AABB GetAABB ();
-    __EAPI std::shared_ptr<MeshObject> InvalidateAABB ();
+    __EAPI AABB GetAABB () override;
 
     // add bone to mesh object
     __EAPI std::shared_ptr<MeshObject> AddInfluencingBoneObject (std::shared_ptr<BoneObject> boneObject);
@@ -48,9 +47,6 @@ private:
     std::shared_ptr<Mesh> m_mesh;
     std::vector<std::shared_ptr<BoneObject>> m_influencingBoneObjects;
     std::shared_ptr<Material> m_material;
-
-    AABB m_aabb;
-    bool m_aabbDirty;
 
     float m_boneTransformationMatrixArray[CILANTRO_MAX_BONES * 16];
 };

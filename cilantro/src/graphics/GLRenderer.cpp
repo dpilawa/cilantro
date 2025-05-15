@@ -445,7 +445,7 @@ void GLRenderer::UpdateAABB (std::shared_ptr<MeshObject> meshObject)
     // load vertex buffer - wireframes
     glBindBuffer (GL_ARRAY_BUFFER, w->VBO[EGlVboType::VBO_VERTICES]);
     glBufferData (GL_ARRAY_BUFFER, 8 * sizeof (float) * 3, meshObject->GetAABB ().GetVerticesData () , GL_DYNAMIC_DRAW);
-
+    
     // unbind VAO - wireframes
     glBindVertexArray (0);
 

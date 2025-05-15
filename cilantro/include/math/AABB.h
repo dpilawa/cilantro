@@ -21,7 +21,8 @@ class __CEAPI AABB
 public:
     // constructors
     __EAPI AABB ();
-    
+    __EAPI AABB (const Vector3f& lowerBound, const Vector3f& upperBound);
+
     // copy constructor
     __EAPI AABB (const AABB& other);
 
@@ -50,8 +51,11 @@ public:
     __EAPI uint32_t* GetLineIndicesData ();
     __EAPI uint32_t* GetTriangleIndicesData ();
 
-    // get trinagle array in given space
-    __EAPI std::array<Triangle<Vector3f>, 12> GetTriangles (const Matrix4f& spaceTransform) const;
+    // get triangle array
+    __EAPI std::array<Triangle<Vector3f>, 12> GetTriangles () const;
+
+    // transform AABB to new space and calculate new axis aligned bounds
+    __EAPI AABB ToSpace (const Matrix4f& spaceTransform) const;
 
 private:
     Vector3f m_lowerBound; // lower bound of AABB
@@ -60,16 +64,21 @@ private:
     std::vector<float> m_vertices;
 
     // lines
-    std::vector<uint32_t> m_lineIndices = { 0, 1,  2, 3,  2, 0,  3, 1,
-                                          4, 5,  6, 7,  4, 6,  7, 5,
-                                          2, 6,  3, 7,  0, 4,  1, 5 };
+    std::vector<uint32_t> m_lineIndices = { 
+        0, 1,  2, 3,  2, 0,  3, 1,
+        4, 5,  6, 7,  4, 6,  7, 5,
+        2, 6,  3, 7,  0, 4,  1, 5 
+    };
+    
     // triangles
-    std::vector<uint32_t> m_triangleIndices = { 0, 1, 2,  2, 3, 0,
-                                             4, 5, 6,  6, 7, 4,
-                                             0, 1, 4,  4, 5, 0,
-                                             2, 3, 6,  6, 7, 2,
-                                             0, 2, 4,  4, 6, 0,
-                                             1, 3, 5,  5, 7, 1 };
+    std::vector<uint32_t> m_triangleIndices = {
+        0, 1, 2,  2, 3, 1,
+        4, 5, 6,  6, 7, 5,
+        0, 1, 4,  4, 5, 1,
+        2, 3, 6,  6, 7, 3,
+        0, 2, 4,  4, 6, 2,
+        1, 3, 5,  5, 7, 3
+    };
 
 };
 

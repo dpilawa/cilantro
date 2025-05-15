@@ -15,6 +15,12 @@ AABB::AABB ()
     m_upperBound = Vector3f (negInf, negInf, negInf);
 }
 
+AABB::AABB (const Vector3f& lowerBound, const Vector3f& upperBound)
+{
+    m_lowerBound = lowerBound;
+    m_upperBound = upperBound;
+}
+
 // copy constructor
 AABB::AABB (const AABB& other)
 {
@@ -152,22 +158,54 @@ uint32_t* AABB::GetTriangleIndicesData ()
     return m_triangleIndices.data ();
 }   
 
-std::array<Triangle<Vector3f>, 12> AABB::GetTriangles (const Matrix4f& spaceTransform) const
+std::array<Triangle<Vector3f>, 12> AABB::GetTriangles () const
 {
     std::array<Triangle<Vector3f>, 12> triangles;
-
     auto aabbVertices = GetVertices ();
-
+    
+    // generate triangles
     for (unsigned int i = 0; i < 12; ++i)
     {
-        Vector4f v1 = spaceTransform * Vector4f (aabbVertices[m_triangleIndices[i * 3]], 1.0f);
-        Vector4f v2 = spaceTransform * Vector4f (aabbVertices[m_triangleIndices[i * 3 + 1]], 1.0f);
-        Vector4f v3 = spaceTransform * Vector4f (aabbVertices[m_triangleIndices[i * 3 + 2]], 1.0f);
+        Vector4f v1 = Vector4f (aabbVertices[m_triangleIndices[i * 3]], 1.0f);
+        Vector4f v2 = Vector4f (aabbVertices[m_triangleIndices[i * 3 + 1]], 1.0f);
+        Vector4f v3 = Vector4f (aabbVertices[m_triangleIndices[i * 3 + 2]], 1.0f);
 
         triangles[i] = Triangle<Vector3f> (v1 / v1[3], v2 / v2[3], v3 / v3[3]);
     }
 
     return triangles;
+}
+
+AABB AABB::ToSpace (const Matrix4f& spaceTransform) const
+{
+    float minx = std::numeric_limits<float>::infinity ();
+    float miny = std::numeric_limits<float>::infinity ();
+    float minz = std::numeric_limits<float>::infinity ();
+    float maxx = -std::numeric_limits<float>::infinity ();
+    float maxy = -std::numeric_limits<float>::infinity ();
+    float maxz = -std::numeric_limits<float>::infinity ();
+
+    auto aabbVertices = GetVertices ();
+
+    // conveer aabb vertices to given space
+    for (unsigned int i = 0; i < 8; ++i)
+    {
+        Vector4f v = spaceTransform * Vector4f (aabbVertices[i], 1.0f);
+        aabbVertices[i] = v / v[3];
+    }
+
+    // calculate aabb bounds in new space
+    for (unsigned int i = 0; i < 8; ++i)
+    {
+        minx = std::min (minx, aabbVertices[i][0]);
+        miny = std::min (miny, aabbVertices[i][1]);
+        minz = std::min (minz, aabbVertices[i][2]);
+        maxx = std::max (maxx, aabbVertices[i][0]);
+        maxy = std::max (maxy, aabbVertices[i][1]);
+        maxz = std::max (maxz, aabbVertices[i][2]);
+    }
+
+    return AABB (Vector3f (minx, miny, minz), Vector3f (maxx, maxy, maxz));
 }
 
 AABB operator+ (AABB u, const AABB& v)
