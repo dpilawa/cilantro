@@ -60,6 +60,7 @@ void Shader::SetDefaultParameters ()
     SetParameter ("%%CILANTRO_MAX_POINT_LIGHTS%%", std::to_string (CILANTRO_MAX_POINT_LIGHTS));
     SetParameter ("%%CILANTRO_MAX_SPOT_LIGHTS%%", std::to_string (CILANTRO_MAX_SPOT_LIGHTS));
     SetParameter ("%%CILANTRO_MAX_DIRECTIONAL_LIGHTS%%", std::to_string (CILANTRO_MAX_DIRECTIONAL_LIGHTS));
+    SetParameter ("%%CILANTRO_COMPUTE_GROUP_SIZE%%", std::to_string (CILANTRO_COMPUTE_GROUP_SIZE));
 
     SetParameter ("%%ACTIVE_DIRECTIONAL_LIGHTS%%", "1");
 }

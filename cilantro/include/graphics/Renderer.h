@@ -45,6 +45,8 @@ public:
 
     __EAPI virtual void RenderFrame () override;   
     
+    __EAPI virtual AABB CalculateAABB (std::shared_ptr<MeshObject> meshObject) override;
+
     ///////////////////////////////////////////////////////////////////////////
 
     template <typename T, typename ...Params>

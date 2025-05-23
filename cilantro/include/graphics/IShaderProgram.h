@@ -6,7 +6,7 @@
 
 namespace cilantro {
 
-enum EBindingPoint { BP_MATRICES = 1, BP_POINTLIGHTS, BP_DIRECTIONALLIGHTS, BP_SPOTLIGHTS, BP_LIGHTVIEW_DIRECTIONAL };
+enum class EShaderBindingPoint { BP_MATRICES = 0, BP_POINTLIGHTS, BP_DIRECTIONALLIGHTS, BP_SPOTLIGHTS, BP_DIRECTIONALLIGHTVIEWMATRICES, BP_BONETRANSFORMATIONS, BP_VERTICES, BP_BONEINDICES, BP_BONEWEIGHTS, BP_AABB };
 
 struct IShader;
 class Vector2f;
@@ -37,6 +37,7 @@ struct IShaderProgram
 
     // use program
     virtual void Use () const = 0;      
+    virtual void Compute (unsigned int groupsX, unsigned int groupsY, unsigned int groupsZ) const = 0;
 };
 
 } // namespace cilantro

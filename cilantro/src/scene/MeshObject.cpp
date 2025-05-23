@@ -62,7 +62,7 @@ AABB MeshObject::GetAABB ()
 {
     if (m_aabbDirty)
     {
-        m_aabb.CalculateForMeshObject (std::dynamic_pointer_cast<MeshObject> (shared_from_this ()));
+        m_aabb = GetGameScene ()->GetRenderer ()->CalculateAABB (std::dynamic_pointer_cast<MeshObject> (shared_from_this ()));
         m_aabbDirty = false;
 
         InvalidateHierarchyAABB ();
@@ -89,7 +89,7 @@ std::shared_ptr<MeshObject> MeshObject::AddInfluencingBoneObject (std::shared_pt
     return std::dynamic_pointer_cast<MeshObject> (shared_from_this ());
 }
 
-float* MeshObject::GetBoneTransformationsMatrixArray ()
+float* MeshObject::GetBoneTransformationsMatrixArray (bool transpose)
 {
     unsigned int index = 16;
     Matrix4f boneTransformation;
@@ -114,7 +114,7 @@ float* MeshObject::GetBoneTransformationsMatrixArray ()
             }
         }
 
-        boneTransformation = boneObject->GetWorldTransformMatrix () * boneObject->GetBone ()->GetOffsetMatrix ();
+        boneTransformation = transpose ? Mathf::Transpose(boneObject->GetWorldTransformMatrix () * boneObject->GetBone ()->GetOffsetMatrix ()) : (boneObject->GetWorldTransformMatrix () * boneObject->GetBone ()->GetOffsetMatrix ());
 
         std::memcpy (m_boneTransformationMatrixArray + index, boneTransformation[0], 16 * sizeof (float));
         index += 16;

@@ -3,6 +3,7 @@
 #include "cilantroengine.h"
 #include "glad/gl.h"
 #include "graphics/Renderer.h"
+#include "math/AABB.h"
 
 namespace cilantro {
 
@@ -11,7 +12,8 @@ class MeshObject;
 class Camera;
 
 enum EGlVboType { VBO_VERTICES = 0, VBO_NORMALS, VBO_UVS, VBO_TANGENTS, VBO_BITANGENTS, VBO_BONES, VBO_BONEWEIGHTS };
-enum EGlUboType { UBO_MATRICES = 0, UBO_POINTLIGHTS, UBO_DIRECTIONALLIGHTS, UBO_SPOTLIGHTS, UBO_DIRECTIONALLIGHTVIEWMATRICES };
+enum EGlUboType { UBO_MATRICES = 0, UBO_POINTLIGHTS, UBO_DIRECTIONALLIGHTS, UBO_SPOTLIGHTS, UBO_DIRECTIONALLIGHTVIEWMATRICES, UBO_BONETRANSFORMATIONS, sentinel };
+enum EGlSsboType { SSBO_VERTICES = EGlUboType::sentinel, SSBO_BONEINDICES, SSBO_BONEWEIGHTS, SSBO_AABB };
 
 struct SGlGeometryBuffers;
 struct SGlMaterialTextureUnits;
@@ -30,12 +32,18 @@ struct SGlGeometryBuffers
     GLuint EBO;
     // Vertex Array Object
     GLuint VAO;
+    // Bone transformation buffers
+    GLuint vertexPositionsSSBO;
+    GLuint boneTransformationsUBO;
+    GLuint boneIndicesSSBO;
+    GLuint boneWeightsSSBO;
+    GLuint aabbSSBO;
 };
 
 struct SGlUniformBuffers
 {
     // Uniform Buffer Objects (view & projection matrices, point lights, directional lights, spot lights, directional light view transforms)
-    GLuint UBO[CILANTRO_UBO_COUNT];
+    GLuint UBO[CILANTRO_GLOBAL_UBO_COUNT];
 };
 
 struct SGlUniformMatrixBuffer
@@ -44,6 +52,10 @@ struct SGlUniformMatrixBuffer
     GLfloat viewMatrix[16];
     // projection matrix
     GLfloat projectionMatrix[16];
+};
+
+struct SGlUniformLightViewMatrixBuffer
+{
     // directional light view matrices
     GLfloat directionalLightView[16 * CILANTRO_MAX_DIRECTIONAL_LIGHTS];
 };
@@ -118,6 +130,13 @@ struct SGlUniformSpotLightBuffer
     SGlSpotLightStruct spotLights[CILANTRO_MAX_SPOT_LIGHTS];
 };
 
+struct SGlEncodedAABB {
+    GLuint minBits[3];
+    GLuint pad1;
+    GLuint maxBits[3];
+    GLuint pad2;
+};
+
 class __CEAPI GLRenderer : public Renderer
 {
 public:
@@ -139,7 +158,9 @@ public:
     __EAPI virtual void DrawAABBGeometryBuffers (std::shared_ptr<IShaderProgram> shader) override;
     
     __EAPI virtual void Update (std::shared_ptr<MeshObject> meshObject) override;
-    __EAPI virtual void UpdateAABB (std::shared_ptr<MeshObject> meshObject) override;
+    __EAPI virtual void UpdateAABBBuffers (std::shared_ptr<MeshObject> meshObject) override;
+    __EAPI virtual AABB CalculateAABB (std::shared_ptr<MeshObject> meshObject) override;
+
     __EAPI virtual void Update (std::shared_ptr<Material> material, unsigned int textureUnit) override;
     __EAPI virtual void Update (std::shared_ptr<Material> material) override;
     
@@ -180,10 +201,13 @@ private:
     void InitializeShaderLibrary ();
     
     void InitializeMatrixUniformBuffers ();
-    void LoadViewProjectionUniformBuffers (std::shared_ptr<Camera> camera);
-    void LoadLightViewUniformBuffers ();
+    void LoadMatrixUniformBuffers (std::shared_ptr<Camera> camera);
     void DeinitializeMatrixUniformBuffers ();    
     
+    void InitializeLightViewMatrixUniformBuffers ();
+    void LoadLightViewMatrixUniformBuffers ();
+    void DeinitializeLightViewMatrixUniformBuffers ();
+
     void InitializeObjectBuffers ();
     void DeinitializeObjectBuffers ();
 
@@ -209,6 +233,7 @@ private:
 
     // data structures for uniforms
     SGlUniformMatrixBuffer* m_uniformMatrixBuffer;
+    SGlUniformLightViewMatrixBuffer* m_uniformLightViewMatrixBuffer;
     SGlUniformPointLightBuffer* m_uniformPointLightBuffer;
     SGlUniformDirectionalLightBuffer* m_uniformDirectionalLightBuffer;
     SGlUniformSpotLightBuffer* m_uniformSpotLightBuffer;

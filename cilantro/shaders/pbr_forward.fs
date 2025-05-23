@@ -5,6 +5,7 @@
 #define MAX_SPOT_LIGHTS %%CILANTRO_MAX_SPOT_LIGHTS%%
 
 const float PI = 3.14159265359;
+const int PCFPOWER = 1;
 
 /* fragment position in world space */
 in vec3 fPosition;
@@ -173,9 +174,20 @@ float CalculateDirectionalLightShadow (int directionalLightIdx)
     vec4 fragmentLightSpace = mDirectionalLightSpace[directionalLightIdx] * vec4 (fPosition, 1.0);
     vec3 depthMapCoords = vec3 (fragmentLightSpace / fragmentLightSpace.w) * 0.5 + 0.5;
     float fragmentDepth = abs (depthMapCoords.z);
-    float lightmapDepth = texture (tDirectionalShadowMap, vec3 (depthMapCoords.x, depthMapCoords.y, directionalLightIdx)).r;
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / textureSize(tDirectionalShadowMap, 0).xy;
+    
+    for(int x = -PCFPOWER; x <= PCFPOWER; ++x)
+    {
+        for(int y = -PCFPOWER; y <= PCFPOWER; ++y)
+        {
+            float pcfDepth = texture(tDirectionalShadowMap, vec3 (depthMapCoords.xy + vec2 (x, y) * texelSize, directionalLightIdx)).r; 
+            shadow += (fragmentDepth < pcfDepth || (fragmentDepth > 1.0)) ? 1.0 : 0.0;        
+        }    
+    }
+    shadow /= pow (PCFPOWER * 2 + 1, 2);
 
-    return ((lightmapDepth > fragmentDepth) || (fragmentDepth > 1.0)) ? 1.0 : 0.0;
+    return shadow;
 }
 
 /* calculate directional light radiance */

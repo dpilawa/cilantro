@@ -6,7 +6,8 @@ typedef size_t handle_t;
 // defines
 #define CILANTRO_FPS                        60.0f
 #define CILANTRO_VBO_COUNT                  7
-#define CILANTRO_UBO_COUNT                  5
+#define CILANTRO_GLOBAL_UBO_COUNT           5
+#define CILANTRO_MAX_VERTICES               65536
 #define CILANTRO_MAX_TEXTURE_UNITS          16
 #define CILANTRO_MAX_POINT_LIGHTS           32
 #define CILANTRO_MAX_DIRECTIONAL_LIGHTS     32
@@ -14,9 +15,10 @@ typedef size_t handle_t;
 #define CILANTRO_MAX_FRAMEBUFFER_TEXTURES   8
 #define CILANTRO_MAX_BONES                  128
 #define CILANTRO_MAX_BONE_INFLUENCES        4
-#define CILANTRO_SHADOW_MAP_SIZE            2048
-#define CILANTRO_SHADOW_MAP_DEPTH           24
+#define CILANTRO_SHADOW_MAP_SIZE            4096
+#define CILANTRO_SHADOW_MAP_DEPTH           32
 #define CILANTRO_MULTISAMPLE                4
+#define CILANTRO_COMPUTE_GROUP_SIZE         256
 
 // linking
 #if defined _WIN32 || defined __CYGWIN__

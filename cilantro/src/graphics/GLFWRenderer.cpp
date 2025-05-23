@@ -135,6 +135,12 @@ void GLFWRenderer::Initialize ()
         LogMessage (MSG_LOCATION) << "GL_MAX_FRAMEBUFFER_HEIGHT =" << std::to_string (data); 
     }
 
+    glGetIntegerv (GL_MAX_UNIFORM_BLOCK_SIZE, &data);
+    if (glGetError() == GL_NO_ERROR)
+    {
+        LogMessage (MSG_LOCATION) << "GL_MAX_UNIFORM_BLOCK_SIZE =" << std::to_string (data); 
+    }
+
     LogMessage (MSG_LOCATION) << "GLFWRenderer started";
 
     GLRenderer::Initialize ();

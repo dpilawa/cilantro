@@ -5,7 +5,7 @@
 
 namespace cilantro {
 
-enum class EShaderType { VERTEX_SHADER, GEOMETRY_SHADER, FRAGMENT_SHADER };
+enum class EShaderType { VERTEX_SHADER, GEOMETRY_SHADER, FRAGMENT_SHADER, COMPUTE_SHADER };
 
 struct IShader 
 {

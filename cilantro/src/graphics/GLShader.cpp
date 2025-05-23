@@ -21,6 +21,9 @@ GLShader::GLShader (const std::string& path, EShaderType shaderType) : Shader (p
         case EShaderType::FRAGMENT_SHADER:
             m_glShaderId = glCreateShader (GL_FRAGMENT_SHADER);
             break;
+        case EShaderType::COMPUTE_SHADER:
+            m_glShaderId = glCreateShader (GL_COMPUTE_SHADER);
+            break;
     }
 
     Compile ();

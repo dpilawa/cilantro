@@ -19,6 +19,7 @@ class PointLight;
 class DirectionalLight;
 class SpotLight;
 class Camera;
+class AABB;
 
 class Vector4f;
 
@@ -73,7 +74,8 @@ struct IRenderer
     virtual void DrawAABBGeometryBuffers (std::shared_ptr<IShaderProgram> shader) = 0;
 
     virtual void Update (std::shared_ptr<MeshObject> meshObject) = 0;
-    virtual void UpdateAABB (std::shared_ptr<MeshObject> meshObject) = 0;
+    virtual void UpdateAABBBuffers (std::shared_ptr<MeshObject> meshObject) = 0;
+    virtual AABB CalculateAABB (std::shared_ptr<MeshObject> meshObject) = 0;
     virtual void Update (std::shared_ptr<Material>, unsigned int textureUnit) = 0;
     virtual void Update (std::shared_ptr<Material> material) = 0;
     

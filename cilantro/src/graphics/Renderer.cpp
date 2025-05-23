@@ -179,6 +179,40 @@ void Renderer::RenderFrame ()
     m_totalFrameRenderTime += GetGameScene ()->GetTimer ()->GetFrameRenderTime ();
 }
 
+AABB Renderer::CalculateAABB (std::shared_ptr<MeshObject> meshObject)
+{
+    AABB aabb;
+
+    // calculate in CPU
+
+    auto mesh = meshObject->GetMesh ();
+    float* data = mesh->GetVerticesData ();
+    Matrix4f worldTransform = meshObject->GetWorldTransformMatrix ();
+
+    // apply bone transformations
+    auto boneTransformations = meshObject->GetBoneTransformationsMatrixArray ();
+    for (size_t v = 0; v < mesh->GetVertexCount (); v++)
+    {
+        Vector3f modelVertex (data[v * 3], data[v * 3 + 1], data[v * 3 + 2]);
+        Vector4f worldVertex = worldTransform * Vector4f (modelVertex, 1.0f);
+        Vector4f transformedVertex = Vector4f (0.0f, 0.0f, 0.0f, 0.0f);
+        bool transformed = false;
+
+        for (size_t i = 0; i < mesh->GetBoneInfluenceCounts ()[v]; i++)
+        {
+            size_t boneIndex = mesh->GetBoneIndicesData ()[v * CILANTRO_MAX_BONE_INFLUENCES + i];
+            float boneWeight = mesh->GetBoneWeightsData ()[v * CILANTRO_MAX_BONE_INFLUENCES + i];
+            
+            transformedVertex += boneWeight * Matrix4f (boneTransformations + boneIndex * 16) * worldVertex;
+            transformed = true;
+        }
+
+        transformed ? aabb.AddVertex (transformedVertex) : aabb.AddVertex (worldVertex);
+    }
+
+    return aabb;
+}
+
 void Renderer::InitializeRenderStages ()
 {
     if (m_isShadowMapping == true)

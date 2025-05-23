@@ -7,7 +7,7 @@ layout (location = 1) in vec3 vNormal;
 layout (location = 2) in vec2 vUV;
 layout (location = 3) in vec3 vTangent;
 layout (location = 4) in vec3 vBitangent;
-layout (location = 5) in ivec4 vBoneIndices;
+layout (location = 5) in uvec4 vBoneIndices;
 layout (location = 6) in vec4 vBoneWeights;
 #else
 in vec3 vPosition;
@@ -15,7 +15,7 @@ in vec3 vNormal;
 in vec2 vUV;
 in vec3 vTangent;
 in vec3 vBitangent;
-in ivec4 vBoneIndices;
+in uvec4 vBoneIndices;
 in vec4 vBoneWeights;
 #endif
 
@@ -23,14 +23,16 @@ in vec4 vBoneWeights;
 uniform mat4 mModel;
 uniform mat3 mNormal;
 
-/* array of bone transformation matrices */
-uniform mat4 mBoneTransformations[%%CILANTRO_MAX_BONES%%];
-
 /* view and projection matrices */
 layout (std140) uniform UniformMatricesBlock
 {
     mat4 mView;
     mat4 mProjection;
+};
+
+/* array of bone transformation matrices */
+layout (std140) uniform UniformBoneTransformationsBlock {
+    mat4 mBoneTransformations[%%CILANTRO_MAX_BONES%%];
 };
 
 /* output variables */

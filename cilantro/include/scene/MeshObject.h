@@ -36,7 +36,7 @@ public:
     __EAPI std::shared_ptr<MeshObject> AddInfluencingBoneObject (std::shared_ptr<BoneObject> boneObject);
 
     // generate array of bone transformations to be loaded to shader
-    __EAPI float* GetBoneTransformationsMatrixArray ();
+    __EAPI float* GetBoneTransformationsMatrixArray (bool transpose = false);
 
     // invoked by game loop on each frame or on update (e.g. transform)
     __EAPI virtual void OnFrame () override;

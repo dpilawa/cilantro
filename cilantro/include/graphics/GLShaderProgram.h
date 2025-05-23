@@ -31,6 +31,7 @@ public:
     __EAPI virtual IShaderProgram& SetUniformMatrix4fv (const std::string& uniformName, const float* uniformValue, size_t count) override;    
 
     __EAPI void Use () const override;
+    __EAPI void Compute (unsigned int groupsX, unsigned int groupsY, unsigned int groupsZ) const override;
 
     ///////////////////////////////////////////////////////////////////////////
 
@@ -39,7 +40,8 @@ public:
     GLuint GetUniformLocationId (const std::string& uniformName) const;
 
     // bind uniform block
-    void BindUniformBlock (const std::string& blockName, EBindingPoint bp);
+    void BindUniformBlock (const std::string& blockName, EShaderBindingPoint bp);
+    void BindShaderStorageBlock (const std::string& blockName, EShaderBindingPoint bp);
 
 private:
     // ID of a shader program

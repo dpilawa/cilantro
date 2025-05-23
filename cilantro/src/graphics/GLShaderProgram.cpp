@@ -154,6 +154,12 @@ void GLShaderProgram::Use () const
     glUseProgram (m_glShaderProgramId);
 }
 
+void GLShaderProgram::Compute (unsigned int groupsX, unsigned int groupsY, unsigned int groupsZ) const
+{
+    glDispatchCompute (groupsX, groupsY, groupsZ);
+    glMemoryBarrier (GL_SHADER_STORAGE_BARRIER_BIT);
+}
+
 GLuint GLShaderProgram::GetProgramId () const
 {
     return m_glShaderProgramId;
@@ -166,26 +172,64 @@ GLuint GLShaderProgram::GetUniformLocationId (const std::string& uniformName) co
 
     if (paramUniformLocation == GL_INVALID_INDEX)
     {
-        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Uniform" << uniformName << "not found in stage shader" << this->GetName ();
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Uniform" << uniformName << "not found in shader program" << this->GetName ();
     }
 
     return paramUniformLocation;
 }
 
-void GLShaderProgram::BindUniformBlock (const std::string& blockName, EBindingPoint bp)
+void GLShaderProgram::BindUniformBlock (const std::string& blockName, EShaderBindingPoint bp)
 {
     GLuint uniformBlockIndex = glGetUniformBlockIndex (m_glShaderProgramId, blockName.c_str ());
+    GLint actualBinding = -1;
 
     if (uniformBlockIndex != GL_INVALID_INDEX)
     {
-        glUniformBlockBinding (m_glShaderProgramId, uniformBlockIndex, bp);
+        glUniformBlockBinding (m_glShaderProgramId, uniformBlockIndex, static_cast<int>(bp));
+        glGetActiveUniformBlockiv(m_glShaderProgramId, uniformBlockIndex, GL_UNIFORM_BLOCK_BINDING, &actualBinding);
+        if (actualBinding != static_cast<int>(bp))
+        {
+            LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to bind uniform block" << blockName << "to binding point" << static_cast<int>(bp);
+        }
     }	
     else
     {
-        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Uniform block" << blockName << "not found in stage shader" << this->GetName ();
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Uniform block" << blockName << "not found in shader program" << this->GetName ();
     }
     
 }
+
+void GLShaderProgram::BindShaderStorageBlock(const std::string& blockName, EShaderBindingPoint bp)
+{
+#if (CILANTRO_GL_VERSION >= 430)    
+    GLuint blockIndex = glGetProgramResourceIndex(m_glShaderProgramId, GL_SHADER_STORAGE_BLOCK, blockName.c_str());
+    GLint actualBinding = -1;
+
+    if (blockIndex != GL_INVALID_INDEX)
+    {
+        glShaderStorageBlockBinding(m_glShaderProgramId, blockIndex, static_cast<GLuint>(bp));
+
+        GLenum props[] = { GL_BUFFER_BINDING };
+        GLint values[1];
+        glGetProgramResourceiv(m_glShaderProgramId, GL_SHADER_STORAGE_BLOCK, blockIndex, 1, props, 1, nullptr, values);
+        actualBinding = values[0];
+
+        if (actualBinding != static_cast<GLint>(bp))
+        {
+            LogMessage(MSG_LOCATION, EXIT_FAILURE)
+                << "Unable to bind SSBO block \"" << blockName << "\" to binding point " << static_cast<int>(bp);
+        }
+    }
+    else
+    {
+        LogMessage(MSG_LOCATION, EXIT_FAILURE)
+            << "SSBO block \"" << blockName << "\" not found in shader program \"" << this->GetName() << "\"";
+    }
+#else
+    LogMessage(MSG_LOCATION, EXIT_FAILURE) << "SSBO binding not supported in OpenGL version < 4.3";
+#endif
+}
+
 
 } // namespace cilantro
 

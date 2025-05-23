@@ -15,7 +15,9 @@ in vec4 vBoneWeights;
 uniform mat4 mModel;
 
 /* array of bone transformation matrices */
-uniform mat4 mBoneTransformations[%%CILANTRO_MAX_BONES%%];
+layout (std140) uniform UniformBoneTransformationsBlock {
+    mat4 mBoneTransformations[%%CILANTRO_MAX_BONES%%];
+};
 
 void main()
 {

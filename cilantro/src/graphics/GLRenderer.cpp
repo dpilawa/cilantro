@@ -21,6 +21,7 @@
 #include <cmath>
 #include <cstring>
 #include <array>
+#include <bit>
 
 namespace cilantro {
 
@@ -30,6 +31,7 @@ GLRenderer::GLRenderer (std::shared_ptr<GameScene> gameScene, unsigned int width
     m_surfaceGeometryBuffer = new SGlGeometryBuffers ();
     m_uniformBuffers = new SGlUniformBuffers ();
     m_uniformMatrixBuffer = new SGlUniformMatrixBuffer ();
+    m_uniformLightViewMatrixBuffer = new SGlUniformLightViewMatrixBuffer ();
     m_uniformPointLightBuffer = new SGlUniformPointLightBuffer ();
     m_uniformDirectionalLightBuffer = new SGlUniformDirectionalLightBuffer ();
     m_uniformSpotLightBuffer = new SGlUniformSpotLightBuffer ();
@@ -45,6 +47,7 @@ GLRenderer::~GLRenderer ()
     delete m_surfaceGeometryBuffer;
     delete m_uniformBuffers;
     delete m_uniformMatrixBuffer;
+    delete m_uniformLightViewMatrixBuffer;
     delete m_uniformPointLightBuffer;
     delete m_uniformDirectionalLightBuffer;
     delete m_uniformSpotLightBuffer;
@@ -58,6 +61,7 @@ void GLRenderer::Initialize ()
     InitializeQuadGeometryBuffer ();
     InitializeObjectBuffers ();
     InitializeMatrixUniformBuffers ();
+    InitializeLightViewMatrixUniformBuffers ();
     InitializeLightUniformBuffers ();
 
     // set callback for new MeshObjects
@@ -65,7 +69,7 @@ void GLRenderer::Initialize ()
         [&](const std::shared_ptr<MeshObjectUpdateMessage>& message) 
         { 
             Update (GetGameScene ()->GetGameObjectManager ()->GetByHandle<MeshObject> (message->GetHandle ()));
-            UpdateAABB (GetGameScene ()->GetGameObjectManager ()->GetByHandle<MeshObject> (message->GetHandle ()));
+            UpdateAABBBuffers (GetGameScene ()->GetGameObjectManager ()->GetByHandle<MeshObject> (message->GetHandle ()));
         }
     );
 
@@ -116,6 +120,7 @@ void GLRenderer::Deinitialize ()
     DeinitializeQuadGeometryBuffer ();
     DeinitializeObjectBuffers ();
     DeinitializeMatrixUniformBuffers ();
+    DeinitializeLightViewMatrixUniformBuffers ();
     DeinitializeLightUniformBuffers ();
 }
 
@@ -136,7 +141,7 @@ void GLRenderer::RenderFrame ()
         // AABBs
         if (std::dynamic_pointer_cast<MeshObject> (GetGameScene ()->GetGameObjectManager ()->GetByHandle<GameObject> (handle)) != nullptr)
         {
-            UpdateAABB (GetGameScene ()->GetGameObjectManager ()->GetByHandle<MeshObject> (handle));
+            UpdateAABBBuffers (GetGameScene ()->GetGameObjectManager ()->GetByHandle<MeshObject> (handle));
         }
     }
 
@@ -145,6 +150,7 @@ void GLRenderer::RenderFrame ()
 
 void GLRenderer::Draw (std::shared_ptr<MeshObject> meshObject)
 {
+    SGlGeometryBuffers* b = m_sceneGeometryBuffers[meshObject->GetHandle ()];
     GLuint shaderProgramId;
 
     auto objM = meshObject->GetMaterial ();
@@ -220,9 +226,6 @@ void GLRenderer::Draw (std::shared_ptr<MeshObject> meshObject)
         geometryShaderProgram->SetUniformVector3f ("eyePosition", GetGameScene ()->GetActiveCamera ()->GetPosition ());
     }
 
-    // set bone transformation matrix array uniform
-    geometryShaderProgram->SetUniformMatrix4fv ("mBoneTransformations", meshObject->GetBoneTransformationsMatrixArray (), CILANTRO_MAX_BONES);
-
     // get shader program for rendered meshobject (lighting pass)
     if (m_isDeferredRendering)
     {
@@ -234,9 +237,13 @@ void GLRenderer::Draw (std::shared_ptr<MeshObject> meshObject)
         lightingShaderProgram->SetUniformVector3f ("eyePosition", GetGameScene ()->GetActiveCamera ()->GetPosition ());
 
     }
-    
+
+    // load bone transformation matrix array to buffer
+    glBindBuffer (GL_UNIFORM_BUFFER, b->boneTransformationsUBO);
+    glBufferData (GL_UNIFORM_BUFFER, CILANTRO_MAX_BONES * sizeof (GLfloat) * 16, meshObject->GetBoneTransformationsMatrixArray (true), GL_DYNAMIC_DRAW);
+    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUboType::UBO_BONETRANSFORMATIONS), b->boneTransformationsUBO);
+
     // draw mesh
-    SGlGeometryBuffers* b = m_sceneGeometryBuffers[meshObject->GetHandle ()];
     geometryShaderProgram->Use ();
     RenderGeometryBuffer (b, GL_TRIANGLES);
 }
@@ -257,8 +264,10 @@ void GLRenderer::DrawSceneGeometryBuffers (std::shared_ptr<IShaderProgram> shade
         // load model matrix to currently bound shader
         shader->SetUniformMatrix4f ("mModel", m->GetWorldTransformMatrix ());
 
-        // set bone transformation matrix array uniform
-        shader->SetUniformMatrix4fv ("mBoneTransformations", m->GetBoneTransformationsMatrixArray (), CILANTRO_MAX_BONES);
+        // load bone transformation matrix array to buffer
+        glBindBuffer (GL_UNIFORM_BUFFER, m_sceneGeometryBuffers[m->GetHandle ()]->boneTransformationsUBO);
+        glBufferData (GL_UNIFORM_BUFFER, CILANTRO_MAX_BONES * sizeof (float) * 16, m->GetBoneTransformationsMatrixArray (true), GL_DYNAMIC_DRAW);
+        glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUboType::UBO_BONETRANSFORMATIONS), m_sceneGeometryBuffers[m->GetHandle ()]->boneTransformationsUBO);
 
         // draw
         RenderGeometryBuffer (geometryBuffer.second, GL_TRIANGLES);
@@ -334,6 +343,40 @@ void GLRenderer::Update (std::shared_ptr<MeshObject> meshObject)
         // location = 6 (bone weights)
         glVertexAttribPointer (EGlVboType::VBO_BONEWEIGHTS, CILANTRO_MAX_BONE_INFLUENCES, GL_FLOAT, GL_FALSE, CILANTRO_MAX_BONE_INFLUENCES * sizeof (int), (GLvoid*)0);
 
+        // generate bone transformation matrix array uniform buffer
+        glGenBuffers (1, &b->boneTransformationsUBO);
+        glBindBuffer (GL_UNIFORM_BUFFER, b->boneTransformationsUBO);
+        glBufferData (GL_UNIFORM_BUFFER, CILANTRO_MAX_BONES * sizeof (GLfloat) * 16, NULL, GL_DYNAMIC_DRAW);
+        glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUboType::UBO_BONETRANSFORMATIONS), b->boneTransformationsUBO);
+
+#if (CILANTRO_GL_VERSION >= 430)
+
+        // generate vertex positions array SSBO buffer
+        glGenBuffers (1, &b->vertexPositionsSSBO);
+        glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->vertexPositionsSSBO);
+        glBufferData (GL_SHADER_STORAGE_BUFFER, CILANTRO_MAX_VERTICES * sizeof (GLfloat) * 3, NULL, GL_DYNAMIC_DRAW);
+        glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSsboType::SSBO_VERTICES), b->vertexPositionsSSBO);
+
+        // generate bone indices array SSBO buffer
+        glGenBuffers (1, &b->boneIndicesSSBO);
+        glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->boneIndicesSSBO);
+        glBufferData (GL_SHADER_STORAGE_BUFFER, CILANTRO_MAX_VERTICES * sizeof (GLuint) * CILANTRO_MAX_BONE_INFLUENCES, NULL, GL_DYNAMIC_DRAW);
+        glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSsboType::SSBO_BONEINDICES), b->boneIndicesSSBO);
+
+        // generate bone weights array SSBO buffer
+        glGenBuffers (1, &b->boneWeightsSSBO);
+        glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->boneWeightsSSBO);
+        glBufferData (GL_SHADER_STORAGE_BUFFER, CILANTRO_MAX_VERTICES * sizeof (GLfloat) * CILANTRO_MAX_BONE_INFLUENCES, NULL, GL_DYNAMIC_DRAW);
+        glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSsboType::SSBO_BONEWEIGHTS), b->boneWeightsSSBO);
+
+        // generate AABB result SSBO buffer
+        glGenBuffers (1, &b->aabbSSBO);
+        glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->aabbSSBO);
+        glBufferData (GL_SHADER_STORAGE_BUFFER, sizeof (SGlEncodedAABB), NULL, GL_DYNAMIC_DRAW);
+        glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSsboType::SSBO_AABB), b->aabbSSBO);
+
+#endif
+
         // generate index buffer
         glGenBuffers (1, &b->EBO);
         glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, b->EBO);
@@ -396,7 +439,7 @@ void GLRenderer::Update (std::shared_ptr<MeshObject> meshObject)
 
 }
 
-void GLRenderer::UpdateAABB (std::shared_ptr<MeshObject> meshObject)
+void GLRenderer::UpdateAABBBuffers (std::shared_ptr<MeshObject> meshObject)
 {
     handle_t objectHandle = meshObject->GetHandle ();
 
@@ -449,6 +492,86 @@ void GLRenderer::UpdateAABB (std::shared_ptr<MeshObject> meshObject)
     // unbind VAO - wireframes
     glBindVertexArray (0);
 
+}
+
+AABB GLRenderer::CalculateAABB (std::shared_ptr<MeshObject> meshObject)
+{
+#if (CILANTRO_GL_VERSION >= 430)
+
+    // calculate in GPU
+
+    AABB aabb;
+    SGlEncodedAABB aabbGPU;
+    SGlGeometryBuffers* b = m_sceneGeometryBuffers[meshObject->GetHandle ()];
+
+    // get compute shader
+    auto computeShader = m_shaderProgramManager->GetByName<GLShaderProgram> ("aabb_compute_shader");
+    computeShader->Use ();
+    
+    // get world matrix for drawn objects and set uniform value
+    computeShader->SetUniformMatrix4f ("mModel", meshObject->GetWorldTransformMatrix ());
+
+    // load bone transformation matrix array to buffer
+    glBindBuffer (GL_UNIFORM_BUFFER, b->boneTransformationsUBO);
+    glBufferData (GL_UNIFORM_BUFFER, CILANTRO_MAX_BONES * sizeof (GLfloat) * 16, meshObject->GetBoneTransformationsMatrixArray (true), GL_DYNAMIC_DRAW);
+    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUboType::UBO_BONETRANSFORMATIONS), b->boneTransformationsUBO);
+
+    // load vertex positions array buffer (SSBO)
+    glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->vertexPositionsSSBO);
+    glBufferData (GL_SHADER_STORAGE_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (GLfloat) * 3, meshObject->GetMesh ()->GetVerticesData (), GL_DYNAMIC_DRAW);
+    glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSsboType::SSBO_VERTICES), b->vertexPositionsSSBO);
+
+    // load bone indices array buffer (SSBO)
+    glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->boneIndicesSSBO);
+    glBufferData (GL_SHADER_STORAGE_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (GLuint) * CILANTRO_MAX_BONE_INFLUENCES, meshObject->GetMesh ()->GetBoneIndicesData (), GL_DYNAMIC_DRAW);
+    glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSsboType::SSBO_BONEINDICES), b->boneIndicesSSBO);
+
+    // load bone weights array buffer (SSBO)
+    glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->boneWeightsSSBO);
+    glBufferData (GL_SHADER_STORAGE_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (GLfloat) * CILANTRO_MAX_BONE_INFLUENCES, meshObject->GetMesh ()->GetBoneWeightsData (), GL_DYNAMIC_DRAW);
+    glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSsboType::SSBO_BONEWEIGHTS), b->boneWeightsSSBO);
+
+    // initialize AABB extreme values
+    aabbGPU.minBits[0] = 0xFFFFFFFF;
+    aabbGPU.minBits[1] = 0xFFFFFFFF;
+    aabbGPU.minBits[2] = 0xFFFFFFFF;
+    aabbGPU.pad1 = 0x00000000;
+    aabbGPU.maxBits[0] = 0x00000000;
+    aabbGPU.maxBits[1] = 0x00000000;
+    aabbGPU.maxBits[2] = 0x00000000;
+    aabbGPU.pad2 = 0x00000000;
+    glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->aabbSSBO);
+    glBufferData (GL_SHADER_STORAGE_BUFFER, sizeof (SGlEncodedAABB), &aabbGPU, GL_DYNAMIC_DRAW);
+    glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSsboType::SSBO_AABB), b->aabbSSBO);
+
+    // dispatch compute shader
+    GLuint groupSize = (static_cast<GLuint>(meshObject->GetMesh ()->GetVertexCount ()) + CILANTRO_COMPUTE_GROUP_SIZE - 1) / CILANTRO_COMPUTE_GROUP_SIZE;
+    computeShader->Compute (groupSize, 1, 1);
+
+    // read back AABB from compute shader
+    glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->aabbSSBO);
+    glGetBufferSubData (GL_SHADER_STORAGE_BUFFER, 0, sizeof (SGlEncodedAABB), &aabbGPU);
+    
+    // redo the bit flip for the float representation
+    auto toFloat = [](std::uint32_t u) -> float {
+        std::uint32_t bits = (u & 0x80000000u)
+            ? (u & 0x7FFFFFFFu)
+            : ~u;
+        return std::bit_cast<float>(bits);
+    };
+
+    // create the AABB object
+    aabb.AddVertex (Vector3f (toFloat (aabbGPU.minBits[0]), toFloat (aabbGPU.minBits[1]), toFloat (aabbGPU.minBits[2])));
+    aabb.AddVertex (Vector3f (toFloat (aabbGPU.maxBits[0]), toFloat (aabbGPU.maxBits[1]), toFloat (aabbGPU.maxBits[2])));
+
+    return aabb;
+
+#else
+
+    // fall back to CPU calculation
+    return Renderer::CalculateAABB (meshObject);
+
+#endif
 }
 
 void GLRenderer::Update (std::shared_ptr<Material> material, unsigned int textureUnit)
@@ -658,8 +781,9 @@ void GLRenderer::Update (std::shared_ptr<DirectionalLight> directionalLight)
     shadowmapShader->Compile ();
 
     auto shadowmapShaderProg = GetShaderProgramManager ()->GetByName<GLShaderProgram> ("shadowmap_directional_shader");
-    shadowmapShaderProg->Link ();    
-    shadowmapShaderProg->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL);
+    shadowmapShaderProg->Link ();
+    shadowmapShaderProg->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EShaderBindingPoint::BP_DIRECTIONALLIGHTVIEWMATRICES);
+    shadowmapShaderProg->BindUniformBlock ("UniformBoneTransformationsBlock", EShaderBindingPoint::BP_BONETRANSFORMATIONS);
 
     // copy direction
     Vector3f lightDirection = directionalLight->GetForward ();
@@ -746,12 +870,12 @@ void GLRenderer::Update (std::shared_ptr<SpotLight> spotLight)
 
 void GLRenderer::UpdateCameraBuffers (std::shared_ptr<Camera> camera)
 {
-    LoadViewProjectionUniformBuffers (camera);
+    LoadMatrixUniformBuffers (camera);
 }
 
 void GLRenderer::UpdateLightViewBuffers ()
 {
-    LoadLightViewUniformBuffers ();
+    LoadLightViewMatrixUniformBuffers ();
 }
 
 size_t GLRenderer::GetPointLightCount () const
@@ -989,6 +1113,9 @@ void GLRenderer::InitializeShaderLibrary ()
     GetGameScene ()->GetGame ()->GetResourceManager ()->Load<GLShader> ("shadowmap_fragment_shader", "shaders/shadowmap.fs", EShaderType::FRAGMENT_SHADER);
     GetGameScene ()->GetGame ()->GetResourceManager ()->Load<GLShader> ("aabb_vertex_shader", "shaders/aabb.vs", EShaderType::VERTEX_SHADER);
     GetGameScene ()->GetGame ()->GetResourceManager ()->Load<GLShader> ("aabb_fragment_shader", "shaders/aabb.fs", EShaderType::FRAGMENT_SHADER);
+#if (CILANTRO_GL_VERSION >= 430)    
+    GetGameScene ()->GetGame ()->GetResourceManager ()->Load<GLShader> ("aabb_compute_shader", "shaders/aabb.cs", EShaderType::COMPUTE_SHADER);
+#endif
 
     // PBR model (forward)
     p = Create<GLShaderProgram> ("pbr_forward_shader");
@@ -1011,11 +1138,12 @@ void GLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tAO"), 4);
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 5);
 #endif
-    p->BindUniformBlock ("UniformMatricesBlock", EBindingPoint::BP_MATRICES);
-    p->BindUniformBlock ("UniformPointLightsBlock", EBindingPoint::BP_POINTLIGHTS);
-    p->BindUniformBlock ("UniformDirectionalLightsBlock", EBindingPoint::BP_DIRECTIONALLIGHTS);
-    p->BindUniformBlock ("UniformSpotLightsBlock", EBindingPoint::BP_SPOTLIGHTS);
-    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL);
+    p->BindUniformBlock ("UniformMatricesBlock", EShaderBindingPoint::BP_MATRICES);
+    p->BindUniformBlock ("UniformPointLightsBlock", EShaderBindingPoint::BP_POINTLIGHTS);
+    p->BindUniformBlock ("UniformDirectionalLightsBlock", EShaderBindingPoint::BP_DIRECTIONALLIGHTS);
+    p->BindUniformBlock ("UniformSpotLightsBlock", EShaderBindingPoint::BP_SPOTLIGHTS);
+    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EShaderBindingPoint::BP_DIRECTIONALLIGHTVIEWMATRICES);
+    p->BindUniformBlock ("UniformBoneTransformationsBlock", EShaderBindingPoint::BP_BONETRANSFORMATIONS);
     CheckGLError (MSG_LOCATION);
 
     // PBR model (deferred, geometry pass)
@@ -1038,7 +1166,8 @@ void GLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tRoughness"), 3);
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tAO"), 4);
 #endif
-    p->BindUniformBlock ("UniformMatricesBlock", EBindingPoint::BP_MATRICES);
+    p->BindUniformBlock ("UniformMatricesBlock", EShaderBindingPoint::BP_MATRICES);
+    p->BindUniformBlock ("UniformBoneTransformationsBlock", EShaderBindingPoint::BP_BONETRANSFORMATIONS);
     CheckGLError (MSG_LOCATION);
 
     // PBR model (deferred, lighting pass)
@@ -1059,10 +1188,10 @@ void GLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tUnused"), 4);
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 5);
 #endif
-    p->BindUniformBlock ("UniformPointLightsBlock", EBindingPoint::BP_POINTLIGHTS);
-    p->BindUniformBlock ("UniformDirectionalLightsBlock", EBindingPoint::BP_DIRECTIONALLIGHTS);
-    p->BindUniformBlock ("UniformSpotLightsBlock", EBindingPoint::BP_SPOTLIGHTS);
-    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL);  
+    p->BindUniformBlock ("UniformPointLightsBlock", EShaderBindingPoint::BP_POINTLIGHTS);
+    p->BindUniformBlock ("UniformDirectionalLightsBlock", EShaderBindingPoint::BP_DIRECTIONALLIGHTS);
+    p->BindUniformBlock ("UniformSpotLightsBlock", EShaderBindingPoint::BP_SPOTLIGHTS);
+    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EShaderBindingPoint::BP_DIRECTIONALLIGHTVIEWMATRICES);  
     CheckGLError (MSG_LOCATION);
 
     // Blinn-Phong model (forward)
@@ -1085,11 +1214,12 @@ void GLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tEmissive"), 3);
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 4);
 #endif
-    p->BindUniformBlock ("UniformMatricesBlock", EBindingPoint::BP_MATRICES);
-    p->BindUniformBlock ("UniformPointLightsBlock", EBindingPoint::BP_POINTLIGHTS);
-    p->BindUniformBlock ("UniformDirectionalLightsBlock", EBindingPoint::BP_DIRECTIONALLIGHTS);
-    p->BindUniformBlock ("UniformSpotLightsBlock", EBindingPoint::BP_SPOTLIGHTS); 
-    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL);
+    p->BindUniformBlock ("UniformMatricesBlock", EShaderBindingPoint::BP_MATRICES);
+    p->BindUniformBlock ("UniformPointLightsBlock", EShaderBindingPoint::BP_POINTLIGHTS);
+    p->BindUniformBlock ("UniformDirectionalLightsBlock", EShaderBindingPoint::BP_DIRECTIONALLIGHTS);
+    p->BindUniformBlock ("UniformSpotLightsBlock", EShaderBindingPoint::BP_SPOTLIGHTS); 
+    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EShaderBindingPoint::BP_DIRECTIONALLIGHTVIEWMATRICES);
+    p->BindUniformBlock ("UniformBoneTransformationsBlock", EShaderBindingPoint::BP_BONETRANSFORMATIONS);
     CheckGLError (MSG_LOCATION);
     
     // Blinn-Phong model (deferred, geometry pass)
@@ -1111,7 +1241,8 @@ void GLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tSpecular"), 2);
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tEmissive"), 3);
 #endif    
-    p->BindUniformBlock ("UniformMatricesBlock", EBindingPoint::BP_MATRICES);
+    p->BindUniformBlock ("UniformMatricesBlock", EShaderBindingPoint::BP_MATRICES);
+    p->BindUniformBlock ("UniformBoneTransformationsBlock", EShaderBindingPoint::BP_BONETRANSFORMATIONS);
     CheckGLError (MSG_LOCATION);
 
     // Blinn-Phong model (deferred, lighting pass)
@@ -1132,10 +1263,10 @@ void GLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tSpecular"), 4);
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 5);
 #endif
-    p->BindUniformBlock ("UniformPointLightsBlock", EBindingPoint::BP_POINTLIGHTS);
-    p->BindUniformBlock ("UniformDirectionalLightsBlock", EBindingPoint::BP_DIRECTIONALLIGHTS);
-    p->BindUniformBlock ("UniformSpotLightsBlock", EBindingPoint::BP_SPOTLIGHTS);   
-    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL); 
+    p->BindUniformBlock ("UniformPointLightsBlock", EShaderBindingPoint::BP_POINTLIGHTS);
+    p->BindUniformBlock ("UniformDirectionalLightsBlock", EShaderBindingPoint::BP_DIRECTIONALLIGHTS);
+    p->BindUniformBlock ("UniformSpotLightsBlock", EShaderBindingPoint::BP_SPOTLIGHTS);   
+    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EShaderBindingPoint::BP_DIRECTIONALLIGHTVIEWMATRICES); 
     CheckGLError (MSG_LOCATION);
 
     // Screen quad rendering
@@ -1210,7 +1341,8 @@ void GLRenderer::InitializeShaderLibrary ()
 #endif
 #if (CILANTRO_GL_VERSION < 420)
 #endif
-    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL);
+    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EShaderBindingPoint::BP_DIRECTIONALLIGHTVIEWMATRICES);
+    p->BindUniformBlock ("UniformBoneTransformationsBlock", EShaderBindingPoint::BP_BONETRANSFORMATIONS);
     CheckGLError (MSG_LOCATION);
 
     // AABB rendering
@@ -1222,8 +1354,22 @@ void GLRenderer::InitializeShaderLibrary ()
 #if (CILANTRO_GL_VERSION < 330)
     glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
 #endif
-    p->BindUniformBlock ("UniformMatricesBlock", EBindingPoint::BP_MATRICES);
+    p->BindUniformBlock ("UniformMatricesBlock", EShaderBindingPoint::BP_MATRICES);
     CheckGLError (MSG_LOCATION);
+
+#if (CILANTRO_GL_VERSION >= 430)    
+    // AABB compute shader
+    p = Create<GLShaderProgram> ("aabb_compute_shader");
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("aabb_compute_shader"));
+    p->Link ();
+    p->Use ();
+    p->BindUniformBlock ("UniformBoneTransformationsBlock", EShaderBindingPoint::BP_BONETRANSFORMATIONS);
+    p->BindShaderStorageBlock ("VertexBufferBlock", EShaderBindingPoint::BP_VERTICES);  
+    p->BindShaderStorageBlock ("BoneIndicesBufferBlock", EShaderBindingPoint::BP_BONEINDICES);
+    p->BindShaderStorageBlock ("BoneWeightsBufferBlock", EShaderBindingPoint::BP_BONEWEIGHTS);
+    p->BindShaderStorageBlock ("AABBBufferBlock", EShaderBindingPoint::BP_AABB);
+    CheckGLError (MSG_LOCATION);
+#endif
 
 }
 
@@ -1233,18 +1379,12 @@ void GLRenderer::InitializeMatrixUniformBuffers ()
     glGenBuffers (1, &m_uniformBuffers->UBO[UBO_MATRICES]);
     glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_MATRICES]);
     glBufferData (GL_UNIFORM_BUFFER, sizeof (SGlUniformMatrixBuffer), NULL, GL_DYNAMIC_DRAW);
-    glBindBufferBase (GL_UNIFORM_BUFFER, EBindingPoint::BP_MATRICES, m_uniformBuffers->UBO[UBO_MATRICES]);
-
-    // create unform buffers for light view transforms
-    glGenBuffers (1, &m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTVIEWMATRICES]);
-    glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTVIEWMATRICES]);
-    glBufferData (GL_UNIFORM_BUFFER, 16 * sizeof (GLfloat) * CILANTRO_MAX_DIRECTIONAL_LIGHTS, NULL, GL_DYNAMIC_DRAW);
-    glBindBufferBase (GL_UNIFORM_BUFFER, EBindingPoint::BP_LIGHTVIEW_DIRECTIONAL, m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTVIEWMATRICES]);
+    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUboType::UBO_MATRICES), m_uniformBuffers->UBO[UBO_MATRICES]);
 
     CheckGLError (MSG_LOCATION);
 }
 
-void GLRenderer::LoadViewProjectionUniformBuffers (std::shared_ptr<Camera> camera)
+void GLRenderer::LoadMatrixUniformBuffers (std::shared_ptr<Camera> camera)
 {
     Matrix4f view = camera->GetViewMatrix ();
     Matrix4f projection = camera->GetProjectionMatrix (m_width, m_height);
@@ -1262,7 +1402,23 @@ void GLRenderer::LoadViewProjectionUniformBuffers (std::shared_ptr<Camera> camer
     glBindBuffer (GL_UNIFORM_BUFFER, 0);
 }
 
-void GLRenderer::LoadLightViewUniformBuffers ()
+void GLRenderer::DeinitializeMatrixUniformBuffers ()
+{
+    glDeleteBuffers (1, &m_uniformBuffers->UBO[UBO_MATRICES]);
+}
+
+void GLRenderer::InitializeLightViewMatrixUniformBuffers ()
+{
+    // create unform buffers for light view transforms
+    glGenBuffers (1, &m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTVIEWMATRICES]);
+    glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTVIEWMATRICES]);
+    glBufferData (GL_UNIFORM_BUFFER, 16 * sizeof (GLfloat) * CILANTRO_MAX_DIRECTIONAL_LIGHTS, NULL, GL_DYNAMIC_DRAW);
+    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUboType::UBO_DIRECTIONALLIGHTVIEWMATRICES), m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTVIEWMATRICES]);
+
+    CheckGLError (MSG_LOCATION);
+}
+
+void GLRenderer::LoadLightViewMatrixUniformBuffers ()
 {
     auto frustumVertices = GetGameScene ()->GetActiveCamera ()->GetFrustumVertices (m_width, m_height);
     AABB sceneAABB = GetGameScene ()->GetGameObjectManager ()->GetByName<GameObject> ("root")->GetHierarchyAABB ();
@@ -1274,19 +1430,18 @@ void GLRenderer::LoadLightViewUniformBuffers ()
         Matrix4f lightViewProjection = GetGameScene ()->GetGameObjectManager ()->GetByHandle<DirectionalLight> (light.first)->GenLightViewProjectionMatrix (frustumVertices, sceneAABB);
 
         // copy to buffer
-        std::memcpy (m_uniformMatrixBuffer->directionalLightView + light.second * 16, Mathf::Transpose (lightViewProjection)[0], 16 * sizeof (GLfloat));
+        std::memcpy (m_uniformLightViewMatrixBuffer->directionalLightView + light.second * 16, Mathf::Transpose (lightViewProjection)[0], 16 * sizeof (GLfloat));
     }
 
     // load to GPU - directional light view
     glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTVIEWMATRICES]);
-    glBufferSubData (GL_UNIFORM_BUFFER, 0, 16 * sizeof (GLfloat) * m_uniformDirectionalLightBuffer->directionalLightCount, m_uniformMatrixBuffer->directionalLightView);
+    glBufferSubData (GL_UNIFORM_BUFFER, 0, 16 * sizeof (GLfloat) * m_uniformDirectionalLightBuffer->directionalLightCount, m_uniformLightViewMatrixBuffer->directionalLightView);
     glBindBuffer (GL_UNIFORM_BUFFER, 0);
 
 }
 
-void GLRenderer::DeinitializeMatrixUniformBuffers ()
+void GLRenderer::DeinitializeLightViewMatrixUniformBuffers ()
 {
-    glDeleteBuffers (1, &m_uniformBuffers->UBO[UBO_MATRICES]);
     glDeleteBuffers (1, &m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTVIEWMATRICES]);
 }
 
@@ -1307,6 +1462,13 @@ void GLRenderer::DeinitializeObjectBuffers ()
 {
     for (auto&& buffer : m_sceneGeometryBuffers)
     {
+        glDeleteBuffers (1, &buffer.second->boneTransformationsUBO);
+#if (CILANTRO_GL_VERSION >= 430)        
+        glDeleteBuffers (1, &buffer.second->vertexPositionsSSBO);
+        glDeleteBuffers (1, &buffer.second->boneIndicesSSBO);
+        glDeleteBuffers (1, &buffer.second->boneWeightsSSBO);
+        glDeleteBuffers (1, &buffer.second->aabbSSBO);
+#endif
         glDeleteBuffers (CILANTRO_VBO_COUNT, buffer.second->VBO);
         glDeleteBuffers (1, &buffer.second->EBO);
         glDeleteVertexArrays (1, &buffer.second->VAO);
@@ -1380,19 +1542,19 @@ void GLRenderer::InitializeLightUniformBuffers ()
     glGenBuffers (1, &m_uniformBuffers->UBO[UBO_POINTLIGHTS]);
     glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_POINTLIGHTS]);
     glBufferData (GL_UNIFORM_BUFFER, sizeof (SGlUniformPointLightBuffer), m_uniformPointLightBuffer, GL_DYNAMIC_DRAW);
-    glBindBufferBase (GL_UNIFORM_BUFFER, EBindingPoint::BP_POINTLIGHTS, m_uniformBuffers->UBO[UBO_POINTLIGHTS]);
+    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUboType::UBO_POINTLIGHTS), m_uniformBuffers->UBO[UBO_POINTLIGHTS]);
 
     // create uniform buffer for directional lights
     glGenBuffers (1, &m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTS]);
     glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTS]);
     glBufferData (GL_UNIFORM_BUFFER, sizeof (SGlUniformDirectionalLightBuffer), m_uniformDirectionalLightBuffer, GL_DYNAMIC_DRAW);
-    glBindBufferBase (GL_UNIFORM_BUFFER, EBindingPoint::BP_DIRECTIONALLIGHTS, m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTS]);
+    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUboType::UBO_DIRECTIONALLIGHTS), m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTS]);
 
     // create uniform buffer for spot lights
     glGenBuffers (1, &m_uniformBuffers->UBO[UBO_SPOTLIGHTS]);
     glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_SPOTLIGHTS]);
     glBufferData (GL_UNIFORM_BUFFER, sizeof (SGlUniformSpotLightBuffer), m_uniformSpotLightBuffer, GL_DYNAMIC_DRAW);
-    glBindBufferBase (GL_UNIFORM_BUFFER, EBindingPoint::BP_SPOTLIGHTS, m_uniformBuffers->UBO[UBO_SPOTLIGHTS]);
+    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUboType::UBO_SPOTLIGHTS), m_uniformBuffers->UBO[UBO_SPOTLIGHTS]);
 
     // scan objects vector for lights and populate light buffers
     for (auto&& gameObject : GetGameScene ()->GetGameObjectManager ())

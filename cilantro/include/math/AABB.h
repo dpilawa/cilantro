@@ -41,10 +41,6 @@ public:
     // add vertex to AABB
     __EAPI void AddVertex (const Vector3f& v);
 
-    // calculate
-    __EAPI void CalculateForMesh (std::shared_ptr<Mesh> mesh, const Matrix4f& worldTransform);
-    __EAPI void CalculateForMeshObject (std::shared_ptr<MeshObject> meshObject);
-
     // get eight vertices of AABB
     __EAPI std::array<Vector3f, 8> GetVertices () const;
     __EAPI float* GetVerticesData ();
