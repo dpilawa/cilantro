@@ -241,7 +241,7 @@ void GLRenderer::Draw (std::shared_ptr<MeshObject> meshObject)
     // load bone transformation matrix array to buffer
     glBindBuffer (GL_UNIFORM_BUFFER, b->boneTransformationsUBO);
     glBufferData (GL_UNIFORM_BUFFER, CILANTRO_MAX_BONES * sizeof (GLfloat) * 16, meshObject->GetBoneTransformationsMatrixArray (true), GL_DYNAMIC_DRAW);
-    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUboType::UBO_BONETRANSFORMATIONS), b->boneTransformationsUBO);
+    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUBOType::UBO_BONETRANSFORMATIONS), b->boneTransformationsUBO);
 
     // draw mesh
     geometryShaderProgram->Use ();
@@ -267,7 +267,7 @@ void GLRenderer::DrawSceneGeometryBuffers (std::shared_ptr<IShaderProgram> shade
         // load bone transformation matrix array to buffer
         glBindBuffer (GL_UNIFORM_BUFFER, m_sceneGeometryBuffers[m->GetHandle ()]->boneTransformationsUBO);
         glBufferData (GL_UNIFORM_BUFFER, CILANTRO_MAX_BONES * sizeof (float) * 16, m->GetBoneTransformationsMatrixArray (true), GL_DYNAMIC_DRAW);
-        glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUboType::UBO_BONETRANSFORMATIONS), m_sceneGeometryBuffers[m->GetHandle ()]->boneTransformationsUBO);
+        glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUBOType::UBO_BONETRANSFORMATIONS), m_sceneGeometryBuffers[m->GetHandle ()]->boneTransformationsUBO);
 
         // draw
         RenderGeometryBuffer (geometryBuffer.second, GL_TRIANGLES);
@@ -302,52 +302,52 @@ void GLRenderer::Update (std::shared_ptr<MeshObject> meshObject)
         glBindVertexArray (b->VAO);
 
         // generate vertex buffer
-        glGenBuffers (1, &b->VBO[EGlVboType::VBO_VERTICES]);
-        glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVboType::VBO_VERTICES]);
+        glGenBuffers (1, &b->VBO[EGlVBOType::VBO_VERTICES]);
+        glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVBOType::VBO_VERTICES]);
         // location = 0 (vertex position)
-        glVertexAttribPointer (EGlVboType::VBO_VERTICES, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (GLvoid*)0);
+        glVertexAttribPointer (EGlVBOType::VBO_VERTICES, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (GLvoid*)0);
 
         // generate normals buffer
-        glGenBuffers (1, &b->VBO[EGlVboType::VBO_NORMALS]);
-        glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVboType::VBO_NORMALS]);
+        glGenBuffers (1, &b->VBO[EGlVBOType::VBO_NORMALS]);
+        glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVBOType::VBO_NORMALS]);
         // location = 1 (vertex normal)
-        glVertexAttribPointer (EGlVboType::VBO_NORMALS, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (GLvoid*)0);
+        glVertexAttribPointer (EGlVBOType::VBO_NORMALS, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (GLvoid*)0);
 
         // generate uv buffer
-        glGenBuffers (1, &b->VBO[EGlVboType::VBO_UVS]);
-        glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVboType::VBO_UVS]);
+        glGenBuffers (1, &b->VBO[EGlVBOType::VBO_UVS]);
+        glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVBOType::VBO_UVS]);
         // location = 2 (vertex uv)
-        glVertexAttribPointer (EGlVboType::VBO_UVS, 2, GL_FLOAT, GL_FALSE, 2 * sizeof (float), (GLvoid*)0);
+        glVertexAttribPointer (EGlVBOType::VBO_UVS, 2, GL_FLOAT, GL_FALSE, 2 * sizeof (float), (GLvoid*)0);
 
         // generate tangents buffer
-        glGenBuffers (1, &b->VBO[EGlVboType::VBO_TANGENTS]);
-        glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVboType::VBO_TANGENTS]);
+        glGenBuffers (1, &b->VBO[EGlVBOType::VBO_TANGENTS]);
+        glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVBOType::VBO_TANGENTS]);
         // location = 3 (vertex tangent)
-        glVertexAttribPointer (EGlVboType::VBO_TANGENTS, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (GLvoid*)0);
+        glVertexAttribPointer (EGlVBOType::VBO_TANGENTS, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (GLvoid*)0);
 
         // generate bitangents buffer
-        glGenBuffers (1, &b->VBO[EGlVboType::VBO_BITANGENTS]);
-        glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVboType::VBO_BITANGENTS]);
+        glGenBuffers (1, &b->VBO[EGlVBOType::VBO_BITANGENTS]);
+        glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVBOType::VBO_BITANGENTS]);
         // location = 4 (vertex bitangent)
-        glVertexAttribPointer (EGlVboType::VBO_BITANGENTS, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (GLvoid*)0);
+        glVertexAttribPointer (EGlVBOType::VBO_BITANGENTS, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (GLvoid*)0);
 
         // generate bone index
-        glGenBuffers (1, &b->VBO[EGlVboType::VBO_BONES]);
-        glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVboType::VBO_BONES]);
+        glGenBuffers (1, &b->VBO[EGlVBOType::VBO_BONES]);
+        glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVBOType::VBO_BONES]);
         // location = 5 (bone indices)
-        glVertexAttribIPointer (EGlVboType::VBO_BONES, CILANTRO_MAX_BONE_INFLUENCES, GL_INT, CILANTRO_MAX_BONE_INFLUENCES * sizeof (int), (GLvoid*)0);
+        glVertexAttribIPointer (EGlVBOType::VBO_BONES, CILANTRO_MAX_BONE_INFLUENCES, GL_INT, CILANTRO_MAX_BONE_INFLUENCES * sizeof (int), (GLvoid*)0);
 
         // generate bone weight buffer
-        glGenBuffers (1, &b->VBO[EGlVboType::VBO_BONEWEIGHTS]);
-        glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVboType::VBO_BONEWEIGHTS]);
+        glGenBuffers (1, &b->VBO[EGlVBOType::VBO_BONEWEIGHTS]);
+        glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVBOType::VBO_BONEWEIGHTS]);
         // location = 6 (bone weights)
-        glVertexAttribPointer (EGlVboType::VBO_BONEWEIGHTS, CILANTRO_MAX_BONE_INFLUENCES, GL_FLOAT, GL_FALSE, CILANTRO_MAX_BONE_INFLUENCES * sizeof (int), (GLvoid*)0);
+        glVertexAttribPointer (EGlVBOType::VBO_BONEWEIGHTS, CILANTRO_MAX_BONE_INFLUENCES, GL_FLOAT, GL_FALSE, CILANTRO_MAX_BONE_INFLUENCES * sizeof (int), (GLvoid*)0);
 
         // generate bone transformation matrix array uniform buffer
         glGenBuffers (1, &b->boneTransformationsUBO);
         glBindBuffer (GL_UNIFORM_BUFFER, b->boneTransformationsUBO);
         glBufferData (GL_UNIFORM_BUFFER, CILANTRO_MAX_BONES * sizeof (GLfloat) * 16, NULL, GL_DYNAMIC_DRAW);
-        glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUboType::UBO_BONETRANSFORMATIONS), b->boneTransformationsUBO);
+        glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUBOType::UBO_BONETRANSFORMATIONS), b->boneTransformationsUBO);
 
 #if (CILANTRO_GL_VERSION >= 430)
 
@@ -355,25 +355,25 @@ void GLRenderer::Update (std::shared_ptr<MeshObject> meshObject)
         glGenBuffers (1, &b->vertexPositionsSSBO);
         glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->vertexPositionsSSBO);
         glBufferData (GL_SHADER_STORAGE_BUFFER, CILANTRO_MAX_VERTICES * sizeof (GLfloat) * 3, NULL, GL_DYNAMIC_DRAW);
-        glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSsboType::SSBO_VERTICES), b->vertexPositionsSSBO);
+        glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSSBOType::SSBO_VERTICES), b->vertexPositionsSSBO);
 
         // generate bone indices array SSBO buffer
         glGenBuffers (1, &b->boneIndicesSSBO);
         glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->boneIndicesSSBO);
         glBufferData (GL_SHADER_STORAGE_BUFFER, CILANTRO_MAX_VERTICES * sizeof (GLuint) * CILANTRO_MAX_BONE_INFLUENCES, NULL, GL_DYNAMIC_DRAW);
-        glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSsboType::SSBO_BONEINDICES), b->boneIndicesSSBO);
+        glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSSBOType::SSBO_BONEINDICES), b->boneIndicesSSBO);
 
         // generate bone weights array SSBO buffer
         glGenBuffers (1, &b->boneWeightsSSBO);
         glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->boneWeightsSSBO);
         glBufferData (GL_SHADER_STORAGE_BUFFER, CILANTRO_MAX_VERTICES * sizeof (GLfloat) * CILANTRO_MAX_BONE_INFLUENCES, NULL, GL_DYNAMIC_DRAW);
-        glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSsboType::SSBO_BONEWEIGHTS), b->boneWeightsSSBO);
+        glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSSBOType::SSBO_BONEWEIGHTS), b->boneWeightsSSBO);
 
         // generate AABB result SSBO buffer
         glGenBuffers (1, &b->aabbSSBO);
         glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->aabbSSBO);
         glBufferData (GL_SHADER_STORAGE_BUFFER, sizeof (SGlEncodedAABB), NULL, GL_DYNAMIC_DRAW);
-        glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSsboType::SSBO_AABB), b->aabbSSBO);
+        glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSSBOType::SSBO_AABB), b->aabbSSBO);
 
 #endif
 
@@ -382,13 +382,13 @@ void GLRenderer::Update (std::shared_ptr<MeshObject> meshObject)
         glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, b->EBO);
 
         // enable VBO arrays
-        glEnableVertexAttribArray (EGlVboType::VBO_VERTICES);
-        glEnableVertexAttribArray (EGlVboType::VBO_NORMALS);
-        glEnableVertexAttribArray (EGlVboType::VBO_UVS);
-        glEnableVertexAttribArray (EGlVboType::VBO_TANGENTS);
-        glEnableVertexAttribArray (EGlVboType::VBO_BITANGENTS);
-        glEnableVertexAttribArray (EGlVboType::VBO_BONES);
-        glEnableVertexAttribArray (EGlVboType::VBO_BONEWEIGHTS);
+        glEnableVertexAttribArray (EGlVBOType::VBO_VERTICES);
+        glEnableVertexAttribArray (EGlVBOType::VBO_NORMALS);
+        glEnableVertexAttribArray (EGlVBOType::VBO_UVS);
+        glEnableVertexAttribArray (EGlVBOType::VBO_TANGENTS);
+        glEnableVertexAttribArray (EGlVBOType::VBO_BITANGENTS);
+        glEnableVertexAttribArray (EGlVBOType::VBO_BONES);
+        glEnableVertexAttribArray (EGlVBOType::VBO_BONEWEIGHTS);
 
         // unbind VAO
         glBindVertexArray (0);
@@ -403,31 +403,31 @@ void GLRenderer::Update (std::shared_ptr<MeshObject> meshObject)
     glBindVertexArray (b->VAO);
 
     // load vertex buffer
-    glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVboType::VBO_VERTICES]);
+    glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVBOType::VBO_VERTICES]);
     glBufferData (GL_ARRAY_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (float) * 3, meshObject->GetMesh ()->GetVerticesData (), GL_DYNAMIC_DRAW);
 
     // load normals buffer
-    glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVboType::VBO_NORMALS]);
+    glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVBOType::VBO_NORMALS]);
     glBufferData (GL_ARRAY_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (float) * 3, meshObject->GetMesh ()->GetNormalsData (), GL_DYNAMIC_DRAW);
     
     // load uv buffer
-    glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVboType::VBO_UVS]);
+    glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVBOType::VBO_UVS]);
     glBufferData (GL_ARRAY_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (float) * 2, meshObject->GetMesh ()->GetUVData (), GL_DYNAMIC_DRAW);
 
     // load tangents buffer
-    glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVboType::VBO_TANGENTS]);
+    glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVBOType::VBO_TANGENTS]);
     glBufferData (GL_ARRAY_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (float) * 3, meshObject->GetMesh ()->GetTangentData (), GL_DYNAMIC_DRAW);
 
     // load bitangents buffer
-    glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVboType::VBO_BITANGENTS]);
+    glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVBOType::VBO_BITANGENTS]);
     glBufferData (GL_ARRAY_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (float) * 3, meshObject->GetMesh ()->GetBitangentData (), GL_DYNAMIC_DRAW);
 
     // load bone index buffer
-    glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVboType::VBO_BONES]);
+    glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVBOType::VBO_BONES]);
     glBufferData (GL_ARRAY_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (uint32_t) * CILANTRO_MAX_BONE_INFLUENCES, meshObject->GetMesh ()->GetBoneIndicesData (), GL_DYNAMIC_DRAW);
 
     // load bone weight buffer
-    glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVboType::VBO_BONEWEIGHTS]);
+    glBindBuffer (GL_ARRAY_BUFFER, b->VBO[EGlVBOType::VBO_BONEWEIGHTS]);
     glBufferData (GL_ARRAY_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (float) * CILANTRO_MAX_BONE_INFLUENCES, meshObject->GetMesh ()->GetBoneWeightsData (), GL_DYNAMIC_DRAW);
 
     // load index buffer
@@ -458,10 +458,10 @@ void GLRenderer::UpdateAABBBuffers (std::shared_ptr<MeshObject> meshObject)
         glBindVertexArray (w->VAO);
 
         // generate vertex buffer - wireframes
-        glGenBuffers (1, &w->VBO[EGlVboType::VBO_VERTICES]);
-        glBindBuffer (GL_ARRAY_BUFFER, w->VBO[EGlVboType::VBO_VERTICES]);
+        glGenBuffers (1, &w->VBO[EGlVBOType::VBO_VERTICES]);
+        glBindBuffer (GL_ARRAY_BUFFER, w->VBO[EGlVBOType::VBO_VERTICES]);
         // location = 0 (vertex position)
-        glVertexAttribPointer (EGlVboType::VBO_VERTICES, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (GLvoid*)0);
+        glVertexAttribPointer (EGlVBOType::VBO_VERTICES, 3, GL_FLOAT, GL_FALSE, 3 * sizeof (float), (GLvoid*)0);
 
         // generate index buffer
         glGenBuffers (1, &w->EBO);
@@ -472,7 +472,7 @@ void GLRenderer::UpdateAABBBuffers (std::shared_ptr<MeshObject> meshObject)
         glBufferData (GL_ELEMENT_ARRAY_BUFFER, 12 * 2 * sizeof (uint32_t), meshObject->GetAABB ().GetLineIndicesData (), GL_STATIC_DRAW);
 
         // enable VBO arrays
-        glEnableVertexAttribArray (EGlVboType::VBO_VERTICES);
+        glEnableVertexAttribArray (EGlVBOType::VBO_VERTICES);
 
         // unbind VAO
         glBindVertexArray (0);
@@ -486,7 +486,7 @@ void GLRenderer::UpdateAABBBuffers (std::shared_ptr<MeshObject> meshObject)
     glBindVertexArray (w->VAO);
 
     // load vertex buffer - wireframes
-    glBindBuffer (GL_ARRAY_BUFFER, w->VBO[EGlVboType::VBO_VERTICES]);
+    glBindBuffer (GL_ARRAY_BUFFER, w->VBO[EGlVBOType::VBO_VERTICES]);
     glBufferData (GL_ARRAY_BUFFER, 8 * sizeof (float) * 3, meshObject->GetAABB ().GetVerticesData () , GL_DYNAMIC_DRAW);
     
     // unbind VAO - wireframes
@@ -514,22 +514,22 @@ AABB GLRenderer::CalculateAABB (std::shared_ptr<MeshObject> meshObject)
     // load bone transformation matrix array to buffer
     glBindBuffer (GL_UNIFORM_BUFFER, b->boneTransformationsUBO);
     glBufferData (GL_UNIFORM_BUFFER, CILANTRO_MAX_BONES * sizeof (GLfloat) * 16, meshObject->GetBoneTransformationsMatrixArray (true), GL_DYNAMIC_DRAW);
-    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUboType::UBO_BONETRANSFORMATIONS), b->boneTransformationsUBO);
+    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUBOType::UBO_BONETRANSFORMATIONS), b->boneTransformationsUBO);
 
     // load vertex positions array buffer (SSBO)
     glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->vertexPositionsSSBO);
     glBufferData (GL_SHADER_STORAGE_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (GLfloat) * 3, meshObject->GetMesh ()->GetVerticesData (), GL_DYNAMIC_DRAW);
-    glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSsboType::SSBO_VERTICES), b->vertexPositionsSSBO);
+    glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSSBOType::SSBO_VERTICES), b->vertexPositionsSSBO);
 
     // load bone indices array buffer (SSBO)
     glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->boneIndicesSSBO);
     glBufferData (GL_SHADER_STORAGE_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (GLuint) * CILANTRO_MAX_BONE_INFLUENCES, meshObject->GetMesh ()->GetBoneIndicesData (), GL_DYNAMIC_DRAW);
-    glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSsboType::SSBO_BONEINDICES), b->boneIndicesSSBO);
+    glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSSBOType::SSBO_BONEINDICES), b->boneIndicesSSBO);
 
     // load bone weights array buffer (SSBO)
     glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->boneWeightsSSBO);
     glBufferData (GL_SHADER_STORAGE_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (GLfloat) * CILANTRO_MAX_BONE_INFLUENCES, meshObject->GetMesh ()->GetBoneWeightsData (), GL_DYNAMIC_DRAW);
-    glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSsboType::SSBO_BONEWEIGHTS), b->boneWeightsSSBO);
+    glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSSBOType::SSBO_BONEWEIGHTS), b->boneWeightsSSBO);
 
     // initialize AABB extreme values
     aabbGPU.minBits[0] = 0xFFFFFFFF;
@@ -542,7 +542,7 @@ AABB GLRenderer::CalculateAABB (std::shared_ptr<MeshObject> meshObject)
     aabbGPU.pad2 = 0x00000000;
     glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->aabbSSBO);
     glBufferData (GL_SHADER_STORAGE_BUFFER, sizeof (SGlEncodedAABB), &aabbGPU, GL_DYNAMIC_DRAW);
-    glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSsboType::SSBO_AABB), b->aabbSSBO);
+    glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSSBOType::SSBO_AABB), b->aabbSSBO);
 
     // dispatch compute shader
     GLuint groupSize = (static_cast<GLuint>(meshObject->GetMesh ()->GetVertexCount ()) + CILANTRO_COMPUTE_GROUP_SIZE - 1) / CILANTRO_COMPUTE_GROUP_SIZE;
@@ -782,8 +782,8 @@ void GLRenderer::Update (std::shared_ptr<DirectionalLight> directionalLight)
 
     auto shadowmapShaderProg = GetShaderProgramManager ()->GetByName<GLShaderProgram> ("shadowmap_directional_shader");
     shadowmapShaderProg->Link ();
-    shadowmapShaderProg->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EShaderBindingPoint::BP_DIRECTIONALLIGHTVIEWMATRICES);
-    shadowmapShaderProg->BindUniformBlock ("UniformBoneTransformationsBlock", EShaderBindingPoint::BP_BONETRANSFORMATIONS);
+    shadowmapShaderProg->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EGlUBOType::UBO_DIRECTIONALLIGHTVIEWMATRICES);
+    shadowmapShaderProg->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
 
     // copy direction
     Vector3f lightDirection = directionalLight->GetForward ();
@@ -1138,12 +1138,12 @@ void GLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tAO"), 4);
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 5);
 #endif
-    p->BindUniformBlock ("UniformMatricesBlock", EShaderBindingPoint::BP_MATRICES);
-    p->BindUniformBlock ("UniformPointLightsBlock", EShaderBindingPoint::BP_POINTLIGHTS);
-    p->BindUniformBlock ("UniformDirectionalLightsBlock", EShaderBindingPoint::BP_DIRECTIONALLIGHTS);
-    p->BindUniformBlock ("UniformSpotLightsBlock", EShaderBindingPoint::BP_SPOTLIGHTS);
-    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EShaderBindingPoint::BP_DIRECTIONALLIGHTVIEWMATRICES);
-    p->BindUniformBlock ("UniformBoneTransformationsBlock", EShaderBindingPoint::BP_BONETRANSFORMATIONS);
+    p->BindUniformBlock ("UniformMatricesBlock", EGlUBOType::UBO_MATRICES);
+    p->BindUniformBlock ("UniformPointLightsBlock", EGlUBOType::UBO_POINTLIGHTS);
+    p->BindUniformBlock ("UniformDirectionalLightsBlock", EGlUBOType::UBO_DIRECTIONALLIGHTS);
+    p->BindUniformBlock ("UniformSpotLightsBlock", EGlUBOType::UBO_SPOTLIGHTS);
+    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EGlUBOType::UBO_DIRECTIONALLIGHTVIEWMATRICES);
+    p->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
     CheckGLError (MSG_LOCATION);
 
     // PBR model (deferred, geometry pass)
@@ -1166,8 +1166,8 @@ void GLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tRoughness"), 3);
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tAO"), 4);
 #endif
-    p->BindUniformBlock ("UniformMatricesBlock", EShaderBindingPoint::BP_MATRICES);
-    p->BindUniformBlock ("UniformBoneTransformationsBlock", EShaderBindingPoint::BP_BONETRANSFORMATIONS);
+    p->BindUniformBlock ("UniformMatricesBlock", EGlUBOType::UBO_MATRICES);
+    p->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
     CheckGLError (MSG_LOCATION);
 
     // PBR model (deferred, lighting pass)
@@ -1188,10 +1188,10 @@ void GLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tUnused"), 4);
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 5);
 #endif
-    p->BindUniformBlock ("UniformPointLightsBlock", EShaderBindingPoint::BP_POINTLIGHTS);
-    p->BindUniformBlock ("UniformDirectionalLightsBlock", EShaderBindingPoint::BP_DIRECTIONALLIGHTS);
-    p->BindUniformBlock ("UniformSpotLightsBlock", EShaderBindingPoint::BP_SPOTLIGHTS);
-    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EShaderBindingPoint::BP_DIRECTIONALLIGHTVIEWMATRICES);  
+    p->BindUniformBlock ("UniformPointLightsBlock", EGlUBOType::UBO_POINTLIGHTS);
+    p->BindUniformBlock ("UniformDirectionalLightsBlock", EGlUBOType::UBO_DIRECTIONALLIGHTS);
+    p->BindUniformBlock ("UniformSpotLightsBlock", EGlUBOType::UBO_SPOTLIGHTS);
+    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EGlUBOType::UBO_DIRECTIONALLIGHTVIEWMATRICES);  
     CheckGLError (MSG_LOCATION);
 
     // Blinn-Phong model (forward)
@@ -1214,12 +1214,12 @@ void GLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tEmissive"), 3);
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 4);
 #endif
-    p->BindUniformBlock ("UniformMatricesBlock", EShaderBindingPoint::BP_MATRICES);
-    p->BindUniformBlock ("UniformPointLightsBlock", EShaderBindingPoint::BP_POINTLIGHTS);
-    p->BindUniformBlock ("UniformDirectionalLightsBlock", EShaderBindingPoint::BP_DIRECTIONALLIGHTS);
-    p->BindUniformBlock ("UniformSpotLightsBlock", EShaderBindingPoint::BP_SPOTLIGHTS); 
-    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EShaderBindingPoint::BP_DIRECTIONALLIGHTVIEWMATRICES);
-    p->BindUniformBlock ("UniformBoneTransformationsBlock", EShaderBindingPoint::BP_BONETRANSFORMATIONS);
+    p->BindUniformBlock ("UniformMatricesBlock", EGlUBOType::UBO_MATRICES);
+    p->BindUniformBlock ("UniformPointLightsBlock", EGlUBOType::UBO_POINTLIGHTS);
+    p->BindUniformBlock ("UniformDirectionalLightsBlock", EGlUBOType::UBO_DIRECTIONALLIGHTS);
+    p->BindUniformBlock ("UniformSpotLightsBlock", EGlUBOType::UBO_SPOTLIGHTS); 
+    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EGlUBOType::UBO_DIRECTIONALLIGHTVIEWMATRICES);
+    p->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
     CheckGLError (MSG_LOCATION);
     
     // Blinn-Phong model (deferred, geometry pass)
@@ -1241,8 +1241,8 @@ void GLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tSpecular"), 2);
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tEmissive"), 3);
 #endif    
-    p->BindUniformBlock ("UniformMatricesBlock", EShaderBindingPoint::BP_MATRICES);
-    p->BindUniformBlock ("UniformBoneTransformationsBlock", EShaderBindingPoint::BP_BONETRANSFORMATIONS);
+    p->BindUniformBlock ("UniformMatricesBlock", EGlUBOType::UBO_MATRICES);
+    p->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
     CheckGLError (MSG_LOCATION);
 
     // Blinn-Phong model (deferred, lighting pass)
@@ -1263,10 +1263,10 @@ void GLRenderer::InitializeShaderLibrary ()
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tSpecular"), 4);
     glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 5);
 #endif
-    p->BindUniformBlock ("UniformPointLightsBlock", EShaderBindingPoint::BP_POINTLIGHTS);
-    p->BindUniformBlock ("UniformDirectionalLightsBlock", EShaderBindingPoint::BP_DIRECTIONALLIGHTS);
-    p->BindUniformBlock ("UniformSpotLightsBlock", EShaderBindingPoint::BP_SPOTLIGHTS);   
-    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EShaderBindingPoint::BP_DIRECTIONALLIGHTVIEWMATRICES); 
+    p->BindUniformBlock ("UniformPointLightsBlock", EGlUBOType::UBO_POINTLIGHTS);
+    p->BindUniformBlock ("UniformDirectionalLightsBlock", EGlUBOType::UBO_DIRECTIONALLIGHTS);
+    p->BindUniformBlock ("UniformSpotLightsBlock", EGlUBOType::UBO_SPOTLIGHTS);   
+    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EGlUBOType::UBO_DIRECTIONALLIGHTVIEWMATRICES); 
     CheckGLError (MSG_LOCATION);
 
     // Screen quad rendering
@@ -1341,8 +1341,8 @@ void GLRenderer::InitializeShaderLibrary ()
 #endif
 #if (CILANTRO_GL_VERSION < 420)
 #endif
-    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EShaderBindingPoint::BP_DIRECTIONALLIGHTVIEWMATRICES);
-    p->BindUniformBlock ("UniformBoneTransformationsBlock", EShaderBindingPoint::BP_BONETRANSFORMATIONS);
+    p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EGlUBOType::UBO_DIRECTIONALLIGHTVIEWMATRICES);
+    p->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
     CheckGLError (MSG_LOCATION);
 
     // AABB rendering
@@ -1354,7 +1354,7 @@ void GLRenderer::InitializeShaderLibrary ()
 #if (CILANTRO_GL_VERSION < 330)
     glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
 #endif
-    p->BindUniformBlock ("UniformMatricesBlock", EShaderBindingPoint::BP_MATRICES);
+    p->BindUniformBlock ("UniformMatricesBlock", EGlUBOType::UBO_MATRICES);
     CheckGLError (MSG_LOCATION);
 
 #if (CILANTRO_GL_VERSION >= 430)    
@@ -1363,11 +1363,11 @@ void GLRenderer::InitializeShaderLibrary ()
     p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("aabb_compute_shader"));
     p->Link ();
     p->Use ();
-    p->BindUniformBlock ("UniformBoneTransformationsBlock", EShaderBindingPoint::BP_BONETRANSFORMATIONS);
-    p->BindShaderStorageBlock ("VertexBufferBlock", EShaderBindingPoint::BP_VERTICES);  
-    p->BindShaderStorageBlock ("BoneIndicesBufferBlock", EShaderBindingPoint::BP_BONEINDICES);
-    p->BindShaderStorageBlock ("BoneWeightsBufferBlock", EShaderBindingPoint::BP_BONEWEIGHTS);
-    p->BindShaderStorageBlock ("AABBBufferBlock", EShaderBindingPoint::BP_AABB);
+    p->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
+    p->BindShaderStorageBlock ("VertexBufferBlock", EGlSSBOType::SSBO_VERTICES);  
+    p->BindShaderStorageBlock ("BoneIndicesBufferBlock", EGlSSBOType::SSBO_BONEINDICES);
+    p->BindShaderStorageBlock ("BoneWeightsBufferBlock", EGlSSBOType::SSBO_BONEWEIGHTS);
+    p->BindShaderStorageBlock ("AABBBufferBlock", EGlSSBOType::SSBO_AABB);
     CheckGLError (MSG_LOCATION);
 #endif
 
@@ -1379,7 +1379,7 @@ void GLRenderer::InitializeMatrixUniformBuffers ()
     glGenBuffers (1, &m_uniformBuffers->UBO[UBO_MATRICES]);
     glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_MATRICES]);
     glBufferData (GL_UNIFORM_BUFFER, sizeof (SGlUniformMatrixBuffer), NULL, GL_DYNAMIC_DRAW);
-    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUboType::UBO_MATRICES), m_uniformBuffers->UBO[UBO_MATRICES]);
+    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUBOType::UBO_MATRICES), m_uniformBuffers->UBO[UBO_MATRICES]);
 
     CheckGLError (MSG_LOCATION);
 }
@@ -1413,7 +1413,7 @@ void GLRenderer::InitializeLightViewMatrixUniformBuffers ()
     glGenBuffers (1, &m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTVIEWMATRICES]);
     glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTVIEWMATRICES]);
     glBufferData (GL_UNIFORM_BUFFER, 16 * sizeof (GLfloat) * CILANTRO_MAX_DIRECTIONAL_LIGHTS, NULL, GL_DYNAMIC_DRAW);
-    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUboType::UBO_DIRECTIONALLIGHTVIEWMATRICES), m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTVIEWMATRICES]);
+    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUBOType::UBO_DIRECTIONALLIGHTVIEWMATRICES), m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTVIEWMATRICES]);
 
     CheckGLError (MSG_LOCATION);
 }
@@ -1500,19 +1500,19 @@ void GLRenderer::InitializeQuadGeometryBuffer ()
     glGenVertexArrays (1, &m_surfaceGeometryBuffer->VAO);    
     glBindVertexArray (m_surfaceGeometryBuffer->VAO);
 
-    glGenBuffers (1, &m_surfaceGeometryBuffer->VBO[EGlVboType::VBO_VERTICES]);
-    glGenBuffers (1, &m_surfaceGeometryBuffer->VBO[EGlVboType::VBO_UVS]);
+    glGenBuffers (1, &m_surfaceGeometryBuffer->VBO[EGlVBOType::VBO_VERTICES]);
+    glGenBuffers (1, &m_surfaceGeometryBuffer->VBO[EGlVBOType::VBO_UVS]);
 
-    glBindBuffer (GL_ARRAY_BUFFER, m_surfaceGeometryBuffer->VBO[EGlVboType::VBO_VERTICES]);
+    glBindBuffer (GL_ARRAY_BUFFER, m_surfaceGeometryBuffer->VBO[EGlVBOType::VBO_VERTICES]);
     glBufferData (GL_ARRAY_BUFFER, sizeof (quadVertices), &quadVertices, GL_STATIC_DRAW);
-    glVertexAttribPointer (EGlVboType::VBO_VERTICES, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glVertexAttribPointer (EGlVBOType::VBO_VERTICES, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 
-    glBindBuffer (GL_ARRAY_BUFFER, m_surfaceGeometryBuffer->VBO[EGlVboType::VBO_UVS]);
+    glBindBuffer (GL_ARRAY_BUFFER, m_surfaceGeometryBuffer->VBO[EGlVBOType::VBO_UVS]);
     glBufferData (GL_ARRAY_BUFFER, sizeof (quadUV), &quadUV, GL_STATIC_DRAW);
-    glVertexAttribPointer (EGlVboType::VBO_UVS, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glVertexAttribPointer (EGlVBOType::VBO_UVS, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 
-    glEnableVertexAttribArray (EGlVboType::VBO_VERTICES);
-    glEnableVertexAttribArray (EGlVboType::VBO_UVS);
+    glEnableVertexAttribArray (EGlVBOType::VBO_VERTICES);
+    glEnableVertexAttribArray (EGlVBOType::VBO_UVS);
 
     glGenBuffers (1, &m_surfaceGeometryBuffer->EBO);
     glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, m_surfaceGeometryBuffer->EBO);
@@ -1529,7 +1529,7 @@ void GLRenderer::InitializeQuadGeometryBuffer ()
 void GLRenderer::DeinitializeQuadGeometryBuffer ()
 {
     glDeleteVertexArrays(1, &m_surfaceGeometryBuffer->VAO);
-    glDeleteBuffers(1, &m_surfaceGeometryBuffer->VBO[EGlVboType::VBO_VERTICES]);
+    glDeleteBuffers(1, &m_surfaceGeometryBuffer->VBO[EGlVBOType::VBO_VERTICES]);
 }
 
 void GLRenderer::InitializeLightUniformBuffers ()
@@ -1542,19 +1542,19 @@ void GLRenderer::InitializeLightUniformBuffers ()
     glGenBuffers (1, &m_uniformBuffers->UBO[UBO_POINTLIGHTS]);
     glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_POINTLIGHTS]);
     glBufferData (GL_UNIFORM_BUFFER, sizeof (SGlUniformPointLightBuffer), m_uniformPointLightBuffer, GL_DYNAMIC_DRAW);
-    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUboType::UBO_POINTLIGHTS), m_uniformBuffers->UBO[UBO_POINTLIGHTS]);
+    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUBOType::UBO_POINTLIGHTS), m_uniformBuffers->UBO[UBO_POINTLIGHTS]);
 
     // create uniform buffer for directional lights
     glGenBuffers (1, &m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTS]);
     glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTS]);
     glBufferData (GL_UNIFORM_BUFFER, sizeof (SGlUniformDirectionalLightBuffer), m_uniformDirectionalLightBuffer, GL_DYNAMIC_DRAW);
-    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUboType::UBO_DIRECTIONALLIGHTS), m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTS]);
+    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUBOType::UBO_DIRECTIONALLIGHTS), m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTS]);
 
     // create uniform buffer for spot lights
     glGenBuffers (1, &m_uniformBuffers->UBO[UBO_SPOTLIGHTS]);
     glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_SPOTLIGHTS]);
     glBufferData (GL_UNIFORM_BUFFER, sizeof (SGlUniformSpotLightBuffer), m_uniformSpotLightBuffer, GL_DYNAMIC_DRAW);
-    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUboType::UBO_SPOTLIGHTS), m_uniformBuffers->UBO[UBO_SPOTLIGHTS]);
+    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUBOType::UBO_SPOTLIGHTS), m_uniformBuffers->UBO[UBO_SPOTLIGHTS]);
 
     // scan objects vector for lights and populate light buffers
     for (auto&& gameObject : GetGameScene ()->GetGameObjectManager ())

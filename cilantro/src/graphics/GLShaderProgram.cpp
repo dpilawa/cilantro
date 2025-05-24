@@ -178,7 +178,7 @@ GLuint GLShaderProgram::GetUniformLocationId (const std::string& uniformName) co
     return paramUniformLocation;
 }
 
-void GLShaderProgram::BindUniformBlock (const std::string& blockName, EShaderBindingPoint bp)
+void GLShaderProgram::BindUniformBlock (const std::string& blockName, EGlUBOType bp)
 {
     GLuint uniformBlockIndex = glGetUniformBlockIndex (m_glShaderProgramId, blockName.c_str ());
     GLint actualBinding = -1;
@@ -199,7 +199,7 @@ void GLShaderProgram::BindUniformBlock (const std::string& blockName, EShaderBin
     
 }
 
-void GLShaderProgram::BindShaderStorageBlock(const std::string& blockName, EShaderBindingPoint bp)
+void GLShaderProgram::BindShaderStorageBlock(const std::string& blockName, EGlSSBOType bp)
 {
 #if (CILANTRO_GL_VERSION >= 430)    
     GLuint blockIndex = glGetProgramResourceIndex(m_glShaderProgramId, GL_SHADER_STORAGE_BLOCK, blockName.c_str());

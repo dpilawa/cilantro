@@ -3,6 +3,7 @@
 #include "cilantroengine.h"
 #include "glad/gl.h"
 #include "graphics/ShaderProgram.h"
+#include "graphics/GLRenderer.h"
 
 namespace cilantro {
 
@@ -40,8 +41,8 @@ public:
     GLuint GetUniformLocationId (const std::string& uniformName) const;
 
     // bind uniform block
-    void BindUniformBlock (const std::string& blockName, EShaderBindingPoint bp);
-    void BindShaderStorageBlock (const std::string& blockName, EShaderBindingPoint bp);
+    void BindUniformBlock (const std::string& blockName, EGlUBOType bp);
+    void BindShaderStorageBlock (const std::string& blockName, EGlSSBOType bp);
 
 private:
     // ID of a shader program
