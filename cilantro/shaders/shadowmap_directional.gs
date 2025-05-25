@@ -1,13 +1,9 @@
-#version %%CILANTRO_GL_VERSION%%
-#extension GL_EXT_geometry_shader : enable
-#extension GL_ARB_tessellation_shader : enable
-#extension GL_ARB_gpu_shader5 : enable
-#extension GL_ARB_geometry_shader4 : enable
+#version %%CILANTRO_GLSL_VERSION%%
 
 layout(triangles, invocations = %%ACTIVE_DIRECTIONAL_LIGHTS%%) in;
 layout(triangle_strip, max_vertices = 3) out;
 
-layout (std140) uniform UniformDirectionalLightViewMatricesBlock
+layout (std140, binding = %%UBO_DIRECTIONALLIGHTVIEWMATRICES%%) uniform UniformDirectionalLightViewMatricesBlock
 {
     mat4 mLightSpace[%%CILANTRO_MAX_DIRECTIONAL_LIGHTS%%];
 };

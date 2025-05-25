@@ -1,4 +1,4 @@
-#version %%CILANTRO_GL_VERSION%%
+#version %%CILANTRO_GLSL_VERSION%%
 
 #define MAX_POINT_LIGHTS %%CILANTRO_MAX_POINT_LIGHTS%%
 #define MAX_DIRECTIONAL_LIGHTS %%CILANTRO_MAX_DIRECTIONAL_LIGHTS%%
@@ -13,7 +13,7 @@ in vec2 fTextureCoordinates;
 vec3 viewDirection;
 
 /* material properties */
-#if (__VERSION__ >= 420)
+#if (__VERSION__ >= 430)
 layout (binding=0) uniform sampler2D tPosition;
 layout (binding=1) uniform sampler2D tNormal;
 layout (binding=2) uniform sampler2D tDiffuse;
@@ -28,7 +28,7 @@ uniform sampler2D tSpecular;
 #endif
 
 /* shadow maps */
-#if (__VERSION__ >= 420)
+#if (__VERSION__ >= 430)
 layout (binding = 5) uniform sampler2DArray tDirectionalShadowMap;
 #else
 uniform sampler2DArray tDirectionalShadowMap;
@@ -72,25 +72,25 @@ struct SpotLightStruct
     float outerCutoffCosine;
 };
 
-layout(std140) uniform UniformPointLightsBlock
+layout(std140, binding = %%UBO_POINTLIGHTS%%) uniform UniformPointLightsBlock
 {
     int pointLightCount;
     PointLightStruct pointLights[MAX_POINT_LIGHTS];
 };
 
-layout(std140) uniform UniformDirectionalLightsBlock
+layout(std140, binding = %%UBO_DIRECTIONALLIGHTS%%) uniform UniformDirectionalLightsBlock
 {
     int directionalLightCount;
     DirectionalLightStruct directionalLights[MAX_DIRECTIONAL_LIGHTS];
 };
 
-layout(std140) uniform UniformSpotLightsBlock
+layout(std140, binding = %%UBO_SPOTLIGHTS%%) uniform UniformSpotLightsBlock
 {
     int spotLightCount;
     SpotLightStruct spotLights[MAX_SPOT_LIGHTS];
 };
 
-layout (std140) uniform UniformDirectionalLightViewMatricesBlock
+layout (std140, binding = %%UBO_DIRECTIONALLIGHTVIEWMATRICES%%) uniform UniformDirectionalLightViewMatricesBlock
 {
     highp mat4 mDirectionalLightSpace[MAX_DIRECTIONAL_LIGHTS];
 };

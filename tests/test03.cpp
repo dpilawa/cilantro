@@ -31,7 +31,7 @@ int main (int argc, char* argv[])
     game->Initialize ();
 
     auto scene = game->Create<GameScene> ("scene");
-    auto renderer = scene->Create<GLFWRenderer> (800, 600, true, true, "Test 03", false, true, false);
+    auto renderer = scene->Create<GLFWRenderer> (800, 600, true, true, "Test 03", false, true, true);
     auto inputController = game->Create<GLFWInputController> ();
 
     AssimpModelLoader modelLoader (game);

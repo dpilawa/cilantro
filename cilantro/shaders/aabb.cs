@@ -1,31 +1,31 @@
-#version %%CILANTRO_GL_VERSION%%
+#version %%CILANTRO_GLSL_VERSION%%
 
 layout(local_size_x = %%CILANTRO_COMPUTE_GROUP_SIZE%%) in;
 
 /* transformation matrices */
 uniform mat4 mModel;
 
-layout(std430) readonly buffer VertexBufferBlock {
+layout(std430, binding = %%SSBO_VERTICES%%) readonly buffer VertexBufferBlock {
     float positions[];
 };
 
-layout(std430) buffer BoneIndicesBufferBlock {
+layout(std430, binding = %%SSBO_BONEINDICES%%) buffer BoneIndicesBufferBlock {
     uvec4 boneIndices[];
 };
 
-layout(std430) buffer BoneWeightsBufferBlock {
+layout(std430, binding = %%SSBO_BONEWEIGHTS%%) buffer BoneWeightsBufferBlock {
     vec4 boneWeights[];
 };
 
-layout(std140) uniform UniformBoneTransformationsBlock {
-    mat4 mBoneTransformations[%%CILANTRO_MAX_BONES%%];
-};
-
-layout(std430) buffer AABBBufferBlock {
+layout(std430, binding = %%SSBO_AABB%%) buffer AABBBufferBlock {
     uvec3 minBits;
     uint pad1;
     uvec3 maxBits;
     uint pad2;
+};
+
+layout(std140, binding = %%UBO_BONETRANSFORMATIONS%%) uniform UniformBoneTransformationsBlock {
+    mat4 mBoneTransformations[%%CILANTRO_MAX_BONES%%];
 };
 
 shared vec3 sharedMin[%%CILANTRO_COMPUTE_GROUP_SIZE%%];

@@ -1,4 +1,4 @@
-#version %%CILANTRO_GL_VERSION%%
+#version %%CILANTRO_GLSL_VERSION%%
 
 /* fragment position in world space */
 in vec3 fPosition;
@@ -13,7 +13,7 @@ in vec2 fUV;
 vec3 viewDirection;
 
 /* material properties */
-#if (__VERSION__ >= 420)
+#if (__VERSION__ >= 430)
 layout (binding = 0) uniform sampler2D tDiffuse;
 layout (binding = 1) uniform sampler2D tNormal;
 layout (binding = 2) uniform sampler2D tSpecular;

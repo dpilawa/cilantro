@@ -20,12 +20,10 @@ public:
 
     virtual void Load (const std::string& path) override;
     
-    void SetParameter (const std::string& parameter, const std::string& value) override;
+    virtual void SetParameter (const std::string& parameter, const std::string& value) override;
+    virtual void SetDefaultParameters () override;
 
     ///////////////////////////////////////////////////////////////////////////
-
-private:
-    void SetDefaultParameters ();
 
 protected:
 

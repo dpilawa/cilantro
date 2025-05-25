@@ -1,10 +1,9 @@
 #include "graphics/GLRenderer.h"
+#include "graphics/GLUtils.h"
 #include "graphics/GLShader.h"
 #include "graphics/GLShaderProgram.h"
 #include "graphics/GLFramebuffer.h"
-#if (CILANTRO_GL_VERSION > 140)
 #include "graphics/GLMultisampleFramebuffer.h"
-#endif
 #include "graphics/SurfaceRenderStage.h"
 
 #include "system/Game.h"
@@ -56,6 +55,9 @@ GLRenderer::~GLRenderer ()
 void GLRenderer::Initialize ()
 {    
     Renderer::Initialize ();
+
+    GLUtils::PrintGLInfo ();
+    GLUtils::PrintGLExtensions ();
 
     InitializeShaderLibrary ();
     InitializeQuadGeometryBuffer ();
@@ -349,33 +351,33 @@ void GLRenderer::Update (std::shared_ptr<MeshObject> meshObject)
         glBufferData (GL_UNIFORM_BUFFER, CILANTRO_MAX_BONES * sizeof (GLfloat) * 16, NULL, GL_DYNAMIC_DRAW);
         glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUBOType::UBO_BONETRANSFORMATIONS), b->boneTransformationsUBO);
 
-#if (CILANTRO_GL_VERSION >= 430)
 
-        // generate vertex positions array SSBO buffer
-        glGenBuffers (1, &b->vertexPositionsSSBO);
-        glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->vertexPositionsSSBO);
-        glBufferData (GL_SHADER_STORAGE_BUFFER, CILANTRO_MAX_VERTICES * sizeof (GLfloat) * 3, NULL, GL_DYNAMIC_DRAW);
-        glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSSBOType::SSBO_VERTICES), b->vertexPositionsSSBO);
+        if (GLUtils::GetGLSLVersion ().versionNumber >= 430)
+        {
+            // generate vertex positions array SSBO buffer
+            glGenBuffers (1, &b->vertexPositionsSSBO);
+            glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->vertexPositionsSSBO);
+            glBufferData (GL_SHADER_STORAGE_BUFFER, CILANTRO_MAX_VERTICES * sizeof (GLfloat) * 3, NULL, GL_DYNAMIC_DRAW);
+            glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSSBOType::SSBO_VERTICES), b->vertexPositionsSSBO);
 
-        // generate bone indices array SSBO buffer
-        glGenBuffers (1, &b->boneIndicesSSBO);
-        glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->boneIndicesSSBO);
-        glBufferData (GL_SHADER_STORAGE_BUFFER, CILANTRO_MAX_VERTICES * sizeof (GLuint) * CILANTRO_MAX_BONE_INFLUENCES, NULL, GL_DYNAMIC_DRAW);
-        glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSSBOType::SSBO_BONEINDICES), b->boneIndicesSSBO);
+            // generate bone indices array SSBO buffer
+            glGenBuffers (1, &b->boneIndicesSSBO);
+            glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->boneIndicesSSBO);
+            glBufferData (GL_SHADER_STORAGE_BUFFER, CILANTRO_MAX_VERTICES * sizeof (GLuint) * CILANTRO_MAX_BONE_INFLUENCES, NULL, GL_DYNAMIC_DRAW);
+            glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSSBOType::SSBO_BONEINDICES), b->boneIndicesSSBO);
 
-        // generate bone weights array SSBO buffer
-        glGenBuffers (1, &b->boneWeightsSSBO);
-        glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->boneWeightsSSBO);
-        glBufferData (GL_SHADER_STORAGE_BUFFER, CILANTRO_MAX_VERTICES * sizeof (GLfloat) * CILANTRO_MAX_BONE_INFLUENCES, NULL, GL_DYNAMIC_DRAW);
-        glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSSBOType::SSBO_BONEWEIGHTS), b->boneWeightsSSBO);
+            // generate bone weights array SSBO buffer
+            glGenBuffers (1, &b->boneWeightsSSBO);
+            glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->boneWeightsSSBO);
+            glBufferData (GL_SHADER_STORAGE_BUFFER, CILANTRO_MAX_VERTICES * sizeof (GLfloat) * CILANTRO_MAX_BONE_INFLUENCES, NULL, GL_DYNAMIC_DRAW);
+            glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSSBOType::SSBO_BONEWEIGHTS), b->boneWeightsSSBO);
 
-        // generate AABB result SSBO buffer
-        glGenBuffers (1, &b->aabbSSBO);
-        glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->aabbSSBO);
-        glBufferData (GL_SHADER_STORAGE_BUFFER, sizeof (SGlEncodedAABB), NULL, GL_DYNAMIC_DRAW);
-        glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSSBOType::SSBO_AABB), b->aabbSSBO);
-
-#endif
+            // generate AABB result SSBO buffer
+            glGenBuffers (1, &b->aabbSSBO);
+            glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->aabbSSBO);
+            glBufferData (GL_SHADER_STORAGE_BUFFER, sizeof (SGlEncodedAABB), NULL, GL_DYNAMIC_DRAW);
+            glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSSBOType::SSBO_AABB), b->aabbSSBO);
+        }
 
         // generate index buffer
         glGenBuffers (1, &b->EBO);
@@ -496,82 +498,82 @@ void GLRenderer::UpdateAABBBuffers (std::shared_ptr<MeshObject> meshObject)
 
 AABB GLRenderer::CalculateAABB (std::shared_ptr<MeshObject> meshObject)
 {
-#if (CILANTRO_GL_VERSION >= 430)
+    if (GLUtils::GetGLSLVersion ().versionNumber >= 430)
+    {
+        // calculate in GPU
 
-    // calculate in GPU
+        AABB aabb;
+        SGlEncodedAABB aabbGPU;
+        SGlGeometryBuffers* b = m_sceneGeometryBuffers[meshObject->GetHandle ()];
 
-    AABB aabb;
-    SGlEncodedAABB aabbGPU;
-    SGlGeometryBuffers* b = m_sceneGeometryBuffers[meshObject->GetHandle ()];
+        // get compute shader
+        auto computeShader = m_shaderProgramManager->GetByName<GLShaderProgram> ("aabb_compute_shader");
+        computeShader->Use ();
+        
+        // get world matrix for drawn objects and set uniform value
+        computeShader->SetUniformMatrix4f ("mModel", meshObject->GetWorldTransformMatrix ());
 
-    // get compute shader
-    auto computeShader = m_shaderProgramManager->GetByName<GLShaderProgram> ("aabb_compute_shader");
-    computeShader->Use ();
-    
-    // get world matrix for drawn objects and set uniform value
-    computeShader->SetUniformMatrix4f ("mModel", meshObject->GetWorldTransformMatrix ());
+        // load bone transformation matrix array to buffer
+        glBindBuffer (GL_UNIFORM_BUFFER, b->boneTransformationsUBO);
+        glBufferData (GL_UNIFORM_BUFFER, CILANTRO_MAX_BONES * sizeof (GLfloat) * 16, meshObject->GetBoneTransformationsMatrixArray (true), GL_DYNAMIC_DRAW);
+        glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUBOType::UBO_BONETRANSFORMATIONS), b->boneTransformationsUBO);
 
-    // load bone transformation matrix array to buffer
-    glBindBuffer (GL_UNIFORM_BUFFER, b->boneTransformationsUBO);
-    glBufferData (GL_UNIFORM_BUFFER, CILANTRO_MAX_BONES * sizeof (GLfloat) * 16, meshObject->GetBoneTransformationsMatrixArray (true), GL_DYNAMIC_DRAW);
-    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUBOType::UBO_BONETRANSFORMATIONS), b->boneTransformationsUBO);
+        // load vertex positions array buffer (SSBO)
+        glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->vertexPositionsSSBO);
+        glBufferData (GL_SHADER_STORAGE_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (GLfloat) * 3, meshObject->GetMesh ()->GetVerticesData (), GL_DYNAMIC_DRAW);
+        glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSSBOType::SSBO_VERTICES), b->vertexPositionsSSBO);
 
-    // load vertex positions array buffer (SSBO)
-    glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->vertexPositionsSSBO);
-    glBufferData (GL_SHADER_STORAGE_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (GLfloat) * 3, meshObject->GetMesh ()->GetVerticesData (), GL_DYNAMIC_DRAW);
-    glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSSBOType::SSBO_VERTICES), b->vertexPositionsSSBO);
+        // load bone indices array buffer (SSBO)
+        glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->boneIndicesSSBO);
+        glBufferData (GL_SHADER_STORAGE_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (GLuint) * CILANTRO_MAX_BONE_INFLUENCES, meshObject->GetMesh ()->GetBoneIndicesData (), GL_DYNAMIC_DRAW);
+        glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSSBOType::SSBO_BONEINDICES), b->boneIndicesSSBO);
 
-    // load bone indices array buffer (SSBO)
-    glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->boneIndicesSSBO);
-    glBufferData (GL_SHADER_STORAGE_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (GLuint) * CILANTRO_MAX_BONE_INFLUENCES, meshObject->GetMesh ()->GetBoneIndicesData (), GL_DYNAMIC_DRAW);
-    glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSSBOType::SSBO_BONEINDICES), b->boneIndicesSSBO);
+        // load bone weights array buffer (SSBO)
+        glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->boneWeightsSSBO);
+        glBufferData (GL_SHADER_STORAGE_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (GLfloat) * CILANTRO_MAX_BONE_INFLUENCES, meshObject->GetMesh ()->GetBoneWeightsData (), GL_DYNAMIC_DRAW);
+        glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSSBOType::SSBO_BONEWEIGHTS), b->boneWeightsSSBO);
 
-    // load bone weights array buffer (SSBO)
-    glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->boneWeightsSSBO);
-    glBufferData (GL_SHADER_STORAGE_BUFFER, meshObject->GetMesh ()->GetVertexCount () * sizeof (GLfloat) * CILANTRO_MAX_BONE_INFLUENCES, meshObject->GetMesh ()->GetBoneWeightsData (), GL_DYNAMIC_DRAW);
-    glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSSBOType::SSBO_BONEWEIGHTS), b->boneWeightsSSBO);
+        // initialize AABB extreme values
+        aabbGPU.minBits[0] = 0xFFFFFFFF;
+        aabbGPU.minBits[1] = 0xFFFFFFFF;
+        aabbGPU.minBits[2] = 0xFFFFFFFF;
+        aabbGPU.pad1 = 0x00000000;
+        aabbGPU.maxBits[0] = 0x00000000;
+        aabbGPU.maxBits[1] = 0x00000000;
+        aabbGPU.maxBits[2] = 0x00000000;
+        aabbGPU.pad2 = 0x00000000;
+        glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->aabbSSBO);
+        glBufferData (GL_SHADER_STORAGE_BUFFER, sizeof (SGlEncodedAABB), &aabbGPU, GL_DYNAMIC_DRAW);
+        glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSSBOType::SSBO_AABB), b->aabbSSBO);
 
-    // initialize AABB extreme values
-    aabbGPU.minBits[0] = 0xFFFFFFFF;
-    aabbGPU.minBits[1] = 0xFFFFFFFF;
-    aabbGPU.minBits[2] = 0xFFFFFFFF;
-    aabbGPU.pad1 = 0x00000000;
-    aabbGPU.maxBits[0] = 0x00000000;
-    aabbGPU.maxBits[1] = 0x00000000;
-    aabbGPU.maxBits[2] = 0x00000000;
-    aabbGPU.pad2 = 0x00000000;
-    glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->aabbSSBO);
-    glBufferData (GL_SHADER_STORAGE_BUFFER, sizeof (SGlEncodedAABB), &aabbGPU, GL_DYNAMIC_DRAW);
-    glBindBufferBase (GL_SHADER_STORAGE_BUFFER, static_cast<int>(EGlSSBOType::SSBO_AABB), b->aabbSSBO);
+        // dispatch compute shader
+        GLuint groupSize = (static_cast<GLuint>(meshObject->GetMesh ()->GetVertexCount ()) + CILANTRO_COMPUTE_GROUP_SIZE - 1) / CILANTRO_COMPUTE_GROUP_SIZE;
+        computeShader->Compute (groupSize, 1, 1);
 
-    // dispatch compute shader
-    GLuint groupSize = (static_cast<GLuint>(meshObject->GetMesh ()->GetVertexCount ()) + CILANTRO_COMPUTE_GROUP_SIZE - 1) / CILANTRO_COMPUTE_GROUP_SIZE;
-    computeShader->Compute (groupSize, 1, 1);
+        // read back AABB from compute shader
+        glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->aabbSSBO);
+        glGetBufferSubData (GL_SHADER_STORAGE_BUFFER, 0, sizeof (SGlEncodedAABB), &aabbGPU);
+        
+        // redo the bit flip for the float representation
+        auto toFloat = [](std::uint32_t u) -> float {
+            std::uint32_t bits = (u & 0x80000000u)
+                ? (u & 0x7FFFFFFFu)
+                : ~u;
+            return std::bit_cast<float>(bits);
+        };
 
-    // read back AABB from compute shader
-    glBindBuffer (GL_SHADER_STORAGE_BUFFER, b->aabbSSBO);
-    glGetBufferSubData (GL_SHADER_STORAGE_BUFFER, 0, sizeof (SGlEncodedAABB), &aabbGPU);
-    
-    // redo the bit flip for the float representation
-    auto toFloat = [](std::uint32_t u) -> float {
-        std::uint32_t bits = (u & 0x80000000u)
-            ? (u & 0x7FFFFFFFu)
-            : ~u;
-        return std::bit_cast<float>(bits);
-    };
+        // create the AABB object
+        aabb.AddVertex (Vector3f (toFloat (aabbGPU.minBits[0]), toFloat (aabbGPU.minBits[1]), toFloat (aabbGPU.minBits[2])));
+        aabb.AddVertex (Vector3f (toFloat (aabbGPU.maxBits[0]), toFloat (aabbGPU.maxBits[1]), toFloat (aabbGPU.maxBits[2])));
 
-    // create the AABB object
-    aabb.AddVertex (Vector3f (toFloat (aabbGPU.minBits[0]), toFloat (aabbGPU.minBits[1]), toFloat (aabbGPU.minBits[2])));
-    aabb.AddVertex (Vector3f (toFloat (aabbGPU.maxBits[0]), toFloat (aabbGPU.maxBits[1]), toFloat (aabbGPU.maxBits[2])));
+        return aabb;
 
-    return aabb;
-
-#else
-
-    // fall back to CPU calculation
-    return Renderer::CalculateAABB (meshObject);
-
-#endif
+    }
+    else
+    {
+        // fall back to CPU calculation
+        return Renderer::CalculateAABB (meshObject);
+    }
 }
 
 void GLRenderer::Update (std::shared_ptr<Material> material, unsigned int textureUnit)
@@ -899,11 +901,14 @@ std::shared_ptr<IFramebuffer> GLRenderer::CreateFramebuffer (unsigned int width,
 
     if (multisampleEnabled)
     {
-#if (CILANTRO_GL_VERSION <= 150)
-        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "OpenGL 3.2 required for multisample framebuffers";
-#else
-        framebuffer = std::make_shared<GLMultisampleFramebuffer> (width, height, rgbTextureCount, rgbaTextureCount, depthBufferArrayTextureCount, depthStencilRenderbufferEnabled);
-#endif
+        if (GLUtils::GetGLSLVersion ().versionNumber <= 150)
+        {
+            LogMessage (MSG_LOCATION, EXIT_FAILURE) << "OpenGL 3.2 required for multisample framebuffers";
+        }
+        else 
+        {
+            framebuffer = std::make_shared<GLMultisampleFramebuffer> (width, height, rgbTextureCount, rgbaTextureCount, depthBufferArrayTextureCount, depthStencilRenderbufferEnabled);
+        }
     }
     else
     {
@@ -1113,9 +1118,10 @@ void GLRenderer::InitializeShaderLibrary ()
     GetGameScene ()->GetGame ()->GetResourceManager ()->Load<GLShader> ("shadowmap_fragment_shader", "shaders/shadowmap.fs", EShaderType::FRAGMENT_SHADER);
     GetGameScene ()->GetGame ()->GetResourceManager ()->Load<GLShader> ("aabb_vertex_shader", "shaders/aabb.vs", EShaderType::VERTEX_SHADER);
     GetGameScene ()->GetGame ()->GetResourceManager ()->Load<GLShader> ("aabb_fragment_shader", "shaders/aabb.fs", EShaderType::FRAGMENT_SHADER);
-#if (CILANTRO_GL_VERSION >= 430)    
-    GetGameScene ()->GetGame ()->GetResourceManager ()->Load<GLShader> ("aabb_compute_shader", "shaders/aabb.cs", EShaderType::COMPUTE_SHADER);
-#endif
+    if (GLUtils::GetGLSLVersion ().versionNumber >= 430)
+    {
+        GetGameScene ()->GetGame ()->GetResourceManager ()->Load<GLShader> ("aabb_compute_shader", "shaders/aabb.cs", EShaderType::COMPUTE_SHADER);
+    }
 
     // PBR model (forward)
     p = Create<GLShaderProgram> ("pbr_forward_shader");
@@ -1123,28 +1129,30 @@ void GLRenderer::InitializeShaderLibrary ()
     p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("pbr_forward_fragment_shader"));
     p->Link ();
     p->Use ();
-#if (CILANTRO_GL_VERSION < 330)
-    glBindAttribLocation(p->GetProgramId (), 0, "vPosition");
-    glBindAttribLocation(p->GetProgramId (), 1, "vNormal");
-    glBindAttribLocation(p->GetProgramId (), 2, "vUV");
-    glBindAttribLocation(p->GetProgramId (), 3, "vTangent");
-    glBindAttribLocation(p->GetProgramId (), 4, "vBitangent");
-#endif
-#if (CILANTRO_GL_VERSION < 420)
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tAlbedo"), 0);
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tNormal"), 1);
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tMetallic"), 2);
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tRoughness"), 3);
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tAO"), 4);
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 5);
-#endif
+    if (GLUtils::GetGLSLVersion ().versionNumber < 330)
+    {
+        glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
+        glBindAttribLocation (p->GetProgramId (), 1, "vNormal");
+        glBindAttribLocation (p->GetProgramId (), 2, "vUV");
+        glBindAttribLocation (p->GetProgramId (), 3, "vTangent");
+        glBindAttribLocation (p->GetProgramId (), 4, "vBitangent");
+    }
+    if (GLUtils::GetGLSLVersion ().versionNumber < 430)
+    {
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tAlbedo"), 0);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tNormal"), 1);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tMetallic"), 2);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tRoughness"), 3);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tAO"), 4);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 5);
+    }
     p->BindUniformBlock ("UniformMatricesBlock", EGlUBOType::UBO_MATRICES);
     p->BindUniformBlock ("UniformPointLightsBlock", EGlUBOType::UBO_POINTLIGHTS);
     p->BindUniformBlock ("UniformDirectionalLightsBlock", EGlUBOType::UBO_DIRECTIONALLIGHTS);
     p->BindUniformBlock ("UniformSpotLightsBlock", EGlUBOType::UBO_SPOTLIGHTS);
     p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EGlUBOType::UBO_DIRECTIONALLIGHTVIEWMATRICES);
     p->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
-    CheckGLError (MSG_LOCATION);
+    GLUtils::CheckGLError (MSG_LOCATION);
 
     // PBR model (deferred, geometry pass)
     p = Create<GLShaderProgram> ("pbr_deferred_geometrypass_shader");
@@ -1152,23 +1160,25 @@ void GLRenderer::InitializeShaderLibrary ()
     p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("pbr_deferred_geometrypass_fragment_shader"));
     p->Link ();
     p->Use ();
-#if (CILANTRO_GL_VERSION < 330)
-    glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
-    glBindAttribLocation (p->GetProgramId (), 1, "vNormal");
-    glBindAttribLocation (p->GetProgramId (), 2, "vUV");
-    glBindAttribLocation (p->GetProgramId (), 3, "vTangent");
-    glBindAttribLocation (p->GetProgramId (), 4, "vBitangent");
-#endif
-#if (CILANTRO_GL_VERSION < 420)
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tAlbedo"), 0);
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tNormal"), 1);
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tMetallic"), 2);
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tRoughness"), 3);
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tAO"), 4);
-#endif
+    if (GLUtils::GetGLSLVersion ().versionNumber < 330)
+    {
+        glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
+        glBindAttribLocation (p->GetProgramId (), 1, "vNormal");
+        glBindAttribLocation (p->GetProgramId (), 2, "vUV");
+        glBindAttribLocation (p->GetProgramId (), 3, "vTangent");
+        glBindAttribLocation (p->GetProgramId (), 4, "vBitangent");
+    }
+    if (GLUtils::GetGLSLVersion ().versionNumber < 430)
+    {
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tAlbedo"), 0);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tNormal"), 1);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tMetallic"), 2);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tRoughness"), 3);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tAO"), 4);
+    }
     p->BindUniformBlock ("UniformMatricesBlock", EGlUBOType::UBO_MATRICES);
     p->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
-    CheckGLError (MSG_LOCATION);
+    GLUtils::CheckGLError (MSG_LOCATION);
 
     // PBR model (deferred, lighting pass)
     p = Create<GLShaderProgram> ("pbr_deferred_lightingpass_shader");
@@ -1176,23 +1186,25 @@ void GLRenderer::InitializeShaderLibrary ()
     p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("pbr_deferred_lightingpass_fragment_shader"));
     p->Link ();
     p->Use ();
-#if (CILANTRO_GL_VERSION < 330)
-    glBindAttribLocation(p->GetProgramId (), 0, "vPosition");
-    glBindAttribLocation(p->GetProgramId (), 1, "vTextureCoordinates");
-#endif
-#if (CILANTRO_GL_VERSION < 420)
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tPosition"), 0);
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tNormal"), 1);
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tAlbedo"), 2);
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tMetallicRoughnessAO"), 3);
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tUnused"), 4);
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 5);
-#endif
+    if (GLUtils::GetGLSLVersion ().versionNumber < 330)
+    {
+        glBindAttribLocation(p->GetProgramId (), 0, "vPosition");
+        glBindAttribLocation(p->GetProgramId (), 1, "vTextureCoordinates");
+    }
+    if (GLUtils::GetGLSLVersion ().versionNumber < 430)
+    {
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tPosition"), 0);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tNormal"), 1);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tAlbedo"), 2);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tMetallicRoughnessAO"), 3);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tUnused"), 4);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 5);
+    }
     p->BindUniformBlock ("UniformPointLightsBlock", EGlUBOType::UBO_POINTLIGHTS);
     p->BindUniformBlock ("UniformDirectionalLightsBlock", EGlUBOType::UBO_DIRECTIONALLIGHTS);
     p->BindUniformBlock ("UniformSpotLightsBlock", EGlUBOType::UBO_SPOTLIGHTS);
     p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EGlUBOType::UBO_DIRECTIONALLIGHTVIEWMATRICES);  
-    CheckGLError (MSG_LOCATION);
+    GLUtils::CheckGLError (MSG_LOCATION);
 
     // Blinn-Phong model (forward)
     p = Create<GLShaderProgram> ("blinnphong_forward_shader");
@@ -1200,27 +1212,29 @@ void GLRenderer::InitializeShaderLibrary ()
     p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("blinnphong_forward_fragment_shader"));
     p->Link ();
     p->Use ();
-#if (CILANTRO_GL_VERSION < 330)	
-    glBindAttribLocation(p->GetProgramId (), 0, "vPosition");
-    glBindAttribLocation(p->GetProgramId (), 1, "vNormal");
-    glBindAttribLocation(p->GetProgramId (), 2, "vUV");
-    glBindAttribLocation(p->GetProgramId (), 3, "vTangent");
-    glBindAttribLocation(p->GetProgramId (), 4, "vBitangent");
-#endif
-#if (CILANTRO_GL_VERSION < 420)
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDiffuse"), 0);
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tNormal"), 1);
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tSpecular"), 2);
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tEmissive"), 3);
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 4);
-#endif
+    if (GLUtils::GetGLSLVersion ().versionNumber < 330)
+    {
+        glBindAttribLocation(p->GetProgramId (), 0, "vPosition");
+        glBindAttribLocation(p->GetProgramId (), 1, "vNormal");
+        glBindAttribLocation(p->GetProgramId (), 2, "vUV");
+        glBindAttribLocation(p->GetProgramId (), 3, "vTangent");
+        glBindAttribLocation(p->GetProgramId (), 4, "vBitangent");
+    }
+    if (GLUtils::GetGLSLVersion ().versionNumber < 430)
+    {
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDiffuse"), 0);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tNormal"), 1);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tSpecular"), 2);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tEmissive"), 3);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 4);
+    }
     p->BindUniformBlock ("UniformMatricesBlock", EGlUBOType::UBO_MATRICES);
     p->BindUniformBlock ("UniformPointLightsBlock", EGlUBOType::UBO_POINTLIGHTS);
     p->BindUniformBlock ("UniformDirectionalLightsBlock", EGlUBOType::UBO_DIRECTIONALLIGHTS);
     p->BindUniformBlock ("UniformSpotLightsBlock", EGlUBOType::UBO_SPOTLIGHTS); 
     p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EGlUBOType::UBO_DIRECTIONALLIGHTVIEWMATRICES);
     p->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
-    CheckGLError (MSG_LOCATION);
+    GLUtils::CheckGLError (MSG_LOCATION);
     
     // Blinn-Phong model (deferred, geometry pass)
     p = Create<GLShaderProgram> ("blinnphong_deferred_geometrypass_shader");
@@ -1228,22 +1242,24 @@ void GLRenderer::InitializeShaderLibrary ()
     p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("blinnphong_deferred_geometrypass_fragment_shader"));
     p->Link ();
     p->Use ();
-#if (CILANTRO_GL_VERSION < 330)
-    glBindAttribLocation(p->GetProgramId (), 0, "vPosition");
-    glBindAttribLocation(p->GetProgramId (), 1, "vNormal");
-    glBindAttribLocation(p->GetProgramId (), 2, "vUV");
-    glBindAttribLocation(p->GetProgramId (), 3, "vTangent");
-    glBindAttribLocation(p->GetProgramId (), 4, "vBitangent");
-#endif
-#if (CILANTRO_GL_VERSION < 420)
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDiffuse"), 0);
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tNormal"), 1);
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tSpecular"), 2);
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tEmissive"), 3);
-#endif    
+    if (GLUtils::GetGLSLVersion ().versionNumber < 330)
+    {
+        glBindAttribLocation(p->GetProgramId (), 0, "vPosition");
+        glBindAttribLocation(p->GetProgramId (), 1, "vNormal");
+        glBindAttribLocation(p->GetProgramId (), 2, "vUV");
+        glBindAttribLocation(p->GetProgramId (), 3, "vTangent");
+        glBindAttribLocation(p->GetProgramId (), 4, "vBitangent");
+    }
+    if (GLUtils::GetGLSLVersion ().versionNumber < 430)
+    {
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDiffuse"), 0);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tNormal"), 1);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tSpecular"), 2);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tEmissive"), 3);
+    }    
     p->BindUniformBlock ("UniformMatricesBlock", EGlUBOType::UBO_MATRICES);
     p->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
-    CheckGLError (MSG_LOCATION);
+    GLUtils::CheckGLError (MSG_LOCATION);
 
     // Blinn-Phong model (deferred, lighting pass)
     p = Create<GLShaderProgram> ("blinnphong_deferred_lightingpass_shader");
@@ -1251,23 +1267,25 @@ void GLRenderer::InitializeShaderLibrary ()
     p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("blinnphong_deferred_lightingpass_fragment_shader"));
     p->Link ();
     p->Use ();
-#if (CILANTRO_GL_VERSION < 330)
-    glBindAttribLocation(p->GetProgramId (), 0, "vPosition");
-    glBindAttribLocation(p->GetProgramId (), 1, "vTextureCoordinates");
-#endif
-#if (CILANTRO_GL_VERSION < 420)
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tPosition"), 0);
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tNormal"), 1);
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDiffuse"), 2);
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tEmissive"), 3);
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tSpecular"), 4);
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 5);
-#endif
+    if (GLUtils::GetGLSLVersion ().versionNumber < 330)
+    {
+        glBindAttribLocation(p->GetProgramId (), 0, "vPosition");
+        glBindAttribLocation(p->GetProgramId (), 1, "vTextureCoordinates");
+    }
+    if (GLUtils::GetGLSLVersion ().versionNumber < 430)
+    {
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tPosition"), 0);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tNormal"), 1);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDiffuse"), 2);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tEmissive"), 3);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tSpecular"), 4);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 5);
+    }
     p->BindUniformBlock ("UniformPointLightsBlock", EGlUBOType::UBO_POINTLIGHTS);
     p->BindUniformBlock ("UniformDirectionalLightsBlock", EGlUBOType::UBO_DIRECTIONALLIGHTS);
     p->BindUniformBlock ("UniformSpotLightsBlock", EGlUBOType::UBO_SPOTLIGHTS);   
     p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EGlUBOType::UBO_DIRECTIONALLIGHTVIEWMATRICES); 
-    CheckGLError (MSG_LOCATION);
+    GLUtils::CheckGLError (MSG_LOCATION);
 
     // Screen quad rendering
     p = Create<GLShaderProgram> ("flatquad_shader");
@@ -1275,14 +1293,16 @@ void GLRenderer::InitializeShaderLibrary ()
     p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("flatquad_fragment_shader"));   
     p->Link ();
     p->Use (); 
-#if (CILANTRO_GL_VERSION < 330)	
-    glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
-    glBindAttribLocation (p->GetProgramId (), 1, "vTextureCoordinates");
-#endif    
-#if (CILANTRO_GL_VERSION < 420)
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "fScreenTexture"), 0);
-#endif
-    CheckGLError (MSG_LOCATION);
+    if (GLUtils::GetGLSLVersion ().versionNumber < 330)
+    {
+        glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
+        glBindAttribLocation (p->GetProgramId (), 1, "vTextureCoordinates");
+    }
+    if (GLUtils::GetGLSLVersion ().versionNumber < 430)
+    {
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "fScreenTexture"), 0);
+    }
+    GLUtils::CheckGLError (MSG_LOCATION);
 
     // Post-processing HDR
     p = Create<GLShaderProgram> ("post_hdr_shader");
@@ -1290,14 +1310,16 @@ void GLRenderer::InitializeShaderLibrary ()
     p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("post_hdr_fragment_shader"));
     p->Link ();
     p->Use ();
-#if (CILANTRO_GL_VERSION < 330)	
-    glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
-    glBindAttribLocation (p->GetProgramId (), 1, "vTextureCoordinates");
-#endif
-#if (CILANTRO_GL_VERSION < 420)
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "fScreenTexture"), 0);
-#endif
-    CheckGLError (MSG_LOCATION);
+    if (GLUtils::GetGLSLVersion ().versionNumber < 330)
+    {
+        glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
+        glBindAttribLocation (p->GetProgramId (), 1, "vTextureCoordinates");
+    }
+    if (GLUtils::GetGLSLVersion ().versionNumber < 430)
+    {
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "fScreenTexture"), 0);
+    }
+    GLUtils::CheckGLError (MSG_LOCATION);
 
     // Post-processing gamma
     p = Create<GLShaderProgram> ("post_gamma_shader");
@@ -1305,14 +1327,16 @@ void GLRenderer::InitializeShaderLibrary ()
     p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("post_gamma_fragment_shader"));   
     p->Link ();
     p->Use (); 
-#if (CILANTRO_GL_VERSION < 330)	
-    glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
-    glBindAttribLocation (p->GetProgramId (), 1, "vTextureCoordinates");
-#endif
-#if (CILANTRO_GL_VERSION < 420)
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "fScreenTexture"), 0);
-#endif
-    CheckGLError (MSG_LOCATION);
+    if (GLUtils::GetGLSLVersion ().versionNumber < 330)
+    {
+        glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
+        glBindAttribLocation (p->GetProgramId (), 1, "vTextureCoordinates");
+    }
+    if (GLUtils::GetGLSLVersion ().versionNumber < 430)
+    {
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "fScreenTexture"), 0);
+    }
+    GLUtils::CheckGLError (MSG_LOCATION);
 
     // Post-processing fxaa
     p = Create<GLShaderProgram> ("post_fxaa_shader");
@@ -1320,14 +1344,16 @@ void GLRenderer::InitializeShaderLibrary ()
     p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("post_fxaa_fragment_shader"));   
     p->Link ();
     p->Use (); 
-#if (CILANTRO_GL_VERSION < 330)	
-    glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
-    glBindAttribLocation (p->GetProgramId (), 1, "vTextureCoordinates");
-#endif
-#if (CILANTRO_GL_VERSION < 420)
-    glUniform1i (glGetUniformLocation (p->GetProgramId (), "fScreenTexture"), 0);
-#endif
-    CheckGLError (MSG_LOCATION);
+    if (GLUtils::GetGLSLVersion ().versionNumber < 330)
+    {
+        glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
+        glBindAttribLocation (p->GetProgramId (), 1, "vTextureCoordinates");
+    }
+    if (GLUtils::GetGLSLVersion ().versionNumber < 430)
+    {
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "fScreenTexture"), 0);
+    }
+    GLUtils::CheckGLError (MSG_LOCATION);
 
     // Shadow map (directional)
     p = Create<GLShaderProgram> ("shadowmap_directional_shader");
@@ -1336,14 +1362,13 @@ void GLRenderer::InitializeShaderLibrary ()
     p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("shadowmap_fragment_shader"));
     p->Link ();
     p->Use (); 
-#if (CILANTRO_GL_VERSION < 330)	
-    glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
-#endif
-#if (CILANTRO_GL_VERSION < 420)
-#endif
+    if (GLUtils::GetGLSLVersion ().versionNumber < 330)
+    {
+        glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
+    }
     p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EGlUBOType::UBO_DIRECTIONALLIGHTVIEWMATRICES);
     p->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
-    CheckGLError (MSG_LOCATION);
+    GLUtils::CheckGLError (MSG_LOCATION);
 
     // AABB rendering
     p = Create<GLShaderProgram> ("aabb_shader");
@@ -1351,25 +1376,27 @@ void GLRenderer::InitializeShaderLibrary ()
     p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("aabb_fragment_shader"));
     p->Link ();
     p->Use ();
-#if (CILANTRO_GL_VERSION < 330)
-    glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
-#endif
+    if (GLUtils::GetGLSLVersion ().versionNumber < 330)
+    {
+        glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
+    }
     p->BindUniformBlock ("UniformMatricesBlock", EGlUBOType::UBO_MATRICES);
-    CheckGLError (MSG_LOCATION);
+    GLUtils::CheckGLError (MSG_LOCATION);
 
-#if (CILANTRO_GL_VERSION >= 430)    
-    // AABB compute shader
-    p = Create<GLShaderProgram> ("aabb_compute_shader");
-    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("aabb_compute_shader"));
-    p->Link ();
-    p->Use ();
-    p->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
-    p->BindShaderStorageBlock ("VertexBufferBlock", EGlSSBOType::SSBO_VERTICES);  
-    p->BindShaderStorageBlock ("BoneIndicesBufferBlock", EGlSSBOType::SSBO_BONEINDICES);
-    p->BindShaderStorageBlock ("BoneWeightsBufferBlock", EGlSSBOType::SSBO_BONEWEIGHTS);
-    p->BindShaderStorageBlock ("AABBBufferBlock", EGlSSBOType::SSBO_AABB);
-    CheckGLError (MSG_LOCATION);
-#endif
+    if (GLUtils::GetGLSLVersion ().versionNumber >= 430)
+    {  
+        // AABB compute shader
+        p = Create<GLShaderProgram> ("aabb_compute_shader");
+        p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("aabb_compute_shader"));
+        p->Link ();
+        p->Use ();
+        p->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
+        p->BindShaderStorageBlock ("VertexBufferBlock", EGlSSBOType::SSBO_VERTICES);  
+        p->BindShaderStorageBlock ("BoneIndicesBufferBlock", EGlSSBOType::SSBO_BONEINDICES);
+        p->BindShaderStorageBlock ("BoneWeightsBufferBlock", EGlSSBOType::SSBO_BONEWEIGHTS);
+        p->BindShaderStorageBlock ("AABBBufferBlock", EGlSSBOType::SSBO_AABB);
+        GLUtils::CheckGLError (MSG_LOCATION);
+    }
 
 }
 
@@ -1381,7 +1408,7 @@ void GLRenderer::InitializeMatrixUniformBuffers ()
     glBufferData (GL_UNIFORM_BUFFER, sizeof (SGlUniformMatrixBuffer), NULL, GL_DYNAMIC_DRAW);
     glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUBOType::UBO_MATRICES), m_uniformBuffers->UBO[UBO_MATRICES]);
 
-    CheckGLError (MSG_LOCATION);
+    GLUtils::CheckGLError (MSG_LOCATION);
 }
 
 void GLRenderer::LoadMatrixUniformBuffers (std::shared_ptr<Camera> camera)
@@ -1415,7 +1442,7 @@ void GLRenderer::InitializeLightViewMatrixUniformBuffers ()
     glBufferData (GL_UNIFORM_BUFFER, 16 * sizeof (GLfloat) * CILANTRO_MAX_DIRECTIONAL_LIGHTS, NULL, GL_DYNAMIC_DRAW);
     glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUBOType::UBO_DIRECTIONALLIGHTVIEWMATRICES), m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTVIEWMATRICES]);
 
-    CheckGLError (MSG_LOCATION);
+    GLUtils::CheckGLError (MSG_LOCATION);
 }
 
 void GLRenderer::LoadLightViewMatrixUniformBuffers ()
@@ -1463,12 +1490,15 @@ void GLRenderer::DeinitializeObjectBuffers ()
     for (auto&& buffer : m_sceneGeometryBuffers)
     {
         glDeleteBuffers (1, &buffer.second->boneTransformationsUBO);
-#if (CILANTRO_GL_VERSION >= 430)        
-        glDeleteBuffers (1, &buffer.second->vertexPositionsSSBO);
-        glDeleteBuffers (1, &buffer.second->boneIndicesSSBO);
-        glDeleteBuffers (1, &buffer.second->boneWeightsSSBO);
-        glDeleteBuffers (1, &buffer.second->aabbSSBO);
-#endif
+        
+        if (GLUtils::GetGLSLVersion ().versionNumber >= 430)
+        {
+            glDeleteBuffers (1, &buffer.second->vertexPositionsSSBO);
+            glDeleteBuffers (1, &buffer.second->boneIndicesSSBO);
+            glDeleteBuffers (1, &buffer.second->boneWeightsSSBO);
+            glDeleteBuffers (1, &buffer.second->aabbSSBO);
+        }    
+
         glDeleteBuffers (CILANTRO_VBO_COUNT, buffer.second->VBO);
         glDeleteBuffers (1, &buffer.second->EBO);
         glDeleteVertexArrays (1, &buffer.second->VAO);
@@ -1523,7 +1553,7 @@ void GLRenderer::InitializeQuadGeometryBuffer ()
 
     m_surfaceGeometryBuffer->indexCount = 6;
 
-    CheckGLError (MSG_LOCATION);
+    GLUtils::CheckGLError (MSG_LOCATION);
 }
 
 void GLRenderer::DeinitializeQuadGeometryBuffer ()
@@ -1601,16 +1631,6 @@ void GLRenderer::RenderGeometryBuffer (SGlGeometryBuffers* buffer, GLuint type)
     
     // unbind
     glBindVertexArray (0);
-}
-
-void GLRenderer::CheckGLError (const std::string& location)
-{
-    GLuint errorCode;
-
-    if ((errorCode = glGetError ()) != GL_NO_ERROR)
-    {
-        LogMessage (location, EXIT_FAILURE) << "glError:" << std::hex << std::showbase << errorCode;
-    }
 }
 
 } // namespace cilantro

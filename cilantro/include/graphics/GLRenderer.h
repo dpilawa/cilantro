@@ -20,7 +20,7 @@ struct SGlMaterialTextureUnits;
 
 typedef std::unordered_map <handle_t, SGlGeometryBuffers*> TObjectGeometryBufferMap;
 typedef std::unordered_map <handle_t, SGlMaterialTextureUnits*> TMaterialTextureUnitsMap;
-typedef std::unordered_map<handle_t, size_t> TLightHandleIdxMap;
+typedef std::unordered_map <handle_t, size_t> TLightHandleIdxMap;
 
 struct SGlGeometryBuffers
 {
@@ -219,8 +219,6 @@ private:
     void UpdateLightBufferRecursive (handle_t objectHandle);
 
     void RenderGeometryBuffer (SGlGeometryBuffers* buffer, GLuint type); 
-  
-    void CheckGLError (const std::string& location);
 
 private:
     // buffers with geometry data to be passed to GPU (key is object handle)

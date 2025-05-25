@@ -4,6 +4,8 @@
 #include "scene/GameScene.h"
 #include "system/Game.h"
 #include "system/LogMessage.h"
+#include <vector>
+#include <tuple>
 
 namespace cilantro {
 
@@ -24,10 +26,10 @@ GLFWRenderer::~GLFWRenderer ()
 void GLFWRenderer::Initialize ()
 {
     GLFWmonitor* monitor;
-    GLint data;
     
     // initialize GLFW
     glfwInit ();
+    DetectGLVersion ();
 
     // check fullscreen
     if (m_isFullscreen)
@@ -45,19 +47,10 @@ void GLFWRenderer::Initialize ()
     // set up GL & window properties
 #ifdef CILANTRO_BUILDING_GLES
     glfwWindowHint (GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
-    glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, CILANTRO_GLES_VERSION_MAJOR);
-	glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, CILANTRO_GLES_VERSION_MINOR);
-#else
-    glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, CILANTRO_GL_VERSION_MAJOR);
-	glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, CILANTRO_GL_VERSION_MINOR);
 #endif    
     glfwWindowHint (GLFW_RESIZABLE, m_isResizable);
     glfwWindowHint (GLFW_VISIBLE, 1);
-#if (CILANTRO_GL_VERSION < 150)
-    glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_ANY_PROFILE);
-#else
     glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-#endif
     glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint (GLFW_COCOA_RETINA_FRAMEBUFFER, GL_TRUE);
 
@@ -93,53 +86,8 @@ void GLFWRenderer::Initialize ()
     {
         LogMessage (MSG_LOCATION, EXIT_FAILURE) << "GL context initialization failed";
     }
+
     glGetError(	);
-    // display GL version information
-    LogMessage (MSG_LOCATION) << "Version:" << (char*) glGetString (GL_VERSION);
-    LogMessage (MSG_LOCATION) << "Shader language version:" << (char*) glGetString (GL_SHADING_LANGUAGE_VERSION);
-    LogMessage (MSG_LOCATION) << "Renderer:" << (char*) glGetString (GL_RENDERER);
-
-    glGetIntegerv (GL_MAX_GEOMETRY_SHADER_INVOCATIONS, &data);
-    if (glGetError() == GL_NO_ERROR)
-    {
-        LogMessage (MSG_LOCATION) << "GL_MAX_GEOMETRY_SHADER_INVOCATIONS =" << std::to_string (data);
-    }
-
-    glGetIntegerv (GL_MAX_ARRAY_TEXTURE_LAYERS, &data);
-    if (glGetError() == GL_NO_ERROR)
-    {
-        LogMessage (MSG_LOCATION) << "GL_MAX_ARRAY_TEXTURE_LAYERS =" << std::to_string (data);
-    }
-
-    glGetIntegerv (GL_MAX_VERTEX_OUTPUT_COMPONENTS, &data);
-    if (glGetError() == GL_NO_ERROR)
-    {
-        LogMessage (MSG_LOCATION) << "GL_MAX_VERTEX_OUTPUT_COMPONENTS =" << std::to_string (data);
-    }
-
-    glGetIntegerv (GL_MAX_FRAMEBUFFER_LAYERS, &data);
-    if (glGetError() == GL_NO_ERROR)
-    {
-        LogMessage (MSG_LOCATION) << "GL_MAX_FRAMEBUFFER_LAYERS =" << std::to_string (data); 
-    }
-
-    glGetIntegerv (GL_MAX_FRAMEBUFFER_WIDTH, &data);
-    if (glGetError() == GL_NO_ERROR)
-    {
-        LogMessage (MSG_LOCATION) << "GL_MAX_FRAMEBUFFER_WIDTH =" << std::to_string (data); 
-    }
-
-    glGetIntegerv (GL_MAX_FRAMEBUFFER_HEIGHT, &data);
-    if (glGetError() == GL_NO_ERROR)
-    {
-        LogMessage (MSG_LOCATION) << "GL_MAX_FRAMEBUFFER_HEIGHT =" << std::to_string (data); 
-    }
-
-    glGetIntegerv (GL_MAX_UNIFORM_BLOCK_SIZE, &data);
-    if (glGetError() == GL_NO_ERROR)
-    {
-        LogMessage (MSG_LOCATION) << "GL_MAX_UNIFORM_BLOCK_SIZE =" << std::to_string (data); 
-    }
 
     LogMessage (MSG_LOCATION) << "GLFWRenderer started";
 
@@ -165,6 +113,31 @@ void GLFWRenderer::RenderFrame ()
     if (glfwWindowShouldClose (window))
     {
         GetGameScene ()->GetGame ()->Stop ();
+    }
+}
+
+void GLFWRenderer::DetectGLVersion ()
+{
+    std::vector<std::pair<int,int>> candidates = {
+        {4,6},{4,5},{4,4},{4,3},{4,2},{4,1},{4,0},
+        {3,3},{3,2},{3,1},{3,0},
+        {2,1},{2,0}
+    };
+
+    for (auto [maj, min] : candidates) {
+        glfwDefaultWindowHints();
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, maj);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, min);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+
+        GLFWwindow* tmp = glfwCreateWindow(1,1,"", nullptr, nullptr);
+        if (tmp) {
+            std::string version = std::to_string(maj) + "." + std::to_string(min);
+            LogMessage(MSG_LOCATION) << "OpenGL version found:" << version;
+            glfwDestroyWindow(tmp);
+            break;
+        }
     }
 }
 

@@ -1,4 +1,4 @@
-#version %%CILANTRO_GL_VERSION%%
+#version %%CILANTRO_GLSL_VERSION%%
 
 #if (__VERSION__ >= 330)
 layout (location = 0) in vec2 vPosition;

@@ -7,10 +7,8 @@ project (cilantro)
 
 set(CILANTRO_GL_VERSION_MAJOR 4)
 set(CILANTRO_GL_VERSION_MINOR 6)
-set(CILANTRO_GL_VERSION 460) # 140=3.1, 150=3.2, 330=3.3, ..., 460=4.6
 set(CILANTRO_GLES_VERSION_MAJOR 3)
 set(CILANTRO_GLES_VERSION_MINOR 2)
-set(CILANTRO_GLES_VERSION "300 es")
 option(CILANTRO_BUILD_DLL "Build as shared library" ON)
 option(CILANTRO_BUILD_GLES "Build for GLES target" OFF)
 option(CILANTRO_WITH_GLFW "Build with GLFW extensions" ON)
@@ -26,7 +24,6 @@ option(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
 option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
 
 if(CILANTRO_BUILD_GLES)
-    set(GLAD_EXTENSIONS "GL_EXT_geometry_shader")
     set(GLAD_EXTENSIONS "GL_ARB_tessellation_shader")
     set(GLAD_EXTENSIONS "GL_ARB_geometry_shader4")
     set(GLAD_EXTENSIONS "GL_ARB_gpu_shader5")

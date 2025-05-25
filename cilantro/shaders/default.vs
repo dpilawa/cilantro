@@ -1,4 +1,4 @@
-#version %%CILANTRO_GL_VERSION%%
+#version %%CILANTRO_GLSL_VERSION%%
 
 /* vertex data */
 #if (__VERSION__ >= 330)
@@ -24,14 +24,14 @@ uniform mat4 mModel;
 uniform mat3 mNormal;
 
 /* view and projection matrices */
-layout (std140) uniform UniformMatricesBlock
+layout (std140, binding = %%UBO_MATRICES%%) uniform UniformMatricesBlock
 {
     mat4 mView;
     mat4 mProjection;
 };
 
 /* array of bone transformation matrices */
-layout (std140) uniform UniformBoneTransformationsBlock {
+layout (std140, binding = %%UBO_BONETRANSFORMATIONS%%) uniform UniformBoneTransformationsBlock {
     mat4 mBoneTransformations[%%CILANTRO_MAX_BONES%%];
 };
 

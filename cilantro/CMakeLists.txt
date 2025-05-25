@@ -7,10 +7,8 @@ include_directories ("${PROJECT_SOURCE_DIR}/ext/stb")
 include_directories ("${PROJECT_SOURCE_DIR}/ext/assimp/include")
 include_directories ("${PROJECT_SOURCE_DIR}/cilantro/include")
 
-add_compile_definitions(CILANTRO_GL_VERSION=${CILANTRO_GL_VERSION})
 add_compile_definitions(CILANTRO_GL_VERSION_MAJOR=${CILANTRO_GL_VERSION_MAJOR})
 add_compile_definitions(CILANTRO_GL_VERSION_MINOR=${CILANTRO_GL_VERSION_MINOR})
-add_compile_definitions(CILANTRO_GLES_VERSION="${CILANTRO_GLES_VERSION}")
 add_compile_definitions(CILANTRO_GLES_VERSION_MAJOR=${CILANTRO_GLES_VERSION_MAJOR})
 add_compile_definitions(CILANTRO_GLES_VERSION_MINOR=${CILANTRO_GLES_VERSION_MINOR})
 
@@ -23,35 +21,30 @@ if(CILANTRO_WITH_GLFW)
     )
 endif()
 
-if(CILANTRO_GL_VERSION GREATER 150)
-    set(CILANTRO_FILES ${CILANTRO_FILES}
-        include/graphics/GLMultisampleFramebuffer.h
-        src/graphics/GLMultisampleFramebuffer.cpp
-    )
-endif()
-
 set(CILANTRO_FILES ${CILANTRO_FILES}
 include/cilantroengine.h
 
 include/graphics/AABBRenderStage.h
-include/graphics/IFramebuffer.h
-include/graphics/Framebuffer.h
-include/graphics/GLFramebuffer.h
 include/graphics/DeferredGeometryRenderStage.h
 include/graphics/ForwardGeometryRenderStage.h
+include/graphics/Framebuffer.h
+include/graphics/GLFramebuffer.h
+include/graphics/GLRenderer.h
 include/graphics/GLShader.h
 include/graphics/GLShaderProgram.h
+include/graphics/GLMultisampleFramebuffer.h
+include/graphics/GLUtils.h
+include/graphics/IFramebuffer.h
 include/graphics/IRenderer.h
-include/graphics/Renderer.h
-include/graphics/GLRenderer.h
-include/graphics/SurfaceRenderStage.h
-include/graphics/ShadowMapRenderStage.h
 include/graphics/IRenderStage.h
-include/graphics/RenderStage.h
 include/graphics/IShader.h
 include/graphics/IShaderProgram.h
+include/graphics/Renderer.h
+include/graphics/RenderStage.h
 include/graphics/Shader.h
 include/graphics/ShaderProgram.h
+include/graphics/ShadowMapRenderStage.h
+include/graphics/SurfaceRenderStage.h
 include/input/InputController.h
 include/input/Input.h
 include/math/AABB.h
@@ -107,19 +100,21 @@ include/system/Message.h
 include/system/MessageBus.h
 
 src/graphics/AABBRenderStage.cpp
-src/graphics/Framebuffer.cpp
-src/graphics/GLFramebuffer.cpp
 src/graphics/DeferredGeometryRenderStage.cpp
 src/graphics/ForwardGeometryRenderStage.cpp
+src/graphics/Framebuffer.cpp
+src/graphics/GLFramebuffer.cpp
+src/graphics/GLRenderer.cpp
 src/graphics/GLShader.cpp
 src/graphics/GLShaderProgram.cpp
+src/graphics/GLMultisampleFramebuffer.cpp
+src/graphics/GLUtils.cpp
 src/graphics/Renderer.cpp
-src/graphics/GLRenderer.cpp
 src/graphics/RenderStage.cpp
-src/graphics/SurfaceRenderStage.cpp
-src/graphics/ShadowMapRenderStage.cpp
 src/graphics/Shader.cpp
 src/graphics/ShaderProgram.cpp
+src/graphics/ShadowMapRenderStage.cpp
+src/graphics/SurfaceRenderStage.cpp
 src/input/InputController.cpp
 src/math/AABB.cpp
 src/math/Bezier.cpp

@@ -27,8 +27,6 @@ void Shader::Load (const std::string& path)
     ss << f.rdbuf ();
     m_shaderSourceParametrized = ss.str ();
     m_shaderSource = m_shaderSourceParametrized;
-
-    this->SetDefaultParameters ();
 }
 
 void Shader::SetParameter (const std::string& parameter, const std::string& value)
@@ -49,12 +47,7 @@ void Shader::SetParameter (const std::string& parameter, const std::string& valu
 }
 
 void Shader::SetDefaultParameters ()
-{
-#ifdef CILANTRO_BUILDING_GLES    
-    SetParameter ("%%CILANTRO_GL_VERSION%%", CILANTRO_GLES_VERSION);
-#else
-    SetParameter ("%%CILANTRO_GL_VERSION%%", std::to_string (CILANTRO_GL_VERSION));
-#endif    
+{  
     SetParameter ("%%CILANTRO_MAX_BONES%%", std::to_string (CILANTRO_MAX_BONES));
     SetParameter ("%%CILANTRO_MAX_BONE_INFLUENCES%%", std::to_string (CILANTRO_MAX_BONE_INFLUENCES));
     SetParameter ("%%CILANTRO_MAX_POINT_LIGHTS%%", std::to_string (CILANTRO_MAX_POINT_LIGHTS));

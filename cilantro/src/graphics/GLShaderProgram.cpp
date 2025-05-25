@@ -1,5 +1,6 @@
 #include "graphics/GLShaderProgram.h"
 #include "graphics/GLShader.h"
+#include "graphics/GLUtils.h"
 #include "system/LogMessage.h"
 #include "math/Vector2f.h"
 #include "math/Vector3f.h"
@@ -201,33 +202,36 @@ void GLShaderProgram::BindUniformBlock (const std::string& blockName, EGlUBOType
 
 void GLShaderProgram::BindShaderStorageBlock(const std::string& blockName, EGlSSBOType bp)
 {
-#if (CILANTRO_GL_VERSION >= 430)    
-    GLuint blockIndex = glGetProgramResourceIndex(m_glShaderProgramId, GL_SHADER_STORAGE_BLOCK, blockName.c_str());
-    GLint actualBinding = -1;
-
-    if (blockIndex != GL_INVALID_INDEX)
+    if (GLUtils::GetGLSLVersion ().versionNumber >= 430)
     {
-        glShaderStorageBlockBinding(m_glShaderProgramId, blockIndex, static_cast<GLuint>(bp));
+        GLuint blockIndex = glGetProgramResourceIndex(m_glShaderProgramId, GL_SHADER_STORAGE_BLOCK, blockName.c_str());
+        GLint actualBinding = -1;
 
-        GLenum props[] = { GL_BUFFER_BINDING };
-        GLint values[1];
-        glGetProgramResourceiv(m_glShaderProgramId, GL_SHADER_STORAGE_BLOCK, blockIndex, 1, props, 1, nullptr, values);
-        actualBinding = values[0];
+        if (blockIndex != GL_INVALID_INDEX)
+        {
+            glShaderStorageBlockBinding(m_glShaderProgramId, blockIndex, static_cast<GLuint>(bp));
 
-        if (actualBinding != static_cast<GLint>(bp))
+            GLenum props[] = { GL_BUFFER_BINDING };
+            GLint values[1];
+            glGetProgramResourceiv(m_glShaderProgramId, GL_SHADER_STORAGE_BLOCK, blockIndex, 1, props, 1, nullptr, values);
+            actualBinding = values[0];
+
+            if (actualBinding != static_cast<GLint>(bp))
+            {
+                LogMessage(MSG_LOCATION, EXIT_FAILURE)
+                    << "Unable to bind SSBO block \"" << blockName << "\" to binding point " << static_cast<int>(bp);
+            }
+        }
+        else
         {
             LogMessage(MSG_LOCATION, EXIT_FAILURE)
-                << "Unable to bind SSBO block \"" << blockName << "\" to binding point " << static_cast<int>(bp);
+                << "SSBO block \"" << blockName << "\" not found in shader program \"" << this->GetName() << "\"";
         }
     }
     else
     {
-        LogMessage(MSG_LOCATION, EXIT_FAILURE)
-            << "SSBO block \"" << blockName << "\" not found in shader program \"" << this->GetName() << "\"";
+        LogMessage(MSG_LOCATION, EXIT_FAILURE) << "SSBO binding not supported in OpenGL version < 4.3";
     }
-#else
-    LogMessage(MSG_LOCATION, EXIT_FAILURE) << "SSBO binding not supported in OpenGL version < 4.3";
-#endif
 }
 
 

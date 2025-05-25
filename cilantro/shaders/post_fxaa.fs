@@ -1,4 +1,4 @@
-#version %%CILANTRO_GL_VERSION%%
+#version %%CILANTRO_GLSL_VERSION%%
 
 #define FXAA_REDUCE_MIN 1.0 / 128.0
 

@@ -14,6 +14,7 @@ struct IShader
     virtual void Compile () = 0;
 
     virtual void SetParameter (const std::string& parameter, const std::string& value) = 0;
+    virtual void SetDefaultParameters () = 0;
 };
 
 } // namespace cilantro

@@ -22,6 +22,8 @@ public:
 
 private:
 
+    void DetectGLVersion ();
+
     static void FramebufferResizeCallback (GLFWwindow* window, int width, int height);
 
     // GL window context

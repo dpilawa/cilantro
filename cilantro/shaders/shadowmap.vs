@@ -1,4 +1,4 @@
-#version %%CILANTRO_GL_VERSION%%
+#version %%CILANTRO_GLSL_VERSION%%
 
 /* vertex data */
 #if (__VERSION__ >= 330)
@@ -15,7 +15,7 @@ in vec4 vBoneWeights;
 uniform mat4 mModel;
 
 /* array of bone transformation matrices */
-layout (std140) uniform UniformBoneTransformationsBlock {
+layout (std140, binding = %%UBO_BONETRANSFORMATIONS%%) uniform UniformBoneTransformationsBlock {
     mat4 mBoneTransformations[%%CILANTRO_MAX_BONES%%];
 };
 
