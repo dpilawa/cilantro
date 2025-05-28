@@ -17,7 +17,7 @@ typedef size_t handle_t;
 #define CILANTRO_MAX_BONE_INFLUENCES        4
 #define CILANTRO_SHADOW_MAP_SIZE            4096
 #define CILANTRO_SHADOW_MAP_DEPTH           32
-#define CILANTRO_SHADOW_BIAS                0.005f
+#define CILANTRO_SHADOW_BIAS                0.0025f
 #define CILANTRO_MULTISAMPLE                4
 #define CILANTRO_COMPUTE_GROUP_SIZE         256
 
