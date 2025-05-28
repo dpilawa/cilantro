@@ -63,6 +63,7 @@ void GLShader::SetDefaultParameters ()
     SetParameter ("%%UBO_DIRECTIONALLIGHTS%%", std::to_string (static_cast<int> (EGlUBOType::UBO_DIRECTIONALLIGHTS)));
     SetParameter ("%%UBO_SPOTLIGHTS%%", std::to_string (static_cast<int> (EGlUBOType::UBO_SPOTLIGHTS)));
     SetParameter ("%%UBO_DIRECTIONALLIGHTVIEWMATRICES%%", std::to_string (static_cast<int> (EGlUBOType::UBO_DIRECTIONALLIGHTVIEWMATRICES)));
+    SetParameter ("%%UBO_SPOTLIGHTVIEWMATRICES%%", std::to_string (static_cast<int> (EGlUBOType::UBO_SPOTLIGHTVIEWMATRICES)));
     SetParameter ("%%UBO_BONETRANSFORMATIONS%%", std::to_string (static_cast<int> (EGlUBOType::UBO_BONETRANSFORMATIONS)));
 
     SetParameter ("%%SSBO_VERTICES%%", std::to_string (static_cast<int> (EGlSSBOType::SSBO_VERTICES)));

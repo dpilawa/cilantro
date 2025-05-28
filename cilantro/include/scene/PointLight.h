@@ -24,6 +24,9 @@ public:
     __EAPI float GetLinearAttenuationFactor () const;
     __EAPI float GetQuadraticAttenuationFactor () const;
 
+    // bounding sphere radius
+    __EAPI float GetBoundingSphereRadius (float threshold) const;
+
     // invoked by game loop on update
     __EAPI void OnUpdate (IRenderer& renderer);
 

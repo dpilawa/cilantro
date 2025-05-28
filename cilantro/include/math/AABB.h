@@ -41,6 +41,10 @@ public:
     // add vertex to AABB
     __EAPI void AddVertex (const Vector3f& v);
 
+    // get lower and upper bounds
+    __EAPI Vector3f GetLowerBound () const;
+    __EAPI Vector3f GetUpperBound () const;
+
     // get eight vertices of AABB
     __EAPI std::array<Vector3f, 8> GetVertices () const;
     __EAPI float* GetVerticesData ();

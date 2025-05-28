@@ -733,14 +733,15 @@ Quaternion Mathf::GenCameraOrientationQuaternion (const Vector3f& position, cons
 Matrix4f Mathf::GenPerspectiveProjectionMatrix (float aspect, float fov, float nearZ, float farZ)
 {
     Matrix4f m;
-    float scale = std::tan (fov * 0.5f);
+    float f = 1.0f / std::tan(fov * 0.5f);
 
-    m.InitIdentity ();
-    m[0][0] = 1.0f / (aspect * scale);
-    m[1][1] = 1.0f / scale;
+    m.InitIdentity();
+    m[0][0] = f / aspect;
+    m[1][1] = f;
     m[2][2] = -(farZ + nearZ) / (farZ - nearZ);
     m[2][3] = -(2.0f * nearZ * farZ) / (farZ - nearZ);
     m[3][2] = -1.0f;
+    m[3][3] = 0.0f;
 
     return m;
 }

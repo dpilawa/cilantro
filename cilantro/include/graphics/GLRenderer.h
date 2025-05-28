@@ -12,7 +12,7 @@ class MeshObject;
 class Camera;
 
 enum EGlVBOType { VBO_VERTICES = 0, VBO_NORMALS, VBO_UVS, VBO_TANGENTS, VBO_BITANGENTS, VBO_BONES, VBO_BONEWEIGHTS };
-enum EGlUBOType { UBO_MATRICES = 0, UBO_POINTLIGHTS, UBO_DIRECTIONALLIGHTS, UBO_SPOTLIGHTS, UBO_DIRECTIONALLIGHTVIEWMATRICES, UBO_BONETRANSFORMATIONS };
+enum EGlUBOType { UBO_MATRICES = 0, UBO_POINTLIGHTS, UBO_DIRECTIONALLIGHTS, UBO_SPOTLIGHTS, UBO_DIRECTIONALLIGHTVIEWMATRICES, UBO_SPOTLIGHTVIEWMATRICES, UBO_BONETRANSFORMATIONS };
 enum EGlSSBOType { SSBO_VERTICES = 0, SSBO_BONEINDICES, SSBO_BONEWEIGHTS, SSBO_AABB };
 
 struct SGlGeometryBuffers;
@@ -42,7 +42,7 @@ struct SGlGeometryBuffers
 
 struct SGlUniformBuffers
 {
-    // Uniform Buffer Objects (view & projection matrices, point lights, directional lights, spot lights, directional light view transforms)
+    // Uniform Buffer Objects (view & projection matrices, point lights, directional lights, spot lights, directional light view transforms, spot light view transforms)
     GLuint UBO[CILANTRO_GLOBAL_UBO_COUNT];
 };
 
@@ -58,6 +58,8 @@ struct SGlUniformLightViewMatrixBuffer
 {
     // directional light view matrices
     GLfloat directionalLightView[16 * CILANTRO_MAX_DIRECTIONAL_LIGHTS];
+    // spot light view matrices
+    GLfloat spotLightView[16 * CILANTRO_MAX_SPOT_LIGHTS];
 };
 
 struct SGlMaterialTextureUnits

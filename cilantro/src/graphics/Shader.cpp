@@ -53,9 +53,13 @@ void Shader::SetDefaultParameters ()
     SetParameter ("%%CILANTRO_MAX_POINT_LIGHTS%%", std::to_string (CILANTRO_MAX_POINT_LIGHTS));
     SetParameter ("%%CILANTRO_MAX_SPOT_LIGHTS%%", std::to_string (CILANTRO_MAX_SPOT_LIGHTS));
     SetParameter ("%%CILANTRO_MAX_DIRECTIONAL_LIGHTS%%", std::to_string (CILANTRO_MAX_DIRECTIONAL_LIGHTS));
+    SetParameter ("%%CILANTRO_MAX_SPOT_LIGHTS%%", std::to_string (CILANTRO_MAX_SPOT_LIGHTS));
     SetParameter ("%%CILANTRO_COMPUTE_GROUP_SIZE%%", std::to_string (CILANTRO_COMPUTE_GROUP_SIZE));
 
+    SetParameter ("%%CILANTRO_SHADOW_BIAS%%", std::to_string (CILANTRO_SHADOW_BIAS));
+
     SetParameter ("%%ACTIVE_DIRECTIONAL_LIGHTS%%", "1");
+    SetParameter ("%%ACTIVE_SPOT_LIGHTS%%", "1");
 }
 
 } // namespace cilantro

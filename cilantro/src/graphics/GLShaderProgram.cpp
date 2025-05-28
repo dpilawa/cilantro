@@ -52,6 +52,28 @@ bool GLShaderProgram::HasUniform (const std::string& uniformName) const
     return true;
 }
 
+IShaderProgram& GLShaderProgram::SetUniformInt (const std::string& uniformName, int uniformValue)
+{
+    GLuint location = GetUniformLocationId (uniformName);
+    if (location != GL_INVALID_INDEX)
+    {
+        glUniform1i (location, uniformValue);
+    }
+
+    return *this;
+}
+
+IShaderProgram& GLShaderProgram::SetUniformUInt (const std::string& uniformName, unsigned int uniformValue)
+{
+    GLuint location = GetUniformLocationId (uniformName);
+    if (location != GL_INVALID_INDEX)
+    {
+        glUniform1ui (location, uniformValue);
+    }
+
+    return *this;
+}
+
 IShaderProgram& GLShaderProgram::SetUniformFloat (const std::string& uniformName, float uniformValue)
 {
     GLuint location = GetUniformLocationId (uniformName);

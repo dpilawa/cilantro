@@ -30,7 +30,7 @@ public:
     __EAPI void OnUpdate (IRenderer& renderStage);
 
     // calculate tight light view projection for given camera frustum and scene AABB (for shadow mapping)
-    __EAPI Matrix4f GenLightViewProjectionMatrix (const std::array<Vector3f, 8>& frustumVertices, const AABB& sceneAABB);
+    __EAPI Matrix4f GenLightViewProjectionMatrix (const std::array<Vector3f, 8>& frustumVertices, const AABB& sceneAABB, bool isOrtho = true, float perspectiveFov = 45.0f, float limitFar = 100.0f);
 
 private:
 

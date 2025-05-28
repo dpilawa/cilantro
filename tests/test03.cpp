@@ -36,13 +36,13 @@ int main (int argc, char* argv[])
 
     AssimpModelLoader modelLoader (game);
 
-    renderer->Create<AABBRenderStage> ("aabb")
+/*     renderer->Create<AABBRenderStage> ("aabb")
         ->SetDepthStencilFramebufferLink (EPipelineLink::LINK_SECOND)
         ->SetClearColorOnFrameEnabled (false)
         ->SetClearDepthOnFrameEnabled (false)
         ->SetDrawFramebufferLink (EPipelineLink::LINK_THIRD)
         ->SetDepthTestEnabled (true)
-        ->SetFramebufferEnabled (false);
+        ->SetFramebufferEnabled (false); */
 
     renderer->Create<SurfaceRenderStage> ("hdr_postprocess")
         ->SetShaderProgram ("post_hdr_shader")

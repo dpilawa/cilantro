@@ -787,6 +787,9 @@ void GLRenderer::Update (std::shared_ptr<DirectionalLight> directionalLight)
     shadowmapShaderProg->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EGlUBOType::UBO_DIRECTIONALLIGHTVIEWMATRICES);
     shadowmapShaderProg->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
 
+    // set offset in shadow map texture array (zero for directional lights)
+    shadowmapShaderProg->SetUniformInt ("textureArrayOffset", 0);
+
     // copy direction
     Vector3f lightDirection = directionalLight->GetForward ();
     m_uniformDirectionalLightBuffer->directionalLights[lightId].lightDirection[0] = lightDirection[0];
@@ -830,6 +833,19 @@ void GLRenderer::Update (std::shared_ptr<SpotLight> spotLight)
         // existing light modified
         lightId = m_spotLights[objectHandle];
     }
+
+    // update invocation count in shadow map geometry shader
+    auto shadowmapShader = GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader> ("shadowmap_spot_geometry_shader");
+    shadowmapShader->SetParameter ("%%ACTIVE_SPOT_LIGHTS%%", std::to_string (GetSpotLightCount ()));
+    shadowmapShader->Compile ();
+
+    auto shadowmapShaderProg = GetShaderProgramManager ()->GetByName<GLShaderProgram> ("shadowmap_spot_shader");
+    shadowmapShaderProg->Link ();
+    shadowmapShaderProg->BindUniformBlock ("UniformSpotLightViewMatricesBlock", EGlUBOType::UBO_SPOTLIGHTVIEWMATRICES);
+    shadowmapShaderProg->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
+
+    // set offset in shadow map texture array (directional light count for spot lights)
+    shadowmapShaderProg->SetUniformInt ("textureArrayOffset", static_cast<int>(GetDirectionalLightCount ()));
 
     // copy position
     Vector4f lightPosition = spotLight->GetPosition ();
@@ -1115,6 +1131,7 @@ void GLRenderer::InitializeShaderLibrary ()
     GetGameScene ()->GetGame ()->GetResourceManager ()->Load<GLShader> ("post_fxaa_fragment_shader", "shaders/post_fxaa.fs", EShaderType::FRAGMENT_SHADER);
     GetGameScene ()->GetGame ()->GetResourceManager ()->Load<GLShader> ("shadowmap_vertex_shader", "shaders/shadowmap.vs", EShaderType::VERTEX_SHADER);
     GetGameScene ()->GetGame ()->GetResourceManager ()->Load<GLShader> ("shadowmap_directional_geometry_shader", "shaders/shadowmap_directional.gs", EShaderType::GEOMETRY_SHADER);
+    GetGameScene ()->GetGame ()->GetResourceManager ()->Load<GLShader> ("shadowmap_spot_geometry_shader", "shaders/shadowmap_spot.gs", EShaderType::GEOMETRY_SHADER);
     GetGameScene ()->GetGame ()->GetResourceManager ()->Load<GLShader> ("shadowmap_fragment_shader", "shaders/shadowmap.fs", EShaderType::FRAGMENT_SHADER);
     GetGameScene ()->GetGame ()->GetResourceManager ()->Load<GLShader> ("aabb_vertex_shader", "shaders/aabb.vs", EShaderType::VERTEX_SHADER);
     GetGameScene ()->GetGame ()->GetResourceManager ()->Load<GLShader> ("aabb_fragment_shader", "shaders/aabb.fs", EShaderType::FRAGMENT_SHADER);
@@ -1144,13 +1161,14 @@ void GLRenderer::InitializeShaderLibrary ()
         glUniform1i (glGetUniformLocation (p->GetProgramId (), "tMetallic"), 2);
         glUniform1i (glGetUniformLocation (p->GetProgramId (), "tRoughness"), 3);
         glUniform1i (glGetUniformLocation (p->GetProgramId (), "tAO"), 4);
-        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 5);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tShadowMap"), 5);
     }
     p->BindUniformBlock ("UniformMatricesBlock", EGlUBOType::UBO_MATRICES);
     p->BindUniformBlock ("UniformPointLightsBlock", EGlUBOType::UBO_POINTLIGHTS);
     p->BindUniformBlock ("UniformDirectionalLightsBlock", EGlUBOType::UBO_DIRECTIONALLIGHTS);
     p->BindUniformBlock ("UniformSpotLightsBlock", EGlUBOType::UBO_SPOTLIGHTS);
     p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EGlUBOType::UBO_DIRECTIONALLIGHTVIEWMATRICES);
+    p->BindUniformBlock ("UniformSpotLightViewMatricesBlock", EGlUBOType::UBO_SPOTLIGHTVIEWMATRICES);
     p->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
     GLUtils::CheckGLError (MSG_LOCATION);
 
@@ -1198,12 +1216,13 @@ void GLRenderer::InitializeShaderLibrary ()
         glUniform1i (glGetUniformLocation (p->GetProgramId (), "tAlbedo"), 2);
         glUniform1i (glGetUniformLocation (p->GetProgramId (), "tMetallicRoughnessAO"), 3);
         glUniform1i (glGetUniformLocation (p->GetProgramId (), "tUnused"), 4);
-        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 5);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tShadowMap"), 5);
     }
     p->BindUniformBlock ("UniformPointLightsBlock", EGlUBOType::UBO_POINTLIGHTS);
     p->BindUniformBlock ("UniformDirectionalLightsBlock", EGlUBOType::UBO_DIRECTIONALLIGHTS);
     p->BindUniformBlock ("UniformSpotLightsBlock", EGlUBOType::UBO_SPOTLIGHTS);
     p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EGlUBOType::UBO_DIRECTIONALLIGHTVIEWMATRICES);  
+    p->BindUniformBlock ("UniformSpotLightViewMatricesBlock", EGlUBOType::UBO_SPOTLIGHTVIEWMATRICES);
     GLUtils::CheckGLError (MSG_LOCATION);
 
     // Blinn-Phong model (forward)
@@ -1226,13 +1245,14 @@ void GLRenderer::InitializeShaderLibrary ()
         glUniform1i (glGetUniformLocation (p->GetProgramId (), "tNormal"), 1);
         glUniform1i (glGetUniformLocation (p->GetProgramId (), "tSpecular"), 2);
         glUniform1i (glGetUniformLocation (p->GetProgramId (), "tEmissive"), 3);
-        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 4);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tShadowMap"), 4);
     }
     p->BindUniformBlock ("UniformMatricesBlock", EGlUBOType::UBO_MATRICES);
     p->BindUniformBlock ("UniformPointLightsBlock", EGlUBOType::UBO_POINTLIGHTS);
     p->BindUniformBlock ("UniformDirectionalLightsBlock", EGlUBOType::UBO_DIRECTIONALLIGHTS);
     p->BindUniformBlock ("UniformSpotLightsBlock", EGlUBOType::UBO_SPOTLIGHTS); 
     p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EGlUBOType::UBO_DIRECTIONALLIGHTVIEWMATRICES);
+    p->BindUniformBlock ("UniformSpotLightViewMatricesBlock", EGlUBOType::UBO_SPOTLIGHTVIEWMATRICES);
     p->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
     GLUtils::CheckGLError (MSG_LOCATION);
     
@@ -1279,12 +1299,13 @@ void GLRenderer::InitializeShaderLibrary ()
         glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDiffuse"), 2);
         glUniform1i (glGetUniformLocation (p->GetProgramId (), "tEmissive"), 3);
         glUniform1i (glGetUniformLocation (p->GetProgramId (), "tSpecular"), 4);
-        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDirectionalShadowMap"), 5);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tShadowMap"), 5);
     }
     p->BindUniformBlock ("UniformPointLightsBlock", EGlUBOType::UBO_POINTLIGHTS);
     p->BindUniformBlock ("UniformDirectionalLightsBlock", EGlUBOType::UBO_DIRECTIONALLIGHTS);
     p->BindUniformBlock ("UniformSpotLightsBlock", EGlUBOType::UBO_SPOTLIGHTS);   
     p->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EGlUBOType::UBO_DIRECTIONALLIGHTVIEWMATRICES); 
+    p->BindUniformBlock ("UniformSpotLightViewMatricesBlock", EGlUBOType::UBO_SPOTLIGHTVIEWMATRICES);
     GLUtils::CheckGLError (MSG_LOCATION);
 
     // Screen quad rendering
@@ -1370,6 +1391,21 @@ void GLRenderer::InitializeShaderLibrary ()
     p->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
     GLUtils::CheckGLError (MSG_LOCATION);
 
+    // Shadow map (spot)
+    p = Create<GLShaderProgram> ("shadowmap_spot_shader");
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("shadowmap_vertex_shader"));
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("shadowmap_spot_geometry_shader"));
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("shadowmap_fragment_shader"));
+    p->Link ();
+    p->Use (); 
+    if (GLUtils::GetGLSLVersion ().versionNumber < 330)
+    {
+        glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
+    }
+    p->BindUniformBlock ("UniformSpotLightViewMatricesBlock", EGlUBOType::UBO_SPOTLIGHTVIEWMATRICES);
+    p->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
+    GLUtils::CheckGLError (MSG_LOCATION);
+
     // AABB rendering
     p = Create<GLShaderProgram> ("aabb_shader");
     p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("aabb_vertex_shader"));
@@ -1384,7 +1420,7 @@ void GLRenderer::InitializeShaderLibrary ()
     GLUtils::CheckGLError (MSG_LOCATION);
 
     if (GLUtils::GetGLSLVersion ().versionNumber >= 430)
-    {  
+    { 
         // AABB compute shader
         p = Create<GLShaderProgram> ("aabb_compute_shader");
         p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("aabb_compute_shader"));
@@ -1437,10 +1473,16 @@ void GLRenderer::DeinitializeMatrixUniformBuffers ()
 void GLRenderer::InitializeLightViewMatrixUniformBuffers ()
 {
     // create unform buffers for light view transforms
+
     glGenBuffers (1, &m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTVIEWMATRICES]);
     glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTVIEWMATRICES]);
     glBufferData (GL_UNIFORM_BUFFER, 16 * sizeof (GLfloat) * CILANTRO_MAX_DIRECTIONAL_LIGHTS, NULL, GL_DYNAMIC_DRAW);
     glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUBOType::UBO_DIRECTIONALLIGHTVIEWMATRICES), m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTVIEWMATRICES]);
+
+    glGenBuffers (1, &m_uniformBuffers->UBO[UBO_SPOTLIGHTVIEWMATRICES]);
+    glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_SPOTLIGHTVIEWMATRICES]);
+    glBufferData (GL_UNIFORM_BUFFER, 16 * sizeof (GLfloat) * CILANTRO_MAX_SPOT_LIGHTS, NULL, GL_DYNAMIC_DRAW);
+    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUBOType::UBO_SPOTLIGHTVIEWMATRICES), m_uniformBuffers->UBO[UBO_SPOTLIGHTVIEWMATRICES]);
 
     GLUtils::CheckGLError (MSG_LOCATION);
 }
@@ -1454,10 +1496,22 @@ void GLRenderer::LoadLightViewMatrixUniformBuffers ()
     for (auto&& light : m_directionalLights)
     {
         // generate matrix
-        Matrix4f lightViewProjection = GetGameScene ()->GetGameObjectManager ()->GetByHandle<DirectionalLight> (light.first)->GenLightViewProjectionMatrix (frustumVertices, sceneAABB);
+        auto l = GetGameScene ()->GetGameObjectManager ()->GetByHandle<DirectionalLight> (light.first);
+        Matrix4f lightViewProjection = l->GenLightViewProjectionMatrix (frustumVertices, sceneAABB);
 
         // copy to buffer
         std::memcpy (m_uniformLightViewMatrixBuffer->directionalLightView + light.second * 16, Mathf::Transpose (lightViewProjection)[0], 16 * sizeof (GLfloat));
+    }
+
+    // calculate and load lightview matrix for each spot light
+    for (auto&& light : m_spotLights)
+    {
+        // generate matrix
+        auto l = GetGameScene ()->GetGameObjectManager ()->GetByHandle<SpotLight> (light.first);
+        Matrix4f lightViewProjection = l->GenLightViewProjectionMatrix (frustumVertices, sceneAABB, false, l->GetOuterCutoff () * 2.0f, l->GetBoundingSphereRadius (0.01f));
+
+        // copy to buffer
+        std::memcpy (m_uniformLightViewMatrixBuffer->spotLightView + light.second * 16, Mathf::Transpose (lightViewProjection)[0], 16 * sizeof (GLfloat));
     }
 
     // load to GPU - directional light view
@@ -1465,11 +1519,17 @@ void GLRenderer::LoadLightViewMatrixUniformBuffers ()
     glBufferSubData (GL_UNIFORM_BUFFER, 0, 16 * sizeof (GLfloat) * m_uniformDirectionalLightBuffer->directionalLightCount, m_uniformLightViewMatrixBuffer->directionalLightView);
     glBindBuffer (GL_UNIFORM_BUFFER, 0);
 
+    // load to GPU - spot light view
+    glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_SPOTLIGHTVIEWMATRICES]);
+    glBufferSubData (GL_UNIFORM_BUFFER, 0, 16 * sizeof (GLfloat) * m_uniformSpotLightBuffer->spotLightCount, m_uniformLightViewMatrixBuffer->spotLightView);
+    glBindBuffer (GL_UNIFORM_BUFFER, 0);
+
 }
 
 void GLRenderer::DeinitializeLightViewMatrixUniformBuffers ()
 {
     glDeleteBuffers (1, &m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTVIEWMATRICES]);
+    glDeleteBuffers (1, &m_uniformBuffers->UBO[UBO_SPOTLIGHTVIEWMATRICES]);
 }
 
 void GLRenderer::InitializeObjectBuffers ()

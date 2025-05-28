@@ -38,14 +38,14 @@ int main (int argc, char* argv [])
     auto renderer = scene->Create<GLFWRenderer> (800, 600, true, true, "Test 01", false, true, true);
     auto inputController = game->Create<GLFWInputController> ();
     
-    renderer->Create<AABBRenderStage> ("aabb")
+/*     renderer->Create<AABBRenderStage> ("aabb")
         ->SetDepthStencilFramebufferLink (EPipelineLink::LINK_SECOND)
         ->SetClearColorOnFrameEnabled (false)
         ->SetClearDepthOnFrameEnabled (false)
         ->SetDrawFramebufferLink (EPipelineLink::LINK_THIRD)
         ->SetDepthTestEnabled (true)
         ->SetDepthTest (EDepthTestFunction::FUNCTION_LEQUAL)
-        ->SetFramebufferEnabled (false);
+        ->SetFramebufferEnabled (false); */
     
     renderer->Create<SurfaceRenderStage> ("hdr_postprocess")
         ->SetShaderProgram ("post_hdr_shader")
@@ -108,7 +108,7 @@ int main (int argc, char* argv [])
         ->SetEmissive (Vector3f (0.9f, 0.9f, 0.9f))
         ->SetDiffuse (Vector3f (0.2f, 0.2f, 0.2f));
 
-    scene->Create<ControlledCamera> ("camera", 60.0f, 0.1f, 5.0f, 0.1f, 0.1f)
+    scene->Create<ControlledCamera> ("camera", 60.0f, 0.1f, 100.0f, 0.1f, 0.1f)
         ->Initialize ()
         ->GetModelTransform ()->Translate (5.0f, 2.5f, 5.0f)->Rotate (-20.0f, 45.0f, 0.0f);
     

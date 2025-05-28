@@ -54,6 +54,27 @@ float PointLight::GetQuadraticAttenuationFactor () const
     return m_attenuationQuadratic;
 }
 
+float PointLight::GetBoundingSphereRadius (float threshold) const
+{
+    float c = m_attenuationConst - 1.0f / threshold;
+    float d = m_attenuationLinear * m_attenuationLinear - 4.0f * m_attenuationQuadratic * c;
+
+    if (d < 0.0f)
+    {
+        return 0.0f; // no valid radius
+    }
+    else if (d == 0.0f)
+    {
+        return -m_attenuationLinear / (2.0f * m_attenuationQuadratic);
+    }
+    else
+    {
+        float r1 = (-m_attenuationLinear + std::sqrt (d)) / (2.0f * m_attenuationQuadratic);
+        float r2 = (-m_attenuationLinear - std::sqrt (d)) / (2.0f * m_attenuationQuadratic);
+        return std::max (r1, r2); // return the larger radius
+    }
+}
+
 void PointLight::OnUpdate (IRenderer& renderer)
 {
     Light::OnUpdate (renderer);

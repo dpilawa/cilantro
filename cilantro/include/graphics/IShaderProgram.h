@@ -23,6 +23,8 @@ struct IShaderProgram
 
     // uniform manipulation
     virtual bool HasUniform (const std::string& uniformName) const = 0;
+    virtual IShaderProgram& SetUniformInt (const std::string& uniformName, int uniformValue) = 0;
+    virtual IShaderProgram& SetUniformUInt (const std::string& uniformName, unsigned int uniformValue) = 0;
     virtual IShaderProgram& SetUniformFloat (const std::string& uniformName, float uniformValue) = 0;
     virtual IShaderProgram& SetUniformFloatv (const std::string& uniformName, const float* uniformValue, size_t count) = 0;
     virtual IShaderProgram& SetUniformVector2f (const std::string& uniformName, const Vector2f& uniformValue) = 0;

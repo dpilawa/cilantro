@@ -21,6 +21,8 @@ public:
     __EAPI virtual void Link () override;
 
     __EAPI virtual bool HasUniform (const std::string& uniformName) const override;
+    __EAPI virtual IShaderProgram& SetUniformInt (const std::string& uniformName, int uniformValue) override;
+    __EAPI virtual IShaderProgram& SetUniformUInt (const std::string& uniformName, unsigned int uniformValue) override;
     __EAPI virtual IShaderProgram& SetUniformFloat (const std::string& uniformName, float uniformValue) override;
     __EAPI virtual IShaderProgram& SetUniformFloatv (const std::string& uniformName, const float* uniformValue, size_t count) override;
     __EAPI virtual IShaderProgram& SetUniformVector2f (const std::string& uniformName, const Vector2f& uniformValue) override;

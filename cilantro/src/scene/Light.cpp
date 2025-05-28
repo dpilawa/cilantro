@@ -54,8 +54,10 @@ void Light::OnUpdate (IRenderer& renderer)
     GameObject::OnUpdate (renderer);
 }
 
-Matrix4f Light::GenLightViewProjectionMatrix (const std::array<Vector3f, 8>& frustumVertices, const AABB& sceneAABB)
+Matrix4f Light::GenLightViewProjectionMatrix (const std::array<Vector3f, 8>& frustumVertices, const AABB& sceneAABB, bool isOrtho, float perspectiveFov, float limitFar)
 {
+    Matrix4f lightViewProjection;
+
     float minX = std::numeric_limits<float>::infinity();
     float maxX = -std::numeric_limits<float>::infinity();
     float minY = std::numeric_limits<float>::infinity();
@@ -63,7 +65,7 @@ Matrix4f Light::GenLightViewProjectionMatrix (const std::array<Vector3f, 8>& fru
     float minZ = std::numeric_limits<float>::infinity();
     float maxZ = -std::numeric_limits<float>::infinity();
 
-    Matrix4f lightView = Mathf::GenCameraViewMatrix (Vector3f (), GetForward (), GetUp ());
+    Matrix4f lightView = Mathf::GenCameraViewMatrix (GetPosition (), GetPosition () + GetForward (), GetUp ());
 
     // find left, right, top and bottom bounds for the camera frustum in light space
     for (auto&& v : frustumVertices)
@@ -77,11 +79,18 @@ Matrix4f Light::GenLightViewProjectionMatrix (const std::array<Vector3f, 8>& fru
         maxY = std::max (maxY, lv[1]);
     }
 
-    // clip AABB realigned to light space axes to these bounds
+    // get AABB of the scene in light space
     AABB aabbLightSpace = sceneAABB.ToSpace (lightView);
     auto aabbTrianglesLightSpace = aabbLightSpace.GetTriangles ();
     std::vector<Triangle<Vector3f>> aabbTrianglesLightSpaceClip (aabbTrianglesLightSpace.begin (), aabbTrianglesLightSpace.end ());
 
+    // clip left, right, top and bottom bounds to the AABB of the scene in light space
+    minX = std::max (minX, aabbLightSpace.GetLowerBound ()[0]);
+    maxX = std::min (maxX, aabbLightSpace.GetUpperBound ()[0]);
+    minY = std::max (minY, aabbLightSpace.GetLowerBound ()[1]);
+    maxY = std::min (maxY, aabbLightSpace.GetUpperBound ()[1]);
+
+    // clip AABB realigned to light space axes to known bounds
     Mathf::ClipTrianglesToPlanes (aabbTrianglesLightSpaceClip, Vector3f (minX, minY, -std::numeric_limits<float>::infinity()), Vector3f (maxX, maxY, std::numeric_limits<float>::infinity()));
 
     // get minZ and maxZ from clipped triangles (this will be near and far planes for the light projection matrix)
@@ -96,7 +105,19 @@ Matrix4f Light::GenLightViewProjectionMatrix (const std::array<Vector3f, 8>& fru
     }
 
     // finally create the light projection matrix
-    return Mathf::GenOrthographicProjectionMatrix (minX, maxX, minY, maxY, minZ, maxZ) * lightView;
+    if (isOrtho)
+    {
+        lightViewProjection = Mathf::GenOrthographicProjectionMatrix (minX, maxX, minY, maxY, minZ, maxZ) * lightView;
+    }
+    else {
+        float epsilon = std::numeric_limits<float>::epsilon();
+        float nearPlane = std::max (-maxZ, 0.0f);
+        float farPlane = std::min (std::max (-minZ, epsilon), limitFar);
+        float aspect = (maxX - minX) / (maxY - minY + epsilon);
+        lightViewProjection = Mathf::GenPerspectiveProjectionMatrix (aspect, Mathf::Deg2Rad (perspectiveFov), nearPlane, farPlane) * lightView;
+    }
+
+    return lightViewProjection;
 }
 
 

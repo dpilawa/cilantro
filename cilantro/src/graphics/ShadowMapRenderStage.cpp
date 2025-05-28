@@ -36,7 +36,7 @@ void ShadowMapRenderStage::InitializeFramebuffer ()
 {   
     if (m_isFramebufferEnabled)
     {
-        size_t numLights = GetRenderer ()->GetDirectionalLightCount ();
+        size_t numLights = GetRenderer ()->GetDirectionalLightCount () + GetRenderer ()->GetSpotLightCount ();
 
         if (numLights > 0)
         {
@@ -54,6 +54,7 @@ void ShadowMapRenderStage::OnFrame ()
 
     // draw all objects in scene
     GetRenderer ()->DrawSceneGeometryBuffers (GetRenderer ()->GetShaderProgramManager ()->GetByName<IShaderProgram> ("shadowmap_directional_shader"));
+    GetRenderer ()->DrawSceneGeometryBuffers (GetRenderer ()->GetShaderProgramManager ()->GetByName<IShaderProgram> ("shadowmap_spot_shader"));
 
     if (m_framebuffer != nullptr)
     {

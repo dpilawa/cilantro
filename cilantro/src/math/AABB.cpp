@@ -71,6 +71,16 @@ void AABB::AddVertex (const Vector3f& v)
     m_upperBound[2] = std::max (m_upperBound[2], v[2]);
 }
 
+Vector3f AABB::GetLowerBound () const
+{
+    return m_lowerBound;
+}
+
+Vector3f AABB::GetUpperBound () const
+{
+    return m_upperBound;
+}
+
 std::array<Vector3f, 8> AABB::GetVertices () const
 {
     std::array<Vector3f, 8> vertices;

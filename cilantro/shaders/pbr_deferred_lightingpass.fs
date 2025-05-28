@@ -1,5 +1,6 @@
 #version %%CILANTRO_GLSL_VERSION%%
 
+#define BIAS %%CILANTRO_SHADOW_BIAS%%
 #define MAX_POINT_LIGHTS %%CILANTRO_MAX_POINT_LIGHTS%%
 #define MAX_DIRECTIONAL_LIGHTS %%CILANTRO_MAX_DIRECTIONAL_LIGHTS%%
 #define MAX_SPOT_LIGHTS %%CILANTRO_MAX_SPOT_LIGHTS%%
@@ -30,9 +31,9 @@ uniform sampler2D tUnused;
 
 /* shadow maps */
 #if (__VERSION__ >= 430)
-layout (binding = 5) uniform sampler2DArray tDirectionalShadowMap;
+layout (binding = 5) uniform sampler2DArray tShadowMap;
 #else
-uniform sampler2DArray tDirectionalShadowMap;
+uniform sampler2DArray tShadowMap;
 #endif
 
 vec3 fPosition;
@@ -93,7 +94,12 @@ layout(std140, binding = %%UBO_SPOTLIGHTS%%) uniform UniformSpotLightsBlock
 
 layout (std140, binding = %%UBO_DIRECTIONALLIGHTVIEWMATRICES%%) uniform UniformDirectionalLightViewMatricesBlock
 {
-    highp mat4 mDirectionalLightSpace[MAX_DIRECTIONAL_LIGHTS];
+    mat4 mDirectionalLightSpace[MAX_DIRECTIONAL_LIGHTS];
+};
+
+layout (std140, binding = %%UBO_SPOTLIGHTVIEWMATRICES%%) uniform UniformSpotLightViewMatricesBlock
+{
+    mat4 mSpotLightSpace[MAX_SPOT_LIGHTS];
 };
 
 /* output color */
@@ -167,16 +173,22 @@ float CalculateDirectionalLightShadow (int directionalLightIdx)
 {
     vec4 fragmentLightSpace = mDirectionalLightSpace[directionalLightIdx] * vec4 (fPosition, 1.0);
     vec3 depthMapCoords = vec3 (fragmentLightSpace / fragmentLightSpace.w) * 0.5 + 0.5;
-    float fragmentDepth = abs (depthMapCoords.z);
+    float fragmentDepth = depthMapCoords.z;
+
+    if (depthMapCoords.x < 0.0 || depthMapCoords.x > 1.0 ||
+        depthMapCoords.y < 0.0 || depthMapCoords.y > 1.0 ||
+        depthMapCoords.z < 0.0 || depthMapCoords.z > 1.0)
+        return 1.0;
+
     float shadow = 0.0;
-    vec2 texelSize = 1.0 / textureSize(tDirectionalShadowMap, 0).xy;
+    vec2 texelSize = 1.0 / textureSize(tShadowMap, 0).xy;
     
     for(int x = -PCFPOWER; x <= PCFPOWER; ++x)
     {
         for(int y = -PCFPOWER; y <= PCFPOWER; ++y)
         {
-            float pcfDepth = texture(tDirectionalShadowMap, vec3 (depthMapCoords.xy + vec2 (x, y) * texelSize, directionalLightIdx)).r; 
-            shadow += (fragmentDepth < pcfDepth || (fragmentDepth > 1.0)) ? 1.0 : 0.0;        
+            float pcfDepth = texture(tShadowMap, vec3 (depthMapCoords.xy + vec2 (x, y) * texelSize, directionalLightIdx)).r; 
+            shadow += (fragmentDepth - BIAS < pcfDepth) ? 1.0 : 0.0;        
         }    
     }
     shadow /= pow (PCFPOWER * 2 + 1, 2);
@@ -189,6 +201,35 @@ vec3 CalculateDirectionalLightRadiance (DirectionalLightStruct light)
 {
     /* radiance (directional light has no attenuation) */
     return light.lightColor;
+}
+
+/* calculate spot light shadow */
+float CalculateSpotLightShadow (int spotLightIdx)
+{
+    vec4 fragmentLightSpace = mSpotLightSpace[spotLightIdx] * vec4 (fPosition, 1.0);
+    vec3 depthMapCoords = vec3 (fragmentLightSpace / fragmentLightSpace.w) * 0.5 + 0.5;
+    float fragmentDepth = depthMapCoords.z;
+
+    if (depthMapCoords.x < 0.0 || depthMapCoords.x > 1.0 ||
+        depthMapCoords.y < 0.0 || depthMapCoords.y > 1.0 ||
+        depthMapCoords.z < 0.0 || depthMapCoords.z > 1.0)
+        return 1.0;
+
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / textureSize(tShadowMap, 0).xy;
+
+    for (int x = -PCFPOWER; x <= PCFPOWER; ++x)
+    {
+        for (int y = -PCFPOWER; y <= PCFPOWER; ++y)
+        {
+            vec2 offset = vec2(x, y) * texelSize;
+            float pcfDepth = texture(tShadowMap, vec3(depthMapCoords.xy + offset, directionalLightCount + spotLightIdx)).r;
+            shadow += (fragmentDepth - BIAS < pcfDepth) ? 1.0 : 0.0;
+        }
+    }
+    shadow /= pow (PCFPOWER * 2 + 1, 2);
+
+    return shadow;
 }
 
 /* calculate spot light radiance */
@@ -265,6 +306,7 @@ void main()
         vec3 lightDirection = normalize (spotLights[i].lightPosition - fPosition);
         vec3 halfwayDirection = normalize (viewDirection + lightDirection);
 
+        float shadow = CalculateSpotLightShadow (i);
         vec3 radiance = CalculateSpotLightRadiance (spotLights[i], lightDirection);
         vec3 specular = CalculateCookTorranceSpecularBRDF (fNormal, lightDirection, viewDirection, halfwayDirection);
         
@@ -276,7 +318,7 @@ void main()
         kD = kD * (1.0 - fMetallic);	
 
         float NdotL = max (dot (fNormal, lightDirection), 0.0);        
-        Lo += (kD * fAlbedo / PI + specular) * radiance * NdotL + vec3(0.01) * fAlbedo * fAO;
+        Lo += (kD * fAlbedo / PI + specular) * radiance * shadow * NdotL + vec3(0.01) * fAlbedo * fAO;
     }
 
     color = vec4 (Lo, 1.0);
