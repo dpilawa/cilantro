@@ -3,6 +3,7 @@
 #include "scene/PointLight.h"
 #include "graphics/Renderer.h"
 #include "system/Game.h"
+#include <cmath>
 
 namespace cilantro
 {
