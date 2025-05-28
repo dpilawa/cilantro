@@ -13,7 +13,7 @@ in vec2 fUV;
 vec3 viewDirection;
 
 /* material properties */
-#if (__VERSION__ >= 430)
+#if (__VERSION__ >= 420)
 layout (binding = 0) uniform sampler2D tAlbedo;
 layout (binding = 1) uniform sampler2D tNormal;
 layout (binding = 2) uniform sampler2D tMetallic;

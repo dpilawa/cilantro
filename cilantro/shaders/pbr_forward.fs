@@ -21,7 +21,7 @@ in vec2 fUV;
 vec3 viewDirection;
 
 /* material properties */
-#if (__VERSION__ >= 430)
+#if (__VERSION__ >= 420)
 layout (binding = 0) uniform sampler2D tAlbedo;
 layout (binding = 1) uniform sampler2D tNormal;
 layout (binding = 2) uniform sampler2D tMetallic;
@@ -36,7 +36,7 @@ uniform sampler2D tAO;
 #endif
 
 /* shadow maps */
-#if (__VERSION__ >= 430)
+#if (__VERSION__ >= 420)
 layout (binding = 5) uniform sampler2DArray tShadowMap;
 #else
 uniform sampler2DArray tShadowMap;
@@ -80,33 +80,71 @@ struct SpotLightStruct
     float outerCutoffCosine;
 };
 
+#if (__VERSION__ >= 420)
 layout(std140, binding = %%UBO_POINTLIGHTS%%) uniform UniformPointLightsBlock
 {
     int pointLightCount;
     PointLightStruct pointLights[MAX_POINT_LIGHTS];
 };
+#else
+layout(std140) uniform UniformPointLightsBlock
+{
+    int pointLightCount;
+    PointLightStruct pointLights[MAX_POINT_LIGHTS];
+};
+#endif
 
+#if (__VERSION__ >= 420)
 layout(std140, binding = %%UBO_DIRECTIONALLIGHTS%%) uniform UniformDirectionalLightsBlock
 {
     int directionalLightCount;
     DirectionalLightStruct directionalLights[MAX_DIRECTIONAL_LIGHTS];
 };
+#else
+layout(std140) uniform UniformDirectionalLightsBlock
+{
+    int directionalLightCount;
+    DirectionalLightStruct directionalLights[MAX_DIRECTIONAL_LIGHTS];
+};
+#endif
 
+#if (__VERSION__ >= 420)
 layout(std140, binding = %%UBO_SPOTLIGHTS%%) uniform UniformSpotLightsBlock
 {
     int spotLightCount;
     SpotLightStruct spotLights[MAX_SPOT_LIGHTS];
 };
+#else
+layout(std140) uniform UniformSpotLightsBlock
+{
+    int spotLightCount;
+    SpotLightStruct spotLights[MAX_SPOT_LIGHTS];
+};
+#endif
 
+#if (__VERSION__ >= 420)
 layout (std140, binding = %%UBO_DIRECTIONALLIGHTVIEWMATRICES%%) uniform UniformDirectionalLightViewMatricesBlock
 {
     mat4 mDirectionalLightSpace[MAX_DIRECTIONAL_LIGHTS];
 };
+#else
+layout (std140) uniform UniformDirectionalLightViewMatricesBlock
+{
+    mat4 mDirectionalLightSpace[MAX_DIRECTIONAL_LIGHTS];
+};
+#endif
 
+#if (__VERSION__ >= 420)
 layout (std140, binding = %%UBO_SPOTLIGHTVIEWMATRICES%%) uniform UniformSpotLightViewMatricesBlock
 {
     mat4 mSpotLightSpace[MAX_SPOT_LIGHTS];
 };
+#else
+layout (std140) uniform UniformSpotLightViewMatricesBlock
+{
+    mat4 mSpotLightSpace[MAX_SPOT_LIGHTS];
+};
+#endif
 
 /* output color */
 out vec4 color;

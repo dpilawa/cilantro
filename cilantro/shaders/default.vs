@@ -24,16 +24,30 @@ uniform mat4 mModel;
 uniform mat3 mNormal;
 
 /* view and projection matrices */
+#if (__VERSION__ >= 420)
 layout (std140, binding = %%UBO_MATRICES%%) uniform UniformMatricesBlock
 {
     mat4 mView;
     mat4 mProjection;
 };
+#else
+layout (std140) uniform UniformMatricesBlock
+{
+    mat4 mView;
+    mat4 mProjection;
+};
+#endif
 
 /* array of bone transformation matrices */
+#if (__VERSION__ >= 420)
 layout (std140, binding = %%UBO_BONETRANSFORMATIONS%%) uniform UniformBoneTransformationsBlock {
     mat4 mBoneTransformations[%%CILANTRO_MAX_BONES%%];
 };
+#else
+layout (std140) uniform UniformBoneTransformationsBlock {
+    mat4 mBoneTransformations[%%CILANTRO_MAX_BONES%%];
+};
+#endif
 
 /* output variables */
 out vec3 fPosition;
