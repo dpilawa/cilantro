@@ -20,7 +20,7 @@ layout (std140, binding = %%UBO_BONETRANSFORMATIONS%%) uniform UniformBoneTransf
     mat4 mBoneTransformations[%%CILANTRO_MAX_BONES%%];
 };
 #else
-layout (std140, binding = %%UBO_BONETRANSFORMATIONS%%) uniform UniformBoneTransformationsBlock {
+layout (std140) uniform UniformBoneTransformationsBlock {
     mat4 mBoneTransformations[%%CILANTRO_MAX_BONES%%];
 };
 #endif
