@@ -5,8 +5,6 @@
 #define MAX_DIRECTIONAL_LIGHTS %%CILANTRO_MAX_DIRECTIONAL_LIGHTS%%
 #define MAX_SPOT_LIGHTS %%CILANTRO_MAX_SPOT_LIGHTS%%
 
-const int PCFPOWER = 1;
-
 /* fragment position in world space */
 in vec3 fPosition;
 
@@ -34,9 +32,9 @@ uniform sampler2D tEmissive;
 
 /* shadow maps */
 #if (__VERSION__ >= 420)
-layout (binding = 4) uniform sampler2DArray tShadowMap;
+layout (binding = 4) uniform sampler2DArrayShadow tShadowMap;
 #else
-uniform sampler2DArray tShadowMap;
+uniform sampler2DArrayShadow tShadowMap;
 #endif
 
 vec3 fNormal;
@@ -186,28 +184,13 @@ vec4 CalculatePointLight (PointLightStruct light, int pointLightIdx)
 /* calculate directional light shadow */
 float CalculateDirectionalLightShadow (int directionalLightIdx)
 {
-    vec4 fragmentLightSpace = mDirectionalLightSpace[directionalLightIdx] * vec4 (fPosition, 1.0);
-    vec3 depthMapCoords = vec3 (fragmentLightSpace / fragmentLightSpace.w) * 0.5 + 0.5;
-    float fragmentDepth = depthMapCoords.z;
+    vec4 fragmentLightSpace = mDirectionalLightSpace[directionalLightIdx] * vec4(fPosition, 1.0);
+    vec3 depthMapCoords = fragmentLightSpace.xyz / fragmentLightSpace.w * 0.5 + 0.5;
 
-    if (depthMapCoords.x < 0.0 || depthMapCoords.x > 1.0 ||
-        depthMapCoords.y < 0.0 || depthMapCoords.y > 1.0 ||
-        depthMapCoords.z < 0.0 || depthMapCoords.z > 1.0)
+    if (any(lessThan(depthMapCoords, vec3(0.0))) || any(greaterThan(depthMapCoords, vec3(1.0))))
         return 1.0;
 
-    float shadow = 0.0;
-    vec2 texelSize = 1.0 / textureSize(tShadowMap, 0).xy;
-    
-    for(int x = -PCFPOWER; x <= PCFPOWER; ++x)
-    {
-        for(int y = -PCFPOWER; y <= PCFPOWER; ++y)
-        {
-            float pcfDepth = texture(tShadowMap, vec3 (depthMapCoords.xy + vec2 (x, y) * texelSize, directionalLightIdx)).r; 
-            shadow += (fragmentDepth - BIAS < pcfDepth) ? 1.0 : 0.0;        
-        }    
-    }
-    shadow /= pow (PCFPOWER * 2 + 1, 2);
-
+    float shadow = texture(tShadowMap, vec4(depthMapCoords.xy, directionalLightIdx, depthMapCoords.z - BIAS));
     return shadow;
 }
 
@@ -236,29 +219,13 @@ vec4 CalculateDirectionalLight (DirectionalLightStruct light, int directionalLig
 /* calculate spot light shadow */
 float CalculateSpotLightShadow (int spotLightIdx)
 {
-    vec4 fragmentLightSpace = mSpotLightSpace[spotLightIdx] * vec4 (fPosition, 1.0);
-    vec3 depthMapCoords = vec3 (fragmentLightSpace / fragmentLightSpace.w) * 0.5 + 0.5;
-    float fragmentDepth = depthMapCoords.z;
+    vec4 fragmentLightSpace = mSpotLightSpace[spotLightIdx] * vec4(fPosition, 1.0);
+    vec3 depthMapCoords = fragmentLightSpace.xyz / fragmentLightSpace.w * 0.5 + 0.5;
 
-    if (depthMapCoords.x < 0.0 || depthMapCoords.x > 1.0 ||
-        depthMapCoords.y < 0.0 || depthMapCoords.y > 1.0 ||
-        depthMapCoords.z < 0.0 || depthMapCoords.z > 1.0)
+    if (any(lessThan(depthMapCoords, vec3(0.0))) || any(greaterThan(depthMapCoords, vec3(1.0))))
         return 1.0;
 
-    float shadow = 0.0;
-    vec2 texelSize = 1.0 / textureSize(tShadowMap, 0).xy;
-
-    for (int x = -PCFPOWER; x <= PCFPOWER; ++x)
-    {
-        for (int y = -PCFPOWER; y <= PCFPOWER; ++y)
-        {
-            vec2 offset = vec2(x, y) * texelSize;
-            float pcfDepth = texture(tShadowMap, vec3(depthMapCoords.xy + offset, directionalLightCount + spotLightIdx)).r;
-            shadow += ((fragmentDepth - BIAS) < pcfDepth) ? 1.0 : 0.0;
-        }
-    }
-    shadow /= pow (PCFPOWER * 2 + 1, 2);
-
+    float shadow = texture(tShadowMap, vec4(depthMapCoords.xy, directionalLightCount + spotLightIdx, depthMapCoords.z - BIAS));
     return shadow;
 }
 

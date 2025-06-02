@@ -53,8 +53,10 @@ void GLFramebuffer::Initialize ()
         glGenTextures (1, &m_glBuffers.depthTextureArray);
         glBindTexture (GL_TEXTURE_2D_ARRAY, m_glBuffers.depthTextureArray);
         glTexImage3D (GL_TEXTURE_2D_ARRAY, 0, CILANTRO_SHADOW_MAP_DEPTH == 32 ? GL_DEPTH_COMPONENT32F : (CILANTRO_SHADOW_MAP_DEPTH == 24 ? GL_DEPTH_COMPONENT24 : GL_DEPTH_COMPONENT16), m_bufferWidth, m_bufferHeight, static_cast<GLsizei> (m_depthBufferArrayLayerCount), 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
-        glTexParameteri (GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri (GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_COMPARE_FUNC, GL_LESS);
+        glTexParameteri (GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri (GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri (GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
         glTexParameteri (GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);        
         glTexParameterfv (GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor); 
