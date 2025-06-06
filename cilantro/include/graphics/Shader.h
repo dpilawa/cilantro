@@ -4,11 +4,11 @@
 #include "graphics/IShader.h"
 #include "resource/LoadableResource.h"
 #include <string>
-#include <map>
+#include <unordered_map>
 
 namespace cilantro {
 
-typedef std::map<std::string, std::string> TParameterValueMap;
+typedef std::unordered_map<std::string, std::string> TValueMap;
 
 class __CEAPI Shader : public IShader, public LoadableResource
 {
@@ -20,8 +20,9 @@ public:
 
     virtual void Load (const std::string& path) override;
     
-    virtual void SetParameter (const std::string& parameter, const std::string& value) override;
-    virtual void SetDefaultParameters () override;
+    virtual void SetStaticParameter (const std::string& parameter, const std::string& value) override;
+    virtual void SetVariable (const std::string& variable, const std::string& value) override;
+    virtual void SetDefaults () override;
 
     ///////////////////////////////////////////////////////////////////////////
 
@@ -31,11 +32,17 @@ protected:
     EShaderType m_shaderType;
 
     // source code
+    std::string m_shaderSourceNoVariables;
     std::string m_shaderSource;
-    std::string m_shaderSourceParametrized;
 
-    // parameter value map
-    TParameterValueMap m_paramValMap;
+    // parameter and variable value maps
+    TValueMap m_parameterValMap;
+    TValueMap m_variableValMap;
+
+private:
+
+    // function to replace variables in the shader source code
+    void ReplaceVariables ();
 
 };
 

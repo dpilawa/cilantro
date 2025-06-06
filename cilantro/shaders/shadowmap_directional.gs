@@ -4,7 +4,7 @@
 #extension GL_EXT_geometry_shader4 : enable
 #endif
 
-layout(triangles, invocations = %%ACTIVE_DIRECTIONAL_LIGHTS%%) in;
+layout(triangles, invocations = $$ACTIVE_DIRECTIONAL_LIGHTS$$) in;
 layout(triangle_strip, max_vertices = 3) out;
 
 #if (__VERSION__ >= 420)

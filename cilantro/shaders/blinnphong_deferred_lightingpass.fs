@@ -1,17 +1,12 @@
 #version %%CILANTRO_GLSL_VERSION%%
 
-#define BIAS %%CILANTRO_SHADOW_BIAS%%
-#define MAX_POINT_LIGHTS %%CILANTRO_MAX_POINT_LIGHTS%%
-#define MAX_DIRECTIONAL_LIGHTS %%CILANTRO_MAX_DIRECTIONAL_LIGHTS%%
-#define MAX_SPOT_LIGHTS %%CILANTRO_MAX_SPOT_LIGHTS%%
-
 /* texture coords */
 in vec2 fTextureCoordinates;
 
 /* viewing direction */
 vec3 viewDirection;
 
-/* material properties */
+/* g-buffer */
 #if (__VERSION__ >= 420)
 layout (binding=0) uniform sampler2D tPosition;
 layout (binding=1) uniform sampler2D tNormal;
@@ -26,13 +21,6 @@ uniform sampler2D tEmissive;
 uniform sampler2D tSpecular;
 #endif
 
-/* shadow maps */
-#if (__VERSION__ >= 420)
-layout (binding = 5) uniform sampler2DArrayShadow tShadowMap;
-#else
-uniform sampler2DArrayShadow tShadowMap;
-#endif
-
 vec3 fPosition;
 vec3 fNormal;
 vec3 fDiffuseColor;
@@ -43,216 +31,12 @@ float fSpecularShininess;
 /* eye position in world space */
 uniform vec3 eyePosition;
 
-/* light data structures */
-struct PointLightStruct
-{
-    vec3 lightPosition;	/* world space */
-    vec3 lightColor;
-    float attenuationConst;
-    float attenuationLinear;
-    float attenuationQuadratic;
-};
-
-struct DirectionalLightStruct
-{
-    vec3 lightDirection;
-    vec3 lightColor;
-};
-
-struct SpotLightStruct
-{
-    vec3 lightPosition;	/* world space */		
-    vec3 lightDirection;
-    vec3 lightColor;
-    float attenuationConst;
-    float attenuationLinear;
-    float attenuationQuadratic;		
-    float innerCutoffCosine;
-    float outerCutoffCosine;
-};
-
-#if (__VERSION__ >= 420)
-layout(std140, binding = %%UBO_POINTLIGHTS%%) uniform UniformPointLightsBlock
-{
-    int pointLightCount;
-    PointLightStruct pointLights[MAX_POINT_LIGHTS];
-};
-#else
-layout(std140) uniform UniformPointLightsBlock
-{
-    int pointLightCount;
-    PointLightStruct pointLights[MAX_POINT_LIGHTS];
-};
-#endif
-
-#if (__VERSION__ >= 420)
-layout(std140, binding = %%UBO_DIRECTIONALLIGHTS%%) uniform UniformDirectionalLightsBlock
-{
-    int directionalLightCount;
-    DirectionalLightStruct directionalLights[MAX_DIRECTIONAL_LIGHTS];
-};
-#else
-layout(std140) uniform UniformDirectionalLightsBlock
-{
-    int directionalLightCount;
-    DirectionalLightStruct directionalLights[MAX_DIRECTIONAL_LIGHTS];
-};
-#endif
-
-#if (__VERSION__ >= 420)
-layout(std140, binding = %%UBO_SPOTLIGHTS%%) uniform UniformSpotLightsBlock
-{
-    int spotLightCount;
-    SpotLightStruct spotLights[MAX_SPOT_LIGHTS];
-};
-#else
-layout(std140) uniform UniformSpotLightsBlock
-{
-    int spotLightCount;
-    SpotLightStruct spotLights[MAX_SPOT_LIGHTS];
-};
-#endif
-
-#if (__VERSION__ >= 420)
-layout (std140, binding = %%UBO_DIRECTIONALLIGHTVIEWMATRICES%%) uniform UniformDirectionalLightViewMatricesBlock
-{
-    mat4 mDirectionalLightSpace[MAX_DIRECTIONAL_LIGHTS];
-};
-#else
-layout (std140) uniform UniformDirectionalLightViewMatricesBlock
-{
-    mat4 mDirectionalLightSpace[MAX_DIRECTIONAL_LIGHTS];
-};
-#endif
-
-#if (__VERSION__ >= 420)
-layout (std140, binding = %%UBO_SPOTLIGHTVIEWMATRICES%%) uniform UniformSpotLightViewMatricesBlock
-{
-    mat4 mSpotLightSpace[MAX_SPOT_LIGHTS];
-};
-#else
-layout (std140) uniform UniformSpotLightViewMatricesBlock
-{
-    mat4 mSpotLightSpace[MAX_SPOT_LIGHTS];
-};
-#endif
-
 /* output color */
 out vec4 color;
 
-/* calculate diffuse coefficient */
-float CalculateDiffuse (float n_dot_l)
-{
-    return clamp (n_dot_l, 0.0, 1.0);
-}
-
-/* calculate specular coefficient */
-float CalculateSpecular (vec3 lightDirection, float n_dot_l)
-{
-    vec3 halfwayDirection = normalize (lightDirection + viewDirection);
-    return pow (clamp (dot (fNormal, halfwayDirection), 0.0, 1.0), fSpecularShininess) * smoothstep(0.0, 0.5, n_dot_l);		
-}
-
-vec3 CalculateOutputColor (float diffuseCoefficient, float attenuationFactor, float specularCoefficient, float shadow, vec3 lightColor)
-{
-    return (diffuseCoefficient * fDiffuseColor * shadow * attenuationFactor + specularCoefficient * fSpecularColor) * lightColor;
-}
-
-/* calculate contribution of one point light */
-vec4 CalculatePointLight (PointLightStruct light, int pointLightIdx)
-{
-    vec3 lightDirection = normalize (light.lightPosition - fPosition);
-
-    /* diffuse component */
-    float n_dot_l = dot (fNormal, lightDirection);
-    float diffuseCoefficient = CalculateDiffuse (n_dot_l);
-
-    /* specular component */
-    float specularCoefficient = CalculateSpecular (lightDirection, n_dot_l);
-    
-    /* attenuation */
-    float distanceToLight = length (light.lightPosition - fPosition);
-    float attenuationFactor = 1.0f / (light.attenuationConst + light.attenuationLinear * distanceToLight + light.attenuationQuadratic * distanceToLight * distanceToLight);
-
-    /* aggregate output */
-    return vec4 (CalculateOutputColor (diffuseCoefficient, attenuationFactor, specularCoefficient, 1.0, light.lightColor), 1.0);
-}
-
-/* calculate directional light shadow */
-float CalculateDirectionalLightShadow (int directionalLightIdx)
-{
-    vec4 fragmentLightSpace = mDirectionalLightSpace[directionalLightIdx] * vec4(fPosition, 1.0);
-    vec3 depthMapCoords = fragmentLightSpace.xyz / fragmentLightSpace.w * 0.5 + 0.5;
-
-    if (any(lessThan(depthMapCoords, vec3(0.0))) || any(greaterThan(depthMapCoords, vec3(1.0))))
-        return 1.0;
-
-    float shadow = texture(tShadowMap, vec4(depthMapCoords.xy, directionalLightIdx, depthMapCoords.z - BIAS));
-    return shadow;
-}
-
-/* calculate contribution of one directional light */
-vec4 CalculateDirectionalLight (DirectionalLightStruct light, int directionalLightIdx)
-{
-    vec3 lightDirection = normalize (-light.lightDirection);
-
-    /* diffuse component */
-    float n_dot_l = dot (fNormal, lightDirection);		
-    float diffuseCoefficient = CalculateDiffuse (n_dot_l);
-
-    /* shadow */
-    float shadow = CalculateDirectionalLightShadow (directionalLightIdx);
-
-    /* specular component */
-    float specularCoefficient = CalculateSpecular (lightDirection, n_dot_l);
-
-    /* attenuation */
-    float attenuationFactor = 1.0f;
-
-    /* aggregate output */
-    return vec4 (CalculateOutputColor (diffuseCoefficient, attenuationFactor, specularCoefficient, shadow, light.lightColor), 1.0);
-}
-
-/* calculate spot light shadow */
-float CalculateSpotLightShadow (int spotLightIdx)
-{
-    vec4 fragmentLightSpace = mSpotLightSpace[spotLightIdx] * vec4(fPosition, 1.0);
-    vec3 depthMapCoords = fragmentLightSpace.xyz / fragmentLightSpace.w * 0.5 + 0.5;
-
-    if (any(lessThan(depthMapCoords, vec3(0.0))) || any(greaterThan(depthMapCoords, vec3(1.0))))
-        return 1.0;
-
-    float shadow = texture(tShadowMap, vec4(depthMapCoords.xy, directionalLightCount + spotLightIdx, depthMapCoords.z - BIAS));
-    return shadow;
-}
-
-/* calculate contribution of one spot light */
-vec4 CalculateSpotLight (SpotLightStruct light, int spotLightIdx)
-{
-    vec3 lightDirection = normalize (light.lightPosition - fPosition);
-
-    /* check if in cone */
-    float theta = dot (lightDirection, normalize (-light.lightDirection));
-    float epsilon = light.innerCutoffCosine - light.outerCutoffCosine;
-    float intensity = clamp ((theta - light.outerCutoffCosine) / epsilon, 0.0, 1.0); 		
-
-    /* diffuse component */
-    float n_dot_l = dot (fNormal, lightDirection);
-    float diffuseCoefficient = CalculateDiffuse (n_dot_l);
-    
-    /* shadow */
-    float shadow = CalculateSpotLightShadow (spotLightIdx);
-
-    /* specular component */
-    float specularCoefficient = CalculateSpecular (lightDirection, n_dot_l);
-    
-    /* attenuation */
-    float distanceToLight = length (light.lightPosition - fPosition);
-    float attenuationFactor = 1.0f / (light.attenuationConst + light.attenuationLinear * distanceToLight + light.attenuationQuadratic * distanceToLight * distanceToLight);
-        
-    /* aggregate output */
-    return vec4 (CalculateOutputColor (diffuseCoefficient, attenuationFactor, specularCoefficient, shadow, light.lightColor) * intensity, 1.0);
-}
+%%include shaders/lights.fs%%
+%%include shaders/shadows.fs%%
+%%include shaders/blinnphong.fs%%
 
 void main()
 {

@@ -1,4 +1,5 @@
 #include "graphics/Shader.h"
+#include "graphics/ShaderProcessor.h"
 #include "system/LogMessage.h"
 #include "system/Game.h"
 #include <iostream>
@@ -11,55 +12,56 @@ namespace cilantro {
 Shader::Shader (const std::string& path, EShaderType shaderType) : LoadableResource (path)
 {
     this->m_shaderType = shaderType;
-    Load (path);
 }
 
 void Shader::Load (const std::string& path)
 {
-    std::ifstream f (path, std::ios::binary);
-    std::ostringstream ss;
-   
-    if (!f.is_open ())
-    {
-        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to read shader file" << path;
-    }
-
-    ss << f.rdbuf ();
-    m_shaderSourceParametrized = ss.str ();
-    m_shaderSource = m_shaderSourceParametrized;
+    ShaderProcessor processor (m_parameterValMap);
+    m_shaderSourceNoVariables = processor.ProcessShader (path);
+    ReplaceVariables ();
 }
 
-void Shader::SetParameter (const std::string& parameter, const std::string& value)
+void Shader::SetStaticParameter (const std::string& parameter, const std::string& value)
 {
-    std::size_t pos;
-
-    m_paramValMap.insert_or_assign (parameter, value);
-
-    m_shaderSource = m_shaderSourceParametrized;
-
-    for (auto& p : m_paramValMap)
-    {
-        while ((pos = m_shaderSource.find (p.first)) != std::string::npos)
-        {
-            m_shaderSource.replace (pos, p.first.length (), p.second);
-        }
-    }    
+    m_parameterValMap.insert_or_assign (parameter, value);
 }
 
-void Shader::SetDefaultParameters ()
+void Shader::SetVariable (const std::string& variable, const std::string& value)
+{
+    m_variableValMap.insert_or_assign (variable, value);
+    ReplaceVariables ();
+}
+
+void Shader::SetDefaults ()
 {  
-    SetParameter ("%%CILANTRO_MAX_BONES%%", std::to_string (CILANTRO_MAX_BONES));
-    SetParameter ("%%CILANTRO_MAX_BONE_INFLUENCES%%", std::to_string (CILANTRO_MAX_BONE_INFLUENCES));
-    SetParameter ("%%CILANTRO_MAX_POINT_LIGHTS%%", std::to_string (CILANTRO_MAX_POINT_LIGHTS));
-    SetParameter ("%%CILANTRO_MAX_SPOT_LIGHTS%%", std::to_string (CILANTRO_MAX_SPOT_LIGHTS));
-    SetParameter ("%%CILANTRO_MAX_DIRECTIONAL_LIGHTS%%", std::to_string (CILANTRO_MAX_DIRECTIONAL_LIGHTS));
-    SetParameter ("%%CILANTRO_MAX_SPOT_LIGHTS%%", std::to_string (CILANTRO_MAX_SPOT_LIGHTS));
-    SetParameter ("%%CILANTRO_COMPUTE_GROUP_SIZE%%", std::to_string (CILANTRO_COMPUTE_GROUP_SIZE));
+    SetStaticParameter ("CILANTRO_MAX_BONES", std::to_string (CILANTRO_MAX_BONES));
+    SetStaticParameter ("CILANTRO_MAX_BONE_INFLUENCES", std::to_string (CILANTRO_MAX_BONE_INFLUENCES));
+    SetStaticParameter ("CILANTRO_MAX_POINT_LIGHTS", std::to_string (CILANTRO_MAX_POINT_LIGHTS));
+    SetStaticParameter ("CILANTRO_MAX_SPOT_LIGHTS", std::to_string (CILANTRO_MAX_SPOT_LIGHTS));
+    SetStaticParameter ("CILANTRO_MAX_DIRECTIONAL_LIGHTS", std::to_string (CILANTRO_MAX_DIRECTIONAL_LIGHTS));
+    SetStaticParameter ("CILANTRO_MAX_SPOT_LIGHTS", std::to_string (CILANTRO_MAX_SPOT_LIGHTS));
+    SetStaticParameter ("CILANTRO_COMPUTE_GROUP_SIZE", std::to_string (CILANTRO_COMPUTE_GROUP_SIZE));
 
-    SetParameter ("%%CILANTRO_SHADOW_BIAS%%", std::to_string (CILANTRO_SHADOW_BIAS));
+    SetStaticParameter ("CILANTRO_SHADOW_BIAS", std::to_string (CILANTRO_SHADOW_BIAS));
 
-    SetParameter ("%%ACTIVE_DIRECTIONAL_LIGHTS%%", "1");
-    SetParameter ("%%ACTIVE_SPOT_LIGHTS%%", "1");
+    SetVariable ("ACTIVE_DIRECTIONAL_LIGHTS", "1");
+    SetVariable ("ACTIVE_SPOT_LIGHTS", "1");
+}
+
+void Shader::ReplaceVariables ()
+{
+    m_shaderSource = m_shaderSourceNoVariables;
+
+    for (const auto& [variable, value] : m_variableValMap)
+    {
+        std::string var = "$$" + variable + "$$";
+        size_t pos = 0;
+        while ((pos = m_shaderSource.find (var, pos)) != std::string::npos)
+        {
+            m_shaderSource.replace (pos, var.length (), value);
+            pos += value.length ();
+        }
+    }
 }
 
 } // namespace cilantro

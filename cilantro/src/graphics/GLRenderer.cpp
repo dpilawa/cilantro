@@ -779,7 +779,7 @@ void GLRenderer::Update (std::shared_ptr<DirectionalLight> directionalLight)
 
     // update invocation count in shadow map geometry shader
     auto shadowmapShader = GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader> ("shadowmap_directional_geometry_shader");
-    shadowmapShader->SetParameter ("%%ACTIVE_DIRECTIONAL_LIGHTS%%", std::to_string (GetDirectionalLightCount ()));
+    shadowmapShader->SetVariable ("ACTIVE_DIRECTIONAL_LIGHTS", std::to_string (GetDirectionalLightCount ()));
     shadowmapShader->Compile ();
 
     auto shadowmapShaderProg = GetShaderProgramManager ()->GetByName<GLShaderProgram> ("shadowmap_directional_shader");
@@ -836,7 +836,7 @@ void GLRenderer::Update (std::shared_ptr<SpotLight> spotLight)
 
     // update invocation count in shadow map geometry shader
     auto shadowmapShader = GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader> ("shadowmap_spot_geometry_shader");
-    shadowmapShader->SetParameter ("%%ACTIVE_SPOT_LIGHTS%%", std::to_string (GetSpotLightCount ()));
+    shadowmapShader->SetVariable ("ACTIVE_SPOT_LIGHTS", std::to_string (GetSpotLightCount ()));
     shadowmapShader->Compile ();
 
     auto shadowmapShaderProg = GetShaderProgramManager ()->GetByName<GLShaderProgram> ("shadowmap_spot_shader");

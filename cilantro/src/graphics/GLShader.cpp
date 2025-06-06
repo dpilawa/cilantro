@@ -28,7 +28,8 @@ GLShader::GLShader (const std::string& path, EShaderType shaderType) : Shader (p
             break;
     }
 
-    SetDefaultParameters ();
+    SetDefaults ();
+    Load (path);
     Compile ();
 
     glGetShaderiv (m_glShaderId, GL_COMPILE_STATUS, &success);
@@ -52,24 +53,24 @@ void GLShader::Compile ()
     glCompileShader (m_glShaderId); 
 }
 
-void GLShader::SetDefaultParameters ()
+void GLShader::SetDefaults ()
 {
-    Shader::SetDefaultParameters ();
+    Shader::SetDefaults ();
 
-    SetParameter ("%%CILANTRO_GLSL_VERSION%%", GLUtils::GetGLSLVersion ().directive);
+    SetStaticParameter ("CILANTRO_GLSL_VERSION", GLUtils::GetGLSLVersion ().directive);
 
-    SetParameter ("%%UBO_MATRICES%%", std::to_string (static_cast<int> (EGlUBOType::UBO_MATRICES)));
-    SetParameter ("%%UBO_POINTLIGHTS%%", std::to_string (static_cast<int> (EGlUBOType::UBO_POINTLIGHTS)));
-    SetParameter ("%%UBO_DIRECTIONALLIGHTS%%", std::to_string (static_cast<int> (EGlUBOType::UBO_DIRECTIONALLIGHTS)));
-    SetParameter ("%%UBO_SPOTLIGHTS%%", std::to_string (static_cast<int> (EGlUBOType::UBO_SPOTLIGHTS)));
-    SetParameter ("%%UBO_DIRECTIONALLIGHTVIEWMATRICES%%", std::to_string (static_cast<int> (EGlUBOType::UBO_DIRECTIONALLIGHTVIEWMATRICES)));
-    SetParameter ("%%UBO_SPOTLIGHTVIEWMATRICES%%", std::to_string (static_cast<int> (EGlUBOType::UBO_SPOTLIGHTVIEWMATRICES)));
-    SetParameter ("%%UBO_BONETRANSFORMATIONS%%", std::to_string (static_cast<int> (EGlUBOType::UBO_BONETRANSFORMATIONS)));
+    SetStaticParameter ("UBO_MATRICES", std::to_string (static_cast<int> (EGlUBOType::UBO_MATRICES)));
+    SetStaticParameter ("UBO_POINTLIGHTS", std::to_string (static_cast<int> (EGlUBOType::UBO_POINTLIGHTS)));
+    SetStaticParameter ("UBO_DIRECTIONALLIGHTS", std::to_string (static_cast<int> (EGlUBOType::UBO_DIRECTIONALLIGHTS)));
+    SetStaticParameter ("UBO_SPOTLIGHTS", std::to_string (static_cast<int> (EGlUBOType::UBO_SPOTLIGHTS)));
+    SetStaticParameter ("UBO_DIRECTIONALLIGHTVIEWMATRICES", std::to_string (static_cast<int> (EGlUBOType::UBO_DIRECTIONALLIGHTVIEWMATRICES)));
+    SetStaticParameter ("UBO_SPOTLIGHTVIEWMATRICES", std::to_string (static_cast<int> (EGlUBOType::UBO_SPOTLIGHTVIEWMATRICES)));
+    SetStaticParameter ("UBO_BONETRANSFORMATIONS", std::to_string (static_cast<int> (EGlUBOType::UBO_BONETRANSFORMATIONS)));
 
-    SetParameter ("%%SSBO_VERTICES%%", std::to_string (static_cast<int> (EGlSSBOType::SSBO_VERTICES)));
-    SetParameter ("%%SSBO_BONEINDICES%%", std::to_string (static_cast<int> (EGlSSBOType::SSBO_BONEINDICES)));
-    SetParameter ("%%SSBO_BONEWEIGHTS%%", std::to_string (static_cast<int> (EGlSSBOType::SSBO_BONEWEIGHTS)));
-    SetParameter ("%%SSBO_AABB%%", std::to_string (static_cast<int> (EGlSSBOType::SSBO_AABB)));
+    SetStaticParameter ("SSBO_VERTICES", std::to_string (static_cast<int> (EGlSSBOType::SSBO_VERTICES)));
+    SetStaticParameter ("SSBO_BONEINDICES", std::to_string (static_cast<int> (EGlSSBOType::SSBO_BONEINDICES)));
+    SetStaticParameter ("SSBO_BONEWEIGHTS", std::to_string (static_cast<int> (EGlSSBOType::SSBO_BONEWEIGHTS)));
+    SetStaticParameter ("SSBO_AABB", std::to_string (static_cast<int> (EGlSSBOType::SSBO_AABB)));
 }
 
 GLuint GLShader::GetShaderId () const

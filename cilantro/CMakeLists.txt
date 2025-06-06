@@ -42,6 +42,7 @@ include/graphics/IShaderProgram.h
 include/graphics/Renderer.h
 include/graphics/RenderStage.h
 include/graphics/Shader.h
+include/graphics/ShaderProcessor.h
 include/graphics/ShaderProgram.h
 include/graphics/ShadowMapRenderStage.h
 include/graphics/SurfaceRenderStage.h
@@ -112,6 +113,7 @@ src/graphics/GLUtils.cpp
 src/graphics/Renderer.cpp
 src/graphics/RenderStage.cpp
 src/graphics/Shader.cpp
+src/graphics/ShaderProcessor.cpp
 src/graphics/ShaderProgram.cpp
 src/graphics/ShadowMapRenderStage.cpp
 src/graphics/SurfaceRenderStage.cpp
