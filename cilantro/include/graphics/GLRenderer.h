@@ -12,7 +12,7 @@ class MeshObject;
 class Camera;
 
 enum EGlVBOType { VBO_VERTICES = 0, VBO_NORMALS, VBO_UVS, VBO_TANGENTS, VBO_BITANGENTS, VBO_BONES, VBO_BONEWEIGHTS };
-enum EGlUBOType { UBO_MATRICES = 0, UBO_POINTLIGHTS, UBO_DIRECTIONALLIGHTS, UBO_SPOTLIGHTS, UBO_DIRECTIONALLIGHTVIEWMATRICES, UBO_SPOTLIGHTVIEWMATRICES, UBO_BONETRANSFORMATIONS };
+enum EGlUBOType { UBO_MATRICES = 0, UBO_POINTLIGHTS, UBO_DIRECTIONALLIGHTS, UBO_SPOTLIGHTS, UBO_DIRECTIONALLIGHTVIEWMATRICES, UBO_SPOTLIGHTVIEWMATRICES, UBO_POINTLIGHTVIEWMATRICES, UBO_BONETRANSFORMATIONS };
 enum EGlSSBOType { SSBO_VERTICES = 0, SSBO_BONEINDICES, SSBO_BONEWEIGHTS, SSBO_AABB };
 
 struct SGlGeometryBuffers;
@@ -42,7 +42,7 @@ struct SGlGeometryBuffers
 
 struct SGlUniformBuffers
 {
-    // Uniform Buffer Objects (view & projection matrices, point lights, directional lights, spot lights, directional light view transforms, spot light view transforms)
+    // Uniform Buffer Objects (view & projection matrices, point lights, directional lights, spot lights, directional light view transforms, spot light view transforms, point light view transforms, bone transformations)
     GLuint UBO[CILANTRO_GLOBAL_UBO_COUNT];
 };
 
@@ -60,6 +60,8 @@ struct SGlUniformLightViewMatrixBuffer
     GLfloat directionalLightView[16 * CILANTRO_MAX_DIRECTIONAL_LIGHTS];
     // spot light view matrices
     GLfloat spotLightView[16 * CILANTRO_MAX_SPOT_LIGHTS];
+    // point light view matrices (cube maps)
+    GLfloat pointLightView[16 * 6 * CILANTRO_MAX_POINT_LIGHTS];
 };
 
 struct SGlMaterialTextureUnits
@@ -176,7 +178,7 @@ public:
     __EAPI virtual size_t GetPointLightCount () const override;
     __EAPI virtual size_t GetDirectionalLightCount () const override;
     __EAPI virtual size_t GetSpotLightCount () const override;
-    
+
     __EAPI virtual std::shared_ptr<IFramebuffer> CreateFramebuffer (unsigned int width, unsigned int height, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayTextureCount, bool depthStencilRenderbufferEnabled, bool multisampleEnabled) override;
     __EAPI virtual void BindDefaultFramebuffer () override;
     __EAPI virtual void BindDefaultDepthBuffer () override;

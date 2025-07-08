@@ -49,7 +49,8 @@ void GLFramebuffer::Initialize ()
     {
         // create depth buffer array (used by shadow maps)
         GLfloat borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-
+       
+        // create depth texture array
         glGenTextures (1, &m_glBuffers.depthTextureArray);
         glBindTexture (GL_TEXTURE_2D_ARRAY, m_glBuffers.depthTextureArray);
         glTexImage3D (GL_TEXTURE_2D_ARRAY, 0, CILANTRO_SHADOW_MAP_DEPTH == 32 ? GL_DEPTH_COMPONENT32F : (CILANTRO_SHADOW_MAP_DEPTH == 24 ? GL_DEPTH_COMPONENT24 : GL_DEPTH_COMPONENT16), m_bufferWidth, m_bufferHeight, static_cast<GLsizei> (m_depthBufferArrayLayerCount), 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
@@ -58,11 +59,12 @@ void GLFramebuffer::Initialize ()
         glTexParameteri (GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri (GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri (GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-        glTexParameteri (GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);        
-        glTexParameterfv (GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor); 
+        glTexParameteri (GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        glTexParameterfv (GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BORDER_COLOR, borderColor);
         glBindTexture (GL_TEXTURE_2D_ARRAY, 0);
 
         glFramebufferTexture (GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_glBuffers.depthTextureArray, 0);
+       
     }
     else if (m_depthStencilRenderbufferEnabled)
     {
@@ -107,6 +109,7 @@ void GLFramebuffer::Deinitialize ()
 {
     glDeleteRenderbuffers (1, &m_glBuffers.RBO);
     glDeleteTextures (static_cast<GLsizei> (m_rgbTextureCount + m_rgbaTextureCount), m_glBuffers.textureBuffer);
+    glDeleteTextures (1, &m_glBuffers.depthTextureArray);
     glDeleteFramebuffers (1, &m_glBuffers.FBO);
 }
 
@@ -124,13 +127,13 @@ void GLFramebuffer::BindFramebufferColorTexturesAsColor () const
     }
 }
 
-void GLFramebuffer::BindFramebufferDepthArrayTextureAsColor (unsigned int index) const
+void GLFramebuffer::BindFramebufferDepthTextureArrayAsColor (unsigned int index) const
 {
     glActiveTexture (static_cast<GLenum> (GL_TEXTURE0 + index));
     glBindTexture (GL_TEXTURE_2D_ARRAY, m_glBuffers.depthTextureArray);
 }
 
-void GLFramebuffer::BindFramebufferDepthArrayTextureAsDepth () const
+void GLFramebuffer::BindFramebufferDepthTextureArrayAsDepth () const
 {
     glFramebufferTexture (GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_glBuffers.depthTextureArray, 0);
 }

@@ -213,6 +213,16 @@ AABB Renderer::CalculateAABB (std::shared_ptr<MeshObject> meshObject)
     return aabb;
 }
 
+bool Renderer::IsDeferredRendering () const
+{
+    return m_isDeferredRendering;
+}
+
+bool Renderer::IsShadowMapping () const
+{
+    return m_isShadowMapping;
+}
+
 void Renderer::InitializeRenderStages ()
 {
     if (m_isShadowMapping == true)
@@ -245,7 +255,8 @@ void Renderer::InitializeRenderStages ()
         auto baseForward = this->Create<ForwardGeometryRenderStage> ("forward");
         if (m_isShadowMapping == true)
         {
-            baseForward->SetDepthArrayFramebufferLink (EPipelineLink::LINK_FIRST);
+            baseForward->SetDepthTextureArrayFramebufferLink (EPipelineLink::LINK_FIRST);
+            baseForward->SetDepthCubeMapArrayFramebufferLink (EPipelineLink::LINK_FIRST);
         }
         baseForward->Initialize ();
     }

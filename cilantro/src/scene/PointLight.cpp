@@ -13,6 +13,8 @@ PointLight::PointLight (std::shared_ptr<GameScene> gameScene) : Light (gameScene
     m_attenuationConst = 1.0f;
     m_attenuationLinear = 0.0f;
     m_attenuationQuadratic = 0.0f;
+
+    m_escapeRadius = 0.01f;
 }
 
 PointLight::~PointLight ()
@@ -40,6 +42,13 @@ std::shared_ptr<PointLight> PointLight::SetQuadraticAttenuationFactor (const flo
     return std::dynamic_pointer_cast<PointLight> (shared_from_this ());
 }
 
+std::shared_ptr<PointLight> PointLight::SetEscapeRadius (const float radius)
+{
+    m_escapeRadius = radius;
+    GetGameScene ()->GetGame ()->GetMessageBus ()->Publish<LightUpdateMessage> (std::make_shared<LightUpdateMessage> (this->GetHandle ()));
+    return std::dynamic_pointer_cast<PointLight> (shared_from_this ());
+}
+
 float PointLight::GetConstantAttenuationFactor () const
 {
     return m_attenuationConst;
@@ -53,6 +62,11 @@ float PointLight::GetLinearAttenuationFactor () const
 float PointLight::GetQuadraticAttenuationFactor () const
 {
     return m_attenuationQuadratic;
+}
+
+float PointLight::GetEscapeRadius () const
+{
+    return m_escapeRadius;
 }
 
 float PointLight::GetBoundingSphereRadius (float threshold) const

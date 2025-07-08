@@ -19,10 +19,14 @@ public:
     __EAPI std::shared_ptr<PointLight> SetLinearAttenuationFactor (const float attenuation);
     __EAPI std::shared_ptr<PointLight> SetQuadraticAttenuationFactor (const float attenuation);
 
+    // set other parameters
+    __EAPI std::shared_ptr<PointLight> SetEscapeRadius (const float radius);
+
     // getters
     __EAPI float GetConstantAttenuationFactor () const;
     __EAPI float GetLinearAttenuationFactor () const;
     __EAPI float GetQuadraticAttenuationFactor () const;
+    __EAPI float GetEscapeRadius () const;
 
     // bounding sphere radius
     __EAPI float GetBoundingSphereRadius (float threshold) const;
@@ -35,6 +39,8 @@ private:
     float m_attenuationConst;
     float m_attenuationLinear;
     float m_attenuationQuadratic;
+
+    float m_escapeRadius; // escape radius of light (for shadow map generation where light is inside a mesh, e.g. lamp)
 };
 
 } // namespace cilantro

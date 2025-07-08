@@ -52,7 +52,7 @@ bool Framebuffer::IsDepthStencilRenderbufferEnabled () const
     return m_depthStencilRenderbufferEnabled;
 }
 
-bool Framebuffer::IsDepthArrayEnabled () const
+bool Framebuffer::IsDepthTextureArrayEnabled () const
 {
     return (m_depthBufferArrayLayerCount > 0);
 }

@@ -26,6 +26,7 @@ include/cilantroengine.h
 
 include/graphics/AABBRenderStage.h
 include/graphics/DeferredGeometryRenderStage.h
+include/graphics/DeferredLightingRenderStage.h
 include/graphics/ForwardGeometryRenderStage.h
 include/graphics/Framebuffer.h
 include/graphics/GLFramebuffer.h
@@ -102,6 +103,7 @@ include/system/MessageBus.h
 
 src/graphics/AABBRenderStage.cpp
 src/graphics/DeferredGeometryRenderStage.cpp
+src/graphics/DeferredLightingRenderStage.cpp
 src/graphics/ForwardGeometryRenderStage.cpp
 src/graphics/Framebuffer.cpp
 src/graphics/GLFramebuffer.cpp
@@ -168,12 +170,18 @@ src/system/LogMessage.cpp
 src/system/Timer.cpp
 src/system/MessageBus.cpp
 
+shaders/aabb.cs
+shaders/aabb.fs
+shaders/aabb.vs
+shaders/blinnphong.fs
 shaders/blinnphong_deferred_geometrypass.fs
 shaders/blinnphong_deferred_lightingpass.fs
 shaders/blinnphong_forward.fs
 shaders/default.vs
 shaders/flatquad.fs
 shaders/flatquad.vs
+shaders/lights.fs
+shaders/pbr.fs
 shaders/pbr_deferred_geometrypass.fs
 shaders/pbr_deferred_lightingpass.fs
 shaders/pbr_forward.fs
@@ -181,8 +189,11 @@ shaders/post_fxaa.fs
 shaders/post_gamma.fs
 shaders/post_hdr.fs
 shaders/shadowmap.fs
-shaders/shadowmap_directional.gs
 shaders/shadowmap.vs
+shaders/shadowmap_directional.gs
+shaders/shadowmap_point.gs
+shaders/shadowmap_spot.gs
+shaders/shadows.fs
 
 )
 

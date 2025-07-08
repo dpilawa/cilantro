@@ -54,7 +54,7 @@ int main (int argc, char* argv [])
         ->SetDiffuse ("tEarthDiffuse")
         ->SetSpecular ("tEarthSpec")
         ->SetNormal("tEarthNormal")
-        ->SetSpecularShininess (32.0f);
+        ->SetSpecularShininess (128.0f);
 
     scene->Create<PhongMaterial> ("mMoon")
         ->SetDiffuse ("tMoon")
@@ -83,7 +83,11 @@ int main (int argc, char* argv [])
         ->GetModelTransform ()->Scale (0.273f * 5.0f);
 
     scene->Create<PointLight> ("sunLight")
-        ->SetColor (Vector3f (1.1f, 1.0f, 1.0f))
+        ->SetEscapeRadius (12.0f)
+        ->SetConstantAttenuationFactor (1.0f)
+        ->SetLinearAttenuationFactor (0.005f)
+        ->SetQuadraticAttenuationFactor (0.0005f)
+        ->SetColor (Vector3f (2.2f, 2.0f, 2.0f))
         ->SetEnabled (true)
         ->SetParentObject ("sun");
 

@@ -26,14 +26,17 @@ void GLShaderProgram::AttachShader (const std::shared_ptr<IShader> shader)
 void GLShaderProgram::Link ()
 {
     GLint success;
-    char errorLog[512];
 
     glLinkProgram (m_glShaderProgramId);
     glGetProgramiv (m_glShaderProgramId, GL_LINK_STATUS, &success);
 
     if (!success)
     {
-        glGetProgramInfoLog (m_glShaderProgramId, 512, nullptr, errorLog);
+        GLint length;
+        glGetProgramiv (m_glShaderProgramId, GL_INFO_LOG_LENGTH, &length);
+        std::string errorLog(length, ' ');
+
+        glGetProgramInfoLog (m_glShaderProgramId, length, nullptr, &errorLog[0]);
         glDeleteProgram (m_glShaderProgramId);
         LogMessage () << errorLog;
         LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Unable to link program" << m_glShaderProgramId;

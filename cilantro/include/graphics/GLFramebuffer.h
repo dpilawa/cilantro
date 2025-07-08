@@ -30,8 +30,8 @@ public:
 
     __EAPI virtual void BindFramebuffer () const override;
     __EAPI virtual void BindFramebufferColorTexturesAsColor () const override;
-    __EAPI virtual void BindFramebufferDepthArrayTextureAsColor (unsigned int index) const override;
-    __EAPI virtual void BindFramebufferDepthArrayTextureAsDepth () const override;
+    __EAPI virtual void BindFramebufferDepthTextureArrayAsColor (unsigned int index) const override;
+    __EAPI virtual void BindFramebufferDepthTextureArrayAsDepth () const override;
     __EAPI virtual void BindFramebufferRenderbuffer () const override;
 
     __EAPI virtual void UnbindFramebuffer () const override;    

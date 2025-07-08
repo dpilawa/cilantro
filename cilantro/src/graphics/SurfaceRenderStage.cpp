@@ -40,12 +40,6 @@ void SurfaceRenderStage::OnFrame ()
     m_shaderProgram->Use ();
     m_linkedColorAttachmentsFramebuffer->BindFramebufferColorTexturesAsColor ();
 
-    // bind shadow map (if exists) on next available texture slot
-    if (m_linkedDepthArrayFramebuffer != nullptr && m_linkedDepthArrayFramebuffer->IsDepthArrayEnabled ())
-    {
-        m_linkedDepthArrayFramebuffer->BindFramebufferDepthArrayTextureAsColor (m_linkedColorAttachmentsFramebuffer->GetColorTextureCount ());
-    }
-
     // draw quad
     GetRenderer ()->DrawSurface ();
 

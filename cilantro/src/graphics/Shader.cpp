@@ -42,10 +42,12 @@ void Shader::SetDefaults ()
     SetStaticParameter ("CILANTRO_MAX_SPOT_LIGHTS", std::to_string (CILANTRO_MAX_SPOT_LIGHTS));
     SetStaticParameter ("CILANTRO_COMPUTE_GROUP_SIZE", std::to_string (CILANTRO_COMPUTE_GROUP_SIZE));
 
+    SetStaticParameter ("CILANTRO_SHADOW_MAP_BINDING", std::to_string (CILANTRO_SHADOW_MAP_BINDING));
     SetStaticParameter ("CILANTRO_SHADOW_BIAS", std::to_string (CILANTRO_SHADOW_BIAS));
 
     SetVariable ("ACTIVE_DIRECTIONAL_LIGHTS", "1");
     SetVariable ("ACTIVE_SPOT_LIGHTS", "1");
+    SetVariable ("ACTIVE_POINT_LIGHTS", "1");
 }
 
 void Shader::ReplaceVariables ()

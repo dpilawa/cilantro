@@ -20,18 +20,21 @@ using namespace cilantro;
 
 int main (int argc, char* argv [])
 {
+    bool shadowMappingEnabled = true;
+    bool deferredRenderingEnabled = true;
+
     auto game = std::make_shared<Game> ();
     game->Initialize ();
 
     auto scene = game->Create<GameScene> ("scene");
-    auto renderer = scene->Create<GLFWRenderer> (800, 600, true, false, "Test 04", false, true, true);
+    auto renderer = scene->Create<GLFWRenderer> (800, 600, shadowMappingEnabled, deferredRenderingEnabled, "Test 04", false, true, true);
     auto inputController = game->Create<GLFWInputController> ();
 
     AssimpModelLoader modelLoader (game);
 
     renderer->Create<SurfaceRenderStage> ("hdr_postprocess")
         ->SetShaderProgram ("post_hdr_shader")
-        ->SetColorAttachmentsFramebufferLink (EPipelineLink::LINK_PREVIOUS);
+        ->SetColorAttachmentsFramebufferLink (deferredRenderingEnabled ? (shadowMappingEnabled ? EPipelineLink::LINK_THIRD : EPipelineLink::LINK_SECOND) : EPipelineLink::LINK_PREVIOUS);
 
     renderer->Create<SurfaceRenderStage> ("fxaa_postprocess")
         ->SetShaderProgram ("post_fxaa_shader")

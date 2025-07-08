@@ -15,8 +15,8 @@ struct IFramebuffer
 
     virtual void BindFramebuffer () const = 0;
     virtual void BindFramebufferColorTexturesAsColor () const = 0;
-    virtual void BindFramebufferDepthArrayTextureAsColor (unsigned int index) const = 0;
-    virtual void BindFramebufferDepthArrayTextureAsDepth () const = 0;
+    virtual void BindFramebufferDepthTextureArrayAsColor (unsigned int index) const = 0;
+    virtual void BindFramebufferDepthTextureArrayAsDepth () const = 0;
     virtual void BindFramebufferRenderbuffer () const = 0;
     
     virtual void UnbindFramebuffer () const = 0;    
@@ -32,7 +32,7 @@ struct IFramebuffer
     virtual unsigned int GetDepthArrayLayerCount () const = 0;
 
     virtual bool IsDepthStencilRenderbufferEnabled () const = 0;
-    virtual bool IsDepthArrayEnabled () const = 0;
+    virtual bool IsDepthTextureArrayEnabled () const = 0;
 
     virtual void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight) = 0;
 };

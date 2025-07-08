@@ -10,7 +10,7 @@ namespace cilantro {
 class __CEAPI GLMultisampleFramebuffer : public GLFramebuffer 
 {
 public:
-    __EAPI GLMultisampleFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int dsBufferArraySize, bool hasDepthStencilRB);
+    __EAPI GLMultisampleFramebuffer (unsigned int bufferWidth, unsigned int bufferHeight, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayLayerCount, bool hasDepthStencilRB);
     __EAPI virtual ~GLMultisampleFramebuffer () {};
 
     ///////////////////////////////////////////////////////////////////////////

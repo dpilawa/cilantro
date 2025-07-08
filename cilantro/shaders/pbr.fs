@@ -91,6 +91,7 @@ vec3 CalculatePointLight (int pointLightIdx)
     vec3 lightDirection = normalize (pointLights[pointLightIdx].lightPosition - fPosition);
     vec3 halfwayDirection = normalize (viewDirection + lightDirection);
 
+    float shadow = CalculatePointLightShadow (pointLightIdx);
     vec3 radiance = CalculatePointLightRadiance (pointLights[pointLightIdx]);
     vec3 specular = CalculateCookTorranceSpecularBRDF (fNormal, lightDirection, viewDirection, halfwayDirection);
     
@@ -102,7 +103,7 @@ vec3 CalculatePointLight (int pointLightIdx)
     kD = kD * (1.0 - fMetallic);	
 
     float NdotL = max (dot (fNormal, lightDirection), 0.0);        
-    return (kD * fAlbedo / PI + specular) * radiance * NdotL + vec3(0.01) * fAlbedo * fAO;
+    return (kD * fAlbedo / PI + specular) * radiance * shadow * NdotL + vec3(0.01) * fAlbedo * fAO;
 }
 
 vec3 CalculateDirectionalLight (int directionalLightIdx)

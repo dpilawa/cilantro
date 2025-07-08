@@ -13,7 +13,7 @@ float CalculateSpecular (vec3 lightDirection, float n_dot_l)
 
 vec3 CalculateOutputColor (float diffuseCoefficient, float attenuationFactor, float specularCoefficient, float shadow, vec3 lightColor)
 {
-    return (diffuseCoefficient * fDiffuseColor * shadow * attenuationFactor + specularCoefficient * fSpecularColor) * lightColor;
+    return (diffuseCoefficient * fDiffuseColor * attenuationFactor + specularCoefficient * fSpecularColor) * shadow * lightColor;
 }
 
 /* calculate contribution of one point light */
@@ -24,7 +24,10 @@ vec4 CalculatePointLight (PointLightStruct light, int pointLightIdx)
     /* diffuse component */
     float n_dot_l = dot (fNormal, lightDirection);
     float diffuseCoefficient = CalculateDiffuse (n_dot_l);
-    
+
+    /* shadow */
+    float shadow = CalculatePointLightShadow (pointLightIdx);
+
     /* specular component */
     float specularCoefficient = CalculateSpecular (lightDirection, n_dot_l);
     
@@ -33,7 +36,7 @@ vec4 CalculatePointLight (PointLightStruct light, int pointLightIdx)
     float attenuationFactor = 1.0f / (light.attenuationConst + light.attenuationLinear * distanceToLight + light.attenuationQuadratic * distanceToLight * distanceToLight);
 
     /* aggregate output */
-    return vec4 (CalculateOutputColor (diffuseCoefficient, attenuationFactor, specularCoefficient, 1.0, light.lightColor), 1.0);
+    return vec4 (CalculateOutputColor (diffuseCoefficient, attenuationFactor, specularCoefficient, shadow, light.lightColor), 1.0);
 }
 
 /* calculate contribution of one directional light */
@@ -68,13 +71,13 @@ vec4 CalculateSpotLight (SpotLightStruct light, int spotLightIdx)
     float epsilon = light.innerCutoffCosine - light.outerCutoffCosine;
     float intensity = clamp ((theta - light.outerCutoffCosine) / epsilon, 0.0, 1.0); 		
 
-    /* shadow */
-    float shadow = CalculateSpotLightShadow (spotLightIdx);
-
     /* diffuse component */
     float n_dot_l = dot (fNormal, lightDirection);
     float diffuseCoefficient = CalculateDiffuse (n_dot_l);
-    
+
+    /* shadow */
+    float shadow = CalculateSpotLightShadow (spotLightIdx);
+
     /* specular component */
     float specularCoefficient = CalculateSpecular (lightDirection, n_dot_l);
     

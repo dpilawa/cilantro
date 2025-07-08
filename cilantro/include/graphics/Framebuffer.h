@@ -22,7 +22,7 @@ public:
     __EAPI virtual unsigned int GetDepthArrayLayerCount () const override final;
 
     __EAPI virtual bool IsDepthStencilRenderbufferEnabled () const override final;
-    __EAPI virtual bool IsDepthArrayEnabled () const override final;
+    __EAPI virtual bool IsDepthTextureArrayEnabled () const override final;
 
     __EAPI void SetFramebufferResolution (unsigned int bufferWidth, unsigned int bufferHeight) override;
 

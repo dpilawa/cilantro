@@ -47,16 +47,23 @@ void GLMultisampleFramebuffer::Initialize ()
     if (m_depthBufferArrayLayerCount > 0)
     {
         // create depth buffer array (used by shadow maps)
-        glGenTextures(1, &m_glBuffers.depthTextureArray);
-        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE_ARRAY, m_glBuffers.depthTextureArray);
+        GLfloat borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+        // create depth texture array
+        glGenTextures (1, &m_glBuffers.depthTextureArray);
+        glBindTexture (GL_TEXTURE_2D_MULTISAMPLE_ARRAY, m_glBuffers.depthTextureArray);
         glTexImage3DMultisample(GL_TEXTURE_2D_MULTISAMPLE_ARRAY, CILANTRO_MULTISAMPLE, GL_DEPTH_COMPONENT32F, CILANTRO_SHADOW_MAP_SIZE, CILANTRO_SHADOW_MAP_SIZE, static_cast<GLsizei> (m_depthBufferArrayLayerCount), GL_TRUE);
-        glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-        glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE_ARRAY, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+        glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE_ARRAY, GL_TEXTURE_COMPARE_FUNC, GL_LESS);
+        glTexParameteri (GL_TEXTURE_2D_MULTISAMPLE_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri (GL_TEXTURE_2D_MULTISAMPLE_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri (GL_TEXTURE_2D_MULTISAMPLE_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        glTexParameteri (GL_TEXTURE_2D_MULTISAMPLE_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        glTexParameterfv (GL_TEXTURE_2D_MULTISAMPLE_ARRAY, GL_TEXTURE_BORDER_COLOR, borderColor);
         glBindTexture (GL_TEXTURE_2D_MULTISAMPLE_ARRAY, 0);
 
         glFramebufferTexture (GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_glBuffers.depthTextureArray, 0);
+
     }
     else if (m_depthStencilRenderbufferEnabled)
     {

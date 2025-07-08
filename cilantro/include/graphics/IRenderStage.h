@@ -20,7 +20,8 @@ struct IRenderStage
     virtual std::shared_ptr<IFramebuffer> GetFramebuffer () const = 0;
     virtual std::shared_ptr<IFramebuffer> GetLinkedColorAttachmentsFramebuffer () const = 0;
     virtual std::shared_ptr<IFramebuffer> GetLinkedDepthStencilFramebuffer () const = 0;
-    virtual std::shared_ptr<IFramebuffer> GetLinkedDepthArrayFramebuffer () const = 0;
+    virtual std::shared_ptr<IFramebuffer> GetLinkedDepthTextureArrayFramebuffer () const = 0;
+    virtual std::shared_ptr<IFramebuffer> GetLinkedDepthCubeMapArrayFramebuffer () const = 0;
     virtual std::shared_ptr<IFramebuffer> GetLinkedDrawFramebuffer () const = 0;
 
     virtual void OnFrame () = 0;
@@ -52,7 +53,8 @@ struct IRenderStage
 
     virtual std::shared_ptr<IRenderStage> SetColorAttachmentsFramebufferLink (EPipelineLink link) = 0;
     virtual std::shared_ptr<IRenderStage> SetDepthStencilFramebufferLink (EPipelineLink link) = 0;
-    virtual std::shared_ptr<IRenderStage> SetDepthArrayFramebufferLink (EPipelineLink link) = 0;
+    virtual std::shared_ptr<IRenderStage> SetDepthTextureArrayFramebufferLink (EPipelineLink link) = 0;
+    virtual std::shared_ptr<IRenderStage> SetDepthCubeMapArrayFramebufferLink (EPipelineLink link) = 0;
     virtual std::shared_ptr<IRenderStage> SetDrawFramebufferLink (EPipelineLink link) = 0;
 
 };

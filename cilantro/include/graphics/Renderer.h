@@ -49,6 +49,9 @@ public:
 
     ///////////////////////////////////////////////////////////////////////////
 
+    __EAPI virtual bool IsDeferredRendering () const;
+    __EAPI virtual bool IsShadowMapping () const;
+
     template <typename T, typename ...Params>
     std::shared_ptr<T> Create (const std::string& name, Params&&... params)
     requires (std::is_base_of_v<IRenderStage,T>);

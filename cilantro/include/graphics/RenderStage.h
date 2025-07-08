@@ -21,7 +21,8 @@ public:
     __EAPI virtual std::shared_ptr<IFramebuffer> GetFramebuffer () const override final;
     __EAPI virtual std::shared_ptr<IFramebuffer> GetLinkedColorAttachmentsFramebuffer () const override final;
     __EAPI virtual std::shared_ptr<IFramebuffer> GetLinkedDepthStencilFramebuffer () const override final;
-    __EAPI virtual std::shared_ptr<IFramebuffer> GetLinkedDepthArrayFramebuffer () const override final;
+    __EAPI virtual std::shared_ptr<IFramebuffer> GetLinkedDepthTextureArrayFramebuffer () const override final;
+    __EAPI virtual std::shared_ptr<IFramebuffer> GetLinkedDepthCubeMapArrayFramebuffer () const override final;
     __EAPI virtual std::shared_ptr<IFramebuffer> GetLinkedDrawFramebuffer () const override final;
 
     __EAPI virtual void OnFrame () override;
@@ -54,7 +55,8 @@ public:
 
     __EAPI virtual std::shared_ptr<IRenderStage> SetColorAttachmentsFramebufferLink (EPipelineLink link) override final;
     __EAPI virtual std::shared_ptr<IRenderStage> SetDepthStencilFramebufferLink (EPipelineLink link) override final;
-    __EAPI virtual std::shared_ptr<IRenderStage> SetDepthArrayFramebufferLink (EPipelineLink link) override final;
+    __EAPI virtual std::shared_ptr<IRenderStage> SetDepthTextureArrayFramebufferLink (EPipelineLink link) override final;
+    __EAPI virtual std::shared_ptr<IRenderStage> SetDepthCubeMapArrayFramebufferLink (EPipelineLink link) override final;
     __EAPI virtual std::shared_ptr<IRenderStage> SetDrawFramebufferLink (EPipelineLink link) override final;
 
     ///////////////////////////////////////////////////////////////////////////
@@ -87,13 +89,15 @@ protected:
     // and where to write to
     EPipelineLink m_colorAttachmentsFramebufferLink;
     EPipelineLink m_depthStencilFramebufferLink;
-    EPipelineLink m_depthArrayFramebufferLink;
+    EPipelineLink m_depthTextureArrayFramebufferLink;
+    EPipelineLink m_depthCubeMapArrayFramebufferLink;
     EPipelineLink m_drawFramebufferLink;
 
     // linked framebuffers
     std::shared_ptr<IFramebuffer> m_linkedColorAttachmentsFramebuffer;
     std::shared_ptr<IFramebuffer> m_linkedDepthStencilFramebuffer;
-    std::shared_ptr<IFramebuffer> m_linkedDepthArrayFramebuffer;
+    std::shared_ptr<IFramebuffer> m_linkedDepthTextureArrayFramebuffer;
+    std::shared_ptr<IFramebuffer> m_linkedDepthCubeMapArrayFramebuffer;
     std::shared_ptr<IFramebuffer> m_linkedDrawFramebuffer;
 
     // depth testing parameters

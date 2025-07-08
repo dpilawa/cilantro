@@ -5,6 +5,9 @@
 #include "graphics/GLFramebuffer.h"
 #include "graphics/GLMultisampleFramebuffer.h"
 #include "graphics/SurfaceRenderStage.h"
+#include "graphics/DeferredGeometryRenderStage.h"
+#include "graphics/DeferredLightingRenderStage.h"
+#include "graphics/ForwardGeometryRenderStage.h"
 
 #include "system/Game.h"
 #include "math/Mathf.h"
@@ -177,12 +180,12 @@ void GLRenderer::Draw (std::shared_ptr<MeshObject> meshObject)
             glBindTexture (GL_TEXTURE_2D, u->textureUnits[i]);
         }
 
-        // bind shadow map (if exists) on next available texture slot
-        if (m_isShadowMapping && (GetCurrentRenderStage ()->GetLinkedDepthArrayFramebuffer ()) != nullptr)
+        // bind shadow maps (if exist)
+        if (m_isShadowMapping && (GetCurrentRenderStage ()->GetLinkedDepthTextureArrayFramebuffer ()) != nullptr)
         {
-            if (GetCurrentRenderStage ()->GetLinkedDepthArrayFramebuffer ()->IsDepthArrayEnabled ())
+            if (GetCurrentRenderStage ()->GetLinkedDepthTextureArrayFramebuffer ()->IsDepthTextureArrayEnabled ())
             {
-                GetCurrentRenderStage ()->GetLinkedDepthArrayFramebuffer ()->BindFramebufferDepthArrayTextureAsColor (u->unitsCount);
+                GetCurrentRenderStage ()->GetLinkedDepthTextureArrayFramebuffer ()->BindFramebufferDepthTextureArrayAsColor (CILANTRO_SHADOW_MAP_BINDING);
             }
         }
 
@@ -222,6 +225,13 @@ void GLRenderer::Draw (std::shared_ptr<MeshObject> meshObject)
     // calculate normal matrix for drawn objects and set uniform value
     geometryShaderProgram->SetUniformMatrix3f ("mNormal", Mathf::Invert (Mathf::Transpose (Matrix3f (meshObject->GetWorldTransformMatrix ()))));
 
+    // set shadow map uniform (if shadow mapping is enabled)
+    // this is only required for forward rendering, because deferred rendering uses a different shader program for lighting pass (DeferredLightingRenderStage)
+    if (!m_isDeferredRendering)
+    {
+        geometryShaderProgram->SetUniformInt ("shadowMapEnabled", m_isShadowMapping ? 1 : 0);
+    }
+    
     // get camera position in world space and set uniform value
     if (!m_isDeferredRendering)
     {
@@ -670,7 +680,7 @@ void GLRenderer::Update (std::shared_ptr<Material> material)
             // create and append new lighting stage
             m_lightingShaderStagesCount++;
             m_lightingShaders.insert (shaderProgramHandle);
-            auto q = Create <SurfaceRenderStage> ("deferred_lighting_" + shaderProgramName);
+            auto q = Create <DeferredLightingRenderStage> ("deferred_lighting_" + shaderProgramName);
             q->SetShaderProgram (shaderProgramName);
             q->SetStencilTestEnabled (true)->SetStencilTest (EStencilTestFunction::FUNCTION_EQUAL, static_cast<int> (shaderProgramHandle));
             q->SetClearColorOnFrameEnabled (true);
@@ -679,7 +689,8 @@ void GLRenderer::Update (std::shared_ptr<Material> material)
             q->SetDepthTestEnabled (false);
             q->SetColorAttachmentsFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_SECOND : EPipelineLink::LINK_FIRST);
             q->SetDepthStencilFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_SECOND : EPipelineLink::LINK_FIRST);
-            q->SetDepthArrayFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_FIRST : EPipelineLink::LINK_CURRENT);
+            q->SetDepthTextureArrayFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_FIRST : EPipelineLink::LINK_CURRENT);
+            q->SetDepthCubeMapArrayFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_FIRST : EPipelineLink::LINK_CURRENT);
             q->SetDrawFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_THIRD : EPipelineLink::LINK_SECOND);
             q->SetFramebufferEnabled (true);
 
@@ -698,7 +709,7 @@ void GLRenderer::Update (std::shared_ptr<Material> material)
             {
                 handle_t stageHandle = GetRenderPipeline ()[2 + (m_isShadowMapping ? 1 : 0)];
 
-                auto stage = m_renderStageManager->GetByHandle<SurfaceRenderStage> (stageHandle);
+                auto stage = m_renderStageManager->GetByHandle<DeferredLightingRenderStage> (stageHandle);
                 stage->SetClearColorOnFrameEnabled (false);
                 stage->SetFramebufferEnabled (false);
             }
@@ -720,6 +731,19 @@ void GLRenderer::Update (std::shared_ptr<PointLight> pointLight)
     {
         lightId = m_uniformPointLightBuffer->pointLightCount++;
         m_pointLights.insert ({ objectHandle, lightId });
+
+        // update invocation count in shadow map geometry shader
+        auto shadowmapShader = GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader> ("shadowmap_point_geometry_shader");
+        shadowmapShader->SetVariable ("ACTIVE_POINT_LIGHTS", std::to_string (GetPointLightCount ()));
+        shadowmapShader->Compile ();
+
+        auto shadowmapShaderProg = GetShaderProgramManager ()->GetByName<GLShaderProgram> ("shadowmap_point_shader");
+        shadowmapShaderProg->Link ();
+        shadowmapShaderProg->BindUniformBlock ("UniformPointLightViewMatricesBlock", EGlUBOType::UBO_POINTLIGHTVIEWMATRICES);
+        shadowmapShaderProg->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
+
+        // set offset in shadow map texture array (directional + spot light count for point lights)
+        shadowmapShaderProg->SetUniformInt ("textureArrayOffset", static_cast<int>(GetDirectionalLightCount () + GetSpotLightCount ()));
     }
     else
     {
@@ -770,25 +794,29 @@ void GLRenderer::Update (std::shared_ptr<DirectionalLight> directionalLight)
     {
         lightId = m_uniformDirectionalLightBuffer->directionalLightCount++;
         m_directionalLights.insert ({ objectHandle, lightId });
+
+        // update invocation count in shadow map geometry shader
+        auto shadowmapShader = GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader> ("shadowmap_directional_geometry_shader");
+        shadowmapShader->SetVariable ("ACTIVE_DIRECTIONAL_LIGHTS", std::to_string (GetDirectionalLightCount ()));
+        shadowmapShader->Compile ();
+
+        auto shadowmapShaderProg = GetShaderProgramManager ()->GetByName<GLShaderProgram> ("shadowmap_directional_shader");
+        shadowmapShaderProg->Link ();
+        shadowmapShaderProg->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EGlUBOType::UBO_DIRECTIONALLIGHTVIEWMATRICES);
+        shadowmapShaderProg->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
+
+        // set offset in shadow map texture array (zero for directional lights)
+        shadowmapShaderProg->SetUniformInt ("textureArrayOffset", 0);
+        shadowmapShaderProg = GetShaderProgramManager ()->GetByName<GLShaderProgram> ("shadowmap_spot_shader");
+        shadowmapShaderProg->SetUniformInt ("textureArrayOffset", static_cast<int>(GetDirectionalLightCount ()));
+        shadowmapShaderProg = GetShaderProgramManager ()->GetByName<GLShaderProgram> ("shadowmap_point_shader");
+        shadowmapShaderProg->SetUniformInt ("textureArrayOffset", static_cast<int>(GetDirectionalLightCount () + GetSpotLightCount ()));
     }
     else
     {
         // existing light modified
         lightId = m_directionalLights[objectHandle];
     }
-
-    // update invocation count in shadow map geometry shader
-    auto shadowmapShader = GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader> ("shadowmap_directional_geometry_shader");
-    shadowmapShader->SetVariable ("ACTIVE_DIRECTIONAL_LIGHTS", std::to_string (GetDirectionalLightCount ()));
-    shadowmapShader->Compile ();
-
-    auto shadowmapShaderProg = GetShaderProgramManager ()->GetByName<GLShaderProgram> ("shadowmap_directional_shader");
-    shadowmapShaderProg->Link ();
-    shadowmapShaderProg->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EGlUBOType::UBO_DIRECTIONALLIGHTVIEWMATRICES);
-    shadowmapShaderProg->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
-
-    // set offset in shadow map texture array (zero for directional lights)
-    shadowmapShaderProg->SetUniformInt ("textureArrayOffset", 0);
 
     // copy direction
     Vector3f lightDirection = directionalLight->GetForward ();
@@ -827,25 +855,27 @@ void GLRenderer::Update (std::shared_ptr<SpotLight> spotLight)
     {
         lightId = m_uniformSpotLightBuffer->spotLightCount++;
         m_spotLights.insert ({ objectHandle, lightId });
+
+        // update invocation count in shadow map geometry shader
+        auto shadowmapShader = GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader> ("shadowmap_spot_geometry_shader");
+        shadowmapShader->SetVariable ("ACTIVE_SPOT_LIGHTS", std::to_string (GetSpotLightCount ()));
+        shadowmapShader->Compile ();
+
+        auto shadowmapShaderProg = GetShaderProgramManager ()->GetByName<GLShaderProgram> ("shadowmap_spot_shader");
+        shadowmapShaderProg->Link ();
+        shadowmapShaderProg->BindUniformBlock ("UniformSpotLightViewMatricesBlock", EGlUBOType::UBO_SPOTLIGHTVIEWMATRICES);
+        shadowmapShaderProg->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
+
+        // set offset in shadow map texture array (directional light count for spot lights)
+        shadowmapShaderProg->SetUniformInt ("textureArrayOffset", static_cast<int>(GetDirectionalLightCount ()));
+        shadowmapShaderProg = GetShaderProgramManager ()->GetByName<GLShaderProgram> ("shadowmap_point_shader");
+        shadowmapShaderProg->SetUniformInt ("textureArrayOffset", static_cast<int>(GetDirectionalLightCount () + GetSpotLightCount ()));
     }
     else
     {
         // existing light modified
         lightId = m_spotLights[objectHandle];
     }
-
-    // update invocation count in shadow map geometry shader
-    auto shadowmapShader = GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader> ("shadowmap_spot_geometry_shader");
-    shadowmapShader->SetVariable ("ACTIVE_SPOT_LIGHTS", std::to_string (GetSpotLightCount ()));
-    shadowmapShader->Compile ();
-
-    auto shadowmapShaderProg = GetShaderProgramManager ()->GetByName<GLShaderProgram> ("shadowmap_spot_shader");
-    shadowmapShaderProg->Link ();
-    shadowmapShaderProg->BindUniformBlock ("UniformSpotLightViewMatricesBlock", EGlUBOType::UBO_SPOTLIGHTVIEWMATRICES);
-    shadowmapShaderProg->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
-
-    // set offset in shadow map texture array (directional light count for spot lights)
-    shadowmapShaderProg->SetUniformInt ("textureArrayOffset", static_cast<int>(GetDirectionalLightCount ()));
 
     // copy position
     Vector4f lightPosition = spotLight->GetPosition ();
@@ -1132,6 +1162,7 @@ void GLRenderer::InitializeShaderLibrary ()
     GetGameScene ()->GetGame ()->GetResourceManager ()->Load<GLShader> ("shadowmap_vertex_shader", "shaders/shadowmap.vs", EShaderType::VERTEX_SHADER);
     GetGameScene ()->GetGame ()->GetResourceManager ()->Load<GLShader> ("shadowmap_directional_geometry_shader", "shaders/shadowmap_directional.gs", EShaderType::GEOMETRY_SHADER);
     GetGameScene ()->GetGame ()->GetResourceManager ()->Load<GLShader> ("shadowmap_spot_geometry_shader", "shaders/shadowmap_spot.gs", EShaderType::GEOMETRY_SHADER);
+    GetGameScene ()->GetGame ()->GetResourceManager ()->Load<GLShader> ("shadowmap_point_geometry_shader", "shaders/shadowmap_point.gs", EShaderType::GEOMETRY_SHADER);
     GetGameScene ()->GetGame ()->GetResourceManager ()->Load<GLShader> ("shadowmap_fragment_shader", "shaders/shadowmap.fs", EShaderType::FRAGMENT_SHADER);
     GetGameScene ()->GetGame ()->GetResourceManager ()->Load<GLShader> ("aabb_vertex_shader", "shaders/aabb.vs", EShaderType::VERTEX_SHADER);
     GetGameScene ()->GetGame ()->GetResourceManager ()->Load<GLShader> ("aabb_fragment_shader", "shaders/aabb.fs", EShaderType::FRAGMENT_SHADER);
@@ -1406,6 +1437,21 @@ void GLRenderer::InitializeShaderLibrary ()
     p->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
     GLUtils::CheckGLError (MSG_LOCATION);
 
+    // Shadow map (point)
+    p = Create<GLShaderProgram> ("shadowmap_point_shader");
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("shadowmap_vertex_shader"));
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("shadowmap_point_geometry_shader"));
+    p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("shadowmap_fragment_shader"));
+    p->Link ();
+    p->Use (); 
+    if (GLUtils::GetGLSLVersion ().versionNumber < 330)
+    {
+        glBindAttribLocation (p->GetProgramId (), 0, "vPosition");
+    }
+    p->BindUniformBlock ("UniformPointLightViewMatricesBlock", EGlUBOType::UBO_POINTLIGHTVIEWMATRICES);
+    p->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
+    GLUtils::CheckGLError (MSG_LOCATION);
+
     // AABB rendering
     p = Create<GLShaderProgram> ("aabb_shader");
     p->AttachShader (GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader>("aabb_vertex_shader"));
@@ -1484,6 +1530,11 @@ void GLRenderer::InitializeLightViewMatrixUniformBuffers ()
     glBufferData (GL_UNIFORM_BUFFER, 16 * sizeof (GLfloat) * CILANTRO_MAX_SPOT_LIGHTS, NULL, GL_DYNAMIC_DRAW);
     glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUBOType::UBO_SPOTLIGHTVIEWMATRICES), m_uniformBuffers->UBO[UBO_SPOTLIGHTVIEWMATRICES]);
 
+    glGenBuffers (1, &m_uniformBuffers->UBO[UBO_POINTLIGHTVIEWMATRICES]);
+    glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_POINTLIGHTVIEWMATRICES]);
+    glBufferData (GL_UNIFORM_BUFFER, 6 * 16 * sizeof (GLfloat) * CILANTRO_MAX_POINT_LIGHTS, NULL, GL_DYNAMIC_DRAW);
+    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUBOType::UBO_POINTLIGHTVIEWMATRICES), m_uniformBuffers->UBO[UBO_POINTLIGHTVIEWMATRICES]);
+
     GLUtils::CheckGLError (MSG_LOCATION);
 }
 
@@ -1514,6 +1565,30 @@ void GLRenderer::LoadLightViewMatrixUniformBuffers ()
         std::memcpy (m_uniformLightViewMatrixBuffer->spotLightView + light.second * 16, Mathf::Transpose (lightViewProjection)[0], 16 * sizeof (GLfloat));
     }
 
+    // calculate and load 6 lightview matrices for each point light
+    for (auto&& light : m_pointLights)
+    {
+        // generate matrices
+        auto l = GetGameScene ()->GetGameObjectManager ()->GetByHandle<PointLight> (light.first);
+        Vector3f lightPosition = l->GetPosition ();
+        Matrix4f lightProjection = Mathf::GenPerspectiveProjectionMatrix (1.0f, Mathf::Deg2Rad (90.0f), l->GetEscapeRadius (), l->GetBoundingSphereRadius (0.01f));
+
+        Matrix4f lightViewRight = Mathf::GenCameraViewMatrix (lightPosition, lightPosition + Vector3f (1.0f, 0.0f, 0.0f), Vector3f (0.0f, -1.0f, 0.0f));
+        Matrix4f lightViewLeft = Mathf::GenCameraViewMatrix (lightPosition, lightPosition + Vector3f (-1.0f, 0.0f, 0.0f), Vector3f (0.0f, -1.0f, 0.0f));
+        Matrix4f lightViewTop = Mathf::GenCameraViewMatrix (lightPosition, lightPosition + Vector3f (0.0f, 1.0f, 0.0f), Vector3f (0.0f, 0.0f, 1.0f));
+        Matrix4f lightViewBottom = Mathf::GenCameraViewMatrix (lightPosition, lightPosition + Vector3f (0.0f, -1.0f, 0.0f), Vector3f (0.0f, 0.0f, -1.0f));
+        Matrix4f lightViewFront = Mathf::GenCameraViewMatrix (lightPosition, lightPosition + Vector3f (0.0f, 0.0f, 1.0f), Vector3f (0.0f, -1.0f, 0.0f));
+        Matrix4f lightViewBack = Mathf::GenCameraViewMatrix (lightPosition, lightPosition + Vector3f (0.0f, 0.0f, -1.0f), Vector3f (0.0f, -1.0f, 0.0f));
+
+        // copy to buffer
+        std::memcpy (m_uniformLightViewMatrixBuffer->pointLightView + light.second * 6 * 16 + 0 * 16, Mathf::Transpose (lightProjection * lightViewRight)[0], 16 * sizeof (GLfloat));
+        std::memcpy (m_uniformLightViewMatrixBuffer->pointLightView + light.second * 6 * 16 + 1 * 16, Mathf::Transpose (lightProjection * lightViewLeft)[0], 16 * sizeof (GLfloat));
+        std::memcpy (m_uniformLightViewMatrixBuffer->pointLightView + light.second * 6 * 16 + 2 * 16, Mathf::Transpose (lightProjection * lightViewTop)[0], 16 * sizeof (GLfloat));
+        std::memcpy (m_uniformLightViewMatrixBuffer->pointLightView + light.second * 6 * 16 + 3 * 16, Mathf::Transpose (lightProjection * lightViewBottom)[0], 16 * sizeof (GLfloat));
+        std::memcpy (m_uniformLightViewMatrixBuffer->pointLightView + light.second * 6 * 16 + 4 * 16, Mathf::Transpose (lightProjection * lightViewFront)[0], 16 * sizeof (GLfloat));
+        std::memcpy (m_uniformLightViewMatrixBuffer->pointLightView + light.second * 6 * 16 + 5 * 16, Mathf::Transpose (lightProjection * lightViewBack)[0], 16 * sizeof (GLfloat));
+    }
+
     // load to GPU - directional light view
     glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTVIEWMATRICES]);
     glBufferSubData (GL_UNIFORM_BUFFER, 0, 16 * sizeof (GLfloat) * m_uniformDirectionalLightBuffer->directionalLightCount, m_uniformLightViewMatrixBuffer->directionalLightView);
@@ -1524,12 +1599,18 @@ void GLRenderer::LoadLightViewMatrixUniformBuffers ()
     glBufferSubData (GL_UNIFORM_BUFFER, 0, 16 * sizeof (GLfloat) * m_uniformSpotLightBuffer->spotLightCount, m_uniformLightViewMatrixBuffer->spotLightView);
     glBindBuffer (GL_UNIFORM_BUFFER, 0);
 
+    // load to GPU - point light views
+    glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_POINTLIGHTVIEWMATRICES]);
+    glBufferSubData (GL_UNIFORM_BUFFER, 0, 6 * 16 * sizeof (GLfloat) * m_uniformPointLightBuffer->pointLightCount, m_uniformLightViewMatrixBuffer->pointLightView);
+    glBindBuffer (GL_UNIFORM_BUFFER, 0);
+
 }
 
 void GLRenderer::DeinitializeLightViewMatrixUniformBuffers ()
 {
     glDeleteBuffers (1, &m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTVIEWMATRICES]);
     glDeleteBuffers (1, &m_uniformBuffers->UBO[UBO_SPOTLIGHTVIEWMATRICES]);
+    glDeleteBuffers (1, &m_uniformBuffers->UBO[UBO_POINTLIGHTVIEWMATRICES]);
 }
 
 void GLRenderer::InitializeObjectBuffers ()

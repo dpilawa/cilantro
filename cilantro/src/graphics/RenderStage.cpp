@@ -27,12 +27,14 @@ RenderStage::RenderStage (std::shared_ptr<IRenderer> renderer)
 
     , m_colorAttachmentsFramebufferLink (EPipelineLink::LINK_CURRENT)
     , m_depthStencilFramebufferLink (EPipelineLink::LINK_CURRENT)
-    , m_depthArrayFramebufferLink (EPipelineLink::LINK_CURRENT)
+    , m_depthTextureArrayFramebufferLink (EPipelineLink::LINK_CURRENT)
+    , m_depthCubeMapArrayFramebufferLink (EPipelineLink::LINK_CURRENT)
     , m_drawFramebufferLink (EPipelineLink::LINK_CURRENT)
 
     , m_linkedColorAttachmentsFramebuffer (nullptr)
     , m_linkedDepthStencilFramebuffer (nullptr)
-    , m_linkedDepthArrayFramebuffer (nullptr)
+    , m_linkedDepthTextureArrayFramebuffer (nullptr)
+    , m_linkedDepthCubeMapArrayFramebuffer (nullptr)
     , m_linkedDrawFramebuffer (nullptr)
 
     , m_depthTestFunction (EDepthTestFunction::FUNCTION_LESS)
@@ -74,9 +76,14 @@ std::shared_ptr<IFramebuffer> RenderStage::GetLinkedDepthStencilFramebuffer () c
     return GetRenderer ()->GetPipelineFramebuffer (m_depthStencilFramebufferLink);
 }
 
-std::shared_ptr<IFramebuffer> RenderStage::GetLinkedDepthArrayFramebuffer () const
+std::shared_ptr<IFramebuffer> RenderStage::GetLinkedDepthTextureArrayFramebuffer () const
 {
-    return GetRenderer ()->GetPipelineFramebuffer (m_depthArrayFramebufferLink);
+    return GetRenderer ()->GetPipelineFramebuffer (m_depthTextureArrayFramebufferLink);
+}
+
+std::shared_ptr<IFramebuffer> RenderStage::GetLinkedDepthCubeMapArrayFramebuffer () const
+{
+    return GetRenderer ()->GetPipelineFramebuffer (m_depthCubeMapArrayFramebufferLink);
 }
 
 std::shared_ptr<IFramebuffer> RenderStage::GetLinkedDrawFramebuffer () const
@@ -92,7 +99,8 @@ void RenderStage::OnFrame ()
     // link pipeline framebuffers
     m_linkedColorAttachmentsFramebuffer = GetLinkedColorAttachmentsFramebuffer ();
     m_linkedDepthStencilFramebuffer = GetLinkedDepthStencilFramebuffer ();
-    m_linkedDepthArrayFramebuffer = GetLinkedDepthArrayFramebuffer ();
+    m_linkedDepthTextureArrayFramebuffer = GetLinkedDepthTextureArrayFramebuffer ();
+    m_linkedDepthCubeMapArrayFramebuffer = GetLinkedDepthCubeMapArrayFramebuffer ();
     m_linkedDrawFramebuffer = GetLinkedDrawFramebuffer ();
     
     // bind framebuffer to render to
@@ -114,7 +122,7 @@ void RenderStage::OnFrame ()
         } 
         else if (m_linkedDepthStencilFramebuffer->GetDepthArrayLayerCount () > 0)
         {
-            m_linkedDepthStencilFramebuffer->BindFramebufferDepthArrayTextureAsDepth ();
+            m_linkedDepthStencilFramebuffer->BindFramebufferDepthTextureArrayAsDepth ();
         }
         else
         {
@@ -195,7 +203,7 @@ std::shared_ptr<IRenderStage> RenderStage::SetMultisampleEnabled (bool value)
 {
     unsigned int rgbTextureCount;
     unsigned int rgbaTextureCount;
-    unsigned int dsArraySize;
+    unsigned int depthArrayLayerCount;
     unsigned int width;
     unsigned int height;
     bool hasDSRenderbuffer;
@@ -210,14 +218,15 @@ std::shared_ptr<IRenderStage> RenderStage::SetMultisampleEnabled (bool value)
         {
             rgbaTextureCount = m_framebuffer->GetRGBATextureCount ();
             rgbTextureCount = m_framebuffer->GetRGBTextureCount ();
-            dsArraySize = m_framebuffer->GetDepthArrayLayerCount ();
+            depthArrayLayerCount = m_framebuffer->GetDepthArrayLayerCount ();
+
             hasDSRenderbuffer = m_framebuffer->IsDepthStencilRenderbufferEnabled ();
 
             width = m_framebuffer->GetWidth ();
             height = m_framebuffer->GetHeight ();
 
             m_framebuffer->Deinitialize ();
-            m_framebuffer = GetRenderer ()->CreateFramebuffer (width, height, rgbTextureCount, rgbaTextureCount, dsArraySize, hasDSRenderbuffer, m_isMultisampleEnabled);
+            m_framebuffer = GetRenderer ()->CreateFramebuffer (width, height, rgbTextureCount, rgbaTextureCount, depthArrayLayerCount, hasDSRenderbuffer, m_isMultisampleEnabled);
             m_framebuffer->Initialize ();
         }
     }
@@ -366,9 +375,16 @@ std::shared_ptr<IRenderStage> RenderStage::SetDepthStencilFramebufferLink (EPipe
     return std::dynamic_pointer_cast<IRenderStage> (shared_from_this ());
 }
 
-std::shared_ptr<IRenderStage> RenderStage::SetDepthArrayFramebufferLink (EPipelineLink link)
+std::shared_ptr<IRenderStage> RenderStage::SetDepthTextureArrayFramebufferLink (EPipelineLink link)
 {
-    m_depthArrayFramebufferLink = link;
+    m_depthTextureArrayFramebufferLink = link;
+
+    return std::dynamic_pointer_cast<IRenderStage> (shared_from_this ());
+}
+
+std::shared_ptr<IRenderStage> RenderStage::SetDepthCubeMapArrayFramebufferLink (EPipelineLink link)
+{
+    m_depthCubeMapArrayFramebufferLink = link;
 
     return std::dynamic_pointer_cast<IRenderStage> (shared_from_this ());
 }

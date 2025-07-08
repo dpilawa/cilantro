@@ -46,11 +46,25 @@ GLShader::GLShader (const std::string& path, EShaderType shaderType) : Shader (p
 
 void GLShader::Compile ()
 {
+    GLint status;
     const char* src;
 
     src = m_shaderSource.c_str ();
     glShaderSource (m_glShaderId, 1, &src, NULL);
     glCompileShader (m_glShaderId); 
+
+    glGetShaderiv(m_glShaderId, GL_COMPILE_STATUS, &status);
+    if (!status) 
+    {
+        GLint length;
+        glGetShaderiv(m_glShaderId, GL_INFO_LOG_LENGTH, &length);
+        std::string errorLog(length, ' ');
+
+        glGetShaderInfoLog(m_glShaderId, length, &length, &errorLog[0]);
+        glDeleteShader(m_glShaderId);
+        LogMessage(MSG_LOCATION) << errorLog;
+        LogMessage(MSG_LOCATION, EXIT_FAILURE) << "Unable to compile shader" << m_glShaderId;
+    } 
 }
 
 void GLShader::SetDefaults ()
@@ -65,6 +79,7 @@ void GLShader::SetDefaults ()
     SetStaticParameter ("UBO_SPOTLIGHTS", std::to_string (static_cast<int> (EGlUBOType::UBO_SPOTLIGHTS)));
     SetStaticParameter ("UBO_DIRECTIONALLIGHTVIEWMATRICES", std::to_string (static_cast<int> (EGlUBOType::UBO_DIRECTIONALLIGHTVIEWMATRICES)));
     SetStaticParameter ("UBO_SPOTLIGHTVIEWMATRICES", std::to_string (static_cast<int> (EGlUBOType::UBO_SPOTLIGHTVIEWMATRICES)));
+    SetStaticParameter ("UBO_POINTLIGHTVIEWMATRICES", std::to_string (static_cast<int> (EGlUBOType::UBO_POINTLIGHTVIEWMATRICES)));
     SetStaticParameter ("UBO_BONETRANSFORMATIONS", std::to_string (static_cast<int> (EGlUBOType::UBO_BONETRANSFORMATIONS)));
 
     SetStaticParameter ("SSBO_VERTICES", std::to_string (static_cast<int> (EGlSSBOType::SSBO_VERTICES)));

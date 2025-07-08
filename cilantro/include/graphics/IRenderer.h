@@ -91,6 +91,10 @@ struct IRenderer
     virtual size_t GetDirectionalLightCount () const = 0;
     virtual size_t GetSpotLightCount () const = 0;
 
+    // rendering properties
+    virtual bool IsDeferredRendering () const = 0;
+    virtual bool IsShadowMapping () const = 0;
+
     // framebuffer control
     virtual std::shared_ptr<IFramebuffer> CreateFramebuffer (unsigned int width, unsigned int height, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayTextureCount, bool depthStencilRenderbufferEnabled, bool multisampleEnabled) = 0;
     virtual void BindDefaultFramebuffer () = 0;
