@@ -49,8 +49,8 @@ public:
 
     ///////////////////////////////////////////////////////////////////////////
 
-    __EAPI virtual bool IsDeferredRendering () const;
-    __EAPI virtual bool IsShadowMapping () const;
+    __EAPI virtual bool IsDeferredRendering () const override;
+    __EAPI virtual bool IsShadowMapping () const override;
 
     template <typename T, typename ...Params>
     std::shared_ptr<T> Create (const std::string& name, Params&&... params)
