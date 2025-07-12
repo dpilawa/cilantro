@@ -1192,7 +1192,7 @@ void GLRenderer::InitializeShaderLibrary ()
         glUniform1i (glGetUniformLocation (p->GetProgramId (), "tMetallic"), 2);
         glUniform1i (glGetUniformLocation (p->GetProgramId (), "tRoughness"), 3);
         glUniform1i (glGetUniformLocation (p->GetProgramId (), "tAO"), 4);
-        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tShadowMap"), 5);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tShadowMap"), CILANTRO_SHADOW_MAP_BINDING);
     }
     p->BindUniformBlock ("UniformMatricesBlock", EGlUBOType::UBO_MATRICES);
     p->BindUniformBlock ("UniformPointLightsBlock", EGlUBOType::UBO_POINTLIGHTS);
@@ -1247,7 +1247,7 @@ void GLRenderer::InitializeShaderLibrary ()
         glUniform1i (glGetUniformLocation (p->GetProgramId (), "tAlbedo"), 2);
         glUniform1i (glGetUniformLocation (p->GetProgramId (), "tMetallicRoughnessAO"), 3);
         glUniform1i (glGetUniformLocation (p->GetProgramId (), "tUnused"), 4);
-        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tShadowMap"), 5);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tShadowMap"), CILANTRO_SHADOW_MAP_BINDING);
     }
     p->BindUniformBlock ("UniformPointLightsBlock", EGlUBOType::UBO_POINTLIGHTS);
     p->BindUniformBlock ("UniformDirectionalLightsBlock", EGlUBOType::UBO_DIRECTIONALLIGHTS);
@@ -1276,7 +1276,7 @@ void GLRenderer::InitializeShaderLibrary ()
         glUniform1i (glGetUniformLocation (p->GetProgramId (), "tNormal"), 1);
         glUniform1i (glGetUniformLocation (p->GetProgramId (), "tSpecular"), 2);
         glUniform1i (glGetUniformLocation (p->GetProgramId (), "tEmissive"), 3);
-        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tShadowMap"), 4);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tShadowMap"), CILANTRO_SHADOW_MAP_BINDING); 
     }
     p->BindUniformBlock ("UniformMatricesBlock", EGlUBOType::UBO_MATRICES);
     p->BindUniformBlock ("UniformPointLightsBlock", EGlUBOType::UBO_POINTLIGHTS);
@@ -1330,7 +1330,7 @@ void GLRenderer::InitializeShaderLibrary ()
         glUniform1i (glGetUniformLocation (p->GetProgramId (), "tDiffuse"), 2);
         glUniform1i (glGetUniformLocation (p->GetProgramId (), "tEmissive"), 3);
         glUniform1i (glGetUniformLocation (p->GetProgramId (), "tSpecular"), 4);
-        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tShadowMap"), 5);
+        glUniform1i (glGetUniformLocation (p->GetProgramId (), "tShadowMap"), CILANTRO_SHADOW_MAP_BINDING);
     }
     p->BindUniformBlock ("UniformPointLightsBlock", EGlUBOType::UBO_POINTLIGHTS);
     p->BindUniformBlock ("UniformDirectionalLightsBlock", EGlUBOType::UBO_DIRECTIONALLIGHTS);

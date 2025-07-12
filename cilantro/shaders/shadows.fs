@@ -111,5 +111,5 @@ float CalculatePointLightShadow (int pointLightIdx)
     if (any (lessThan (depthMapCoords, vec3 (0.0))) || any (greaterThan (depthMapCoords, vec3 (1.0))))
         return 1.0;
 
-    return texture (tShadowMap, vec4 (depthMapCoords.xy, directionalLightCount + spotLightCount + 6 * pointLightIdx + faceIndex, depthMapCoords.z - %%CILANTRO_SHADOW_BIAS%%));
+    return texture (tShadowMap, vec4 (depthMapCoords.xy, directionalLightCount + spotLightCount + 6 * pointLightIdx + faceIndex, depthMapCoords.z));
 }
