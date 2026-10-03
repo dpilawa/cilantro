@@ -51,9 +51,6 @@ void ShadowMapRenderStage::OnFrame ()
 {
     RenderStage::OnFrame ();
 
-    // load uniform buffers
-    GetRenderer ()->UpdateLightViewBuffers ();
-
     // draw geometry buffers for all 3 light types   
     if (GetRenderer ()->GetDirectionalLightCount () > 0)
     {

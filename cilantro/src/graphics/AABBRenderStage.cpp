@@ -29,9 +29,6 @@ void AABBRenderStage::OnFrame ()
 {
     RenderStage::OnFrame ();
 
-    // load uniform buffers
-    GetRenderer ()->UpdateCameraBuffers (GetRenderer ()->GetGameScene ()->GetActiveCamera ());
-
     // draw all objects in scene
     GetRenderer ()->DrawAABBGeometryBuffers (GetRenderer ()->GetShaderProgramManager ()->GetByName<IShaderProgram> (ShaderProgramNames::AABB));
 

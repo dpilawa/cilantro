@@ -38,9 +38,6 @@ void DeferredGeometryRenderStage::OnFrame ()
 {
     RenderStage::OnFrame ();
 
-    // load uniform buffers
-    GetRenderer ()->UpdateCameraBuffers (GetRenderer ()->GetGameScene ()->GetActiveCamera ());
-
     // GEOMETRY PASS
     // draw all objects in scene using geometry shader, construct g-buffer
     // set stencil value to lowest depth lighting shader handle

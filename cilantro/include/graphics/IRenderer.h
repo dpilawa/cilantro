@@ -19,7 +19,6 @@ class Material;
 class PointLight;
 class DirectionalLight;
 class SpotLight;
-class Camera;
 class AABB;
 
 class Vector4f;
@@ -77,8 +76,6 @@ struct IRenderer
     virtual void Update (std::shared_ptr<DirectionalLight> directionalLight) = 0;	
     virtual void Update (std::shared_ptr<SpotLight> spotLight) = 0;
 
-    virtual void UpdateCameraBuffers (std::shared_ptr<Camera> camera) = 0;
-    virtual void UpdateLightViewBuffers () = 0;
 
     // object counts
     virtual size_t GetPointLightCount () const = 0;

@@ -37,9 +37,6 @@ void ForwardGeometryRenderStage::OnFrame ()
 {
     RenderStage::OnFrame ();
 
-    // load uniform buffers
-    GetRenderer ()->UpdateCameraBuffers (GetRenderer ()->GetGameScene ()->GetActiveCamera ());
-
     // draw all objects in scene
     for (auto gameObject : GetRenderer ()->GetGameScene ()->GetGameObjectManager ())
     {

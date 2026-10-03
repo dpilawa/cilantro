@@ -16,6 +16,7 @@ namespace cilantro {
 class GameScene;
 class GameObject;
 class Material;
+class Camera;
 
 class __CEAPI Renderer : public IRenderer, public std::enable_shared_from_this<Renderer>
 {
@@ -53,6 +54,10 @@ public:
     // update renderer data of a mesh object AABB wireframe or material texture (implemented by backend)
     virtual void UpdateAABBBuffers (std::shared_ptr<MeshObject> meshObject) = 0;
     virtual void Update (std::shared_ptr<Material> material, unsigned int textureUnit) = 0;
+
+    // load per-frame data shared by render stages (active camera matrices, light view matrices for shadow mapping) to GPU
+    virtual void UpdateCameraBuffers (std::shared_ptr<Camera> camera) = 0;
+    virtual void UpdateLightViewBuffers () = 0;
     
     __EAPI virtual AABB CalculateAABB (std::shared_ptr<MeshObject> meshObject) override;
 
