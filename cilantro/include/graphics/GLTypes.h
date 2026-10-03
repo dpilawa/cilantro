@@ -11,7 +11,7 @@ enum EGlSSBOType { SSBO_VERTICES = 0, SSBO_BONEINDICES, SSBO_BONEWEIGHTS, SSBO_A
 
 struct SGlGeometryBuffers
 {
-    // number of vertices
+    // number of indices
     size_t indexCount;
     // Vertex Buffer Objects (vertices, normals, uvs, tangents, bitangents, bone indices, bone weights)
     GLuint VBO[CILANTRO_VBO_COUNT];

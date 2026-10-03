@@ -188,7 +188,7 @@ void GLGeometryStore::UpdateAABB (std::shared_ptr<MeshObject> meshObject)
     {
         // it is a new object, so generate buffers 
         SGlGeometryBuffers& w = m_aabbGeometryBuffers[objectHandle];
-        w.indexCount = 12; // AABB has 12 edges
+        w.indexCount = 12 * 2; // AABB has 12 edges, 2 indices each
 
         // generate and bind Vertex Array Object (VAO) - wireframes
         glGenVertexArrays (1, &w.VAO);
@@ -452,7 +452,7 @@ void GLGeometryStore::RenderGeometryBuffer (const SGlGeometryBuffers& buffer, GL
     glBindVertexArray (buffer.VAO);
 
     // draw
-    glDrawElements (type, static_cast<GLsizei> (buffer.indexCount) * sizeof (GLuint), GL_UNSIGNED_INT, 0);
+    glDrawElements (type, static_cast<GLsizei> (buffer.indexCount), GL_UNSIGNED_INT, 0);
 
     // unbind
     glBindVertexArray (0);
