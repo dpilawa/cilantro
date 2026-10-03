@@ -227,7 +227,6 @@ std::shared_ptr<IRenderStage> RenderStage::SetMultisampleEnabled (bool value)
 
             m_framebuffer->Deinitialize ();
             m_framebuffer = GetRenderer ()->CreateFramebuffer ({ .width = width, .height = height, .rgbTextureCount = rgbTextureCount, .rgbaTextureCount = rgbaTextureCount, .depthTextureArrayLayerCount = depthArrayLayerCount, .depthStencilRenderbufferEnabled = hasDSRenderbuffer, .multisampleEnabled = m_isMultisampleEnabled });
-            m_framebuffer->Initialize ();
         }
     }
 
