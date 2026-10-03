@@ -1,6 +1,5 @@
 #include "graphics/GLRenderer.h"
 #include "graphics/GLUtils.h"
-#include "graphics/GLShader.h"
 #include "graphics/GLShaderProgram.h"
 #include "graphics/GLShaderLibrary.h"
 #include "graphics/GLCameraBuffer.h"
@@ -9,10 +8,6 @@
 #include "graphics/GLMaterialBindings.h"
 #include "graphics/GLFramebuffer.h"
 #include "graphics/GLMultisampleFramebuffer.h"
-#include "graphics/SurfaceRenderStage.h"
-#include "graphics/DeferredGeometryRenderStage.h"
-#include "graphics/DeferredLightingRenderStage.h"
-#include "graphics/ForwardGeometryRenderStage.h"
 
 #include "system/Game.h"
 #include "math/Mathf.h"
@@ -25,10 +20,6 @@
 #include "scene/PointLight.h"
 #include "scene/DirectionalLight.h"
 #include "scene/SpotLight.h"
-#include <cmath>
-#include <cstring>
-#include <array>
-#include <bit>
 
 namespace cilantro {
 

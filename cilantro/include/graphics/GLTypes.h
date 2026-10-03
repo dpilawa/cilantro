@@ -27,12 +27,6 @@ struct SGlGeometryBuffers
     GLuint aabbSSBO;
 };
 
-struct SGlUniformBuffers
-{
-    // Uniform Buffer Objects (view & projection matrices, point lights, directional lights, spot lights, directional light view transforms, spot light view transforms, point light view transforms, bone transformations)
-    GLuint UBO[CILANTRO_GLOBAL_UBO_COUNT];
-};
-
 struct SGlUniformMatrixBuffer
 {
     // view matrix

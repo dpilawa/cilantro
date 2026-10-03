@@ -1,14 +1,8 @@
 #pragma once
 
 #include "cilantroengine.h"
-#include "glad/gl.h"
 #include "graphics/Renderer.h"
 #include "graphics/GLTypes.h"
-#include "graphics/GLCameraBuffer.h"
-#include "graphics/GLLightBuffers.h"
-#include "graphics/GLGeometryStore.h"
-#include "graphics/GLMaterialBindings.h"
-#include "graphics/GLShaderLibrary.h"
 #include "math/AABB.h"
 
 namespace cilantro {
@@ -16,7 +10,11 @@ namespace cilantro {
 class GameScene;
 class MeshObject;
 class Camera;
-
+class GLCameraBuffer;
+class GLLightBuffers;
+class GLGeometryStore;
+class GLMaterialBindings;
+class GLShaderLibrary;
 
 class __CEAPI GLRenderer : public Renderer
 {
