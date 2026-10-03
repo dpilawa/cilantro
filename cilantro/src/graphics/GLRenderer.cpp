@@ -300,14 +300,6 @@ void GLRenderer::BindDefaultStencilBuffer ()
     glFramebufferTexture (GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, 0, 0);
 }
 
-void GLRenderer::BindDefaultTextures ()
-{
-    for (unsigned int i = 0; i < CILANTRO_MAX_TEXTURE_UNITS; ++i)
-    {
-        glActiveTexture (GL_TEXTURE0 + i);
-        glBindTexture (GL_TEXTURE_2D, 0);
-    }
-}
 
 void GLRenderer::ClearColorBuffer (const Vector4f& rgba)
 {

@@ -56,7 +56,6 @@ public:
     __EAPI virtual void BindDefaultFramebuffer () override;
     __EAPI virtual void BindDefaultDepthBuffer () override;
     __EAPI virtual void BindDefaultStencilBuffer () override;
-    __EAPI virtual void BindDefaultTextures () override;    
     
     __EAPI virtual void ClearColorBuffer (const Vector4f& rgba) override;
     __EAPI virtual void ClearDepthBuffer () override;
