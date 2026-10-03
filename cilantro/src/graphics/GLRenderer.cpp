@@ -4,6 +4,7 @@
 #include "graphics/GLShaderProgram.h"
 #include "graphics/GLShaderLibrary.h"
 #include "graphics/GLCameraBuffer.h"
+#include "graphics/GLLightBuffers.h"
 #include "graphics/GLFramebuffer.h"
 #include "graphics/GLMultisampleFramebuffer.h"
 #include "graphics/SurfaceRenderStage.h"
@@ -33,12 +34,8 @@ GLRenderer::GLRenderer (std::shared_ptr<GameScene> gameScene, unsigned int width
     : Renderer (gameScene, width, height, shadowMappingEnabled, deferredRenderingEnabled)
 {
     m_surfaceGeometryBuffer = new SGlGeometryBuffers ();
-    m_uniformBuffers = new SGlUniformBuffers ();
     m_cameraBuffer = std::make_unique<GLCameraBuffer> ();
-    m_uniformLightViewMatrixBuffer = new SGlUniformLightViewMatrixBuffer ();
-    m_uniformPointLightBuffer = new SGlUniformPointLightBuffer ();
-    m_uniformDirectionalLightBuffer = new SGlUniformDirectionalLightBuffer ();
-    m_uniformSpotLightBuffer = new SGlUniformSpotLightBuffer ();
+    m_lightBuffers = std::make_unique<GLLightBuffers> ();
 }
 
 GLRenderer::~GLRenderer ()
@@ -49,11 +46,6 @@ GLRenderer::~GLRenderer ()
     }
 
     delete m_surfaceGeometryBuffer;
-    delete m_uniformBuffers;
-    delete m_uniformLightViewMatrixBuffer;
-    delete m_uniformPointLightBuffer;
-    delete m_uniformDirectionalLightBuffer;
-    delete m_uniformSpotLightBuffer;
 }
 
 void GLRenderer::Initialize ()
@@ -63,11 +55,11 @@ void GLRenderer::Initialize ()
     GLUtils::PrintGLInfo ();
     GLUtils::PrintGLExtensions ();
 
-    GLShaderLibrary (GetGameScene ()->GetGame ()->GetResourceManager (), m_shaderProgramManager).Initialize ();
+    m_shaderLibrary = std::make_unique<GLShaderLibrary> (GetGameScene ()->GetGame ()->GetResourceManager (), m_shaderProgramManager);
+    m_shaderLibrary->Initialize ();
     InitializeQuadGeometryBuffer ();
     InitializeObjectBuffers ();
     m_cameraBuffer->Initialize ();
-    InitializeLightViewMatrixUniformBuffers ();
     InitializeLightUniformBuffers ();
 
     // set callback for new MeshObjects
@@ -126,7 +118,6 @@ void GLRenderer::Deinitialize ()
     DeinitializeQuadGeometryBuffer ();
     DeinitializeObjectBuffers ();
     m_cameraBuffer->Deinitialize ();
-    DeinitializeLightViewMatrixUniformBuffers ();
     DeinitializeLightUniformBuffers ();
 }
 
@@ -721,200 +712,26 @@ void GLRenderer::Update (std::shared_ptr<Material> material)
 
 void GLRenderer::Update (std::shared_ptr<PointLight> pointLight)
 {
-    handle_t objectHandle = pointLight->GetHandle ();
-    size_t lightId;
-    size_t uniformBufferOffset;
-
-    // check if light is already in collection
-    auto find = m_pointLights.find (objectHandle);
-
-    if (find == m_pointLights.end ())
+    if (m_lightBuffers->Update (pointLight))
     {
-        lightId = m_uniformPointLightBuffer->pointLightCount++;
-        m_pointLights.insert ({ objectHandle, lightId });
-
-        // update invocation count in shadow map geometry shader
-        auto shadowmapShader = GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader> ("shadowmap_point_geometry_shader");
-        shadowmapShader->SetVariable ("ACTIVE_POINT_LIGHTS", std::to_string (GetPointLightCount ()));
-        shadowmapShader->Compile ();
-
-        auto shadowmapShaderProg = GetShaderProgramManager ()->GetByName<GLShaderProgram> ("shadowmap_point_shader");
-        shadowmapShaderProg->Link ();
-        shadowmapShaderProg->BindUniformBlock ("UniformPointLightViewMatricesBlock", EGlUBOType::UBO_POINTLIGHTVIEWMATRICES);
-        shadowmapShaderProg->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
-
-        // set offset in shadow map texture array (directional + spot light count for point lights)
-        shadowmapShaderProg->SetUniformInt ("textureArrayOffset", static_cast<int>(GetDirectionalLightCount () + GetSpotLightCount ()));
+        m_shaderLibrary->OnPointLightAdded (GetDirectionalLightCount (), GetSpotLightCount (), GetPointLightCount ());
     }
-    else
-    {
-        // existing light modified
-        lightId = m_pointLights[objectHandle];
-    }
-
-    // copy position
-    Vector4f lightPosition = pointLight->GetPosition ();
-    m_uniformPointLightBuffer->pointLights[lightId].lightPosition[0] = lightPosition[0];
-    m_uniformPointLightBuffer->pointLights[lightId].lightPosition[1] = lightPosition[1];
-    m_uniformPointLightBuffer->pointLights[lightId].lightPosition[2] = lightPosition[2];
-
-    // copy attenuation factors
-    m_uniformPointLightBuffer->pointLights[lightId].attenuationConst = pointLight->GetConstantAttenuationFactor ();
-    m_uniformPointLightBuffer->pointLights[lightId].attenuationLinear = pointLight->GetLinearAttenuationFactor ();
-    m_uniformPointLightBuffer->pointLights[lightId].attenuationQuadratic = pointLight->GetQuadraticAttenuationFactor ();
-
-    // copy color
-    m_uniformPointLightBuffer->pointLights[lightId].lightColor[0] = pointLight->GetColor ()[0];
-    m_uniformPointLightBuffer->pointLights[lightId].lightColor[1] = pointLight->GetColor ()[1];
-    m_uniformPointLightBuffer->pointLights[lightId].lightColor[2] = pointLight->GetColor ()[2];
-
-    // copy to GPU memory
-    glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_POINTLIGHTS]);
-
-    // load light counts
-    glBufferSubData (GL_UNIFORM_BUFFER, 0, sizeof (m_uniformPointLightBuffer->pointLightCount), &m_uniformPointLightBuffer->pointLightCount);
-
-    // load uniform buffer for a light at given index
-    uniformBufferOffset = sizeof (m_uniformPointLightBuffer->pointLightCount) + 3 * sizeof (GLint) + lightId * sizeof (SGlPointLightStruct);
-    glBufferSubData (GL_UNIFORM_BUFFER, uniformBufferOffset, sizeof (SGlPointLightStruct), &m_uniformPointLightBuffer->pointLights[lightId]);
-
-    glBindBuffer (GL_UNIFORM_BUFFER, 0);
-
 }
 
 void GLRenderer::Update (std::shared_ptr<DirectionalLight> directionalLight)
 {
-    handle_t objectHandle = directionalLight->GetHandle ();
-    size_t lightId;
-    size_t uniformBufferOffset;
-
-    // check if light is already in collection
-    auto find = m_directionalLights.find (objectHandle);
-
-    if (find == m_directionalLights.end ())
+    if (m_lightBuffers->Update (directionalLight))
     {
-        lightId = m_uniformDirectionalLightBuffer->directionalLightCount++;
-        m_directionalLights.insert ({ objectHandle, lightId });
-
-        // update invocation count in shadow map geometry shader
-        auto shadowmapShader = GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader> ("shadowmap_directional_geometry_shader");
-        shadowmapShader->SetVariable ("ACTIVE_DIRECTIONAL_LIGHTS", std::to_string (GetDirectionalLightCount ()));
-        shadowmapShader->Compile ();
-
-        auto shadowmapShaderProg = GetShaderProgramManager ()->GetByName<GLShaderProgram> ("shadowmap_directional_shader");
-        shadowmapShaderProg->Link ();
-        shadowmapShaderProg->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EGlUBOType::UBO_DIRECTIONALLIGHTVIEWMATRICES);
-        shadowmapShaderProg->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
-
-        // set offset in shadow map texture array (zero for directional lights)
-        shadowmapShaderProg->SetUniformInt ("textureArrayOffset", 0);
-        shadowmapShaderProg = GetShaderProgramManager ()->GetByName<GLShaderProgram> ("shadowmap_spot_shader");
-        shadowmapShaderProg->SetUniformInt ("textureArrayOffset", static_cast<int>(GetDirectionalLightCount ()));
-        shadowmapShaderProg = GetShaderProgramManager ()->GetByName<GLShaderProgram> ("shadowmap_point_shader");
-        shadowmapShaderProg->SetUniformInt ("textureArrayOffset", static_cast<int>(GetDirectionalLightCount () + GetSpotLightCount ()));
+        m_shaderLibrary->OnDirectionalLightAdded (GetDirectionalLightCount (), GetSpotLightCount (), GetPointLightCount ());
     }
-    else
-    {
-        // existing light modified
-        lightId = m_directionalLights[objectHandle];
-    }
-
-    // copy direction
-    Vector3f lightDirection = directionalLight->GetForward ();
-    m_uniformDirectionalLightBuffer->directionalLights[lightId].lightDirection[0] = lightDirection[0];
-    m_uniformDirectionalLightBuffer->directionalLights[lightId].lightDirection[1] = lightDirection[1];
-    m_uniformDirectionalLightBuffer->directionalLights[lightId].lightDirection[2] = lightDirection[2];
-
-    // copy color
-    m_uniformDirectionalLightBuffer->directionalLights[lightId].lightColor[0] = directionalLight->GetColor ()[0];
-    m_uniformDirectionalLightBuffer->directionalLights[lightId].lightColor[1] = directionalLight->GetColor ()[1];
-    m_uniformDirectionalLightBuffer->directionalLights[lightId].lightColor[2] = directionalLight->GetColor ()[2];
-
-    // copy to GPU memory
-    glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTS]);
-
-    // load light counts
-    glBufferSubData (GL_UNIFORM_BUFFER, 0, sizeof (m_uniformDirectionalLightBuffer->directionalLightCount), &m_uniformDirectionalLightBuffer->directionalLightCount);
-
-    // load uniform buffer for a light at given index
-    uniformBufferOffset = sizeof (m_uniformDirectionalLightBuffer->directionalLightCount) + 3 * sizeof (GLint) + lightId * sizeof (SGlDirectionalLightStruct);
-    glBufferSubData (GL_UNIFORM_BUFFER, uniformBufferOffset, sizeof (SGlDirectionalLightStruct), &m_uniformDirectionalLightBuffer->directionalLights[lightId]);
-
-    glBindBuffer (GL_UNIFORM_BUFFER, 0);
 }
 
 void GLRenderer::Update (std::shared_ptr<SpotLight> spotLight)
 {
-    handle_t objectHandle = spotLight->GetHandle ();
-    size_t lightId;
-    size_t uniformBufferOffset;
-
-    // check if light is already in collection
-    auto find = m_spotLights.find (objectHandle);
-
-    if (find == m_spotLights.end ())
+    if (m_lightBuffers->Update (spotLight))
     {
-        lightId = m_uniformSpotLightBuffer->spotLightCount++;
-        m_spotLights.insert ({ objectHandle, lightId });
-
-        // update invocation count in shadow map geometry shader
-        auto shadowmapShader = GetGameScene ()->GetGame ()->GetResourceManager ()->GetByName<GLShader> ("shadowmap_spot_geometry_shader");
-        shadowmapShader->SetVariable ("ACTIVE_SPOT_LIGHTS", std::to_string (GetSpotLightCount ()));
-        shadowmapShader->Compile ();
-
-        auto shadowmapShaderProg = GetShaderProgramManager ()->GetByName<GLShaderProgram> ("shadowmap_spot_shader");
-        shadowmapShaderProg->Link ();
-        shadowmapShaderProg->BindUniformBlock ("UniformSpotLightViewMatricesBlock", EGlUBOType::UBO_SPOTLIGHTVIEWMATRICES);
-        shadowmapShaderProg->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
-
-        // set offset in shadow map texture array (directional light count for spot lights)
-        shadowmapShaderProg->SetUniformInt ("textureArrayOffset", static_cast<int>(GetDirectionalLightCount ()));
-        shadowmapShaderProg = GetShaderProgramManager ()->GetByName<GLShaderProgram> ("shadowmap_point_shader");
-        shadowmapShaderProg->SetUniformInt ("textureArrayOffset", static_cast<int>(GetDirectionalLightCount () + GetSpotLightCount ()));
+        m_shaderLibrary->OnSpotLightAdded (GetDirectionalLightCount (), GetSpotLightCount (), GetPointLightCount ());
     }
-    else
-    {
-        // existing light modified
-        lightId = m_spotLights[objectHandle];
-    }
-
-    // copy position
-    Vector4f lightPosition = spotLight->GetPosition ();
-    m_uniformSpotLightBuffer->spotLights[lightId].lightPosition[0] = lightPosition[0];
-    m_uniformSpotLightBuffer->spotLights[lightId].lightPosition[1] = lightPosition[1];
-    m_uniformSpotLightBuffer->spotLights[lightId].lightPosition[2] = lightPosition[2];
-
-    // copy direction
-    Vector3f lightDirection = spotLight->GetForward ();
-    m_uniformSpotLightBuffer->spotLights[lightId].lightDirection[0] = lightDirection[0];
-    m_uniformSpotLightBuffer->spotLights[lightId].lightDirection[1] = lightDirection[1];
-    m_uniformSpotLightBuffer->spotLights[lightId].lightDirection[2] = lightDirection[2];
-    
-    // copy attenuation factors
-    m_uniformSpotLightBuffer->spotLights[lightId].attenuationConst = spotLight->GetConstantAttenuationFactor ();
-    m_uniformSpotLightBuffer->spotLights[lightId].attenuationLinear = spotLight->GetLinearAttenuationFactor ();
-    m_uniformSpotLightBuffer->spotLights[lightId].attenuationQuadratic = spotLight->GetQuadraticAttenuationFactor ();
-
-    // copy cutoff angles
-    m_uniformSpotLightBuffer->spotLights[lightId].innerCutoffCosine = std::cos (Mathf::Deg2Rad (spotLight->GetInnerCutoff ()));
-    m_uniformSpotLightBuffer->spotLights[lightId].outerCutoffCosine = std::cos (Mathf::Deg2Rad (spotLight->GetOuterCutoff ()));
-
-    // copy color
-    m_uniformSpotLightBuffer->spotLights[lightId].lightColor[0] = spotLight->GetColor ()[0];
-    m_uniformSpotLightBuffer->spotLights[lightId].lightColor[1] = spotLight->GetColor ()[1];
-    m_uniformSpotLightBuffer->spotLights[lightId].lightColor[2] = spotLight->GetColor ()[2];
-
-    // copy to GPU memory
-    glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_SPOTLIGHTS]);
-
-    // load light counts
-    glBufferSubData (GL_UNIFORM_BUFFER, 0, sizeof (m_uniformSpotLightBuffer->spotLightCount), &m_uniformSpotLightBuffer->spotLightCount);
-
-    // load uniform buffer for a light at given index
-    uniformBufferOffset = sizeof (m_uniformSpotLightBuffer->spotLightCount) + 3 * sizeof (GLint) + lightId * sizeof (SGlSpotLightStruct);
-    glBufferSubData (GL_UNIFORM_BUFFER, uniformBufferOffset, sizeof (SGlSpotLightStruct), &m_uniformSpotLightBuffer->spotLights[lightId]);
-
-    glBindBuffer (GL_UNIFORM_BUFFER, 0);
 }
 
 void GLRenderer::UpdateCameraBuffers (std::shared_ptr<Camera> camera)
@@ -924,22 +741,25 @@ void GLRenderer::UpdateCameraBuffers (std::shared_ptr<Camera> camera)
 
 void GLRenderer::UpdateLightViewBuffers ()
 {
-    LoadLightViewMatrixUniformBuffers ();
+    auto frustumVertices = GetGameScene ()->GetActiveCamera ()->GetFrustumVertices (m_width, m_height);
+    AABB sceneAABB = GetGameScene ()->GetGameObjectManager ()->GetByName<GameObject> ("root")->GetHierarchyAABB ();
+
+    m_lightBuffers->LoadLightViewMatrices (GetGameScene ()->GetGameObjectManager (), frustumVertices, sceneAABB);
 }
 
 size_t GLRenderer::GetPointLightCount () const
 {
-    return m_uniformPointLightBuffer->pointLightCount;
+    return m_lightBuffers->GetPointLightCount ();
 }
 
 size_t GLRenderer::GetDirectionalLightCount () const
 {
-    return m_uniformDirectionalLightBuffer->directionalLightCount;
+    return m_lightBuffers->GetDirectionalLightCount ();
 }
 
 size_t GLRenderer::GetSpotLightCount () const
 {
-    return m_uniformSpotLightBuffer->spotLightCount;
+    return m_lightBuffers->GetSpotLightCount ();
 }
 
 std::shared_ptr<IFramebuffer> GLRenderer::CreateFramebuffer (unsigned int width, unsigned int height, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayTextureCount, bool depthStencilRenderbufferEnabled, bool multisampleEnabled)
@@ -1143,103 +963,6 @@ void GLRenderer::SetStencilTestOperation (EStencilTestOperation sFail, EStencilT
     glStencilOp (GLOp (sFail), GLOp (dpFail), GLOp (dpPass));
 }
 
-void GLRenderer::InitializeLightViewMatrixUniformBuffers ()
-{
-    // create unform buffers for light view transforms
-
-    glGenBuffers (1, &m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTVIEWMATRICES]);
-    glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTVIEWMATRICES]);
-    glBufferData (GL_UNIFORM_BUFFER, 16 * sizeof (GLfloat) * CILANTRO_MAX_DIRECTIONAL_LIGHTS, NULL, GL_DYNAMIC_DRAW);
-    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUBOType::UBO_DIRECTIONALLIGHTVIEWMATRICES), m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTVIEWMATRICES]);
-
-    glGenBuffers (1, &m_uniformBuffers->UBO[UBO_SPOTLIGHTVIEWMATRICES]);
-    glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_SPOTLIGHTVIEWMATRICES]);
-    glBufferData (GL_UNIFORM_BUFFER, 16 * sizeof (GLfloat) * CILANTRO_MAX_SPOT_LIGHTS, NULL, GL_DYNAMIC_DRAW);
-    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUBOType::UBO_SPOTLIGHTVIEWMATRICES), m_uniformBuffers->UBO[UBO_SPOTLIGHTVIEWMATRICES]);
-
-    glGenBuffers (1, &m_uniformBuffers->UBO[UBO_POINTLIGHTVIEWMATRICES]);
-    glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_POINTLIGHTVIEWMATRICES]);
-    glBufferData (GL_UNIFORM_BUFFER, 6 * 16 * sizeof (GLfloat) * CILANTRO_MAX_POINT_LIGHTS, NULL, GL_DYNAMIC_DRAW);
-    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUBOType::UBO_POINTLIGHTVIEWMATRICES), m_uniformBuffers->UBO[UBO_POINTLIGHTVIEWMATRICES]);
-
-    GLUtils::CheckGLError (MSG_LOCATION);
-}
-
-void GLRenderer::LoadLightViewMatrixUniformBuffers ()
-{
-    auto frustumVertices = GetGameScene ()->GetActiveCamera ()->GetFrustumVertices (m_width, m_height);
-    AABB sceneAABB = GetGameScene ()->GetGameObjectManager ()->GetByName<GameObject> ("root")->GetHierarchyAABB ();
-
-    // calculate and load lightview matrix for each directional light
-    for (auto&& light : m_directionalLights)
-    {
-        // generate matrix
-        auto l = GetGameScene ()->GetGameObjectManager ()->GetByHandle<DirectionalLight> (light.first);
-        Matrix4f lightViewProjection = l->GenLightViewProjectionMatrix (frustumVertices, sceneAABB);
-
-        // copy to buffer
-        std::memcpy (m_uniformLightViewMatrixBuffer->directionalLightView + light.second * 16, Mathf::Transpose (lightViewProjection)[0], 16 * sizeof (GLfloat));
-    }
-
-    // calculate and load lightview matrix for each spot light
-    for (auto&& light : m_spotLights)
-    {
-        // generate matrix
-        auto l = GetGameScene ()->GetGameObjectManager ()->GetByHandle<SpotLight> (light.first);
-        Matrix4f lightViewProjection = l->GenLightViewProjectionMatrix (frustumVertices, sceneAABB, false, l->GetOuterCutoff () * 2.0f, l->GetBoundingSphereRadius (0.01f));
-
-        // copy to buffer
-        std::memcpy (m_uniformLightViewMatrixBuffer->spotLightView + light.second * 16, Mathf::Transpose (lightViewProjection)[0], 16 * sizeof (GLfloat));
-    }
-
-    // calculate and load 6 lightview matrices for each point light
-    for (auto&& light : m_pointLights)
-    {
-        // generate matrices
-        auto l = GetGameScene ()->GetGameObjectManager ()->GetByHandle<PointLight> (light.first);
-        Vector3f lightPosition = l->GetPosition ();
-        Matrix4f lightProjection = Mathf::GenPerspectiveProjectionMatrix (1.0f, Mathf::Deg2Rad (90.0f), l->GetEscapeRadius (), l->GetBoundingSphereRadius (0.01f));
-
-        Matrix4f lightViewRight = Mathf::GenCameraViewMatrix (lightPosition, lightPosition + Vector3f (1.0f, 0.0f, 0.0f), Vector3f (0.0f, -1.0f, 0.0f));
-        Matrix4f lightViewLeft = Mathf::GenCameraViewMatrix (lightPosition, lightPosition + Vector3f (-1.0f, 0.0f, 0.0f), Vector3f (0.0f, -1.0f, 0.0f));
-        Matrix4f lightViewTop = Mathf::GenCameraViewMatrix (lightPosition, lightPosition + Vector3f (0.0f, 1.0f, 0.0f), Vector3f (0.0f, 0.0f, 1.0f));
-        Matrix4f lightViewBottom = Mathf::GenCameraViewMatrix (lightPosition, lightPosition + Vector3f (0.0f, -1.0f, 0.0f), Vector3f (0.0f, 0.0f, -1.0f));
-        Matrix4f lightViewFront = Mathf::GenCameraViewMatrix (lightPosition, lightPosition + Vector3f (0.0f, 0.0f, 1.0f), Vector3f (0.0f, -1.0f, 0.0f));
-        Matrix4f lightViewBack = Mathf::GenCameraViewMatrix (lightPosition, lightPosition + Vector3f (0.0f, 0.0f, -1.0f), Vector3f (0.0f, -1.0f, 0.0f));
-
-        // copy to buffer
-        std::memcpy (m_uniformLightViewMatrixBuffer->pointLightView + light.second * 6 * 16 + 0 * 16, Mathf::Transpose (lightProjection * lightViewRight)[0], 16 * sizeof (GLfloat));
-        std::memcpy (m_uniformLightViewMatrixBuffer->pointLightView + light.second * 6 * 16 + 1 * 16, Mathf::Transpose (lightProjection * lightViewLeft)[0], 16 * sizeof (GLfloat));
-        std::memcpy (m_uniformLightViewMatrixBuffer->pointLightView + light.second * 6 * 16 + 2 * 16, Mathf::Transpose (lightProjection * lightViewTop)[0], 16 * sizeof (GLfloat));
-        std::memcpy (m_uniformLightViewMatrixBuffer->pointLightView + light.second * 6 * 16 + 3 * 16, Mathf::Transpose (lightProjection * lightViewBottom)[0], 16 * sizeof (GLfloat));
-        std::memcpy (m_uniformLightViewMatrixBuffer->pointLightView + light.second * 6 * 16 + 4 * 16, Mathf::Transpose (lightProjection * lightViewFront)[0], 16 * sizeof (GLfloat));
-        std::memcpy (m_uniformLightViewMatrixBuffer->pointLightView + light.second * 6 * 16 + 5 * 16, Mathf::Transpose (lightProjection * lightViewBack)[0], 16 * sizeof (GLfloat));
-    }
-
-    // load to GPU - directional light view
-    glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTVIEWMATRICES]);
-    glBufferSubData (GL_UNIFORM_BUFFER, 0, 16 * sizeof (GLfloat) * m_uniformDirectionalLightBuffer->directionalLightCount, m_uniformLightViewMatrixBuffer->directionalLightView);
-    glBindBuffer (GL_UNIFORM_BUFFER, 0);
-
-    // load to GPU - spot light view
-    glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_SPOTLIGHTVIEWMATRICES]);
-    glBufferSubData (GL_UNIFORM_BUFFER, 0, 16 * sizeof (GLfloat) * m_uniformSpotLightBuffer->spotLightCount, m_uniformLightViewMatrixBuffer->spotLightView);
-    glBindBuffer (GL_UNIFORM_BUFFER, 0);
-
-    // load to GPU - point light views
-    glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_POINTLIGHTVIEWMATRICES]);
-    glBufferSubData (GL_UNIFORM_BUFFER, 0, 6 * 16 * sizeof (GLfloat) * m_uniformPointLightBuffer->pointLightCount, m_uniformLightViewMatrixBuffer->pointLightView);
-    glBindBuffer (GL_UNIFORM_BUFFER, 0);
-
-}
-
-void GLRenderer::DeinitializeLightViewMatrixUniformBuffers ()
-{
-    glDeleteBuffers (1, &m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTVIEWMATRICES]);
-    glDeleteBuffers (1, &m_uniformBuffers->UBO[UBO_SPOTLIGHTVIEWMATRICES]);
-    glDeleteBuffers (1, &m_uniformBuffers->UBO[UBO_POINTLIGHTVIEWMATRICES]);
-}
-
 void GLRenderer::InitializeObjectBuffers ()
 {
     // create and load object buffers for all existing objects
@@ -1332,27 +1055,7 @@ void GLRenderer::DeinitializeQuadGeometryBuffer ()
 
 void GLRenderer::InitializeLightUniformBuffers ()
 {
-    m_uniformPointLightBuffer->pointLightCount = 0;
-    m_uniformSpotLightBuffer->spotLightCount = 0;
-    m_uniformDirectionalLightBuffer->directionalLightCount = 0;
-
-    // create uniform buffer for point lights
-    glGenBuffers (1, &m_uniformBuffers->UBO[UBO_POINTLIGHTS]);
-    glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_POINTLIGHTS]);
-    glBufferData (GL_UNIFORM_BUFFER, sizeof (SGlUniformPointLightBuffer), m_uniformPointLightBuffer, GL_DYNAMIC_DRAW);
-    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUBOType::UBO_POINTLIGHTS), m_uniformBuffers->UBO[UBO_POINTLIGHTS]);
-
-    // create uniform buffer for directional lights
-    glGenBuffers (1, &m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTS]);
-    glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTS]);
-    glBufferData (GL_UNIFORM_BUFFER, sizeof (SGlUniformDirectionalLightBuffer), m_uniformDirectionalLightBuffer, GL_DYNAMIC_DRAW);
-    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUBOType::UBO_DIRECTIONALLIGHTS), m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTS]);
-
-    // create uniform buffer for spot lights
-    glGenBuffers (1, &m_uniformBuffers->UBO[UBO_SPOTLIGHTS]);
-    glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_SPOTLIGHTS]);
-    glBufferData (GL_UNIFORM_BUFFER, sizeof (SGlUniformSpotLightBuffer), m_uniformSpotLightBuffer, GL_DYNAMIC_DRAW);
-    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUBOType::UBO_SPOTLIGHTS), m_uniformBuffers->UBO[UBO_SPOTLIGHTS]);
+    m_lightBuffers->Initialize ();
 
     // scan objects vector for lights and populate light buffers
     for (auto&& gameObject : GetGameScene ()->GetGameObjectManager ())
@@ -1367,10 +1070,7 @@ void GLRenderer::InitializeLightUniformBuffers ()
 
 void GLRenderer::DeinitializeLightUniformBuffers ()
 {
-    // delete all light buffers
-    glDeleteBuffers (1, &m_uniformBuffers->UBO[UBO_POINTLIGHTS]);
-    glDeleteBuffers (1, &m_uniformBuffers->UBO[UBO_DIRECTIONALLIGHTS]);
-    glDeleteBuffers (1, &m_uniformBuffers->UBO[UBO_SPOTLIGHTS]);
+    m_lightBuffers->Deinitialize ();
 }
 
 void GLRenderer::UpdateLightBufferRecursive (handle_t objectHandle)

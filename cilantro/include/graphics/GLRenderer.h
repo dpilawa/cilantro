@@ -5,6 +5,8 @@
 #include "graphics/Renderer.h"
 #include "graphics/GLTypes.h"
 #include "graphics/GLCameraBuffer.h"
+#include "graphics/GLLightBuffers.h"
+#include "graphics/GLShaderLibrary.h"
 #include "math/AABB.h"
 
 namespace cilantro {
@@ -15,7 +17,6 @@ class Camera;
 
 typedef std::unordered_map <handle_t, SGlGeometryBuffers*> TObjectGeometryBufferMap;
 typedef std::unordered_map <handle_t, SGlMaterialTextureUnits*> TMaterialTextureUnitsMap;
-typedef std::unordered_map <handle_t, size_t> TLightHandleIdxMap;
 
 class __CEAPI GLRenderer : public Renderer
 {
@@ -80,9 +81,6 @@ public:
 private:
     
     
-    void InitializeLightViewMatrixUniformBuffers ();
-    void LoadLightViewMatrixUniformBuffers ();
-    void DeinitializeLightViewMatrixUniformBuffers ();
 
     void InitializeObjectBuffers ();
     void DeinitializeObjectBuffers ();
@@ -102,26 +100,14 @@ private:
     TObjectGeometryBufferMap m_aabbGeometryBuffers;
     SGlGeometryBuffers* m_surfaceGeometryBuffer;
 
-    // Buffers for uniforms shared by entire scene
-    SGlUniformBuffers* m_uniformBuffers;
-
-    // data structures for uniforms
+    // GL buffers and shaders shared by entire scene
     std::unique_ptr<GLCameraBuffer> m_cameraBuffer;
-    SGlUniformLightViewMatrixBuffer* m_uniformLightViewMatrixBuffer;
-    SGlUniformPointLightBuffer* m_uniformPointLightBuffer;
-    SGlUniformDirectionalLightBuffer* m_uniformDirectionalLightBuffer;
-    SGlUniformSpotLightBuffer* m_uniformSpotLightBuffer;
+    std::unique_ptr<GLShaderLibrary> m_shaderLibrary;
+    std::unique_ptr<GLLightBuffers> m_lightBuffers;
 
     // materials texture units (key is material handle)
     TMaterialTextureUnitsMap m_materialTextureUnits;
 
-    // maps gameobject handle to index in 
-    // uniformPointLightBuffer
-    // uniformDirectionalLightBuffer
-    // uniformSpotLightBuffer
-    TLightHandleIdxMap m_pointLights;
-    TLightHandleIdxMap m_directionalLights;
-    TLightHandleIdxMap m_spotLights;
 
 };
 

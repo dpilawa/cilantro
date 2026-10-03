@@ -19,6 +19,11 @@ public:
     // load shaders to resource manager, create and link shader programs
     void Initialize ();
 
+    // update shadow map shaders after a light of given type has been added, parameters are light counts including the added light
+    void OnPointLightAdded (size_t directionalLightCount, size_t spotLightCount, size_t pointLightCount);
+    void OnDirectionalLightAdded (size_t directionalLightCount, size_t spotLightCount, size_t pointLightCount);
+    void OnSpotLightAdded (size_t directionalLightCount, size_t spotLightCount, size_t pointLightCount);
+
 private:
     void LoadShaders ();
     void CreatePrograms ();

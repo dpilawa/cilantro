@@ -200,6 +200,60 @@ void GLShaderLibrary::Initialize ()
     CreatePrograms ();
 }
 
+void GLShaderLibrary::OnPointLightAdded (size_t directionalLightCount, size_t spotLightCount, size_t pointLightCount)
+{
+    // update invocation count in shadow map geometry shader
+    auto shadowmapShader = m_shaderResources->GetByName<GLShader> ("shadowmap_point_geometry_shader");
+    shadowmapShader->SetVariable ("ACTIVE_POINT_LIGHTS", std::to_string (pointLightCount));
+    shadowmapShader->Compile ();
+
+    auto shadowmapShaderProg = m_shaderPrograms->GetByName<GLShaderProgram> ("shadowmap_point_shader");
+    shadowmapShaderProg->Link ();
+    shadowmapShaderProg->BindUniformBlock ("UniformPointLightViewMatricesBlock", EGlUBOType::UBO_POINTLIGHTVIEWMATRICES);
+    shadowmapShaderProg->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
+
+    // set offset in shadow map texture array (directional + spot light count for point lights)
+    shadowmapShaderProg->SetUniformInt ("textureArrayOffset", static_cast<int>(directionalLightCount + spotLightCount));
+}
+
+void GLShaderLibrary::OnDirectionalLightAdded (size_t directionalLightCount, size_t spotLightCount, size_t pointLightCount)
+{
+    // update invocation count in shadow map geometry shader
+    auto shadowmapShader = m_shaderResources->GetByName<GLShader> ("shadowmap_directional_geometry_shader");
+    shadowmapShader->SetVariable ("ACTIVE_DIRECTIONAL_LIGHTS", std::to_string (directionalLightCount));
+    shadowmapShader->Compile ();
+
+    auto shadowmapShaderProg = m_shaderPrograms->GetByName<GLShaderProgram> ("shadowmap_directional_shader");
+    shadowmapShaderProg->Link ();
+    shadowmapShaderProg->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EGlUBOType::UBO_DIRECTIONALLIGHTVIEWMATRICES);
+    shadowmapShaderProg->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
+
+    // set offset in shadow map texture array (zero for directional lights)
+    shadowmapShaderProg->SetUniformInt ("textureArrayOffset", 0);
+    shadowmapShaderProg = m_shaderPrograms->GetByName<GLShaderProgram> ("shadowmap_spot_shader");
+    shadowmapShaderProg->SetUniformInt ("textureArrayOffset", static_cast<int>(directionalLightCount));
+    shadowmapShaderProg = m_shaderPrograms->GetByName<GLShaderProgram> ("shadowmap_point_shader");
+    shadowmapShaderProg->SetUniformInt ("textureArrayOffset", static_cast<int>(directionalLightCount + spotLightCount));
+}
+
+void GLShaderLibrary::OnSpotLightAdded (size_t directionalLightCount, size_t spotLightCount, size_t pointLightCount)
+{
+    // update invocation count in shadow map geometry shader
+    auto shadowmapShader = m_shaderResources->GetByName<GLShader> ("shadowmap_spot_geometry_shader");
+    shadowmapShader->SetVariable ("ACTIVE_SPOT_LIGHTS", std::to_string (spotLightCount));
+    shadowmapShader->Compile ();
+
+    auto shadowmapShaderProg = m_shaderPrograms->GetByName<GLShaderProgram> ("shadowmap_spot_shader");
+    shadowmapShaderProg->Link ();
+    shadowmapShaderProg->BindUniformBlock ("UniformSpotLightViewMatricesBlock", EGlUBOType::UBO_SPOTLIGHTVIEWMATRICES);
+    shadowmapShaderProg->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
+
+    // set offset in shadow map texture array (directional light count for spot lights)
+    shadowmapShaderProg->SetUniformInt ("textureArrayOffset", static_cast<int>(directionalLightCount));
+    shadowmapShaderProg = m_shaderPrograms->GetByName<GLShaderProgram> ("shadowmap_point_shader");
+    shadowmapShaderProg->SetUniformInt ("textureArrayOffset", static_cast<int>(directionalLightCount + spotLightCount));
+}
+
 void GLShaderLibrary::LoadShaders ()
 {
     for (auto&& shader : standardShaders)
