@@ -171,9 +171,7 @@ TEST (QuaternionMatrix, RotationMatrixMatchesAxisMatrices)
     EXPECT_MAT4_NEAR (Mathf::GenRotationMatrix (AxisAngle (0, 0, 1, 0.6f)), Mathf::GenRotationZMatrix (0.6f));
 }
 
-// Known defect: GenRotationMatrix normalizes the quaternion into a local variable but then reads the
-// components of the original, so a non-unit quaternion yields a non-orthonormal matrix. Enable once fixed.
-TEST (QuaternionMatrix, DISABLED_RotationMatrixOfNonUnitQuaternionIsRotation)
+TEST (QuaternionMatrix, RotationMatrixOfNonUnitQuaternionIsRotation)
 {
     Quaternion unit = AxisAngle (0, 0, 1, 0.6f);
     Quaternion scaled = 3.0f * unit;
@@ -312,11 +310,7 @@ TEST (QuaternionEuler, SingleAxisAnglesRoundTrip)
     EXPECT_VEC3_NEAR (Mathf::QuaternionToEuler (Mathf::EulerToQuaternion (Vector3f (0, 0, 0.6f))), Vector3f (0, 0, 0.6f));
 }
 
-// Known defect: QuaternionToEuler is not the inverse of EulerToQuaternion for angles on more than one axis.
-// It mixes terms of different Euler conventions (e.g. pitch = atan2 (2 (sx - yz), 1 - 2 (x^2 + z^2)) uses sin (pitch)
-// over cos (pitch) cos (roll), and the yaw cross term has the wrong sign), so it only works when a single angle is non-zero.
-// Enable once fixed.
-TEST (QuaternionEuler, DISABLED_GeneralAnglesRoundTrip)
+TEST (QuaternionEuler, GeneralAnglesRoundTrip)
 {
     Vector3f euler (0.4f, -0.6f, 0.3f);
 
@@ -333,4 +327,35 @@ TEST (QuaternionEuler, EulerQuaternionComposesRollThenPitchThenYaw)
     Matrix4f expected = Mathf::GenRotationYMatrix (euler[1]) * Mathf::GenRotationXMatrix (euler[0]) * Mathf::GenRotationZMatrix (euler[2]);
 
     EXPECT_VEC3_NEAR (Mathf::Rotate (v, Mathf::EulerToQuaternion (euler)), Vector3f (expected * Vector4f (v, 0.0f)));
+}
+
+TEST (QuaternionEuler, AnglesRoundTripOverTheValidRange)
+{
+    // pitch stays away from +/- 90 degrees (gimbal lock), yaw and roll cover the full circle
+    for (float pitch = -1.4f; pitch <= 1.4f; pitch += 0.35f)
+    {
+        for (float yaw = -3.0f; yaw <= 3.0f; yaw += 0.75f)
+        {
+            for (float roll = -3.0f; roll <= 3.0f; roll += 0.75f)
+            {
+                Vector3f euler (pitch, yaw, roll);
+                Vector3f back = Mathf::QuaternionToEuler (Mathf::EulerToQuaternion (euler));
+
+                EXPECT_VEC3_NEAR (back, euler, 2e-3f);
+            }
+        }
+    }
+}
+
+TEST (QuaternionEuler, ConvertedEulerAnglesRepresentTheSameRotationAtGimbalLock)
+{
+    // at +/- 90 degrees of pitch yaw and roll are interchangeable, so only the resulting rotation can be compared
+    for (float pitch : { kPi * 0.5f, -kPi * 0.5f })
+    {
+        Quaternion original = Mathf::EulerToQuaternion (Vector3f (pitch, 0.7f, 0.2f));
+        Vector3f euler = Mathf::QuaternionToEuler (original);
+
+        EXPECT_NEAR (euler[0], pitch, 1e-3f);
+        EXPECT_SAME_ROTATION (Mathf::EulerToQuaternion (euler), original, 2e-3f);
+    }
 }

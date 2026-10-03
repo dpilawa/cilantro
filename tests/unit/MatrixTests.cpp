@@ -342,10 +342,7 @@ TEST (MathfTransform, ScalingAndTranslationAreExtractedFromTrsMatrix)
     EXPECT_VEC3_NEAR (Mathf::GetScalingFromTransformationMatrix (m), Vector3f (2.0f, 0.5f, 3.0f));
 }
 
-// Known defect: GetRotationFromTransformationMatrix multiplies columns by the scale instead of dividing,
-// and copies the third column from m[..][1] instead of m[..][2], so the extracted rotation is wrong
-// (even for a pure rotation). Enable once fixed.
-TEST (MathfTransform, DISABLED_RotationIsExtractedFromPureRotationMatrix)
+TEST (MathfTransform, RotationIsExtractedFromPureRotationMatrix)
 {
     Quaternion expected = Mathf::GenRotationQuaternion (Vector3f (0.0f, 0.0f, 1.0f), kPi * 0.5f);
     Quaternion actual = Mathf::GetRotationFromTransformationMatrix (Mathf::GenRotationZMatrix (kPi * 0.5f));
@@ -353,7 +350,7 @@ TEST (MathfTransform, DISABLED_RotationIsExtractedFromPureRotationMatrix)
     EXPECT_SAME_ROTATION (actual, expected);
 }
 
-TEST (MathfTransform, DISABLED_RotationIsExtractedFromScaledMatrix)
+TEST (MathfTransform, RotationIsExtractedFromScaledMatrix)
 {
     Matrix4f m = Trs (Vector3f (1.0f, 2.0f, 3.0f), Vector3f (0.0f, 0.0f, kPi * 0.5f), Vector3f (2.0f, 2.0f, 2.0f));
     Quaternion expected = Mathf::GenRotationQuaternion (Vector3f (0.0f, 0.0f, 1.0f), kPi * 0.5f);
@@ -435,4 +432,30 @@ TEST (MathfCamera, OrthographicMapsBoxCornersToNdcCorners)
     EXPECT_VEC4_NEAR (o * Vector4f (-4.0f, -3.0f, -1.0f, 1.0f), Vector4f (-1, -1, -1, 1));
     EXPECT_VEC4_NEAR (o * Vector4f (4.0f, 3.0f, -11.0f, 1.0f), Vector4f (1, 1, 1, 1));
     EXPECT_VEC4_NEAR (o * Vector4f (0.0f, 0.0f, -6.0f, 1.0f), Vector4f (0, 0, 0, 1));
+}
+
+TEST (MathfTransform, RotationIsExtractedFromNonUniformlyScaledMatrix)
+{
+    Vector3f euler (0.4f, -0.8f, 0.3f);
+    Matrix4f m = Trs (Vector3f (5.0f, -1.0f, 2.0f), euler, Vector3f (2.0f, 0.25f, 7.0f));
+
+    Quaternion rotation = Mathf::GetRotationFromTransformationMatrix (m);
+
+    // rotating by the extracted quaternion must agree with the rotation part of the matrix
+    Vector3f v (1.0f, 2.0f, 3.0f);
+    Vector3f expected = Vector3f (Mathf::GenRotationXYZMatrix (euler) * Vector4f (v, 0.0f));
+
+    EXPECT_VEC3_NEAR (Mathf::Rotate (v, rotation), expected, 1e-3f);
+    EXPECT_NEAR (Mathf::Norm (rotation), 1.0f, 1e-4f);
+}
+
+TEST (MathfTransform, TransformMatrixDecomposesAndRecomposes)
+{
+    Matrix4f m = Trs (Vector3f (1.0f, 2.0f, 3.0f), Vector3f (0.2f, 0.5f, -0.7f), Vector3f (1.5f, 2.0f, 0.5f));
+
+    Matrix4f rebuilt = Mathf::GenTranslationMatrix (Mathf::GetTranslationFromTransformationMatrix (m))
+                     * Mathf::GenRotationMatrix (Mathf::GetRotationFromTransformationMatrix (m))
+                     * Mathf::GenScalingMatrix (Mathf::GetScalingFromTransformationMatrix (m));
+
+    EXPECT_MAT4_NEAR (rebuilt, m, 1e-3f);
 }

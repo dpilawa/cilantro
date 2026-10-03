@@ -141,33 +141,29 @@ Vector3f Mathf::Rotate (const Vector3f& v, const Vector3f& axis, float theta)
 
 Vector3f Mathf::QuaternionToEuler (const Quaternion& q)
 {
+    // inverse of EulerToQuaternion, where q = Ry (yaw) * Rx (pitch) * Rz (roll)
+    Quaternion qn = Mathf::Normalize (q);
     Vector3f euler;
-    float pole;
 
-    pole = q.v[0] * q.v[1] + q.v[2] * q.s;
+    float sinPitch = 2.0f * (qn.s * qn.v[0] - qn.v[1] * qn.v[2]);
 
-    // pitch
-    euler[0] = std::atan2(2.0f * (q.s * q.v[0] - q.v[1] * q.v[2]), 1.0f - 2.0f * (q.v[0] * q.v[0] + q.v[2] * q.v[2]));
-
-    // yaw
-    euler[1] = std::atan2 (2.0f * (q.s * q.v[1] - q.v[0] * q.v[2]), 1.0f - 2.0f * (q.v[1] * q.v[1] + q.v[2] * q.v[2]));
-
-    // roll
-    euler[2] = std::asin (2.0f * (q.v[0] * q.v[1] + q.s * q.v[2]));
-
-    if (pole > 0.499f)
+    if (sinPitch > 0.9999f || sinPitch < -0.9999f)
     {
-        // north pole        
-        euler[0] = Mathf::Pi () * 0.5f;
-        euler[1] = 2.0f * std::atan2 (q.v[1], q.s);
+        // gimbal lock (pitch at +/- 90 degrees): yaw and roll are not independent, assign everything to yaw
+        euler[0] = (sinPitch > 0.0f ? 1.0f : -1.0f) * Mathf::Pi () * 0.5f;
+        euler[1] = std::atan2 (2.0f * (qn.s * qn.v[1] - qn.v[0] * qn.v[2]), 1.0f - 2.0f * (qn.v[1] * qn.v[1] + qn.v[2] * qn.v[2]));
         euler[2] = 0.0f;
     }
-    else if (pole < -0.499f)
+    else
     {
-        // south pole
-        euler[0] = -Mathf::Pi () * 0.5f;
-        euler[1] = -2.0f * std::atan2 (q.v[1], q.s);
-        euler[2] = 0.0f;		
+        // pitch
+        euler[0] = std::asin (sinPitch);
+
+        // yaw
+        euler[1] = std::atan2 (2.0f * (qn.v[0] * qn.v[2] + qn.s * qn.v[1]), 1.0f - 2.0f * (qn.v[0] * qn.v[0] + qn.v[1] * qn.v[1]));
+
+        // roll
+        euler[2] = std::atan2 (2.0f * (qn.v[0] * qn.v[1] + qn.s * qn.v[2]), 1.0f - 2.0f * (qn.v[0] * qn.v[0] + qn.v[2] * qn.v[2]));
     }
 
     return euler;
@@ -545,23 +541,23 @@ Matrix4f Mathf::GenRotationMatrix (const Quaternion &q)
 
     m.InitIdentity ();
 
-    float qx = q.v[0];
-    float qy = q.v[1];
-    float qz = q.v[2];
+    float qx = qn.v[0];
+    float qy = qn.v[1];
+    float qz = qn.v[2];
     float sqx = qx * qx;
     float sqy = qy * qy;
     float sqz = qz * qz;
 
     m[0][0] = 1.0f - 2.0f * sqy - 2.0f * sqz;
-    m[0][1] = 2.0f * qx * qy - 2.0f * qz * q.s;
-    m[0][2] = 2.0f * qx * qz + 2.0f * qy * q.s;
+    m[0][1] = 2.0f * qx * qy - 2.0f * qz * qn.s;
+    m[0][2] = 2.0f * qx * qz + 2.0f * qy * qn.s;
 
-    m[1][0] = 2.0f * qx * qy + 2.0f * qz * q.s;
+    m[1][0] = 2.0f * qx * qy + 2.0f * qz * qn.s;
     m[1][1] = 1.0f - 2.0f * sqx - 2.0f * sqz;
-    m[1][2] = 2.0f * qy * qz - 2.0f * qx * q.s;
+    m[1][2] = 2.0f * qy * qz - 2.0f * qx * qn.s;
 
-    m[2][0] = 2.0f * qx * qz - 2.0f * qy * q.s;
-    m[2][1] = 2.0f * qy * qz + 2.0f * qx * q.s;
+    m[2][0] = 2.0f * qx * qz - 2.0f * qy * qn.s;
+    m[2][1] = 2.0f * qy * qz + 2.0f * qx * qn.s;
     m[2][2] = 1.0f - 2.0f * sqx - 2.0f * sqy;
 
     return m;
@@ -675,17 +671,16 @@ Quaternion Mathf::GetRotationFromTransformationMatrix (const Matrix4f& m)
 
     pureRotation.InitIdentity ();
 
-    pureRotation[0][0] = m[0][0] * v[0];
-    pureRotation[1][0] = m[1][0] * v[0];
-    pureRotation[2][0] = m[2][0] * v[0];
-
-    pureRotation[0][1] = m[0][1] * v[1];
-    pureRotation[1][1] = m[1][1] * v[1];
-    pureRotation[2][1] = m[2][1] * v[1];
-
-    pureRotation[0][2] = m[0][1] * v[2];
-    pureRotation[1][2] = m[1][1] * v[2];
-    pureRotation[2][2] = m[2][1] * v[2];
+    // remove scaling by normalizing each column of the upper left 3x3 block
+    for (unsigned int column = 0; column < 3; column++)
+    {
+        if (v[column] != 0.0f)
+        {
+            pureRotation[0][column] = m[0][column] / v[column];
+            pureRotation[1][column] = m[1][column] / v[column];
+            pureRotation[2][column] = m[2][column] / v[column];
+        }
+    }
 
     return GenQuaternion (pureRotation);
 }
