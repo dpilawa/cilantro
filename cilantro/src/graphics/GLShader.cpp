@@ -1,5 +1,5 @@
 #include "graphics/GLShader.h"
-#include "graphics/GLRenderer.h"
+#include "graphics/GLTypes.h"
 #include "graphics/GLUtils.h"
 #include "system/LogMessage.h"
 

@@ -32,6 +32,7 @@ include/graphics/Framebuffer.h
 include/graphics/GLFramebuffer.h
 include/graphics/GLRenderer.h
 include/graphics/GLShader.h
+include/graphics/GLTypes.h
 include/graphics/GLShaderProgram.h
 include/graphics/GLMultisampleFramebuffer.h
 include/graphics/GLUtils.h
