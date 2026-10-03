@@ -4,6 +4,7 @@
 #include "glad/gl.h"
 #include "graphics/Renderer.h"
 #include "graphics/GLTypes.h"
+#include "graphics/GLCameraBuffer.h"
 #include "math/AABB.h"
 
 namespace cilantro {
@@ -78,9 +79,6 @@ public:
 
 private:
     
-    void InitializeMatrixUniformBuffers ();
-    void LoadMatrixUniformBuffers (std::shared_ptr<Camera> camera);
-    void DeinitializeMatrixUniformBuffers ();    
     
     void InitializeLightViewMatrixUniformBuffers ();
     void LoadLightViewMatrixUniformBuffers ();
@@ -108,7 +106,7 @@ private:
     SGlUniformBuffers* m_uniformBuffers;
 
     // data structures for uniforms
-    SGlUniformMatrixBuffer* m_uniformMatrixBuffer;
+    std::unique_ptr<GLCameraBuffer> m_cameraBuffer;
     SGlUniformLightViewMatrixBuffer* m_uniformLightViewMatrixBuffer;
     SGlUniformPointLightBuffer* m_uniformPointLightBuffer;
     SGlUniformDirectionalLightBuffer* m_uniformDirectionalLightBuffer;

@@ -29,6 +29,7 @@ include/graphics/DeferredGeometryRenderStage.h
 include/graphics/DeferredLightingRenderStage.h
 include/graphics/ForwardGeometryRenderStage.h
 include/graphics/Framebuffer.h
+include/graphics/GLCameraBuffer.h
 include/graphics/GLFramebuffer.h
 include/graphics/GLRenderer.h
 include/graphics/GLShader.h
@@ -108,6 +109,7 @@ src/graphics/DeferredGeometryRenderStage.cpp
 src/graphics/DeferredLightingRenderStage.cpp
 src/graphics/ForwardGeometryRenderStage.cpp
 src/graphics/Framebuffer.cpp
+src/graphics/GLCameraBuffer.cpp
 src/graphics/GLFramebuffer.cpp
 src/graphics/GLRenderer.cpp
 src/graphics/GLShader.cpp

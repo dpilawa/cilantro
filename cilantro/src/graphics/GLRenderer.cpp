@@ -3,6 +3,7 @@
 #include "graphics/GLShader.h"
 #include "graphics/GLShaderProgram.h"
 #include "graphics/GLShaderLibrary.h"
+#include "graphics/GLCameraBuffer.h"
 #include "graphics/GLFramebuffer.h"
 #include "graphics/GLMultisampleFramebuffer.h"
 #include "graphics/SurfaceRenderStage.h"
@@ -33,7 +34,7 @@ GLRenderer::GLRenderer (std::shared_ptr<GameScene> gameScene, unsigned int width
 {
     m_surfaceGeometryBuffer = new SGlGeometryBuffers ();
     m_uniformBuffers = new SGlUniformBuffers ();
-    m_uniformMatrixBuffer = new SGlUniformMatrixBuffer ();
+    m_cameraBuffer = std::make_unique<GLCameraBuffer> ();
     m_uniformLightViewMatrixBuffer = new SGlUniformLightViewMatrixBuffer ();
     m_uniformPointLightBuffer = new SGlUniformPointLightBuffer ();
     m_uniformDirectionalLightBuffer = new SGlUniformDirectionalLightBuffer ();
@@ -49,7 +50,6 @@ GLRenderer::~GLRenderer ()
 
     delete m_surfaceGeometryBuffer;
     delete m_uniformBuffers;
-    delete m_uniformMatrixBuffer;
     delete m_uniformLightViewMatrixBuffer;
     delete m_uniformPointLightBuffer;
     delete m_uniformDirectionalLightBuffer;
@@ -66,7 +66,7 @@ void GLRenderer::Initialize ()
     GLShaderLibrary (GetGameScene ()->GetGame ()->GetResourceManager (), m_shaderProgramManager).Initialize ();
     InitializeQuadGeometryBuffer ();
     InitializeObjectBuffers ();
-    InitializeMatrixUniformBuffers ();
+    m_cameraBuffer->Initialize ();
     InitializeLightViewMatrixUniformBuffers ();
     InitializeLightUniformBuffers ();
 
@@ -125,7 +125,7 @@ void GLRenderer::Deinitialize ()
 
     DeinitializeQuadGeometryBuffer ();
     DeinitializeObjectBuffers ();
-    DeinitializeMatrixUniformBuffers ();
+    m_cameraBuffer->Deinitialize ();
     DeinitializeLightViewMatrixUniformBuffers ();
     DeinitializeLightUniformBuffers ();
 }
@@ -919,7 +919,7 @@ void GLRenderer::Update (std::shared_ptr<SpotLight> spotLight)
 
 void GLRenderer::UpdateCameraBuffers (std::shared_ptr<Camera> camera)
 {
-    LoadMatrixUniformBuffers (camera);
+    m_cameraBuffer->Update (camera, m_width, m_height);
 }
 
 void GLRenderer::UpdateLightViewBuffers ()
@@ -1141,40 +1141,6 @@ void GLRenderer::SetStencilTestOperation (EStencilTestOperation sFail, EStencilT
     };
 
     glStencilOp (GLOp (sFail), GLOp (dpFail), GLOp (dpPass));
-}
-
-void GLRenderer::InitializeMatrixUniformBuffers ()
-{
-    // create uniform buffer for view and projection matrices
-    glGenBuffers (1, &m_uniformBuffers->UBO[UBO_MATRICES]);
-    glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_MATRICES]);
-    glBufferData (GL_UNIFORM_BUFFER, sizeof (SGlUniformMatrixBuffer), NULL, GL_DYNAMIC_DRAW);
-    glBindBufferBase (GL_UNIFORM_BUFFER, static_cast<int>(EGlUBOType::UBO_MATRICES), m_uniformBuffers->UBO[UBO_MATRICES]);
-
-    GLUtils::CheckGLError (MSG_LOCATION);
-}
-
-void GLRenderer::LoadMatrixUniformBuffers (std::shared_ptr<Camera> camera)
-{
-    Matrix4f view = camera->GetViewMatrix ();
-    Matrix4f projection = camera->GetProjectionMatrix (m_width, m_height);
-
-    // load view matrix
-    std::memcpy (m_uniformMatrixBuffer->viewMatrix, Mathf::Transpose (view)[0], 16 * sizeof (GLfloat));
-
-    // load projection matrix
-    std::memcpy (m_uniformMatrixBuffer->projectionMatrix, Mathf::Transpose (projection)[0], 16 * sizeof (GLfloat));
-
-    // load to GPU - view and projection
-    glBindBuffer (GL_UNIFORM_BUFFER, m_uniformBuffers->UBO[UBO_MATRICES]);
-    glBufferSubData (GL_UNIFORM_BUFFER, 0, 16 * sizeof (GLfloat), m_uniformMatrixBuffer->viewMatrix);
-    glBufferSubData (GL_UNIFORM_BUFFER, 16 * sizeof (GLfloat), 16 * sizeof (GLfloat), m_uniformMatrixBuffer->projectionMatrix);
-    glBindBuffer (GL_UNIFORM_BUFFER, 0);
-}
-
-void GLRenderer::DeinitializeMatrixUniformBuffers ()
-{
-    glDeleteBuffers (1, &m_uniformBuffers->UBO[UBO_MATRICES]);
 }
 
 void GLRenderer::InitializeLightViewMatrixUniformBuffers ()
