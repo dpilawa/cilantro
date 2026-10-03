@@ -1,4 +1,5 @@
 #include "graphics/ShadowMapRenderStage.h"
+#include "graphics/ShaderProgramNames.h"
 #include "graphics/IFramebuffer.h"
 #include "scene/GameScene.h"
 #include "system/Game.h"
@@ -56,17 +57,17 @@ void ShadowMapRenderStage::OnFrame ()
     // draw geometry buffers for all 3 light types   
     if (GetRenderer ()->GetDirectionalLightCount () > 0)
     {
-        GetRenderer ()->DrawSceneGeometryBuffers (GetRenderer ()->GetShaderProgramManager ()->GetByName<IShaderProgram> ("shadowmap_directional_shader"));
+        GetRenderer ()->DrawSceneGeometryBuffers (GetRenderer ()->GetShaderProgramManager ()->GetByName<IShaderProgram> (ShaderProgramNames::ShadowMapDirectional));
     }
 
     if (GetRenderer ()->GetSpotLightCount () > 0)
     {
-        GetRenderer ()->DrawSceneGeometryBuffers (GetRenderer ()->GetShaderProgramManager ()->GetByName<IShaderProgram> ("shadowmap_spot_shader"));
+        GetRenderer ()->DrawSceneGeometryBuffers (GetRenderer ()->GetShaderProgramManager ()->GetByName<IShaderProgram> (ShaderProgramNames::ShadowMapSpot));
     }
 
     if (GetRenderer ()->GetPointLightCount () > 0)
     {
-        GetRenderer ()->DrawSceneGeometryBuffers (GetRenderer ()->GetShaderProgramManager ()->GetByName<IShaderProgram> ("shadowmap_point_shader"));
+        GetRenderer ()->DrawSceneGeometryBuffers (GetRenderer ()->GetShaderProgramManager ()->GetByName<IShaderProgram> (ShaderProgramNames::ShadowMapPoint));
     }
 
     // blit framebuffer

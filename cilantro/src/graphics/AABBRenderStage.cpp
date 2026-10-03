@@ -1,4 +1,5 @@
 #include "graphics/AABBRenderStage.h"
+#include "graphics/ShaderProgramNames.h"
 #include "graphics/IFramebuffer.h"
 #include "scene/GameScene.h"
 #include "system/Game.h"
@@ -32,7 +33,7 @@ void AABBRenderStage::OnFrame ()
     GetRenderer ()->UpdateCameraBuffers (GetRenderer ()->GetGameScene ()->GetActiveCamera ());
 
     // draw all objects in scene
-    GetRenderer ()->DrawAABBGeometryBuffers (GetRenderer ()->GetShaderProgramManager ()->GetByName<IShaderProgram> ("aabb_shader"));
+    GetRenderer ()->DrawAABBGeometryBuffers (GetRenderer ()->GetShaderProgramManager ()->GetByName<IShaderProgram> (ShaderProgramNames::AABB));
 
     if (m_framebuffer != nullptr)
     {

@@ -1,4 +1,5 @@
 #include "graphics/GLShaderLibrary.h"
+#include "graphics/ShaderProgramNames.h"
 #include "graphics/GLShader.h"
 #include "graphics/GLShaderProgram.h"
 #include "graphics/GLUtils.h"
@@ -136,25 +137,25 @@ const std::vector<SProgramSpec> standardPrograms = {
         { { "fScreenTexture", 0 } }, {} },
 
     // Shadow map (directional)
-    { "shadowmap_directional_shader", { "shadowmap_vertex_shader", "shadowmap_directional_geometry_shader", "shadowmap_fragment_shader" }, EVertexLayout::POSITION,
+    { ShaderProgramNames::ShadowMapDirectional, { "shadowmap_vertex_shader", "shadowmap_directional_geometry_shader", "shadowmap_fragment_shader" }, EVertexLayout::POSITION,
         {},
         { { "UniformDirectionalLightViewMatricesBlock", UBO_DIRECTIONALLIGHTVIEWMATRICES },
           { "UniformBoneTransformationsBlock", UBO_BONETRANSFORMATIONS } } },
 
     // Shadow map (spot)
-    { "shadowmap_spot_shader", { "shadowmap_vertex_shader", "shadowmap_spot_geometry_shader", "shadowmap_fragment_shader" }, EVertexLayout::POSITION,
+    { ShaderProgramNames::ShadowMapSpot, { "shadowmap_vertex_shader", "shadowmap_spot_geometry_shader", "shadowmap_fragment_shader" }, EVertexLayout::POSITION,
         {},
         { { "UniformSpotLightViewMatricesBlock", UBO_SPOTLIGHTVIEWMATRICES },
           { "UniformBoneTransformationsBlock", UBO_BONETRANSFORMATIONS } } },
 
     // Shadow map (point)
-    { "shadowmap_point_shader", { "shadowmap_vertex_shader", "shadowmap_point_geometry_shader", "shadowmap_fragment_shader" }, EVertexLayout::POSITION,
+    { ShaderProgramNames::ShadowMapPoint, { "shadowmap_vertex_shader", "shadowmap_point_geometry_shader", "shadowmap_fragment_shader" }, EVertexLayout::POSITION,
         {},
         { { "UniformPointLightViewMatricesBlock", UBO_POINTLIGHTVIEWMATRICES },
           { "UniformBoneTransformationsBlock", UBO_BONETRANSFORMATIONS } } },
 
     // AABB rendering
-    { "aabb_shader", { "aabb_vertex_shader", "aabb_fragment_shader" }, EVertexLayout::POSITION,
+    { ShaderProgramNames::AABB, { "aabb_vertex_shader", "aabb_fragment_shader" }, EVertexLayout::POSITION,
         {},
         { { "UniformMatricesBlock", UBO_MATRICES } } }
 };
@@ -207,7 +208,7 @@ void GLShaderLibrary::OnPointLightAdded (size_t directionalLightCount, size_t sp
     shadowmapShader->SetVariable ("ACTIVE_POINT_LIGHTS", std::to_string (pointLightCount));
     shadowmapShader->Compile ();
 
-    auto shadowmapShaderProg = m_shaderPrograms->GetByName<GLShaderProgram> ("shadowmap_point_shader");
+    auto shadowmapShaderProg = m_shaderPrograms->GetByName<GLShaderProgram> (ShaderProgramNames::ShadowMapPoint);
     shadowmapShaderProg->Link ();
     shadowmapShaderProg->BindUniformBlock ("UniformPointLightViewMatricesBlock", EGlUBOType::UBO_POINTLIGHTVIEWMATRICES);
     shadowmapShaderProg->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
@@ -223,16 +224,16 @@ void GLShaderLibrary::OnDirectionalLightAdded (size_t directionalLightCount, siz
     shadowmapShader->SetVariable ("ACTIVE_DIRECTIONAL_LIGHTS", std::to_string (directionalLightCount));
     shadowmapShader->Compile ();
 
-    auto shadowmapShaderProg = m_shaderPrograms->GetByName<GLShaderProgram> ("shadowmap_directional_shader");
+    auto shadowmapShaderProg = m_shaderPrograms->GetByName<GLShaderProgram> (ShaderProgramNames::ShadowMapDirectional);
     shadowmapShaderProg->Link ();
     shadowmapShaderProg->BindUniformBlock ("UniformDirectionalLightViewMatricesBlock", EGlUBOType::UBO_DIRECTIONALLIGHTVIEWMATRICES);
     shadowmapShaderProg->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
 
     // set offset in shadow map texture array (zero for directional lights)
     shadowmapShaderProg->SetUniformInt ("textureArrayOffset", 0);
-    shadowmapShaderProg = m_shaderPrograms->GetByName<GLShaderProgram> ("shadowmap_spot_shader");
+    shadowmapShaderProg = m_shaderPrograms->GetByName<GLShaderProgram> (ShaderProgramNames::ShadowMapSpot);
     shadowmapShaderProg->SetUniformInt ("textureArrayOffset", static_cast<int>(directionalLightCount));
-    shadowmapShaderProg = m_shaderPrograms->GetByName<GLShaderProgram> ("shadowmap_point_shader");
+    shadowmapShaderProg = m_shaderPrograms->GetByName<GLShaderProgram> (ShaderProgramNames::ShadowMapPoint);
     shadowmapShaderProg->SetUniformInt ("textureArrayOffset", static_cast<int>(directionalLightCount + spotLightCount));
 }
 
@@ -243,14 +244,14 @@ void GLShaderLibrary::OnSpotLightAdded (size_t directionalLightCount, size_t spo
     shadowmapShader->SetVariable ("ACTIVE_SPOT_LIGHTS", std::to_string (spotLightCount));
     shadowmapShader->Compile ();
 
-    auto shadowmapShaderProg = m_shaderPrograms->GetByName<GLShaderProgram> ("shadowmap_spot_shader");
+    auto shadowmapShaderProg = m_shaderPrograms->GetByName<GLShaderProgram> (ShaderProgramNames::ShadowMapSpot);
     shadowmapShaderProg->Link ();
     shadowmapShaderProg->BindUniformBlock ("UniformSpotLightViewMatricesBlock", EGlUBOType::UBO_SPOTLIGHTVIEWMATRICES);
     shadowmapShaderProg->BindUniformBlock ("UniformBoneTransformationsBlock", EGlUBOType::UBO_BONETRANSFORMATIONS);
 
     // set offset in shadow map texture array (directional light count for spot lights)
     shadowmapShaderProg->SetUniformInt ("textureArrayOffset", static_cast<int>(directionalLightCount));
-    shadowmapShaderProg = m_shaderPrograms->GetByName<GLShaderProgram> ("shadowmap_point_shader");
+    shadowmapShaderProg = m_shaderPrograms->GetByName<GLShaderProgram> (ShaderProgramNames::ShadowMapPoint);
     shadowmapShaderProg->SetUniformInt ("textureArrayOffset", static_cast<int>(directionalLightCount + spotLightCount));
 }
 
@@ -307,7 +308,7 @@ void GLShaderLibrary::CreatePrograms ()
     if (glslVersion >= 430)
     {
         // AABB compute shader
-        auto p = m_shaderPrograms->Create<GLShaderProgram> ("aabb_compute_shader");
+        auto p = m_shaderPrograms->Create<GLShaderProgram> (ShaderProgramNames::AABBCompute);
         p->AttachShader (m_shaderResources->GetByName<GLShader> (aabbComputeShader.name));
         p->Link ();
         p->Use ();

@@ -1,4 +1,5 @@
 #include "graphics/GLRenderer.h"
+#include "graphics/ShaderProgramNames.h"
 #include "graphics/GLUtils.h"
 #include "graphics/GLShaderProgram.h"
 #include "graphics/GLShaderLibrary.h"
@@ -193,7 +194,7 @@ AABB GLRenderer::CalculateAABB (std::shared_ptr<MeshObject> meshObject)
     if (GLUtils::GetGLSLVersion ().versionNumber >= 430)
     {
         // calculate in GPU
-        return m_geometryStore->CalculateAABB (meshObject, m_shaderProgramManager->GetByName<GLShaderProgram> ("aabb_compute_shader"));
+        return m_geometryStore->CalculateAABB (meshObject, m_shaderProgramManager->GetByName<GLShaderProgram> (ShaderProgramNames::AABBCompute));
     }
     else
     {
