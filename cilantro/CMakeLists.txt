@@ -31,6 +31,7 @@ include/graphics/ForwardGeometryRenderStage.h
 include/graphics/Framebuffer.h
 include/graphics/GLCameraBuffer.h
 include/graphics/GLLightBuffers.h
+include/graphics/GLGeometryStore.h
 include/graphics/GLFramebuffer.h
 include/graphics/GLRenderer.h
 include/graphics/GLShader.h
@@ -113,6 +114,7 @@ src/graphics/ForwardGeometryRenderStage.cpp
 src/graphics/Framebuffer.cpp
 src/graphics/GLCameraBuffer.cpp
 src/graphics/GLLightBuffers.cpp
+src/graphics/GLGeometryStore.cpp
 src/graphics/GLFramebuffer.cpp
 src/graphics/GLRenderer.cpp
 src/graphics/GLShader.cpp

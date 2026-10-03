@@ -6,6 +6,7 @@
 #include "graphics/GLTypes.h"
 #include "graphics/GLCameraBuffer.h"
 #include "graphics/GLLightBuffers.h"
+#include "graphics/GLGeometryStore.h"
 #include "graphics/GLMaterialBindings.h"
 #include "graphics/GLShaderLibrary.h"
 #include "math/AABB.h"
@@ -16,7 +17,6 @@ class GameScene;
 class MeshObject;
 class Camera;
 
-typedef std::unordered_map <handle_t, SGlGeometryBuffers*> TObjectGeometryBufferMap;
 
 class __CEAPI GLRenderer : public Renderer
 {
@@ -79,35 +79,20 @@ public:
     ///////////////////////////////////////////////////////////////////////////
 
 private:
-    
-    
-
     void InitializeObjectBuffers ();
-    void DeinitializeObjectBuffers ();
 
-    void InitializeQuadGeometryBuffer ();
-    void DeinitializeQuadGeometryBuffer ();
-    
     void InitializeLightUniformBuffers ();
     void DeinitializeLightUniformBuffers ();
     void UpdateLightBufferRecursive (handle_t objectHandle);
 
-    void RenderGeometryBuffer (SGlGeometryBuffers* buffer, GLuint type); 
-
 private:
-    // buffers with geometry data to be passed to GPU (key is object handle)
-    TObjectGeometryBufferMap m_sceneGeometryBuffers;
-    TObjectGeometryBufferMap m_aabbGeometryBuffers;
-    SGlGeometryBuffers* m_surfaceGeometryBuffer;
+    std::unique_ptr<GLGeometryStore> m_geometryStore;
 
     // GL buffers and shaders shared by entire scene
     std::unique_ptr<GLCameraBuffer> m_cameraBuffer;
     std::unique_ptr<GLShaderLibrary> m_shaderLibrary;
     std::unique_ptr<GLLightBuffers> m_lightBuffers;
     std::unique_ptr<GLMaterialBindings> m_materialBindings;
-
-
-
 };
 
 } // namespace cilantro
