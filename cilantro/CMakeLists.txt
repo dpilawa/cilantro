@@ -37,6 +37,7 @@ include/graphics/GLShader.h
 include/graphics/GLShaderLibrary.h
 include/graphics/GLTypes.h
 include/graphics/GLShaderProgram.h
+include/graphics/GLMaterialBindings.h
 include/graphics/GLMultisampleFramebuffer.h
 include/graphics/GLUtils.h
 include/graphics/IFramebuffer.h
@@ -117,6 +118,7 @@ src/graphics/GLRenderer.cpp
 src/graphics/GLShader.cpp
 src/graphics/GLShaderLibrary.cpp
 src/graphics/GLShaderProgram.cpp
+src/graphics/GLMaterialBindings.cpp
 src/graphics/GLMultisampleFramebuffer.cpp
 src/graphics/GLUtils.cpp
 src/graphics/Renderer.cpp

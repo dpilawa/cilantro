@@ -6,6 +6,7 @@
 #include "graphics/GLTypes.h"
 #include "graphics/GLCameraBuffer.h"
 #include "graphics/GLLightBuffers.h"
+#include "graphics/GLMaterialBindings.h"
 #include "graphics/GLShaderLibrary.h"
 #include "math/AABB.h"
 
@@ -16,7 +17,6 @@ class MeshObject;
 class Camera;
 
 typedef std::unordered_map <handle_t, SGlGeometryBuffers*> TObjectGeometryBufferMap;
-typedef std::unordered_map <handle_t, SGlMaterialTextureUnits*> TMaterialTextureUnitsMap;
 
 class __CEAPI GLRenderer : public Renderer
 {
@@ -104,9 +104,8 @@ private:
     std::unique_ptr<GLCameraBuffer> m_cameraBuffer;
     std::unique_ptr<GLShaderLibrary> m_shaderLibrary;
     std::unique_ptr<GLLightBuffers> m_lightBuffers;
+    std::unique_ptr<GLMaterialBindings> m_materialBindings;
 
-    // materials texture units (key is material handle)
-    TMaterialTextureUnitsMap m_materialTextureUnits;
 
 
 };

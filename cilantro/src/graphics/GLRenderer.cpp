@@ -5,6 +5,7 @@
 #include "graphics/GLShaderLibrary.h"
 #include "graphics/GLCameraBuffer.h"
 #include "graphics/GLLightBuffers.h"
+#include "graphics/GLMaterialBindings.h"
 #include "graphics/GLFramebuffer.h"
 #include "graphics/GLMultisampleFramebuffer.h"
 #include "graphics/SurfaceRenderStage.h"
@@ -36,6 +37,7 @@ GLRenderer::GLRenderer (std::shared_ptr<GameScene> gameScene, unsigned int width
     m_surfaceGeometryBuffer = new SGlGeometryBuffers ();
     m_cameraBuffer = std::make_unique<GLCameraBuffer> ();
     m_lightBuffers = std::make_unique<GLLightBuffers> ();
+    m_materialBindings = std::make_unique<GLMaterialBindings> ();
 }
 
 GLRenderer::~GLRenderer ()
@@ -162,16 +164,8 @@ void GLRenderer::Draw (std::shared_ptr<MeshObject> meshObject)
     shaderProgramId = geometryShaderProgram->GetProgramId ();
 
     // bind textures for active material and bind a shadow map
-    if (m_materialTextureUnits.find(meshObject->GetMaterial ()->GetHandle ()) != m_materialTextureUnits.end ())
+    if (m_materialBindings->Bind (meshObject->GetMaterial ()))
     {
-        SGlMaterialTextureUnits* u = m_materialTextureUnits[meshObject->GetMaterial ()->GetHandle ()];
-
-        for (GLuint i = 0; i < u->unitsCount; i++)
-        {
-            glActiveTexture (GL_TEXTURE0 + i);
-            glBindTexture (GL_TEXTURE_2D, u->textureUnits[i]);
-        }
-
         // bind shadow maps (if exist)
         if (m_isShadowMapping && (GetCurrentRenderStage ()->GetLinkedDepthTextureArrayFramebuffer ()) != nullptr)
         {
@@ -580,75 +574,7 @@ AABB GLRenderer::CalculateAABB (std::shared_ptr<MeshObject> meshObject)
 
 void GLRenderer::Update (std::shared_ptr<Material> material, unsigned int textureUnit)
 {
-    handle_t materialHandle = material->GetHandle ();
-    GLuint texture;
-    GLuint format;
-
-    auto GLTextureFormat = [](unsigned int numChannels)
-    {
-        switch (numChannels)
-        {
-        case 1:
-            return GL_RED;
-            break;
-        case 3:
-            return GL_RGB;
-            break;
-        case 4:
-            return GL_RGBA;
-            break;
-        default:
-            return GL_RGB;
-        }
-    };
-
-    texture_map_t& textures = material->GetTexturesMap ();
-
-    // check if material already exists
-    auto find = m_materialTextureUnits.find (materialHandle);
-
-    if (find == m_materialTextureUnits.end ())
-    {
-        m_materialTextureUnits.insert ({ materialHandle, new SGlMaterialTextureUnits () });
-        
-        for (auto&& t : textures)
-        {
-            auto tPtr = t.second.second;
-            std::string tName = t.second.first;
-            GLuint unit = t.first;
-            format = GLTextureFormat (tPtr->GetChannels ());
-
-            glGenTextures (1, &texture);
-            glBindTexture (GL_TEXTURE_2D, texture);
-            glPixelStorei (GL_UNPACK_ALIGNMENT, 1);
-            glTexImage2D (GL_TEXTURE_2D, 0, format, tPtr->GetWidth (), tPtr->GetHeight (), 0, format, GL_UNSIGNED_BYTE, tPtr->Data ());
-            glGenerateMipmap (GL_TEXTURE_2D);
-            glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-            glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glBindTexture (GL_TEXTURE_2D, 0);
-            
-            m_materialTextureUnits[materialHandle]->textureUnits[unit] = texture;
-        }
-
-        m_materialTextureUnits[materialHandle]->unitsCount = (unsigned int) textures.size ();
-
-    }
-    else
-    {
-        auto& t = textures[textureUnit];
-        auto tPtr = t.second;
-        std::string tName = t.first;
-        GLuint unit = textureUnit;
-        format = GLTextureFormat (tPtr->GetChannels ());
-
-        glBindTexture (GL_TEXTURE_2D, m_materialTextureUnits[materialHandle]->textureUnits[unit]);
-        glPixelStorei (GL_UNPACK_ALIGNMENT, 1);
-        glTexImage2D (GL_TEXTURE_2D, 0, format, tPtr->GetWidth (), tPtr->GetHeight (), 0, format, GL_UNSIGNED_BYTE, tPtr->Data ());
-        glGenerateMipmap (GL_TEXTURE_2D);
-        glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glBindTexture (GL_TEXTURE_2D, 0);
-    }
+    m_materialBindings->Update (material, textureUnit);
 }
 
 void GLRenderer::Update (std::shared_ptr<Material> material)
