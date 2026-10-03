@@ -12,6 +12,7 @@ set(CILANTRO_GLES_VERSION_MINOR 2)
 option(CILANTRO_BUILD_DLL "Build as shared library" ON)
 option(CILANTRO_BUILD_GLES "Build for GLES target" OFF)
 option(CILANTRO_WITH_GLFW "Build with GLFW extensions" ON)
+option(CILANTRO_BUILD_UNIT_TESTS "Build unit tests (downloads GoogleTest)" ON)
 
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 option(INJECT_DEBUG_POSTFIX "Inject d postfix on libs" ON)
@@ -41,5 +42,10 @@ add_subdirectory (ext/assimp)
 add_subdirectory (cilantro)
 add_subdirectory (python)
 add_subdirectory (tests)
+
+if(CILANTRO_BUILD_UNIT_TESTS)
+    enable_testing()
+    add_subdirectory (tests/unit)
+endif()
 
 
