@@ -13,6 +13,20 @@ GLMaterialBindings::~GLMaterialBindings ()
 {
 }
 
+void GLMaterialBindings::Deinitialize ()
+{
+    for (auto&& material : m_materialTextureUnits)
+    {
+        for (GLuint i = 0; i < CILANTRO_MAX_TEXTURE_UNITS; i++)
+        {
+            // unused units hold zero and are ignored by GL
+            glDeleteTextures (1, &material.second.textureUnits[i]);
+        }
+    }
+
+    m_materialTextureUnits.clear ();
+}
+
 void GLMaterialBindings::Update (std::shared_ptr<Material> material, unsigned int textureUnit)
 {
     handle_t materialHandle = material->GetHandle ();

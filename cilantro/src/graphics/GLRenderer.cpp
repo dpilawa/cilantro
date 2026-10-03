@@ -114,6 +114,7 @@ void GLRenderer::Deinitialize ()
 
     m_geometryStore->Deinitialize ();
     m_cameraBuffer->Deinitialize ();
+    m_materialBindings->Deinitialize ();
     DeinitializeLightUniformBuffers ();
 }
 

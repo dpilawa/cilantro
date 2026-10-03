@@ -16,6 +16,9 @@ public:
     GLMaterialBindings ();
     virtual ~GLMaterialBindings ();
 
+    // delete GL textures of all materials
+    void Deinitialize ();
+
     // create GL textures of a new material or reload texture of an existing material from given texture unit
     void Update (std::shared_ptr<Material> material, unsigned int textureUnit);
 

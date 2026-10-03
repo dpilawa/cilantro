@@ -350,8 +350,10 @@ void GLGeometryStore::Initialize ()
 void GLGeometryStore::Deinitialize ()
 {
     // surface
-    glDeleteVertexArrays(1, &m_surfaceGeometryBuffer.VAO);
-    glDeleteBuffers(1, &m_surfaceGeometryBuffer.VBO[EGlVBOType::VBO_VERTICES]);
+    glDeleteVertexArrays (1, &m_surfaceGeometryBuffer.VAO);
+    glDeleteBuffers (CILANTRO_VBO_COUNT, m_surfaceGeometryBuffer.VBO);
+    glDeleteBuffers (1, &m_surfaceGeometryBuffer.EBO);
+    m_surfaceGeometryBuffer = SGlGeometryBuffers ();
 
     // scene objects
     for (auto&& buffer : m_sceneGeometryBuffers)
@@ -370,6 +372,18 @@ void GLGeometryStore::Deinitialize ()
         glDeleteBuffers (1, &buffer.second.EBO);
         glDeleteVertexArrays (1, &buffer.second.VAO);
     }
+
+    m_sceneGeometryBuffers.clear ();
+
+    // AABB wireframes
+    for (auto&& buffer : m_aabbGeometryBuffers)
+    {
+        glDeleteBuffers (CILANTRO_VBO_COUNT, buffer.second.VBO);
+        glDeleteBuffers (1, &buffer.second.EBO);
+        glDeleteVertexArrays (1, &buffer.second.VAO);
+    }
+
+    m_aabbGeometryBuffers.clear ();
 }
 
 void GLGeometryStore::Draw (std::shared_ptr<MeshObject> meshObject)
