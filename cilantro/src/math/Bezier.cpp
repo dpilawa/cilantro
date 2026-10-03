@@ -60,7 +60,7 @@ T Bezier<T,d>::GetCurveTangent (float t) const
     point = std::pow (1.0f - t, static_cast<float>(degree - 1)) * (points[1] - points[0]) + std::pow (t, static_cast<float>(degree - 1)) * (points[degree] - points[degree - 1]);
     for (unsigned int i = 1; i <= degree - 2; i++)
     {
-        point += Mathf::Binomial (degree - 1, i) * std::pow (1.0f - t, static_cast<float>(degree - i)) * std::pow (t, static_cast<float>(i)) * (points[i + 1] - points[i]);
+        point += Mathf::Binomial (degree - 1, i) * std::pow (1.0f - t, static_cast<float>(degree - 1 - i)) * std::pow (t, static_cast<float>(i)) * (points[i + 1] - points[i]);
     }
     point *= static_cast<float>(degree);
 

@@ -103,10 +103,7 @@ TEST (Bezier, CubicTangentAtEndsIsThreeTimesFirstAndLastEdge)
     EXPECT_VEC3_NEAR (curve.GetCurveTangent (1.0f), 3.0f * (kCubicPoints[3] - kCubicPoints[2]));
 }
 
-// Known defect: in GetCurveTangent the middle terms use (1 - t)^(degree - i) where the derivative
-// basis of degree n - 1 needs (1 - t)^(degree - 1 - i). For cubic curves the tangent is therefore wrong
-// between the end points. Enable once fixed.
-TEST (Bezier, DISABLED_CubicTangentMatchesNumericalDerivative)
+TEST (Bezier, CubicTangentMatchesNumericalDerivative)
 {
     Bezier<Vector3f, 3> curve (kCubicPoints);
 
