@@ -6,6 +6,18 @@
 
 namespace cilantro {
 
+// parameters of a framebuffer created by renderer
+struct SFramebufferSpec
+{
+    unsigned int width = 0;
+    unsigned int height = 0;
+    unsigned int rgbTextureCount = 0;
+    unsigned int rgbaTextureCount = 0;
+    unsigned int depthTextureArrayLayerCount = 0;
+    bool depthStencilRenderbufferEnabled = false;
+    bool multisampleEnabled = false;
+};
+
 struct IFramebuffer 
 {
     virtual ~IFramebuffer () {};

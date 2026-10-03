@@ -2,6 +2,7 @@
 
 #include "cilantroengine.h"
 #include "resource/ResourceManager.h"
+#include "graphics/IFramebuffer.h"
 #include <set>
 #include <vector>
 
@@ -88,7 +89,7 @@ struct IRenderer
     virtual bool IsShadowMapping () const = 0;
 
     // framebuffer control
-    virtual std::shared_ptr<IFramebuffer> CreateFramebuffer (unsigned int width, unsigned int height, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayTextureCount, bool depthStencilRenderbufferEnabled, bool multisampleEnabled) = 0;
+    virtual std::shared_ptr<IFramebuffer> CreateFramebuffer (const SFramebufferSpec& spec) = 0;
     virtual void BindDefaultFramebuffer () = 0;
     virtual void BindDefaultDepthBuffer () = 0;
     virtual void BindDefaultStencilBuffer () = 0;

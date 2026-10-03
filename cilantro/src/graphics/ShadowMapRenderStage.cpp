@@ -42,7 +42,7 @@ void ShadowMapRenderStage::InitializeFramebuffer ()
 
         if (layerCount > 0)
         {
-            m_framebuffer = GetRenderer ()->CreateFramebuffer (CILANTRO_SHADOW_MAP_SIZE, CILANTRO_SHADOW_MAP_SIZE, 0, 0, (unsigned int) layerCount, false, m_isMultisampleEnabled);
+            m_framebuffer = GetRenderer ()->CreateFramebuffer ({ .width = CILANTRO_SHADOW_MAP_SIZE, .height = CILANTRO_SHADOW_MAP_SIZE, .depthTextureArrayLayerCount = (unsigned int) layerCount, .multisampleEnabled = m_isMultisampleEnabled });
         }
     }
 }

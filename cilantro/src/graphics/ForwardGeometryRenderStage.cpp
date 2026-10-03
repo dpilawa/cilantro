@@ -29,7 +29,7 @@ void ForwardGeometryRenderStage::InitializeFramebuffer ()
 {
     if (m_isFramebufferEnabled)
     {
-        m_framebuffer = GetRenderer ()->CreateFramebuffer (GetRenderer ()->GetWidth (), GetRenderer ()->GetHeight (), 0, 1, 0, true, m_isMultisampleEnabled);
+        m_framebuffer = GetRenderer ()->CreateFramebuffer ({ .width = GetRenderer ()->GetWidth (), .height = GetRenderer ()->GetHeight (), .rgbaTextureCount = 1, .depthStencilRenderbufferEnabled = true, .multisampleEnabled = m_isMultisampleEnabled });
     }
 }
 

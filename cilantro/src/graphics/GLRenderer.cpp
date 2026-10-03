@@ -260,11 +260,11 @@ size_t GLRenderer::GetSpotLightCount () const
     return m_lightBuffers->GetSpotLightCount ();
 }
 
-std::shared_ptr<IFramebuffer> GLRenderer::CreateFramebuffer (unsigned int width, unsigned int height, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayTextureCount, bool depthStencilRenderbufferEnabled, bool multisampleEnabled)
+std::shared_ptr<IFramebuffer> GLRenderer::CreateFramebuffer (const SFramebufferSpec& spec)
 {
     std::shared_ptr<IFramebuffer> framebuffer;
 
-    if (multisampleEnabled)
+    if (spec.multisampleEnabled)
     {
         if (GLUtils::GetGLSLVersion ().versionNumber <= 150)
         {
@@ -272,12 +272,12 @@ std::shared_ptr<IFramebuffer> GLRenderer::CreateFramebuffer (unsigned int width,
         }
         else 
         {
-            framebuffer = std::make_shared<GLMultisampleFramebuffer> (width, height, rgbTextureCount, rgbaTextureCount, depthBufferArrayTextureCount, depthStencilRenderbufferEnabled);
+            framebuffer = std::make_shared<GLMultisampleFramebuffer> (spec.width, spec.height, spec.rgbTextureCount, spec.rgbaTextureCount, spec.depthTextureArrayLayerCount, spec.depthStencilRenderbufferEnabled);
         }
     }
     else
     {
-        framebuffer = std::make_shared<GLFramebuffer> (width, height, rgbTextureCount, rgbaTextureCount, depthBufferArrayTextureCount, depthStencilRenderbufferEnabled);
+        framebuffer = std::make_shared<GLFramebuffer> (spec.width, spec.height, spec.rgbTextureCount, spec.rgbaTextureCount, spec.depthTextureArrayLayerCount, spec.depthStencilRenderbufferEnabled);
     }
     
     framebuffer->Initialize ();
