@@ -1,7 +1,5 @@
 #include "graphics/AABBRenderStage.h"
 #include "graphics/IFramebuffer.h"
-#include "graphics/GLShader.h"
-#include "graphics/GLShaderProgram.h"
 #include "scene/GameScene.h"
 #include "system/Game.h"
 
