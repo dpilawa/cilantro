@@ -77,7 +77,6 @@ public:
     ///////////////////////////////////////////////////////////////////////////
 
 private:
-    void InitializeShaderLibrary ();
     
     void InitializeMatrixUniformBuffers ();
     void LoadMatrixUniformBuffers (std::shared_ptr<Camera> camera);
