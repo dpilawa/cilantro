@@ -31,7 +31,6 @@ public:
     
     __EAPI virtual std::shared_ptr<IRenderer> SetViewport (unsigned int x, unsigned int y, unsigned int sx, unsigned int sy) override;
     
-    __EAPI virtual void RenderFrame () override;
     
     __EAPI virtual void Draw (std::shared_ptr<MeshObject> meshObject) override;
     __EAPI virtual void DrawSurface () override;
@@ -43,7 +42,6 @@ public:
     __EAPI virtual AABB CalculateAABB (std::shared_ptr<MeshObject> meshObject) override;
 
     __EAPI virtual void Update (std::shared_ptr<Material> material, unsigned int textureUnit) override;
-    __EAPI virtual void Update (std::shared_ptr<Material> material) override;
     
     __EAPI virtual void Update (std::shared_ptr<PointLight> pointLight) override;
     __EAPI virtual void Update (std::shared_ptr<DirectionalLight> directionalLight) override;    
@@ -83,7 +81,6 @@ private:
 
     void InitializeLightUniformBuffers ();
     void DeinitializeLightUniformBuffers ();
-    void UpdateLightBufferRecursive (handle_t objectHandle);
 
 private:
     std::unique_ptr<GLGeometryStore> m_geometryStore;

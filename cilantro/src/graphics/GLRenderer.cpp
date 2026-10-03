@@ -59,53 +59,7 @@ void GLRenderer::Initialize ()
     m_cameraBuffer->Initialize ();
     InitializeLightUniformBuffers ();
 
-    // set callback for new MeshObjects
-    GetGameScene ()->GetGame ()->GetMessageBus ()->Subscribe<MeshObjectUpdateMessage> (
-        [&](const std::shared_ptr<MeshObjectUpdateMessage>& message) 
-        { 
-            Update (GetGameScene ()->GetGameObjectManager ()->GetByHandle<MeshObject> (message->GetHandle ()));
-            UpdateAABBBuffers (GetGameScene ()->GetGameObjectManager ()->GetByHandle<MeshObject> (message->GetHandle ()));
-        }
-    );
-
-    // set callback for new or modified materials
-    GetGameScene ()->GetGame ()->GetMessageBus ()->Subscribe<MaterialTextureUpdateMessage> (
-        [&](const std::shared_ptr<MaterialTextureUpdateMessage>& message) 
-        { 
-            Update (GetGameScene ()->GetMaterialManager ()->GetByHandle<Material> (message->GetHandle ()), message->GetTextureUnit ());
-        }
-    );
-    GetGameScene ()->GetGame ()->GetMessageBus ()->Subscribe<MaterialUpdateMessage> (
-        [&](const std::shared_ptr<MaterialUpdateMessage>& message) 
-        { 
-            Update (GetGameScene ()->GetMaterialManager ()->GetByHandle<Material> (message->GetHandle ()));
-        }
-    );
-    
-    // set callback for new or modified lights
-    GetGameScene ()->GetGame ()->GetMessageBus ()->Subscribe<LightUpdateMessage> (
-        [&](const std::shared_ptr<LightUpdateMessage>& message) 
-        { 
-            GetGameScene ()->GetGameObjectManager ()->GetByHandle<GameObject> (message->GetHandle ())->OnUpdate (*this); 
-        }
-    );
-
-    // set callback for modified scene graph (currently this only requires to reload light buffers)
-    GetGameScene ()->GetGame ()->GetMessageBus ()->Subscribe<SceneGraphUpdateMessage> (
-        [&](const std::shared_ptr<SceneGraphUpdateMessage>& message) 
-        { 
-            UpdateLightBufferRecursive (message->GetHandle ());
-        }
-    );
-
-    // set callback for modified transforms (reload light buffers, reload AABB geometry buffers)
-    GetGameScene ()->GetGame ()->GetMessageBus ()->Subscribe<TransformUpdateMessage> (
-        [&](const std::shared_ptr<TransformUpdateMessage>& message) 
-        { 
-            m_invalidatedObjects.insert (message->GetHandle ());
-        }
-    );
-    
+    SubscribeToSceneMessages ();
 }
 
 void GLRenderer::Deinitialize ()
@@ -123,23 +77,6 @@ std::shared_ptr<IRenderer> GLRenderer::SetViewport (unsigned int x, unsigned int
     glViewport (x, y, sx, sy);
 
     return std::dynamic_pointer_cast<IRenderer> (shared_from_this ());
-}
-
-void GLRenderer::RenderFrame ()
-{
-    for (auto handle : m_invalidatedObjects)
-    {
-        // lights
-        UpdateLightBufferRecursive (handle);
-
-        // AABBs
-        if (std::dynamic_pointer_cast<MeshObject> (GetGameScene ()->GetGameObjectManager ()->GetByHandle<GameObject> (handle)) != nullptr)
-        {
-            UpdateAABBBuffers (GetGameScene ()->GetGameObjectManager ()->GetByHandle<MeshObject> (handle));
-        }
-    }
-
-    Renderer::RenderFrame ();
 }
 
 void GLRenderer::Draw (std::shared_ptr<MeshObject> meshObject)
@@ -277,65 +214,6 @@ AABB GLRenderer::CalculateAABB (std::shared_ptr<MeshObject> meshObject)
 void GLRenderer::Update (std::shared_ptr<Material> material, unsigned int textureUnit)
 {
     m_materialBindings->Update (material, textureUnit);
-}
-
-void GLRenderer::Update (std::shared_ptr<Material> material)
-{
-    handle_t shaderProgramHandle = m_shaderProgramManager->GetByName<ShaderProgram>(material->GetDeferredLightingPassShaderProgram ())->GetHandle ();
-    std::string shaderProgramName = material->GetDeferredLightingPassShaderProgram ();
-
-    if (m_isDeferredRendering)
-    {
-        // add material's shader program to set of used shader programs handles
-        // add lighting deferred pass renderStages for each program
-        if (m_lightingShaders.find (shaderProgramHandle) == m_lightingShaders.end ())
-        {
-            // first rotate the pipeline to the left so that geometry stage is last
-            RotateRenderPipelineLeft ();
-            if (m_isShadowMapping)
-            {
-                RotateRenderPipelineLeft ();
-            }
-
-            // create and append new lighting stage
-            m_lightingShaderStagesCount++;
-            m_lightingShaders.insert (shaderProgramHandle);
-            auto q = Create <DeferredLightingRenderStage> ("deferred_lighting_" + shaderProgramName);
-            q->SetShaderProgram (shaderProgramName);
-            q->SetStencilTestEnabled (true)->SetStencilTest (EStencilTestFunction::FUNCTION_EQUAL, static_cast<int> (shaderProgramHandle));
-            q->SetClearColorOnFrameEnabled (true);
-            q->SetClearDepthOnFrameEnabled (false);
-            q->SetClearStencilOnFrameEnabled (false);
-            q->SetDepthTestEnabled (false);
-            q->SetColorAttachmentsFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_SECOND : EPipelineLink::LINK_FIRST);
-            q->SetDepthStencilFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_SECOND : EPipelineLink::LINK_FIRST);
-            q->SetDepthTextureArrayFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_FIRST : EPipelineLink::LINK_CURRENT);
-            q->SetDepthCubeMapArrayFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_FIRST : EPipelineLink::LINK_CURRENT);
-            q->SetDrawFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_THIRD : EPipelineLink::LINK_SECOND);
-            q->SetFramebufferEnabled (true);
-
-            q->Initialize ();
-
-            // rotate pipeline to the right, so that ultimately geometry stage is first and newly added stage is second
-            RotateRenderPipelineRight ();
-            RotateRenderPipelineRight ();
-            if (m_isShadowMapping)
-            {
-                RotateRenderPipelineRight ();
-            }
-            
-            // update flags of other deferred lighting stages (if present)
-            if (m_lightingShaderStagesCount > 1)
-            {
-                handle_t stageHandle = GetRenderPipeline ()[2 + (m_isShadowMapping ? 1 : 0)];
-
-                auto stage = m_renderStageManager->GetByHandle<DeferredLightingRenderStage> (stageHandle);
-                stage->SetClearColorOnFrameEnabled (false);
-                stage->SetFramebufferEnabled (false);
-            }
-
-        }
-    }
 }
 
 void GLRenderer::Update (std::shared_ptr<PointLight> pointLight)
@@ -622,22 +500,6 @@ void GLRenderer::InitializeLightUniformBuffers ()
 void GLRenderer::DeinitializeLightUniformBuffers ()
 {
     m_lightBuffers->Deinitialize ();
-}
-
-void GLRenderer::UpdateLightBufferRecursive (handle_t objectHandle)
-{
-    auto light = GetGameScene ()->GetGameObjectManager ()->GetByHandle<GameObject> (objectHandle);
-
-    if (std::dynamic_pointer_cast<Light>(light) != nullptr)
-    {
-        light->OnUpdate (*this);
-    }
-
-    for (auto&& childObject : light->GetChildren ())
-    {
-        UpdateLightBufferRecursive (childObject.lock ()->GetHandle ());
-    }
-
 }
 
 } // namespace cilantro
