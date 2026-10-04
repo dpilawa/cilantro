@@ -168,3 +168,295 @@ TEST (MessageBus, SubscriberMaySubscribeToAnotherMessageWhileHandling)
 
     EXPECT_EQ (pongs, 1);
 }
+
+// ---------------------------------------------------------------------------
+// Subscription handles
+// ---------------------------------------------------------------------------
+
+TEST (MessageBusSubscription, DefaultHandleIsInactiveAndHarmless)
+{
+    MessageBus::Subscription subscription;
+
+    EXPECT_FALSE (subscription.IsActive ());
+    EXPECT_NO_THROW (subscription.Unsubscribe ());
+}
+
+TEST (MessageBusSubscription, HandleIsActiveWhileSubscribed)
+{
+    MessageBus bus;
+
+    auto subscription = bus.Subscribe<PingMessage> ([](const std::shared_ptr<PingMessage>&) {});
+
+    EXPECT_TRUE (subscription.IsActive ());
+}
+
+TEST (MessageBusSubscription, ExplicitUnsubscribeStopsDelivery)
+{
+    MessageBus bus;
+    int calls = 0;
+
+    auto subscription = bus.Subscribe<PingMessage> ([&](const std::shared_ptr<PingMessage>&) { calls++; });
+    subscription.Unsubscribe ();
+
+    bus.Publish<PingMessage> (std::make_shared<PingMessage> ());
+
+    EXPECT_EQ (calls, 0);
+    EXPECT_FALSE (subscription.IsActive ());
+}
+
+TEST (MessageBusSubscription, UnsubscribingTwiceIsHarmless)
+{
+    MessageBus bus;
+    auto subscription = bus.Subscribe<PingMessage> ([](const std::shared_ptr<PingMessage>&) {});
+
+    subscription.Unsubscribe ();
+
+    EXPECT_NO_THROW (subscription.Unsubscribe ());
+}
+
+TEST (MessageBusSubscription, UnsubscribingOneKeepsOtherSubscribers)
+{
+    MessageBus bus;
+    int first = 0;
+    int second = 0;
+
+    auto a = bus.Subscribe<PingMessage> ([&](const std::shared_ptr<PingMessage>&) { first++; });
+    auto b = bus.Subscribe<PingMessage> ([&](const std::shared_ptr<PingMessage>&) { second++; });
+    a.Unsubscribe ();
+
+    bus.Publish<PingMessage> (std::make_shared<PingMessage> ());
+
+    EXPECT_EQ (first, 0);
+    EXPECT_EQ (second, 1);
+}
+
+TEST (MessageBusSubscription, HandleMayOutliveTheBus)
+{
+    MessageBus::Subscription subscription;
+
+    {
+        MessageBus bus;
+        subscription = bus.Subscribe<PingMessage> ([](const std::shared_ptr<PingMessage>&) {});
+    }
+
+    EXPECT_NO_THROW (subscription.Unsubscribe ());
+    EXPECT_FALSE (subscription.IsActive ());
+}
+
+TEST (MessageBusSubscription, SubscribingToSameTypeWhilePublishingIsSafe)
+{
+    MessageBus bus;
+    int outer = 0;
+    int inner = 0;
+    std::vector<MessageBus::Subscription> keep;
+
+    keep.push_back (bus.Subscribe<PingMessage> ([&](const std::shared_ptr<PingMessage>&)
+    {
+        outer++;
+        if (outer == 1)
+        {
+            keep.push_back (bus.Subscribe<PingMessage> ([&](const std::shared_ptr<PingMessage>&) { inner++; }));
+        }
+    }));
+
+    bus.Publish<PingMessage> (std::make_shared<PingMessage> ());
+
+    // the new callback does not see the message that was being published
+    EXPECT_EQ (outer, 1);
+    EXPECT_EQ (inner, 0);
+
+    bus.Publish<PingMessage> (std::make_shared<PingMessage> ());
+
+    EXPECT_EQ (outer, 2);
+    EXPECT_EQ (inner, 1);
+}
+
+TEST (MessageBusSubscription, UnsubscribingAnotherSubscriberWhilePublishingSkipsIt)
+{
+    MessageBus bus;
+    int second = 0;
+    MessageBus::Subscription secondSubscription;
+
+    auto first = bus.Subscribe<PingMessage> ([&](const std::shared_ptr<PingMessage>&) { secondSubscription.Unsubscribe (); });
+    secondSubscription = bus.Subscribe<PingMessage> ([&](const std::shared_ptr<PingMessage>&) { second++; });
+
+    bus.Publish<PingMessage> (std::make_shared<PingMessage> ());
+
+    EXPECT_EQ (second, 0);
+}
+
+TEST (MessageBusSubscription, SubscriberMayUnsubscribeItselfWhileHandling)
+{
+    MessageBus bus;
+    int calls = 0;
+    MessageBus::Subscription subscription;
+
+    subscription = bus.Subscribe<PingMessage> ([&](const std::shared_ptr<PingMessage>&)
+    {
+        calls++;
+        subscription.Unsubscribe ();
+    });
+
+    bus.Publish<PingMessage> (std::make_shared<PingMessage> ());
+    bus.Publish<PingMessage> (std::make_shared<PingMessage> ());
+
+    EXPECT_EQ (calls, 1);
+}
+
+TEST (MessageBusSubscription, IgnoredHandleKeepsCallbackSubscribed)
+{
+    // the plain handle does not own the subscription, ignoring it (as engine code does) keeps the callback alive
+    MessageBus bus;
+    int calls = 0;
+
+    bus.Subscribe<PingMessage> ([&](const std::shared_ptr<PingMessage>&) { calls++; });
+    bus.Publish<PingMessage> (std::make_shared<PingMessage> ());
+    bus.Publish<PingMessage> (std::make_shared<PingMessage> ());
+
+    EXPECT_EQ (calls, 2);
+}
+
+TEST (MessageBusSubscription, CopiedHandlesControlTheSameSubscription)
+{
+    MessageBus bus;
+    int calls = 0;
+
+    auto handle = bus.Subscribe<PingMessage> ([&](const std::shared_ptr<PingMessage>&) { calls++; });
+    auto copy = handle;
+    copy.Unsubscribe ();
+
+    bus.Publish<PingMessage> (std::make_shared<PingMessage> ());
+
+    EXPECT_EQ (calls, 0);
+    EXPECT_FALSE (handle.IsActive ());
+}
+
+// ---------------------------------------------------------------------------
+// Scoped subscriptions
+// ---------------------------------------------------------------------------
+
+TEST (MessageBusScopedSubscription, DefaultIsInactiveAndHarmless)
+{
+    MessageBus::ScopedSubscription scoped;
+
+    EXPECT_FALSE (scoped.IsActive ());
+    EXPECT_NO_THROW (scoped.Unsubscribe ());
+}
+
+TEST (MessageBusScopedSubscription, DestructionUnsubscribes)
+{
+    MessageBus bus;
+    int calls = 0;
+
+    {
+        MessageBus::ScopedSubscription scoped = bus.Subscribe<PingMessage> ([&](const std::shared_ptr<PingMessage>&) { calls++; });
+        EXPECT_TRUE (scoped.IsActive ());
+
+        bus.Publish<PingMessage> (std::make_shared<PingMessage> ());
+        EXPECT_EQ (calls, 1);
+    }
+
+    bus.Publish<PingMessage> (std::make_shared<PingMessage> ());
+    EXPECT_EQ (calls, 1);
+}
+
+TEST (MessageBusScopedSubscription, MovingTransfersOwnership)
+{
+    MessageBus bus;
+    int calls = 0;
+
+    MessageBus::ScopedSubscription original = bus.Subscribe<PingMessage> ([&](const std::shared_ptr<PingMessage>&) { calls++; });
+    MessageBus::ScopedSubscription moved = std::move (original);
+
+    EXPECT_FALSE (original.IsActive ());
+    EXPECT_TRUE (moved.IsActive ());
+
+    // destroying the moved-from object must not cancel the subscription
+    original.Unsubscribe ();
+    bus.Publish<PingMessage> (std::make_shared<PingMessage> ());
+    EXPECT_EQ (calls, 1);
+}
+
+TEST (MessageBusScopedSubscription, MovedFromDestructionKeepsSubscription)
+{
+    MessageBus bus;
+    int calls = 0;
+    MessageBus::ScopedSubscription owner;
+
+    {
+        MessageBus::ScopedSubscription temporary = bus.Subscribe<PingMessage> ([&](const std::shared_ptr<PingMessage>&) { calls++; });
+        owner = std::move (temporary);
+    }
+
+    bus.Publish<PingMessage> (std::make_shared<PingMessage> ());
+    EXPECT_EQ (calls, 1);
+}
+
+TEST (MessageBusScopedSubscription, AssigningUnsubscribesPreviousCallback)
+{
+    // this is what a stage does when it is initialized twice: only the latest callback may stay
+    MessageBus bus;
+    int oldCalls = 0;
+    int newCalls = 0;
+
+    MessageBus::ScopedSubscription scoped;
+    scoped = bus.Subscribe<PingMessage> ([&](const std::shared_ptr<PingMessage>&) { oldCalls++; });
+    scoped = bus.Subscribe<PingMessage> ([&](const std::shared_ptr<PingMessage>&) { newCalls++; });
+
+    bus.Publish<PingMessage> (std::make_shared<PingMessage> ());
+
+    EXPECT_EQ (oldCalls, 0);
+    EXPECT_EQ (newCalls, 1);
+}
+
+TEST (MessageBusScopedSubscription, MoveAssigningUnsubscribesPreviousCallback)
+{
+    MessageBus bus;
+    int oldCalls = 0;
+    int newCalls = 0;
+
+    MessageBus::ScopedSubscription target = bus.Subscribe<PingMessage> ([&](const std::shared_ptr<PingMessage>&) { oldCalls++; });
+    MessageBus::ScopedSubscription source = bus.Subscribe<PingMessage> ([&](const std::shared_ptr<PingMessage>&) { newCalls++; });
+    target = std::move (source);
+
+    bus.Publish<PingMessage> (std::make_shared<PingMessage> ());
+
+    EXPECT_EQ (oldCalls, 0);
+    EXPECT_EQ (newCalls, 1);
+}
+
+TEST (MessageBusScopedSubscription, MayOutliveTheBus)
+{
+    MessageBus::ScopedSubscription scoped;
+
+    {
+        MessageBus bus;
+        scoped = bus.Subscribe<PingMessage> ([](const std::shared_ptr<PingMessage>&) {});
+    }
+
+    EXPECT_FALSE (scoped.IsActive ());
+    EXPECT_NO_THROW (scoped.Unsubscribe ());
+}
+
+TEST (MessageBusScopedSubscription, OwnerDestroyedWhilePublisherKeepsPublishingIsSafe)
+{
+    // a callback capturing its owner must not be invoked after the owner is gone
+    MessageBus bus;
+    struct Owner
+    {
+        int calls = 0;
+        MessageBus::ScopedSubscription subscription;
+    };
+
+    auto owner = std::make_unique<Owner> ();
+    Owner* raw = owner.get ();
+    owner->subscription = bus.Subscribe<PingMessage> ([raw](const std::shared_ptr<PingMessage>&) { raw->calls++; });
+
+    bus.Publish<PingMessage> (std::make_shared<PingMessage> ());
+    EXPECT_EQ (owner->calls, 1);
+
+    owner.reset ();
+
+    // would write through a dangling pointer without the scoped subscription
+    EXPECT_NO_FATAL_FAILURE (bus.Publish<PingMessage> (std::make_shared<PingMessage> ()));
+}

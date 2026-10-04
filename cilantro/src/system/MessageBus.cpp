@@ -5,6 +5,7 @@ namespace cilantro
 {
 
 MessageBus::MessageBus ()
+    : m_registry (std::make_shared<Registry> ())
 {
     LogMessage () << "MessageBus started";
 }
