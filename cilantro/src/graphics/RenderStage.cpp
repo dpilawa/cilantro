@@ -360,35 +360,35 @@ bool RenderStage::IsClearStencilOnFrameEnabled () const
     return m_isClearStencilOnFrameEnabled;
 }
 
-std::shared_ptr<IRenderStage> RenderStage::SetColorAttachmentsFramebufferLink (EPipelineLink link)
+std::shared_ptr<IRenderStage> RenderStage::SetColorAttachmentsFramebufferLink (const PipelineLink& link)
 {
     m_colorAttachmentsFramebufferLink = link;
 
     return std::dynamic_pointer_cast<IRenderStage> (shared_from_this ());
 }
 
-std::shared_ptr<IRenderStage> RenderStage::SetDepthStencilFramebufferLink (EPipelineLink link)
+std::shared_ptr<IRenderStage> RenderStage::SetDepthStencilFramebufferLink (const PipelineLink& link)
 {
     m_depthStencilFramebufferLink = link;
 
     return std::dynamic_pointer_cast<IRenderStage> (shared_from_this ());
 }
 
-std::shared_ptr<IRenderStage> RenderStage::SetDepthTextureArrayFramebufferLink (EPipelineLink link)
+std::shared_ptr<IRenderStage> RenderStage::SetDepthTextureArrayFramebufferLink (const PipelineLink& link)
 {
     m_depthTextureArrayFramebufferLink = link;
 
     return std::dynamic_pointer_cast<IRenderStage> (shared_from_this ());
 }
 
-std::shared_ptr<IRenderStage> RenderStage::SetDepthCubeMapArrayFramebufferLink (EPipelineLink link)
+std::shared_ptr<IRenderStage> RenderStage::SetDepthCubeMapArrayFramebufferLink (const PipelineLink& link)
 {
     m_depthCubeMapArrayFramebufferLink = link;
 
     return std::dynamic_pointer_cast<IRenderStage> (shared_from_this ());
 }
 
-std::shared_ptr<IRenderStage> RenderStage::SetDrawFramebufferLink (EPipelineLink link)
+std::shared_ptr<IRenderStage> RenderStage::SetDrawFramebufferLink (const PipelineLink& link)
 {
     m_drawFramebufferLink = link;
 

@@ -49,6 +49,8 @@ include/graphics/IShaderProgram.h
 include/graphics/Renderer.h
 include/graphics/RenderStage.h
 include/graphics/Shader.h
+include/graphics/PipelineLink.h
+include/graphics/RenderStageNames.h
 include/graphics/ShaderProcessor.h
 include/graphics/ShaderProgramNames.h
 include/graphics/ShaderProgram.h

@@ -3,6 +3,7 @@
 #include "cilantroengine.h"
 #include "resource/ResourceManager.h"
 #include "graphics/IFramebuffer.h"
+#include "graphics/PipelineLink.h"
 #include <set>
 #include <vector>
 
@@ -23,7 +24,6 @@ class AABB;
 
 class Vector4f;
 
-enum class EPipelineLink { LINK_FIRST, LINK_SECOND, LINK_THIRD, LINK_PREVIOUS, LINK_PREVIOUS_MINUS_1, LINK_CURRENT, LINK_LAST };
 enum class EDepthTestFunction { FUNCTION_NEVER, FUNCTION_LESS, FUNCTION_LEQUAL, FUNCTION_GREATER, FUNCTION_GEQUAL, FUNCTION_EQUAL, FUNCTION_NOTEQUAL, FUNCTION_ALWAYS };
 enum class EStencilTestFunction { FUNCTION_NEVER, FUNCTION_LESS, FUNCTION_LEQUAL, FUNCTION_GREATER, FUNCTION_GEQUAL, FUNCTION_EQUAL, FUNCTION_NOTEQUAL, FUNCTION_ALWAYS };
 enum class EStencilTestOperation { OP_KEEP, OP_ZERO, OP_REPLACE, OP_INC, OP_INC_WRAP, OP_DEC, OP_DEC_WRAP, OP_INV };
@@ -58,7 +58,7 @@ struct IRenderer
     // render pipeline
     virtual std::shared_ptr<TRenderStageManager> GetRenderStageManager () = 0;
     
-    virtual std::shared_ptr<IFramebuffer> GetPipelineFramebuffer (EPipelineLink link) = 0;    
+    virtual std::shared_ptr<IFramebuffer> GetPipelineFramebuffer (const PipelineLink& link) = 0;    
     
     // render current frame
     virtual void RenderFrame () = 0;
