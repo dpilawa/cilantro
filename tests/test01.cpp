@@ -15,6 +15,7 @@
 #include "resource/Texture.h"
 #include "graphics/AABBRenderStage.h"
 #include "graphics/SurfaceRenderStage.h"
+#include "graphics/RenderStageNames.h"
 #include "graphics/GLFWRenderer.h"
 #include "input/GLFWInputController.h"
 #include "math/Mathf.h"
@@ -42,17 +43,17 @@ int main (int argc, char* argv [])
     auto inputController = game->Create<GLFWInputController> ();
     
 /*     renderer->Create<AABBRenderStage> ("aabb")
-        ->SetDepthStencilFramebufferLink (EPipelineLink::LINK_SECOND)
+        ->SetDepthStencilFramebufferLink (RenderStageNames::DeferredGeometry)
         ->SetClearColorOnFrameEnabled (false)
         ->SetClearDepthOnFrameEnabled (false)
-        ->SetDrawFramebufferLink (EPipelineLink::LINK_THIRD)
+        ->SetDrawFramebufferLink (RenderStageNames::DeferredLighting)
         ->SetDepthTestEnabled (true)
         ->SetDepthTest (EDepthTestFunction::FUNCTION_LEQUAL)
         ->SetFramebufferEnabled (false); */
     
     renderer->Create<SurfaceRenderStage> ("hdr_postprocess")
         ->SetShaderProgram ("post_hdr_shader")
-        ->SetColorAttachmentsFramebufferLink (deferredRenderingEnabled ? (shadowMappingEnabled ? EPipelineLink::LINK_THIRD : EPipelineLink::LINK_SECOND) : EPipelineLink::LINK_PREVIOUS);
+        ->SetColorAttachmentsFramebufferLink (deferredRenderingEnabled ? PipelineLink (RenderStageNames::DeferredLighting) : PipelineLink (EPipelineLink::LINK_PREVIOUS));
 
     renderer->Create<SurfaceRenderStage> ("fxaa_postprocess")
         ->SetShaderProgram ("post_fxaa_shader")

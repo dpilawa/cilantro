@@ -53,11 +53,11 @@ public:
     __EAPI bool IsClearDepthOnFrameEnabled () const override final;
     __EAPI bool IsClearStencilOnFrameEnabled () const override final;
 
-    __EAPI virtual std::shared_ptr<IRenderStage> SetColorAttachmentsFramebufferLink (EPipelineLink link) override final;
-    __EAPI virtual std::shared_ptr<IRenderStage> SetDepthStencilFramebufferLink (EPipelineLink link) override final;
-    __EAPI virtual std::shared_ptr<IRenderStage> SetDepthTextureArrayFramebufferLink (EPipelineLink link) override final;
-    __EAPI virtual std::shared_ptr<IRenderStage> SetDepthCubeMapArrayFramebufferLink (EPipelineLink link) override final;
-    __EAPI virtual std::shared_ptr<IRenderStage> SetDrawFramebufferLink (EPipelineLink link) override final;
+    __EAPI virtual std::shared_ptr<IRenderStage> SetColorAttachmentsFramebufferLink (const PipelineLink& link) override final;
+    __EAPI virtual std::shared_ptr<IRenderStage> SetDepthStencilFramebufferLink (const PipelineLink& link) override final;
+    __EAPI virtual std::shared_ptr<IRenderStage> SetDepthTextureArrayFramebufferLink (const PipelineLink& link) override final;
+    __EAPI virtual std::shared_ptr<IRenderStage> SetDepthCubeMapArrayFramebufferLink (const PipelineLink& link) override final;
+    __EAPI virtual std::shared_ptr<IRenderStage> SetDrawFramebufferLink (const PipelineLink& link) override final;
 
     ///////////////////////////////////////////////////////////////////////////
 
@@ -87,11 +87,11 @@ protected:
 
     // these indicate which framebuffer and which render buffer should be current stage's input
     // and where to write to
-    EPipelineLink m_colorAttachmentsFramebufferLink;
-    EPipelineLink m_depthStencilFramebufferLink;
-    EPipelineLink m_depthTextureArrayFramebufferLink;
-    EPipelineLink m_depthCubeMapArrayFramebufferLink;
-    EPipelineLink m_drawFramebufferLink;
+    PipelineLink m_colorAttachmentsFramebufferLink;
+    PipelineLink m_depthStencilFramebufferLink;
+    PipelineLink m_depthTextureArrayFramebufferLink;
+    PipelineLink m_depthCubeMapArrayFramebufferLink;
+    PipelineLink m_drawFramebufferLink;
 
     // linked framebuffers
     std::shared_ptr<IFramebuffer> m_linkedColorAttachmentsFramebuffer;

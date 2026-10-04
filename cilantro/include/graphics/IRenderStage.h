@@ -51,11 +51,11 @@ struct IRenderStage
     virtual bool IsClearDepthOnFrameEnabled () const = 0;
     virtual bool IsClearStencilOnFrameEnabled () const = 0;
 
-    virtual std::shared_ptr<IRenderStage> SetColorAttachmentsFramebufferLink (EPipelineLink link) = 0;
-    virtual std::shared_ptr<IRenderStage> SetDepthStencilFramebufferLink (EPipelineLink link) = 0;
-    virtual std::shared_ptr<IRenderStage> SetDepthTextureArrayFramebufferLink (EPipelineLink link) = 0;
-    virtual std::shared_ptr<IRenderStage> SetDepthCubeMapArrayFramebufferLink (EPipelineLink link) = 0;
-    virtual std::shared_ptr<IRenderStage> SetDrawFramebufferLink (EPipelineLink link) = 0;
+    virtual std::shared_ptr<IRenderStage> SetColorAttachmentsFramebufferLink (const PipelineLink& link) = 0;
+    virtual std::shared_ptr<IRenderStage> SetDepthStencilFramebufferLink (const PipelineLink& link) = 0;
+    virtual std::shared_ptr<IRenderStage> SetDepthTextureArrayFramebufferLink (const PipelineLink& link) = 0;
+    virtual std::shared_ptr<IRenderStage> SetDepthCubeMapArrayFramebufferLink (const PipelineLink& link) = 0;
+    virtual std::shared_ptr<IRenderStage> SetDrawFramebufferLink (const PipelineLink& link) = 0;
 
 };
 

@@ -1,5 +1,6 @@
 #include "graphics/Renderer.h"
 #include "graphics/IRenderStage.h"
+#include "graphics/RenderStageNames.h"
 #include "graphics/ShadowMapRenderStage.h"
 #include "graphics/DeferredGeometryRenderStage.h"
 #include "graphics/ForwardGeometryRenderStage.h"
@@ -31,6 +32,7 @@ Renderer::Renderer (std::shared_ptr<GameScene> gameScene, unsigned int width, un
     m_totalFrameRenderTime = 0.0f;
 
     m_lightingShaderStagesCount = 0;
+    m_lastLightingStageHandle = 0;
 
     m_renderStageManager = std::make_shared<TRenderStageManager> ();
     m_shaderProgramManager = std::make_shared<TShaderProgramManager> ();
@@ -105,58 +107,30 @@ TRenderPipeline& Renderer::GetRenderPipeline ()
     return m_renderPipeline;
 }
 
-std::shared_ptr<IRenderer> Renderer::RotateRenderPipelineLeft ()
+std::shared_ptr<IFramebuffer> Renderer::GetPipelineFramebuffer (const PipelineLink& link)
 {
-    std::rotate (m_renderPipeline.begin (), m_renderPipeline.begin () + 1, m_renderPipeline.end ());
-
-    return std::dynamic_pointer_cast<IRenderer> (shared_from_this ());
-}
-
-std::shared_ptr<IRenderer> Renderer::RotateRenderPipelineRight ()
-{
-    std::rotate (m_renderPipeline.rbegin (), m_renderPipeline.rbegin () + 1, m_renderPipeline.rend ());
-
-    return std::dynamic_pointer_cast<IRenderer> (shared_from_this ());
-}
-
-std::shared_ptr<IFramebuffer> Renderer::GetPipelineFramebuffer (EPipelineLink link)
-{
-    if ((m_currentRenderStageIdx == 0 && link == EPipelineLink::LINK_PREVIOUS) || 
-        (m_currentRenderStageIdx < 2 && link == EPipelineLink::LINK_PREVIOUS_MINUS_1) ||
-        (m_renderPipeline.size () < 2 && link == EPipelineLink::LINK_SECOND) || 
-        (m_renderPipeline.size () < 3 && link == EPipelineLink::LINK_THIRD))
+    if (link.IsNamed ())
     {
-        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Pipeline index out of bounds";
+        if (!m_renderStageManager->HasName<IRenderStage> (link.GetStageName ()))
+        {
+            LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Pipeline link to unknown render stage" << link.GetStageName ();
+        }
+
+        return m_renderStageManager->GetByName<IRenderStage> (link.GetStageName ())->GetFramebuffer ();
     }
 
-    if (link == EPipelineLink::LINK_FIRST)
+    if (link.GetRelative () == EPipelineLink::LINK_PREVIOUS)
     {
-        return GetRenderStageManager ()->GetByHandle<IRenderStage> (m_renderPipeline.front ())->GetFramebuffer ();
+        if (m_currentRenderStageIdx == 0)
+        {
+            LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Pipeline link to previous render stage from the first stage";
+        }
+
+        return m_renderStageManager->GetByHandle<IRenderStage> (m_renderPipeline[m_currentRenderStageIdx - 1])->GetFramebuffer ();
     }
-    else if (link == EPipelineLink::LINK_SECOND)
-    {
-        return GetRenderStageManager ()->GetByHandle<IRenderStage> (m_renderPipeline[1])->GetFramebuffer ();
-    }
-    else if (link == EPipelineLink::LINK_THIRD)
-    {
-        return GetRenderStageManager ()->GetByHandle<IRenderStage> (m_renderPipeline[2])->GetFramebuffer ();
-    }
-    else if (link == EPipelineLink::LINK_PREVIOUS)
-    {
-        return GetRenderStageManager ()->GetByHandle<IRenderStage> (m_renderPipeline[m_currentRenderStageIdx - 1])->GetFramebuffer ();
-    }
-    else if (link == EPipelineLink::LINK_PREVIOUS_MINUS_1)
-    {
-        return GetRenderStageManager ()->GetByHandle<IRenderStage> (m_renderPipeline[m_currentRenderStageIdx - 2])->GetFramebuffer ();
-    }
-    else if (link == EPipelineLink::LINK_LAST)
-    {
-        return GetRenderStageManager ()->GetByHandle<IRenderStage> (m_renderPipeline.back ())->GetFramebuffer ();
-    }
-    else /* LINK_CURRENT */
-    {
-        return GetRenderStageManager ()->GetByHandle<IRenderStage> (m_renderPipeline[m_currentRenderStageIdx])->GetFramebuffer ();
-    }
+
+    /* LINK_CURRENT */
+    return m_renderStageManager->GetByHandle<IRenderStage> (m_renderPipeline[m_currentRenderStageIdx])->GetFramebuffer ();
 }
 
 void Renderer::RenderFrame ()
@@ -248,7 +222,7 @@ void Renderer::InitializeRenderStages ()
 {
     if (m_isShadowMapping == true)
     {
-        auto shadow = this->Create<ShadowMapRenderStage> ("shadow_map");
+        auto shadow = this->Create<ShadowMapRenderStage> (RenderStageNames::ShadowMap);
         shadow->SetFaceCullingEnabled (true);
         shadow->SetFaceCullingMode (EFaceCullingFace::FACE_FRONT, EFaceCullingDirection::DIR_CCW);
         shadow->Initialize ();
@@ -257,7 +231,7 @@ void Renderer::InitializeRenderStages ()
     if (m_isDeferredRendering == true)
     {
         // geometry stage
-        auto baseDeferred = this->Create<DeferredGeometryRenderStage> ("deferred_geometry");
+        auto baseDeferred = this->Create<DeferredGeometryRenderStage> (RenderStageNames::DeferredGeometry);
         baseDeferred->SetDepthTestEnabled (true);
         baseDeferred->SetStencilTestEnabled (true);
         baseDeferred->SetClearColorOnFrameEnabled (true);
@@ -273,11 +247,11 @@ void Renderer::InitializeRenderStages ()
     }
     else
     {
-        auto baseForward = this->Create<ForwardGeometryRenderStage> ("forward");
+        auto baseForward = this->Create<ForwardGeometryRenderStage> (RenderStageNames::Forward);
         if (m_isShadowMapping == true)
         {
-            baseForward->SetDepthTextureArrayFramebufferLink (EPipelineLink::LINK_FIRST);
-            baseForward->SetDepthCubeMapArrayFramebufferLink (EPipelineLink::LINK_FIRST);
+            baseForward->SetDepthTextureArrayFramebufferLink (RenderStageNames::ShadowMap);
+            baseForward->SetDepthCubeMapArrayFramebufferLink (RenderStageNames::ShadowMap);
         }
         baseForward->Initialize ();
     }
@@ -303,50 +277,35 @@ void Renderer::Update (std::shared_ptr<Material> material)
         // add lighting deferred pass renderStages for each program
         if (m_lightingShaders.find (shaderProgramHandle) == m_lightingShaders.end ())
         {
-            // first rotate the pipeline to the left so that geometry stage is last
-            RotateRenderPipelineLeft ();
-            if (m_isShadowMapping)
-            {
-                RotateRenderPipelineLeft ();
-            }
+            // the first lighting stage owns the framebuffer which all lighting stages draw to,
+            // the other stages add their results to it (each stage lights only pixels of its own shader program)
+            bool isFirstLightingStage = (m_lightingShaderStagesCount == 0);
 
-            // create and append new lighting stage
+            // lighting stages are placed right after the geometry stage and the previous lighting stages
+            handle_t anchor = isFirstLightingStage ? m_renderStageManager->GetByName<RenderStage> (RenderStageNames::DeferredGeometry)->GetHandle () : m_lastLightingStageHandle;
+
             m_lightingShaderStagesCount++;
             m_lightingShaders.insert (shaderProgramHandle);
-            auto q = Create <DeferredLightingRenderStage> ("deferred_lighting_" + shaderProgramName);
+
+            std::string stageName = isFirstLightingStage ? std::string (RenderStageNames::DeferredLighting) : std::string (RenderStageNames::DeferredLighting) + "_" + shaderProgramName;
+            auto q = Create <DeferredLightingRenderStage> (stageName);
             q->SetShaderProgram (shaderProgramName);
             q->SetStencilTestEnabled (true)->SetStencilTest (EStencilTestFunction::FUNCTION_EQUAL, static_cast<int> (shaderProgramHandle));
-            q->SetClearColorOnFrameEnabled (true);
+            q->SetClearColorOnFrameEnabled (isFirstLightingStage);
             q->SetClearDepthOnFrameEnabled (false);
             q->SetClearStencilOnFrameEnabled (false);
             q->SetDepthTestEnabled (false);
-            q->SetColorAttachmentsFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_SECOND : EPipelineLink::LINK_FIRST);
-            q->SetDepthStencilFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_SECOND : EPipelineLink::LINK_FIRST);
-            q->SetDepthTextureArrayFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_FIRST : EPipelineLink::LINK_CURRENT);
-            q->SetDepthCubeMapArrayFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_FIRST : EPipelineLink::LINK_CURRENT);
-            q->SetDrawFramebufferLink (m_isShadowMapping ? EPipelineLink::LINK_THIRD : EPipelineLink::LINK_SECOND);
-            q->SetFramebufferEnabled (true);
+            q->SetColorAttachmentsFramebufferLink (RenderStageNames::DeferredGeometry);
+            q->SetDepthStencilFramebufferLink (RenderStageNames::DeferredGeometry);
+            q->SetDepthTextureArrayFramebufferLink (m_isShadowMapping ? PipelineLink (RenderStageNames::ShadowMap) : PipelineLink (EPipelineLink::LINK_CURRENT));
+            q->SetDepthCubeMapArrayFramebufferLink (m_isShadowMapping ? PipelineLink (RenderStageNames::ShadowMap) : PipelineLink (EPipelineLink::LINK_CURRENT));
+            q->SetDrawFramebufferLink (RenderStageNames::DeferredLighting);
+            q->SetFramebufferEnabled (isFirstLightingStage);
 
             q->Initialize ();
 
-            // rotate pipeline to the right, so that ultimately geometry stage is first and newly added stage is second
-            RotateRenderPipelineRight ();
-            RotateRenderPipelineRight ();
-            if (m_isShadowMapping)
-            {
-                RotateRenderPipelineRight ();
-            }
-            
-            // update flags of other deferred lighting stages (if present)
-            if (m_lightingShaderStagesCount > 1)
-            {
-                handle_t stageHandle = GetRenderPipeline ()[2 + (m_isShadowMapping ? 1 : 0)];
-
-                auto stage = m_renderStageManager->GetByHandle<DeferredLightingRenderStage> (stageHandle);
-                stage->SetClearColorOnFrameEnabled (false);
-                stage->SetFramebufferEnabled (false);
-            }
-
+            MoveRenderStageAfter (q->GetHandle (), anchor);
+            m_lastLightingStageHandle = q->GetHandle ();
         }
     }
 }
@@ -431,5 +390,18 @@ void Renderer::UpdateLightsRecursive (handle_t objectHandle)
         UpdateLightsRecursive (childObject.lock ()->GetHandle ());
     }
 
+}
+
+void Renderer::MoveRenderStageAfter (handle_t stageHandle, handle_t anchorHandle)
+{
+    m_renderPipeline.erase (std::remove (m_renderPipeline.begin (), m_renderPipeline.end (), stageHandle), m_renderPipeline.end ());
+
+    auto anchor = std::find (m_renderPipeline.begin (), m_renderPipeline.end (), anchorHandle);
+    if (anchor == m_renderPipeline.end ())
+    {
+        LogMessage (MSG_LOCATION, EXIT_FAILURE) << "Render stage to place after is not in the pipeline";
+    }
+
+    m_renderPipeline.insert (anchor + 1, stageHandle);
 }
 } // namespace cilantro

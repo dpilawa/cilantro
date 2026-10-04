@@ -259,12 +259,14 @@ PYBIND11_MODULE(pycilantro, m) {
 
     py::class_<c::RenderStage, std::shared_ptr<c::RenderStage>>(m, "RenderStage")
         .def("SetFramebufferEnabled", &c::RenderStage::SetFramebufferEnabled, py::return_value_policy::automatic)
-        .def("SetColorAttachmentsFramebufferLink", &c::RenderStage::SetColorAttachmentsFramebufferLink, py::return_value_policy::automatic)
+        .def("SetColorAttachmentsFramebufferLink", [](c::RenderStage& stage, c::EPipelineLink link) { return stage.SetColorAttachmentsFramebufferLink (link); }, py::return_value_policy::automatic)
+        .def("SetColorAttachmentsFramebufferLink", [](c::RenderStage& stage, const std::string& stageName) { return stage.SetColorAttachmentsFramebufferLink (stageName); }, py::return_value_policy::automatic)
         .def("SetMultisampleEnabled", &c::RenderStage::SetMultisampleEnabled, py::return_value_policy::automatic);
 
     py::class_<c::SurfaceRenderStage, c::RenderStage, std::shared_ptr<c::SurfaceRenderStage>>(m, "SurfaceRenderStage")
         .def("SetShaderProgram", &c::SurfaceRenderStage::SetShaderProgram, py::return_value_policy::automatic)
-        .def("SetColorAttachmentsFramebufferLink", &c::SurfaceRenderStage::SetColorAttachmentsFramebufferLink, py::return_value_policy::automatic)
+        .def("SetColorAttachmentsFramebufferLink", [](c::SurfaceRenderStage& stage, c::EPipelineLink link) { return stage.SetColorAttachmentsFramebufferLink (link); }, py::return_value_policy::automatic)
+        .def("SetColorAttachmentsFramebufferLink", [](c::SurfaceRenderStage& stage, const std::string& stageName) { return stage.SetColorAttachmentsFramebufferLink (stageName); }, py::return_value_policy::automatic)
         .def("SetRenderStageParameterFloat", &c::SurfaceRenderStage::SetRenderStageParameterFloat, py::return_value_policy::automatic)
         .def("SetRenderStageParameterVector2f", &c::SurfaceRenderStage::SetRenderStageParameterVector2f, py::return_value_policy::automatic)
         .def("SetRenderStageParameterVector3f", &c::SurfaceRenderStage::SetRenderStageParameterVector3f, py::return_value_policy::automatic)
@@ -515,13 +517,8 @@ PYBIND11_MODULE(pycilantro, m) {
 // enums
 
     py::enum_<c::EPipelineLink>(m, "PipelineLink")
-        .value("LINK_FIRST", c::EPipelineLink::LINK_FIRST)
-        .value("LINK_SECOND", c::EPipelineLink::LINK_SECOND)
-        .value("LINK_THIRD", c::EPipelineLink::LINK_THIRD)
         .value("LINK_PREVIOUS", c::EPipelineLink::LINK_PREVIOUS)
-        .value("LINK_PREVIOUS_MINUS_1", c::EPipelineLink::LINK_PREVIOUS_MINUS_1)
-        .value("LINK_CURRENT", c::EPipelineLink::LINK_CURRENT)
-        .value("LINK_LAST", c::EPipelineLink::LINK_LAST);
+        .value("LINK_CURRENT", c::EPipelineLink::LINK_CURRENT);
  
     py::enum_<c::EInputKey>(m, "InputKey")
         .value("KeyEsc", c::EInputKey::KeyEsc)

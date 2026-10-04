@@ -41,9 +41,7 @@ public:
     
     __EAPI std::shared_ptr<IRenderStage> GetCurrentRenderStage ();
     __EAPI TRenderPipeline& GetRenderPipeline ();
-    __EAPI std::shared_ptr<IRenderer> RotateRenderPipelineLeft ();
-    __EAPI std::shared_ptr<IRenderer> RotateRenderPipelineRight ();
-    __EAPI virtual std::shared_ptr<IFramebuffer> GetPipelineFramebuffer (EPipelineLink link) override final;
+    __EAPI virtual std::shared_ptr<IFramebuffer> GetPipelineFramebuffer (const PipelineLink& link) override final;
 
     __EAPI virtual void RenderFrame () override;   
 
@@ -96,6 +94,7 @@ protected:
     // set of handles of distinct lighting pass shader programs used in the scene
     TLightingShaderSet m_lightingShaders;
     size_t m_lightingShaderStagesCount;
+    handle_t m_lastLightingStageHandle;
 
     // dimensions
     unsigned int m_width;
@@ -120,6 +119,9 @@ private:
     // update renderer data for objects with invalidated transformation
     void UpdateInvalidatedObjects ();
     void UpdateLightsRecursive (handle_t objectHandle);
+
+    // move a render stage in the pipeline to the position right after another stage
+    void MoveRenderStageAfter (handle_t stageHandle, handle_t anchorHandle);
 };
 
 template <typename T, typename ...Params>
