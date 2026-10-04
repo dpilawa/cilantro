@@ -18,6 +18,14 @@ option(CILANTRO_WITH_GLFW "Build with GLFW extensions" ON)
 option(CILANTRO_BUILD_UNIT_TESTS "Build unit tests (downloads GoogleTest)" ON)
 option(CILANTRO_BUILD_PYTHON "Build Python module (uses the interpreter given in PYTHON_EXECUTABLE, if set)" ON)
 
+# Python is used by the OpenGL loader generator (glad, which needs the jinja2 package) and by the Python module (pybind11).
+# They look for the interpreter with different variables, so a choice made with either of them is applied to both.
+if(PYTHON_EXECUTABLE AND NOT Python_EXECUTABLE)
+    set(Python_EXECUTABLE "${PYTHON_EXECUTABLE}" CACHE FILEPATH "Python interpreter")
+elseif(Python_EXECUTABLE AND NOT PYTHON_EXECUTABLE)
+    set(PYTHON_EXECUTABLE "${Python_EXECUTABLE}" CACHE FILEPATH "Python interpreter")
+endif()
+
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 option(INJECT_DEBUG_POSTFIX "Inject d postfix on libs" ON)
 option(ASSIMP_BUILD_ASSIMP_TOOLS "Build assimp tools" OFF)

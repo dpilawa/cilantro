@@ -64,7 +64,7 @@ jobs:
       # glad needs Python with Jinja2, so use the interpreter set up above instead of whichever one CMake finds first
       run: |
         $python = (Get-Command python).Source
-        cmake ..\ -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DPYTHON_EXECUTABLE="$python"
+        cmake ..\ -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DPYTHON_EXECUTABLE="$python" -DPython_EXECUTABLE="$python"
 
     - name: Build
       working-directory: ${{github.workspace}}\build
