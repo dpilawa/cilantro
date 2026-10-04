@@ -7,9 +7,9 @@
 namespace cilantro {
 
 // template instantiations
-template void Mathf::SolveSystemOfLinearEquations<float> (std::vector<std::vector<float>>& A, std::vector<float>& b);
-template void Mathf::SolveSystemOfLinearEquations<Vector3f> (std::vector<std::vector<float>>& A, std::vector<Vector3f>& b);
-template void Mathf::SolveSystemOfLinearEquations<Vector4f> (std::vector<std::vector<float>>& A, std::vector<Vector4f>& b);
+template __EAPI void Mathf::SolveSystemOfLinearEquations<float> (std::vector<std::vector<float>>& A, std::vector<float>& b);
+template __EAPI void Mathf::SolveSystemOfLinearEquations<Vector3f> (std::vector<std::vector<float>>& A, std::vector<Vector3f>& b);
+template __EAPI void Mathf::SolveSystemOfLinearEquations<Vector4f> (std::vector<std::vector<float>>& A, std::vector<Vector4f>& b);
 
 GaussLegendreIntegrator<INTEGRATOR_DEGREE> Mathf::integrator = GaussLegendreIntegrator<INTEGRATOR_DEGREE> ();
 
