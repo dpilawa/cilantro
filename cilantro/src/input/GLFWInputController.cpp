@@ -68,6 +68,10 @@ GLFWInputController::GLFWInputController (std::shared_ptr<Game> game) : InputCon
     axisMouseScrollX = nullptr;
     axisMouseScrollY = nullptr;
 
+    prevAxisMouseX = 0.0;
+    prevAxisMouseY = 0.0;
+    hasPrevAxisMouse = false;
+
     isGameMode = false;
 
     Initialize ();
@@ -258,7 +262,7 @@ void GLFWInputController::KeyCallback (int key, int scancode, int action, int mo
 
 void GLFWInputController::MouseCursorCallback(double xPos, double yPos)
 {
-    if (isGameMode)
+    if (isGameMode && hasPrevAxisMouse)
     {
         if (axisMouseX)
         {
@@ -273,6 +277,7 @@ void GLFWInputController::MouseCursorCallback(double xPos, double yPos)
 
     prevAxisMouseX = xPos;
     prevAxisMouseY = yPos;
+    hasPrevAxisMouse = true;
     
 }
 

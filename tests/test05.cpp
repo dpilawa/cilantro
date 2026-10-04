@@ -156,15 +156,9 @@ public:
 
 private:
 
-    // mouse look; the very first mouse delta is bogus (the previous cursor position is not known yet), so it is dropped
+    // mouse look
     void Look (float dx, float dy)
     {
-        if (!mouseSeen)
-        {
-            mouseSeen = (dx != 0.0f || dy != 0.0f);
-            return;
-        }
-
         yaw += dx * MouseSensitivity;
         pitch = Mathf::Clamp (pitch + dy * MouseSensitivity, -89.0f, 89.0f);
     }
@@ -420,7 +414,6 @@ private:
     float pitch = 0.0f;
     float moveForward = 0.0f;
     float moveRight = 0.0f;
-    bool mouseSeen = false;
 
     bool wantsToFire = false;
     float fireCooldown = 0.0f;
