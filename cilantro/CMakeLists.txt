@@ -50,6 +50,7 @@ include/graphics/Renderer.h
 include/graphics/RenderStage.h
 include/graphics/Shader.h
 include/graphics/ShaderProcessor.h
+include/graphics/ShaderProgramNames.h
 include/graphics/ShaderProgram.h
 include/graphics/ShadowMapRenderStage.h
 include/graphics/SurfaceRenderStage.h

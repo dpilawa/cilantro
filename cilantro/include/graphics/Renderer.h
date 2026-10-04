@@ -16,6 +16,7 @@ namespace cilantro {
 class GameScene;
 class GameObject;
 class Material;
+class Camera;
 
 class __CEAPI Renderer : public IRenderer, public std::enable_shared_from_this<Renderer>
 {
@@ -38,23 +39,31 @@ public:
 
     __EAPI virtual std::shared_ptr<TRenderStageManager> GetRenderStageManager () override final;
     
-    __EAPI virtual std::shared_ptr<IRenderStage> GetCurrentRenderStage () override final;
-    __EAPI virtual TRenderPipeline& GetRenderPipeline () override final;
-    __EAPI virtual std::shared_ptr<IRenderer> RotateRenderPipelineLeft () override final;
-    __EAPI virtual std::shared_ptr<IRenderer> RotateRenderPipelineRight () override final;
+    __EAPI std::shared_ptr<IRenderStage> GetCurrentRenderStage ();
+    __EAPI TRenderPipeline& GetRenderPipeline ();
+    __EAPI std::shared_ptr<IRenderer> RotateRenderPipelineLeft ();
+    __EAPI std::shared_ptr<IRenderer> RotateRenderPipelineRight ();
     __EAPI virtual std::shared_ptr<IFramebuffer> GetPipelineFramebuffer (EPipelineLink link) override final;
 
     __EAPI virtual void RenderFrame () override;   
 
     // update lighting pass render stages when material using new lighting shader program appears (deferred rendering)
     using IRenderer::Update;
-    __EAPI virtual void Update (std::shared_ptr<Material> material) override;
+    __EAPI void Update (std::shared_ptr<Material> material);
+
+    // update renderer data of a mesh object AABB wireframe or material texture (implemented by backend)
+    virtual void UpdateAABBBuffers (std::shared_ptr<MeshObject> meshObject) = 0;
+    virtual void Update (std::shared_ptr<Material> material, unsigned int textureUnit) = 0;
+
+    // load per-frame data shared by render stages (active camera matrices, light view matrices for shadow mapping) to GPU
+    virtual void UpdateCameraBuffers (std::shared_ptr<Camera> camera) = 0;
+    virtual void UpdateLightViewBuffers () = 0;
     
     __EAPI virtual AABB CalculateAABB (std::shared_ptr<MeshObject> meshObject) override;
 
     ///////////////////////////////////////////////////////////////////////////
 
-    __EAPI virtual bool IsDeferredRendering () const override;
+    __EAPI bool IsDeferredRendering () const;
     __EAPI virtual bool IsShadowMapping () const override;
 
     template <typename T, typename ...Params>

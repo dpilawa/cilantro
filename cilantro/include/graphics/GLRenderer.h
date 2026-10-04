@@ -52,11 +52,10 @@ public:
     __EAPI virtual size_t GetDirectionalLightCount () const override;
     __EAPI virtual size_t GetSpotLightCount () const override;
 
-    __EAPI virtual std::shared_ptr<IFramebuffer> CreateFramebuffer (unsigned int width, unsigned int height, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayTextureCount, bool depthStencilRenderbufferEnabled, bool multisampleEnabled) override;
+    __EAPI virtual std::shared_ptr<IFramebuffer> CreateFramebuffer (const SFramebufferSpec& spec) override;
     __EAPI virtual void BindDefaultFramebuffer () override;
     __EAPI virtual void BindDefaultDepthBuffer () override;
     __EAPI virtual void BindDefaultStencilBuffer () override;
-    __EAPI virtual void BindDefaultTextures () override;    
     
     __EAPI virtual void ClearColorBuffer (const Vector4f& rgba) override;
     __EAPI virtual void ClearDepthBuffer () override;

@@ -1,7 +1,6 @@
 #include "graphics/ShadowMapRenderStage.h"
+#include "graphics/ShaderProgramNames.h"
 #include "graphics/IFramebuffer.h"
-#include "graphics/GLShader.h"
-#include "graphics/GLShaderProgram.h"
 #include "scene/GameScene.h"
 #include "system/Game.h"
 
@@ -48,7 +47,7 @@ void ShadowMapRenderStage::InitializeFramebuffer ()
 
         if (layerCount > 0)
         {
-            m_framebuffer = GetRenderer ()->CreateFramebuffer (CILANTRO_SHADOW_MAP_SIZE, CILANTRO_SHADOW_MAP_SIZE, 0, 0, (unsigned int) layerCount, false, m_isMultisampleEnabled);
+            m_framebuffer = GetRenderer ()->CreateFramebuffer ({ .width = CILANTRO_SHADOW_MAP_SIZE, .height = CILANTRO_SHADOW_MAP_SIZE, .depthTextureArrayLayerCount = (unsigned int) layerCount, .multisampleEnabled = m_isMultisampleEnabled });
         }
     }
 }
@@ -57,23 +56,20 @@ void ShadowMapRenderStage::OnFrame ()
 {
     RenderStage::OnFrame ();
 
-    // load uniform buffers
-    GetRenderer ()->UpdateLightViewBuffers ();
-
     // draw geometry buffers for all 3 light types   
     if (GetRenderer ()->GetDirectionalLightCount () > 0)
     {
-        GetRenderer ()->DrawSceneGeometryBuffers (GetRenderer ()->GetShaderProgramManager ()->GetByName<IShaderProgram> ("shadowmap_directional_shader"));
+        GetRenderer ()->DrawSceneGeometryBuffers (GetRenderer ()->GetShaderProgramManager ()->GetByName<IShaderProgram> (ShaderProgramNames::ShadowMapDirectional));
     }
 
     if (GetRenderer ()->GetSpotLightCount () > 0)
     {
-        GetRenderer ()->DrawSceneGeometryBuffers (GetRenderer ()->GetShaderProgramManager ()->GetByName<IShaderProgram> ("shadowmap_spot_shader"));
+        GetRenderer ()->DrawSceneGeometryBuffers (GetRenderer ()->GetShaderProgramManager ()->GetByName<IShaderProgram> (ShaderProgramNames::ShadowMapSpot));
     }
 
     if (GetRenderer ()->GetPointLightCount () > 0)
     {
-        GetRenderer ()->DrawSceneGeometryBuffers (GetRenderer ()->GetShaderProgramManager ()->GetByName<IShaderProgram> ("shadowmap_point_shader"));
+        GetRenderer ()->DrawSceneGeometryBuffers (GetRenderer ()->GetShaderProgramManager ()->GetByName<IShaderProgram> (ShaderProgramNames::ShadowMapPoint));
     }
 
     // blit framebuffer

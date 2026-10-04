@@ -2,6 +2,7 @@
 
 #include "cilantroengine.h"
 #include "resource/ResourceManager.h"
+#include "graphics/IFramebuffer.h"
 #include <set>
 #include <vector>
 
@@ -18,7 +19,6 @@ class Material;
 class PointLight;
 class DirectionalLight;
 class SpotLight;
-class Camera;
 class AABB;
 
 class Vector4f;
@@ -58,10 +58,6 @@ struct IRenderer
     // render pipeline
     virtual std::shared_ptr<TRenderStageManager> GetRenderStageManager () = 0;
     
-    virtual std::shared_ptr<IRenderStage> GetCurrentRenderStage () = 0;
-    virtual TRenderPipeline& GetRenderPipeline () = 0;
-    virtual std::shared_ptr<IRenderer> RotateRenderPipelineLeft () = 0;
-    virtual std::shared_ptr<IRenderer> RotateRenderPipelineRight () = 0;
     virtual std::shared_ptr<IFramebuffer> GetPipelineFramebuffer (EPipelineLink link) = 0;    
     
     // render current frame
@@ -74,17 +70,12 @@ struct IRenderer
     virtual void DrawAABBGeometryBuffers (std::shared_ptr<IShaderProgram> shader) = 0;
 
     virtual void Update (std::shared_ptr<MeshObject> meshObject) = 0;
-    virtual void UpdateAABBBuffers (std::shared_ptr<MeshObject> meshObject) = 0;
     virtual AABB CalculateAABB (std::shared_ptr<MeshObject> meshObject) = 0;
-    virtual void Update (std::shared_ptr<Material>, unsigned int textureUnit) = 0;
-    virtual void Update (std::shared_ptr<Material> material) = 0;
     
     virtual void Update (std::shared_ptr<PointLight> pointLight) = 0;
     virtual void Update (std::shared_ptr<DirectionalLight> directionalLight) = 0;	
     virtual void Update (std::shared_ptr<SpotLight> spotLight) = 0;
 
-    virtual void UpdateCameraBuffers (std::shared_ptr<Camera> camera) = 0;
-    virtual void UpdateLightViewBuffers () = 0;
 
     // object counts
     virtual size_t GetPointLightCount () const = 0;
@@ -92,15 +83,13 @@ struct IRenderer
     virtual size_t GetSpotLightCount () const = 0;
 
     // rendering properties
-    virtual bool IsDeferredRendering () const = 0;
     virtual bool IsShadowMapping () const = 0;
 
     // framebuffer control
-    virtual std::shared_ptr<IFramebuffer> CreateFramebuffer (unsigned int width, unsigned int height, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayTextureCount, bool depthStencilRenderbufferEnabled, bool multisampleEnabled) = 0;
+    virtual std::shared_ptr<IFramebuffer> CreateFramebuffer (const SFramebufferSpec& spec) = 0;
     virtual void BindDefaultFramebuffer () = 0;
     virtual void BindDefaultDepthBuffer () = 0;
     virtual void BindDefaultStencilBuffer () = 0;
-    virtual void BindDefaultTextures () = 0;
 
     virtual void ClearColorBuffer (const Vector4f& rgba) = 0;
     virtual void ClearDepthBuffer () = 0;

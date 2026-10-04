@@ -1,4 +1,5 @@
 #include "graphics/GLRenderer.h"
+#include "graphics/ShaderProgramNames.h"
 #include "graphics/GLUtils.h"
 #include "graphics/GLShaderProgram.h"
 #include "graphics/GLShaderLibrary.h"
@@ -193,7 +194,7 @@ AABB GLRenderer::CalculateAABB (std::shared_ptr<MeshObject> meshObject)
     if (GLUtils::GetGLSLVersion ().versionNumber >= 430)
     {
         // calculate in GPU
-        return m_geometryStore->CalculateAABB (meshObject, m_shaderProgramManager->GetByName<GLShaderProgram> ("aabb_compute_shader"));
+        return m_geometryStore->CalculateAABB (meshObject, m_shaderProgramManager->GetByName<GLShaderProgram> (ShaderProgramNames::AABBCompute));
     }
     else
     {
@@ -259,11 +260,11 @@ size_t GLRenderer::GetSpotLightCount () const
     return m_lightBuffers->GetSpotLightCount ();
 }
 
-std::shared_ptr<IFramebuffer> GLRenderer::CreateFramebuffer (unsigned int width, unsigned int height, unsigned int rgbTextureCount, unsigned int rgbaTextureCount, unsigned int depthBufferArrayTextureCount, bool depthStencilRenderbufferEnabled, bool multisampleEnabled)
+std::shared_ptr<IFramebuffer> GLRenderer::CreateFramebuffer (const SFramebufferSpec& spec)
 {
     std::shared_ptr<IFramebuffer> framebuffer;
 
-    if (multisampleEnabled)
+    if (spec.multisampleEnabled)
     {
         if (GLUtils::GetGLSLVersion ().versionNumber <= 150)
         {
@@ -271,12 +272,12 @@ std::shared_ptr<IFramebuffer> GLRenderer::CreateFramebuffer (unsigned int width,
         }
         else 
         {
-            framebuffer = std::make_shared<GLMultisampleFramebuffer> (width, height, rgbTextureCount, rgbaTextureCount, depthBufferArrayTextureCount, depthStencilRenderbufferEnabled);
+            framebuffer = std::make_shared<GLMultisampleFramebuffer> (spec.width, spec.height, spec.rgbTextureCount, spec.rgbaTextureCount, spec.depthTextureArrayLayerCount, spec.depthStencilRenderbufferEnabled);
         }
     }
     else
     {
-        framebuffer = std::make_shared<GLFramebuffer> (width, height, rgbTextureCount, rgbaTextureCount, depthBufferArrayTextureCount, depthStencilRenderbufferEnabled);
+        framebuffer = std::make_shared<GLFramebuffer> (spec.width, spec.height, spec.rgbTextureCount, spec.rgbaTextureCount, spec.depthTextureArrayLayerCount, spec.depthStencilRenderbufferEnabled);
     }
     
     framebuffer->Initialize ();
@@ -299,14 +300,6 @@ void GLRenderer::BindDefaultStencilBuffer ()
     glFramebufferTexture (GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, 0, 0);
 }
 
-void GLRenderer::BindDefaultTextures ()
-{
-    for (unsigned int i = 0; i < CILANTRO_MAX_TEXTURE_UNITS; ++i)
-    {
-        glActiveTexture (GL_TEXTURE0 + i);
-        glBindTexture (GL_TEXTURE_2D, 0);
-    }
-}
 
 void GLRenderer::ClearColorBuffer (const Vector4f& rgba)
 {

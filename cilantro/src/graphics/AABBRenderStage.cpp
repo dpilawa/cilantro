@@ -1,7 +1,6 @@
 #include "graphics/AABBRenderStage.h"
+#include "graphics/ShaderProgramNames.h"
 #include "graphics/IFramebuffer.h"
-#include "graphics/GLShader.h"
-#include "graphics/GLShaderProgram.h"
 #include "scene/GameScene.h"
 #include "system/Game.h"
 
@@ -22,7 +21,7 @@ void AABBRenderStage::InitializeFramebuffer ()
 {   
     if (m_isFramebufferEnabled)
     {
-        m_framebuffer = GetRenderer ()->CreateFramebuffer (GetRenderer ()->GetWidth (), GetRenderer ()->GetHeight (), 0, 1, 0, true, m_isMultisampleEnabled);
+        m_framebuffer = GetRenderer ()->CreateFramebuffer ({ .width = GetRenderer ()->GetWidth (), .height = GetRenderer ()->GetHeight (), .rgbaTextureCount = 1, .depthStencilRenderbufferEnabled = true, .multisampleEnabled = m_isMultisampleEnabled });
     }
 }
 
@@ -30,11 +29,8 @@ void AABBRenderStage::OnFrame ()
 {
     RenderStage::OnFrame ();
 
-    // load uniform buffers
-    GetRenderer ()->UpdateCameraBuffers (GetRenderer ()->GetGameScene ()->GetActiveCamera ());
-
     // draw all objects in scene
-    GetRenderer ()->DrawAABBGeometryBuffers (GetRenderer ()->GetShaderProgramManager ()->GetByName<IShaderProgram> ("aabb_shader"));
+    GetRenderer ()->DrawAABBGeometryBuffers (GetRenderer ()->GetShaderProgramManager ()->GetByName<IShaderProgram> (ShaderProgramNames::AABB));
 
     if (m_framebuffer != nullptr)
     {

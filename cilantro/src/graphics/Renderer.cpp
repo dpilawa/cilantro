@@ -10,6 +10,7 @@
 #include "scene/MeshObject.h"
 #include "scene/Light.h"
 #include "scene/Material.h"
+#include "scene/Camera.h"
 #include "system/Game.h"
 #include "system/Timer.h"
 #include "system/LogMessage.h"
@@ -161,6 +162,18 @@ std::shared_ptr<IFramebuffer> Renderer::GetPipelineFramebuffer (EPipelineLink li
 void Renderer::RenderFrame ()
 {
     UpdateInvalidatedObjects ();
+
+    // load per-frame data shared by render stages
+    auto camera = GetGameScene ()->GetActiveCamera ();
+    if (camera != nullptr)
+    {
+        UpdateCameraBuffers (camera);
+
+        if (m_isShadowMapping)
+        {
+            UpdateLightViewBuffers ();
+        }
+    }
 
     m_currentRenderStageIdx = 0;
 
