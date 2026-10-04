@@ -102,11 +102,18 @@ void Game::Stop ()
 
 void Game::Step ()
 {
-    // step current scene
-    m_currentGameScene.lock ()->OnFrame ();
+    // step current scene (if any)
+    auto currentGameScene = m_currentGameScene.lock ();
+    if (currentGameScene != nullptr)
+    {
+        currentGameScene->OnFrame ();
+    }
 
-    // process input
-    m_inputController->OnFrame ();
+    // process input (if input controller exists)
+    if (m_inputController != nullptr)
+    {
+        m_inputController->OnFrame ();
+    }
 }
 
 bool Game::IsRunning ()

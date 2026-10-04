@@ -28,6 +28,7 @@ add_executable(unit_tests
     AABBTests.cpp
     CurveTests.cpp
     ResourceManagerTests.cpp
+    GameTests.cpp
     MessageBusTests.cpp
     HookTests.cpp
     ShaderProcessorTests.cpp
