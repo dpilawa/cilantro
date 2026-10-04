@@ -69,7 +69,21 @@ jobs:
     - name: Build
       working-directory: ${{github.workspace}}\build
       shell: powershell
-      run: cmake --build . --config ${{env.BUILD_TYPE}}
+      run: |
+        cmake --build . --config ${{env.BUILD_TYPE}} 2>&1 | Tee-Object -FilePath build.log
+        exit $LASTEXITCODE
+
+    # publish the first build errors as check annotations (job logs need a login to read)
+    - name: Report build errors
+      if: failure()
+      working-directory: ${{github.workspace}}\build
+      shell: powershell
+      run: |
+        Select-String -Path build.log -Pattern 'error|fatal|FAILED|Traceback|Error:' -CaseSensitive:$false | Select-Object -First 10 | ForEach-Object {
+          $m = $_.Line.Trim().Replace('%', '%25')
+          if ($m.Length -gt 1500) { $m = $m.Substring(0, 1500) }
+          Write-Output "::error::$m"
+        }
 
     - name: Test
       working-directory: ${{github.workspace}}\build
