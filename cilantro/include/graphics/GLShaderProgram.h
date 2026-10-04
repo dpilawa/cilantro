@@ -3,7 +3,7 @@
 #include "cilantroengine.h"
 #include "glad/gl.h"
 #include "graphics/ShaderProgram.h"
-#include "graphics/GLRenderer.h"
+#include "graphics/GLTypes.h"
 
 namespace cilantro {
 

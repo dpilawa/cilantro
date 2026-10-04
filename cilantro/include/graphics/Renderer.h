@@ -15,6 +15,7 @@ namespace cilantro {
 
 class GameScene;
 class GameObject;
+class Material;
 
 class __CEAPI Renderer : public IRenderer, public std::enable_shared_from_this<Renderer>
 {
@@ -44,6 +45,10 @@ public:
     __EAPI virtual std::shared_ptr<IFramebuffer> GetPipelineFramebuffer (EPipelineLink link) override final;
 
     __EAPI virtual void RenderFrame () override;   
+
+    // update lighting pass render stages when material using new lighting shader program appears (deferred rendering)
+    using IRenderer::Update;
+    __EAPI virtual void Update (std::shared_ptr<Material> material) override;
     
     __EAPI virtual AABB CalculateAABB (std::shared_ptr<MeshObject> meshObject) override;
 
@@ -61,6 +66,9 @@ public:
     requires (std::is_base_of_v<IShaderProgram,T>);        
 
 protected:
+    // subscribe to scene change messages (mesh, material, light, scene graph, transform updates) to keep renderer data in sync
+    void SubscribeToSceneMessages ();
+
     // game scene being rendered
     std::weak_ptr<GameScene> m_gameScene;
 
@@ -99,6 +107,10 @@ private:
     // initialize and deinitialize all required internal renderstages
     void InitializeRenderStages ();
     void DeinitializeRenderStages ();
+
+    // update renderer data for objects with invalidated transformation
+    void UpdateInvalidatedObjects ();
+    void UpdateLightsRecursive (handle_t objectHandle);
 };
 
 template <typename T, typename ...Params>
