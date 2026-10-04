@@ -48,7 +48,10 @@ void GameScene::OnFrame ()
         gameObject->OnFrame ();
     }
 
-    m_renderer->RenderFrame ();
+    if (m_renderer != nullptr)
+    {
+        m_renderer->RenderFrame ();
+    }
 
     m_timer->Tock ();
 }

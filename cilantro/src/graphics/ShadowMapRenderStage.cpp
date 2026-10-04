@@ -18,7 +18,7 @@ void ShadowMapRenderStage::Initialize ()
     InitializeFramebuffer ();
 
     // set callback for new or modified lights
-    GetRenderer ()->GetGameScene ()->GetGame ()->GetMessageBus ()->Subscribe<LightUpdateMessage> (
+    m_lightSubscription = GetRenderer ()->GetGameScene ()->GetGame ()->GetMessageBus ()->Subscribe<LightUpdateMessage> (
         [&](const std::shared_ptr<LightUpdateMessage>& message) 
         { 
             if (m_framebuffer != nullptr)
@@ -30,6 +30,11 @@ void ShadowMapRenderStage::Initialize ()
         }
     );
 
+}
+
+void ShadowMapRenderStage::Deinitialize ()
+{
+    m_lightSubscription.Unsubscribe ();
 }
 
 void ShadowMapRenderStage::InitializeFramebuffer ()

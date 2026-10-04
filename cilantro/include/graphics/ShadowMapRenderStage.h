@@ -2,6 +2,7 @@
 
 #include "cilantroengine.h"
 #include "graphics/RenderStage.h"
+#include "system/MessageBus.h"
 
 namespace cilantro {
 
@@ -14,14 +15,18 @@ public:
     ///////////////////////////////////////////////////////////////////////////
 
     __EAPI virtual void Initialize () override;
-    __EAPI virtual void Deinitialize () override {};
+    __EAPI virtual void Deinitialize () override;
 
     __EAPI virtual void InitializeFramebuffer () override;
 
     __EAPI virtual void OnFrame () override;
 
     ///////////////////////////////////////////////////////////////////////////
-    
+
+private:
+    // subscription to light updates (recreates shadow map framebuffer), released on deinitialization
+    MessageBus::ScopedSubscription m_lightSubscription;
+
 };
 
 } // namespace cilantro

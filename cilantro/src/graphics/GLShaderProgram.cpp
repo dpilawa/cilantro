@@ -45,14 +45,7 @@ void GLShaderProgram::Link ()
 
 bool GLShaderProgram::HasUniform (const std::string& uniformName) const
 {
-    GLuint location = GetUniformLocationId (uniformName);
-
-    if (location == GL_INVALID_INDEX)
-    {
-        return false;
-    }
-
-    return true;
+    return glGetUniformLocation (m_glShaderProgramId, uniformName.c_str ()) != -1;
 }
 
 IShaderProgram& GLShaderProgram::SetUniformInt (const std::string& uniformName, int uniformValue)
