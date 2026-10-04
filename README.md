@@ -41,6 +41,7 @@ The build produces the engine library (`cilantro`), the Python module, the demos
 | `test02` | Sun, Earth and Moon: forward rendering with Blinn-Phong materials (diffuse, specular and normal maps), 4x multisampling and a camera flying along a spline path. |
 | `test03` | A skinned FBX character with skeletal animation, shadows and a PBR floor. |
 | `test04` | The Cerberus model with PBR textures. |
+| `test05` | A first person shooting gallery: walk around an arena with `W`/`A`/`S`/`D` and the mouse, shoot the floating targets with the left mouse button. Deferred PBR rendering with shadows, a weapon, crosshair and score bar attached to the camera, ray casting against targets and obstacles. |
 
 In `test01`, `test03` and `test04` use `W`/`A`/`S`/`D` and the mouse to fly around and `Space` to release or capture the mouse. `Esc` quits every demo (in `test02` the camera moves on its own).
 

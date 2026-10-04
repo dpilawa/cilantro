@@ -50,6 +50,9 @@ std::shared_ptr<MeshObject> MeshObject::SetMaterial (const std::string& material
 {
     m_material = m_gameScene.lock ()->GetMaterialManager ()->GetByName<Material> (materialName);
 
+    // let the renderer pick up the new material
+    GetGameScene ()->GetGame ()->GetMessageBus ()->Publish<MeshObjectUpdateMessage> (std::make_shared<MeshObjectUpdateMessage> (this->GetHandle ()));
+
     return std::dynamic_pointer_cast<MeshObject> (shared_from_this ());
 }
 

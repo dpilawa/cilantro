@@ -78,6 +78,7 @@ private:
 
     double prevAxisMouseX;
     double prevAxisMouseY;
+    bool hasPrevAxisMouse;
 
     std::unordered_map<std::tuple<int, int, int>, std::shared_ptr<Input<bool>>, TupleHash> glfwKeyEventMap;
     std::unordered_map<std::pair<int, int>, std::shared_ptr<Input<float>>, PairHash> glfwKeyAxisMap;

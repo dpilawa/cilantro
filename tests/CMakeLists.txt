@@ -30,10 +30,16 @@ ControlledCamera.cpp ControlledCamera.h
 )
 add_dependencies(test01 deps cerberus)
 
+add_executable(test05
+test05.cpp
+)
+add_dependencies(test05 deps)
+
 target_link_libraries (test01 cilantro)
 target_link_libraries (test02 cilantro)
 target_link_libraries (test03 cilantro)
 target_link_libraries (test04 cilantro)
+target_link_libraries (test05 cilantro)
 
 externalproject_add(
     cerberus
@@ -71,6 +77,10 @@ set_target_properties(test01
         LINK_FLAGS " --bind -s USE_GLFW=3 -sERROR_ON_UNDEFINED_SYMBOLS=0 -s SINGLE_FILE -s WASM=1 -gsource-map")
 
         set_target_properties(test04
+        PROPERTIES SUFFIX ".html"
+        LINK_FLAGS " --bind -s USE_GLFW=3 -sERROR_ON_UNDEFINED_SYMBOLS=0 -s SINGLE_FILE -s WASM=1 -gsource-map")
+
+        set_target_properties(test05
         PROPERTIES SUFFIX ".html"
         LINK_FLAGS " --bind -s USE_GLFW=3 -sERROR_ON_UNDEFINED_SYMBOLS=0 -s SINGLE_FILE -s WASM=1 -gsource-map")
 endif (DEFINED EMSCRIPTEN)
